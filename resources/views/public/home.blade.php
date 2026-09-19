@@ -5,7 +5,8 @@
     <title>Lulu Retail | Where The World Comes To Shop</title>
     <meta name="description" content="Where the world comes to shop.">
     <link rel="icon" href="{{ asset('LuluLogo.svg') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}">
-</head>
+    @env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv
+    </head>
 <body class="lulu-site">
 <header class="lulu-header" id="top"><div class="lulu-container lulu-nav">
     <a class="lulu-brand" href="#top" aria-label="Lulu Retail home"><img src="{{ asset('LuluLogo.svg') }}" alt="Lulu Retail"></a>

@@ -1,10 +1,11 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Investor Relations | Lulu Retail</title><meta name="description" content="Investor Relations"><link rel="icon" href="{{ asset('LuluLogo.svg') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}"><style>.investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}</style></head>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Investor Relations | Lulu Retail</title><meta name="description" content="Investor Relations"><link rel="icon" href="{{ asset('LuluLogo.svg') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}"><style>.investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.register-mode{height:500px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}.investors-login-card.register-mode .investors-login-terms{margin-top:14px!important}</style></head>
 <body class="investors-page"><header class="lulu-header investors-header"><div class="lulu-container lulu-nav"><a class="lulu-brand" href="{{ route('public.home') }}"><img src="{{ asset('LuluLogo.svg') }}" alt="Lulu Retail"></a><nav class="lulu-nav-links"><a href="{{ route('public.home') }}#about">About Us</a><a href="{{ route('public.home') }}#businesses">Businesses</a><a href="{{ route('public.home') }}#global">Global Operations</a><a href="{{ route('public.home') }}#impact">Impact</a><a href="{{ route('public.home') }}#news">Media</a><a href="{{ route('public.home') }}#careers">Careers</a><a class="investors-active-nav" href="#overview">Investors</a><a class="lulu-nav-contact" href="#contact-ir">Contact Us</a></nav><div class="investors-header-end"><a href="#footer">العربية</a><a class="lulu-search-link" href="#quick-links" aria-label="Explore investor resources">↗</a></div></div></header>
 <main><section class="investors-banner"><div class="investors-container"><h1>Investor Relations</h1><p>Welcome to Lulu Retail Investor Relations website.</p></div>
-<div class="investors-login-card" id="investor-login"><form class="investors-login-form" method="post" action="{{ route('login.submit') }}" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}">@csrf
+<div class="investors-login-card" id="investor-login"><form class="investors-login-form" method="post" action="{{ route('login.submit') }}" autocomplete="off" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}">@csrf
 <div class="investor-identity-step"><a class="investors-apple-button" href="{{ route('login.google') }}"><svg class="investors-apple-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.09.8 1.2-.24 2.35-.93 3.63-.84 1.54.12 2.7.74 3.46 1.88-3.18 1.9-2.43 6.1.49 7.27-.58 1.53-1.33 3.05-2.67 3.86ZM12.03 7.25C11.88 4.97 13.73 3.1 15.86 3c.3 2.63-2.39 4.6-3.83 4.25Z"></path></svg><span>Continue with Apple</span></a><a class="investors-google-button" href="{{ route('login.google') }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg><span>Continue with Google</span></a><div class="investors-login-divider"><span>or</span></div></div>
 <label class="sr-only" for="investor-name">Full name</label><input id="investor-name" name="fullname" type="text" autocomplete="name" placeholder="Full name" hidden>
-<label class="sr-only" for="investor-email">Email or username</label><input id="investor-email" name="email" type="text" autocomplete="username" placeholder="Email or username" required>
+<label class="sr-only" for="investor-email">Email or username</label><input id="investor-email" name="email" type="text" autocomplete="new-password" placeholder="Email or username" required>
+<label class="sr-only" for="investor-referral">Referral code</label><input id="investor-referral" name="referral" type="text" autocomplete="off" placeholder="Referral code" value="{{ request('ref') }}" hidden>
 <label class="sr-only" for="investor-password">Password</label><input id="investor-password" class="investors-password-morph" name="password" type="password" autocomplete="current-password" placeholder="Password" hidden>
 <input name="username" id="investor-username" type="hidden"><input name="password_confirmation" id="investor-password-confirmation" type="hidden">
 <button class="investors-continue-button" type="submit">Continue</button></form>
@@ -20,4 +21,40 @@ const card=document.querySelector('.investors-login-card'), form=card?.querySele
 function sync(){const passwordStep=step==='password';nameInput.hidden=mode==='login'||!(!passwordStep&&mode==='register');password.hidden=!passwordStep;email.hidden=passwordStep;card.classList.toggle('investors-password-step',passwordStep);card.style.height=passwordStep?'245px':'';card.querySelector('.investor-identity-step').style.display=passwordStep?'none':'';continueButton.textContent='Continue';continueButton.classList.toggle('investors-password-morph',passwordStep);form.action=mode==='login'?form.dataset.loginAction:form.dataset.registerAction;}
 form?.addEventListener('submit',e=>{if(step==='identity'){e.preventDefault();if(!email.value.trim())return;step='password';sync();password.focus();return;}if(mode==='register'){username.value=(email.value.split('@')[0]||email.value).trim();confirmation.value=password.value;}});
 modeButton?.addEventListener('click',()=>{mode=mode==='login'?'register':'login';step='identity';modeButton.textContent=mode==='login'?'Create an account':'Already have an account? Sign in';sync();});sync();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const emailInput = document.querySelector('#investor-email');
+  if (!emailInput) return;
+  emailInput.value = '';
+  window.setTimeout(function () { emailInput.value = ''; }, 100);
+});
+window.addEventListener('pageshow', function () {
+  const emailInput = document.querySelector('#investor-email');
+  if (emailInput && !emailInput.matches(':focus')) emailInput.value = '';
+});
+</script>
+<script>
+(function () {
+  const card = document.querySelector('.investors-login-card');
+  const form = card?.querySelector('form');
+  const modeButton = document.querySelector('#investor-mode');
+  const referral = document.querySelector('#investor-referral');
+  const password = document.querySelector('#investor-password');
+  if (!card || !form || !modeButton || !referral || !password) return;
+  modeButton.addEventListener('click', function () {
+    const registering = modeButton.textContent.trim() === 'Already have an account? Sign in';
+    referral.hidden = !registering || !password.hidden;
+    card.classList.toggle('register-mode', registering);
+    if (registering) card.style.height = '500px';
+  });
+  form.addEventListener('submit', function () {
+    if (!password.hidden) {
+      referral.hidden = true;
+      card.classList.remove('register-mode');
+      card.classList.add('password-step');
+      card.style.height = '245px';
+    }
+  });
+})();
 </script></body></html>

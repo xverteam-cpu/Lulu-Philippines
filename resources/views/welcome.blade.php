@@ -3,26 +3,26 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#e31b23">
+        <meta name="theme-color" content="#166534">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="Lotteria">
-        <link rel="icon" type="image/png" href="{{ asset('lotterialogo.png') }}">
-        <link rel="shortcut icon" type="image/png" href="{{ asset('lotterialogo.png') }}">
-        <link rel="apple-touch-icon" href="{{ asset('lotterialogo.png') }}">
+        <meta name="apple-mobile-web-app-title" content="Lulu">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
+        <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
+        <link rel="apple-touch-icon" href="{{ asset('LuluLogo.svg') }}">
         <link rel="manifest" href="{{ asset('manifest.json') }}">
 
-        <title>Lotteria Philippines</title>
+        <title>Lulu</title>
 
         <!-- Open Graph Meta Tags for Social Sharing -->
-        <meta property="og:title" content="Lotteria Philippines">
-        <meta property="og:description" content="Investment packages with daily returns. Start investing with Lotteria Philippines.">
+        <meta property="og:title" content="Lulu">
+        <meta property="og:description" content="Investment packages with daily returns. Start investing with Lulu.">
         <meta property="og:image" content="{{ asset('Lotteria.png') }}">
         <meta property="og:url" content="{{ url('/') }}">
         <meta property="og:type" content="website">
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Lotteria Philippines">
-        <meta name="twitter:description" content="Investment packages with daily returns. Start investing with Lotteria Philippines.">
+        <meta name="twitter:title" content="Lulu">
+        <meta name="twitter:description" content="Investment packages with daily returns. Start investing with Lulu.">
         <meta name="twitter:image" content="{{ asset('Lotteria.png') }}">
 
         <!-- Fonts -->

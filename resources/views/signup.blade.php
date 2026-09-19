@@ -8,7 +8,7 @@
     align-items: center;
     justify-content: center;
     padding: 28px 16px;
-    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    background: linear-gradient(135deg, #f4fbf7 0%, #ffe8e8 100%);
   }
   .signup-card {
     width: 100%;
@@ -20,7 +20,7 @@
   }
   .signup-title {
     margin: 0 0 8px;
-    color: #e31b23;
+    color: #166534;
     font-size: 28px;
     font-weight: 700;
     text-align: center;
@@ -86,13 +86,13 @@
   }
   .signup-button {
     border: 0;
-    background: #e31b23;
+    background: #166534;
     color: #ffffff;
     cursor: pointer;
   }
   .login-link {
-    border: 1px solid #e31b23;
-    color: #e31b23;
+    border: 1px solid #166534;
+    color: #166534;
     background: #ffffff;
   }
   @media (max-width: 640px) {
@@ -117,7 +117,7 @@
     <form class="signup-form" action="{{ route('register.partner') }}" method="post">
       @csrf
       @if ($errors->any())
-        <div class="signup-field full" style="padding:10px 12px;border-radius:6px;background:#fff0f2;color:#b00000;font-size:14px;line-height:20px;">
+        <div class="signup-field full" style="padding:10px 12px;border-radius:6px;background:#fff0f2;color:#0f3d2e;font-size:14px;line-height:20px;">
           {{ $errors->first() }}
         </div>
       @endif

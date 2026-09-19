@@ -23,7 +23,7 @@
   .input-label { font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
   .checkbox-row { display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:14px; background:#f8fafc; border:1px solid #d1d5db; }
   .checkbox-label { font-size:15px; color:#071a44; font-weight:600; }
-  .primary-btn { padding: 14px 18px; border-radius: 14px; border: none; background: #c8102e; color: #fff; font-weight: 700; cursor: pointer; }
+  .primary-btn { padding: 14px 18px; border-radius: 14px; border: none; background: #166534; color: #fff; font-weight: 700; cursor: pointer; }
 </style>
 
 <main class="action-shell">

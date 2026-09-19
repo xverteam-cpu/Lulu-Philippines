@@ -8,7 +8,7 @@
     --border: #e5e7eb;
     --text: #111827;
     --muted: #6b7280;
-    --accent: #c8102e;
+    --accent: #166534;
     --accent-soft: #fde8ec;
     --success: #16a34a;
   }

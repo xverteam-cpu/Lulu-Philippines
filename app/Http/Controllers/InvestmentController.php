@@ -19,7 +19,7 @@ class InvestmentController extends Controller
             'package' => ['required', 'string'],
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
-            'payment_method' => ['required', 'string', 'in:bank_transfer,account_balance,crypto'],
+            'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,crypto'],
         ]);
 
         $package = InvestmentPackages::find($data['package']);
@@ -53,7 +53,7 @@ class InvestmentController extends Controller
             ]);
         }
 
-        $isPending = $data['payment_method'] === 'bank_transfer';
+        $isPending = in_array($data['payment_method'], ['bank_transfer', 'e_wallet'], true);
 
         $investment = DB::transaction(function () use ($request, $data, $package, $isPending, $amountInUsd) {
             if (! $isPending && ! InvestmentPackages::reserveSlot($data['package'])) {

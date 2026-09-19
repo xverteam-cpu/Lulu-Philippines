@@ -33,10 +33,9 @@ class User extends Authenticatable
         'bank_name',
         'bank_account_number',
         'bank_account_holder',
+        'withdrawal_account_type',
         'password',
         'referred_by',
-        'pin_hash',
-        'pin_set_at',
         'signup_bonus_claimed_at',
         'is_admin',
         'is_restricted',
@@ -52,7 +51,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'pin_hash',
         'remember_token',
     ];
 
@@ -66,7 +64,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'pin_set_at' => 'datetime',
             'is_admin' => 'boolean',
             'is_restricted' => 'boolean',
             'last_seen_at' => 'datetime',

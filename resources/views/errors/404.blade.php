@@ -22,8 +22,8 @@
             box-shadow: 0 12px 35px rgba(0,0,0,0.08);
             text-align: center;
         }
-        h1 { color: #d71920; margin-top: 0; }
-        a { color: #d71920; font-weight: 700; }
+        h1 { color: #166534; margin-top: 0; }
+        a { color: #166534; font-weight: 700; }
     </style>
 </head>
 <body>

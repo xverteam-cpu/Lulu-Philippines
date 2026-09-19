@@ -63,19 +63,19 @@ CERT),
 
     'contactPerson' => [
         'technical' => [
-            'givenName' => 'Lotteria',
+            'givenName' => 'Lulu',
             'emailAddress' => env('ADMIN_EMAIL', 'no-reply@lotteria.local'),
         ],
         'support' => [
-            'givenName' => 'Lotteria Support',
+            'givenName' => 'Lulu Support',
             'emailAddress' => env('ADMIN_EMAIL', 'no-reply@lotteria.local'),
         ],
     ],
 
     'organization' => [
         'en-US' => [
-            'name' => 'Lotteria',
-            'displayname' => 'Lotteria',
+            'name' => 'Lulu',
+            'displayname' => 'Lulu',
             'url' => env('APP_URL', 'http://localhost:8000'),
         ],
     ],

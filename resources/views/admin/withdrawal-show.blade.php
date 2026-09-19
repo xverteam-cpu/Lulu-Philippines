@@ -54,13 +54,13 @@
 
   .admin-nav-btn:hover {
     background-color: #f3f4f6;
-    border-color: #c40000;
-    color: #c40000;
+    border-color: #14532d;
+    color: #14532d;
   }
 
   .admin-nav-btn.active {
-    background-color: #c40000;
-    border-color: #c40000;
+    background-color: #14532d;
+    border-color: #14532d;
     color: #ffffff;
     box-shadow: 0 2px 4px rgba(196, 0, 0, 0.15);
   }
@@ -164,7 +164,7 @@
   .detail-value.amount {
     font-size: 18px;
     font-weight: 700;
-    color: #c40000;
+    color: #14532d;
   }
 
   /* Status Badges */
@@ -280,7 +280,7 @@
 
   .form-control:focus {
     outline: none;
-    border-color: #c40000;
+    border-color: #14532d;
     box-shadow: 0 0 0 3px rgba(196, 0, 0, 0.1);
     background-color: #ffffff;
   }
@@ -319,7 +319,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #c40000;
+    color: #14532d;
     text-decoration: none;
     font-weight: 600;
     font-size: 13px;
@@ -468,7 +468,7 @@
 
       <div class="detail-section">
         <span class="detail-label">Withdrawal Amount</span>
-        <span class="detail-value" style="color:#c40000;font-size:28px;font-weight:700;">
+        <span class="detail-value" style="color:#14532d;font-size:28px;font-weight:700;">
           ${{ number_format($withdrawal->amount, 2) }}
         </span>
       </div>
@@ -524,7 +524,7 @@
 
   @if ($withdrawal->status === 'pending')
     <div class="detail-card">
-      <div style="border-bottom:1px solid #ffc5cd;padding-bottom:16px;margin-bottom:16px;">
+      <div style="border-bottom:1px solid #dcefe8;padding-bottom:16px;margin-bottom:16px;">
         <h3 style="margin:0;color:#001a33;font-size:16px;">Take Action</h3>
       </div>
 
@@ -540,7 +540,7 @@
       </div>
 
       <form id="rejectForm" method="POST" action="{{ route('admin.withdrawals.reject', $withdrawal) }}"
-            style="display:none;border-top:1px solid #ffc5cd;padding-top:16px;margin-top:16px;">
+            style="display:none;border-top:1px solid #dcefe8;padding-top:16px;margin-top:16px;">
         @csrf
         <div class="form-group">
           <label class="form-label">Rejection Reason</label>

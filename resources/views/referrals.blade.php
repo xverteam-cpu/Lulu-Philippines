@@ -3,7 +3,7 @@
 @section('content')
 <style>
   .page { min-height: 100vh; padding: 32px 18px; }
-  .referral-card { max-width: 920px; margin: 0 auto; background: #ffffff; border-radius: 18px; padding: 34px; box-shadow: 0 18px 45px rgba(15,23,42,0.10); border: 1px solid #e5eaf0; }
+  .referral-card { max-width: 920px; margin: 0 auto; background: transparent; border-radius: 0; padding: 0; box-shadow: none; border: 0; }
   .top-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; }
   .back-button { display:inline-flex; align-items:center; gap:8px; padding:11px 16px; background:#f4f7fb; color:#0b1f3a; border:1px solid #d8e0ea; border-radius:10px; font-size:14px; font-weight:700; text-decoration:none; }
   .badge { padding:9px 14px; background:#ecfdf3; color:#16703a; border:1px solid #c8f0d5; border-radius:999px; font-size:13px; font-weight:700; }
@@ -19,8 +19,8 @@
   /* Fix: allow the input to shrink inside flex, prevent overflow, and align copy button */
   .copy-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
   .referral-input { flex: 1 1 auto; min-width: 0; padding:16px 18px; border:1px solid #d9e2ec; border-radius:12px; background:#ffffff; color:#0b1f3a; font-size:15px; font-weight:700; outline:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .copy-button { flex: 0 0 140px; border:none; border-radius:12px; background:#e5192a; color:#ffffff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 8px 18px rgba(229,25,42,0.22); }
-  .copy-button:hover { background:#c91423; }
+  .copy-button { flex: 0 0 140px; border:none; border-radius:12px; background:#098a58; color:#ffffff; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 8px 18px rgba(9,138,88,0.22); }
+  .copy-button:hover { background:#08764c; }
 
   .earnings-row { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
   .earnings-title { margin:0; font-size:18px; font-weight:800; color:#071c36; }
@@ -110,10 +110,6 @@
         @endforeach
       </div>
     @endif
-
-    <div style="margin-top:18px;" class="footer-actions">
-      <a href="{{ route('dashboard') }}" class="dashboard-link">Back to Dashboard</a>
-    </div>
 
   </section>
 </main>

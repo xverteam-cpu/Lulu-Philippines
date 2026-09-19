@@ -22,7 +22,7 @@
   .input-group { display: grid; gap: 14px; margin-bottom: 20px; }
   .input-label { font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
   .input-field { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid #d1d5db; background: #f8fafc; font-size: 15px; }
-  .primary-btn { padding: 14px 18px; border-radius: 14px; border: none; background: #c8102e; color: #fff; font-weight: 700; cursor: pointer; }
+  .primary-btn { padding: 14px 18px; border-radius: 14px; border: none; background: #166534; color: #fff; font-weight: 700; cursor: pointer; }
 </style>
 
 <main class="action-shell">

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PackageGiftedEmail;
-use App\Mail\LotteriaPromotionEmail;
+use App\Mail\LuluPromotionEmail;
 use App\Models\Investment;
 use App\Models\PackageSlot;
 use App\Models\ReferralEarning;
@@ -71,12 +71,12 @@ class UserManagementController extends Controller
     {
         $backupPayload = [
             'exported_at' => now()->toIso8601String(),
-            'site' => 'Lotteria',
+            'site' => 'Lulu',
             'users' => User::query()
                 ->orderBy('id')
                 ->get()
                 ->map(function (User $user) {
-                    return $user->makeVisible(['password', 'pin_hash', 'remember_token'])->toArray();
+                    return $user->makeVisible(['password', 'remember_token'])->toArray();
                 })
                 ->values(),
             'investments' => Investment::query()->orderBy('id')->get()->map->toArray()->values(),
@@ -226,7 +226,7 @@ class UserManagementController extends Controller
             ->chunkById(100, function ($users) use (&$sentCount) {
                 foreach ($users as $user) {
                     try {
-                        Mail::to($user->email)->send(new LotteriaPromotionEmail($user));
+                        Mail::to($user->email)->send(new LuluPromotionEmail($user));
                         $sentCount++;
                     } catch (\Throwable $e) {
                         Log::warning('Failed to send promotional email', [

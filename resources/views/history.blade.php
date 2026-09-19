@@ -8,7 +8,7 @@
     --border: #e5e7eb;
     --text: #111827;
     --muted: #6b7280;
-    --accent: #c8102e;
+    --accent: #166534;
     --accent-soft: #fde8ec;
     --success: #16a34a;
     --warning: #d97706;
@@ -294,7 +294,7 @@
       <div class="history-header-left">
         <a href="{{ route('dashboard') }}" class="back-link" aria-label="Go to dashboard">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="16" height="16">
-            <path d="M15 6L9 12L15 18" stroke="#c8102e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 6L9 12L15 18" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Dashboard</span>
         </a>
@@ -407,7 +407,7 @@
                     <td>
                       @if ($withdrawal->bank_name === 'Welcome Bonus')
                         <strong>$5 Sign Up Bonus</strong><br>
-                        <span style="color:#c8102e;font-size:12px;">Welcome reward</span>
+                        <span style="color:#166534;font-size:12px;">Welcome reward</span>
                       @else
                         {{ ucwords(str_replace('_', ' ', $withdrawal->payment_method)) }}
                       @endif

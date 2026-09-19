@@ -36,7 +36,7 @@
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: #ed1c24;
+    background: #166534;
     color: #fff;
     font-weight: 900;
     display: flex;
@@ -70,7 +70,7 @@
     border-radius: 15px;
     background: #fff;
     border: none;
-    color: #ed1c24;
+    color: #166534;
     font-size: 24px;
     font-weight: 800;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
@@ -84,7 +84,7 @@
   .page-title p { color:#71809a; font-size:13px; font-weight:600; margin-top:4px; }
 
   .balance-card {
-    background: #ed1c24;
+    background: #166534;
     border-radius: 22px;
     padding: 22px;
     color: #fff;
@@ -113,24 +113,24 @@
   }
 
   .input-row { position:relative; }
-  .currency { position:absolute; top:15px; left:16px; font-size:16px; font-weight:900; color:#ed1c24; }
+  .currency { position:absolute; top:15px; left:16px; font-size:16px; font-weight:900; color:#166534; }
   .amount-input { padding-left:42px; font-size:22px; font-weight:900; }
 
   .quick-row { display:flex; gap:10px; margin-bottom:18px; }
-  .quick-row button { flex:1; border:none; border-radius:14px; padding:12px 0; background:#fff5f5; color:#ed1c24; font-weight:900; font-size:13px; }
+  .quick-row button { flex:1; border:none; border-radius:14px; padding:12px 0; background:#f4fbf7; color:#166534; font-weight:900; font-size:13px; }
 
   .note { background:#f8fafc; border-radius:16px; padding:14px; font-size:12px; line-height:1.5; color:#6b7890; margin-bottom:18px; }
 
-  .send-btn { width:100%; border:none; border-radius:18px; background:#ed1c24; color:#fff; font-size:17px; font-weight:900; padding:17px; box-shadow:0 16px 28px rgba(237,28,36,0.28); }
+  .send-btn { width:100%; border:none; border-radius:18px; background:#166534; color:#fff; font-size:17px; font-weight:900; padding:17px; box-shadow:0 16px 28px rgba(237,28,36,0.28); }
 
   .recent { margin-top:20px; }
   .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
   .section-head h3 { font-size:16px; font-weight:900; }
-  .section-head a { font-size:14px; color:#ed1c24; text-decoration:none; font-weight:900; }
+  .section-head a { font-size:14px; color:#166534; text-decoration:none; font-weight:900; }
 
   .recipient-list { display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; }
   .recipient { min-width:76px; background:#fff; border-radius:18px; padding:12px 8px; text-align:center; box-shadow:0 8px 22px rgba(0,0,0,0.05); }
-  .avatar { width:42px; height:42px; border-radius:50%; background:#fff0f1; color:#ed1c24; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:900; }
+  .avatar { width:42px; height:42px; border-radius:50%; background:#fff0f1; color:#166534; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:900; }
   .recipient p { font-size:12px; font-weight:800; }
 
   .bottom-nav {
@@ -364,7 +364,7 @@
     <input class="input-box" type="text" placeholder="Add a short note optional" />
 
     <div class="note">
-      Transfers are processed through the Lotteria Wallet system. Please review recipient details before confirming your transaction.
+      Transfers are processed through the Lulu Wallet system. Please review recipient details before confirming your transaction.
     </div>
 
     <button class="send-btn">Continue to Send</button>

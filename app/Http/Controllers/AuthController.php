@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -35,10 +34,9 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
-        $request->session()->forget('pin_verified');
-        Cookie::queue('lotteria_pin_user', (string) Auth::id(), 60 * 24 * 30);
-
-        return redirect()->route(Auth::user()->pin_hash ? 'pin.login' : 'pin.setup');
+        return redirect()->intended(
+            Auth::user()->is_admin ? route('admin.dashboard') : route('dashboard')
+        );
     }
 
     public function register(Request $request): RedirectResponse
@@ -76,10 +74,7 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
-        $request->session()->forget('pin_verified');
-        Cookie::queue('lotteria_pin_user', (string) $user->id, 60 * 24 * 30);
-
-        return redirect()->route('pin.setup');
+        return redirect()->route($user->is_admin ? 'admin.dashboard' : 'dashboard');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -89,7 +84,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('pin.login');
+        return redirect()->route('investors');
     }
 
     private function generateUniqueEmail(string $username): string

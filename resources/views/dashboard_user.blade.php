@@ -3,8 +3,8 @@
 @section('content')
 <style>
   :root {
-    --color-primary: #c8102e;
-    --color-primary-soft: #e21d2a;
+    --color-primary: #166534;
+    --color-primary-soft: #70f556;
     --color-navy: #0f172a;
     --color-title: #1e293b;
     --color-body: #475569;
@@ -14,7 +14,7 @@
     --border: #eef2f7;
     --shadow-soft: 0px 2px 8px rgba(0, 0, 0, 0.02);
     --shadow-card: 0px 10px 30px rgba(0, 0, 0, 0.04);
-    --shadow-red: 0px 12px 24px rgba(219, 0, 7, 0.15);
+    --shadow-lulu: 0px 12px 24px rgba(70, 164, 45, 0.22);
     --radius: 22px;
     --radius-sm: 18px;
     --radius-lg: 30px;
@@ -28,9 +28,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+
   .wallet-shell {
     max-width: 430px;
-    margin: 8px auto 140px;
+    margin: 0 auto 140px;
     padding: 0 16px;
   }
 
@@ -39,7 +44,14 @@
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 20px;
+    width: 100vw;
+    margin: 0 0 18px calc(50% - 50vw);
+    padding: 14px 16px;
+    box-sizing: border-box;
+    color: #fff;
+    background: #098a58;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .brand {
@@ -49,60 +61,73 @@
   }
 
   .brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
-    background: var(--color-primary);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: #098a58;
     font-weight: 900;
     font-size: 16px;
-    box-shadow: 0 6px 18px rgba(15,23,42,.06);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    overflow: hidden;
   }
 
-  .brand-title {
+  .brand-mark img {
+    width: 145%;
+    height: 145%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .account-profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 11px;
+    border: 1px solid rgba(255,255,255,.34);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--color-title);
-    font-size: 18px;
+    text-decoration: none;
+    transition: background .18s ease, transform .18s ease;
+  }
+
+  .account-profile-link:hover {
+    background: rgba(255,255,255,.14);
+    transform: translateY(-1px);
+  }
+
+  .account-profile-link svg {
+    width: 17px;
+    height: 17px;
   }
 
   .hero {
     position: relative;
-    border-radius: var(--radius);
-    padding: 26px 22px;
+    aspect-ratio: 4 / 1;
+    padding: 0;
     color: #fff;
-    background-image:
-      radial-gradient(circle at 18% 20%, rgba(255,255,255,0.18), transparent 24%),
-      radial-gradient(circle at 78% 10%, rgba(255,255,255,0.10), transparent 18%),
-      linear-gradient(135deg, #e11d48 0%, #be123c 100%);
-    background-color: #c8102e;
-    box-shadow: var(--shadow-red);
     overflow: hidden;
   }
 
-  .hero::before {
-    content: '';
+  .hero-card-art {
     position: absolute;
-    top: -18px;
-    right: -24px;
-    width: 170px;
-    height: 170px;
-    background: radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 58%);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
     pointer-events: none;
+    z-index: 0;
+    transform: none;
   }
 
-  .hero::after {
-    content: '';
-    position: absolute;
-    top: 12px;
-    right: 20px;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: none;
-    pointer-events: none;
+  .hero > * {
+    position: relative;
+    z-index: 1;
   }
 
   .hero .hero-cta.mail,
@@ -147,7 +172,7 @@
     height: 20px;
     line-height: 20px;
     border-radius: 999px;
-    background: #d71920;
+    background: #166534;
     color: #fff;
     font-size: 12px;
     font-weight: 800;
@@ -261,8 +286,14 @@
   .hero-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 16px;
+    position: absolute;
+    top: 42%;
+    left: 5%;
+    right: 5%;
+    margin: 0;
+    text-align: center;
   }
 
   .hero-kicker {
@@ -275,11 +306,16 @@
   }
 
   .hero-balance {
-    margin-top: 18px;
+    position: absolute;
+    top: 52%;
+    left: 5%;
+    right: 5%;
+    bottom: auto;
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
+    justify-content: center;
     gap: 16px;
+    text-align: center;
   }
 
   .hero .balance-value {
@@ -299,13 +335,13 @@
     padding: 14px 20px;
     font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 8px 18px rgba(215,25,32,.15);
+    box-shadow: 0 8px 18px rgba(22,101,52,.15);
     transition: transform .18s ease, box-shadow .18s ease;
   }
 
   .hero-cta:hover {
     transform: scale(1.02);
-    box-shadow: 0 10px 22px rgba(215,25,32,.18);
+    box-shadow: 0 10px 22px rgba(22,101,52,.18);
   }
 
   .card {
@@ -371,7 +407,7 @@
 
   .actions-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
     justify-items: center;
   }
@@ -380,11 +416,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
     text-align: center;
     color: var(--color-title);
     font-weight: 500;
-    font-size: 15px;
+    font-size: 13px;
     text-decoration: none;
     width: 100%;
     max-width: 160px;
@@ -392,8 +428,8 @@
   }
 
   .action .icon {
-    width: 72px;
-    height: 72px;
+    width: 36px;
+    height: 36px;
     border-radius: 0;
     display: flex;
     align-items: center;
@@ -408,17 +444,11 @@
     transform: translateY(-3px);
   }
 
-  .action img,
   .action svg {
-    width: 72px;
-    height: 72px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
-  }
-
-  /* Slightly smaller referrals icon to match others visually */
-  .action-referrals .icon img {
-    width: 56px;
-    height: 56px;
+    color: var(--color-primary);
   }
 
   .section-header {
@@ -570,7 +600,7 @@
   }
 
   .banner-indicator.is-active {
-    background: #c8102e;
+    background: #166534;
     transform: scale(1.2);
   }
 
@@ -603,35 +633,39 @@
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    box-shadow: 0 8px 18px rgba(215,25,32,.15);
+    box-shadow: 0 8px 18px rgba(22,101,52,.15);
     transition: transform .18s ease, box-shadow .18s ease;
     min-width: 130px;
   }
 
   .promo .cta:hover {
     transform: scale(1.02);
-    box-shadow: 0 10px 22px rgba(215,25,32,.18);
+    box-shadow: 0 10px 22px rgba(22,101,52,.18);
   }
 
   .bottom-nav {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    position: fixed !important;
+    left: 50%;
+    right: auto;
+    bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    width: min(640px, calc(100vw - 24px));
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: space-around;
-    gap: 18px;
+    gap: 8px;
     max-width: 640px;
     margin: 0 auto;
-    padding: 0 22px;
+    padding: 0 12px;
     height: 86px;
     background: rgba(255,255,255,.95);
-    border-radius: 30px;
+    border-radius: 14px;
     border: 1px solid rgba(239,239,247,.90);
     backdrop-filter: blur(18px);
     box-shadow: 0 8px 24px rgba(15,23,42,.06);
-    z-index: 150;
+    z-index: 9999;
+    visibility: visible;
+    opacity: 1;
   }
 
   .nav-item {
@@ -639,9 +673,12 @@
     flex-direction: column;
     align-items: center;
     gap: 6px;
+    min-width: 0;
+    flex: 1 1 0;
     color: var(--color-muted);
     font-weight: 500;
     font-size: 13px;
+    white-space: nowrap;
     text-decoration: none;
     transition: transform .2s ease, color .2s ease;
   }
@@ -651,9 +688,11 @@
     color: var(--color-title);
   }
 
-  .nav-item img {
+  .nav-item img,
+  .nav-item svg {
     width: 22px;
     height: 22px;
+    color: var(--color-primary);
   }
 
   .bottom-nav a {
@@ -667,9 +706,9 @@
 
   .nav-scan {
     position: relative;
-    top: -24px;
-    width: 64px;
-    height: 64px;
+    top: 0;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -679,14 +718,16 @@
   }
 
   .nav-scan:hover {
-    transform: translateY(-6px);
+    transform: translateY(-2px);
   }
 
-  .nav-scan img {
+  .nav-scan img,
+  .nav-scan svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
+    color: var(--color-primary);
   }
 
   .fab-scrim {
@@ -785,13 +826,15 @@
     padding: 0;
   }
 
-  .fab-action-icon img {
+  .fab-action-icon img,
+  .fab-action-icon svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
     padding: 0;
     border-radius: 0;
+    color: var(--color-primary);
   }
 
   .fab-action:nth-child(1) { transition-delay:.05s; }
@@ -813,56 +856,13 @@
     cursor: pointer;
   }
 
-  .raffle-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0,0,0,.72);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .raffle-card {
-    position: relative;
-    width: min(100%, 520px);
-    border-radius: 24px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 28px 80px rgba(0,0,0,.35);
-  }
-
-  .raffle-close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255,255,255,.9);
-    color: #111;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    z-index: 2;
-  }
-
-  .raffle-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-
   @media (max-width: 760px) {
     .wallet-shell {
-      margin: 8px auto 110px;
+      margin: 0 auto 110px;
       padding: 0 12px;
     }
     .hero {
-      padding: 22px 16px;
+      aspect-ratio: 3 / 1;
     }
     .hero-top {
       flex-direction: row;
@@ -890,7 +890,7 @@
       font-size: 24px;
     }
     .actions-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
     }
     .discover {
@@ -923,10 +923,13 @@
       font-size: 13px;
     }
     .bottom-nav {
-      padding: 0 14px;
+      width: calc(100vw - 16px);
+      padding: 0 8px;
+      gap: 4px;
+      bottom: max(8px, env(safe-area-inset-bottom)) !important;
     }
     .nav-scan {
-      top: -18px;
+      top: 0;
     }
     .notification-panel {
       left: 8px;
@@ -940,7 +943,7 @@
       padding: 0 10px;
     }
     .hero {
-      padding: 18px 14px;
+      aspect-ratio: 3 / 1;
     }
     .hero-top {
       gap: 10px;
@@ -958,15 +961,19 @@
       height: 36px;
     }
     .actions-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
     .action {
       max-width: none;
     }
     .action .icon {
-      width: 56px;
-      height: 56px;
+      width: 32px;
+      height: 32px;
+    }
+    .action svg {
+      width: 32px;
+      height: 32px;
     }
     .discover-item {
       min-width: 128px;
@@ -985,8 +992,20 @@
       object-fit: contain;
     }
     .bottom-nav {
-      padding: 0 12px;
-      height: 78px;
+      width: calc(100vw - 12px);
+      padding: 0 4px;
+      gap: 2px;
+      height: 72px;
+      bottom: max(6px, env(safe-area-inset-bottom)) !important;
+    }
+    .nav-item {
+      gap: 3px;
+      font-size: 11px;
+    }
+    .nav-item img,
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
     }
     .notification-panel {
       top: 68px;
@@ -998,7 +1017,7 @@
       max-width: 760px;
     }
     .actions-grid {
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 </style>
@@ -1017,126 +1036,96 @@
 @endphp
 
 <main class="wallet-shell">
-  @if (! empty($showRafflePopup))
-    <div class="raffle-overlay" id="raffleOverlay" aria-modal="true" role="dialog">
-      <div class="raffle-card">
-        <button class="raffle-close" type="button" id="raffleClose" aria-label="Close raffle popup">×</button>
-        <img src="{{ asset('raffle.png') }}" alt="Raffle promotion" class="raffle-image" loading="lazy" decoding="async">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="https://www.realclipart.com/png/middle/222-2226460_price-age-lulu-group-international-lulu-logo.png" alt="Lulu logo">
       </div>
     </div>
-  @endif
+    <a class="account-profile-link" href="{{ route('profile') }}">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M5 20c.7-3.5 3-5.5 7-5.5s6.3 2 7 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>Profile</span>
+    </a>
+  </header>
+
   <section class="hero">
+    <svg class="hero-card-art" viewBox="0 0 1200 300" role="img"
+         aria-label="Lulu Retail green card background" preserveAspectRatio="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="heroBase" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#006f51"/>
+          <stop offset=".48" stop-color="#008f65"/>
+          <stop offset="1" stop-color="#006c50"/>
+        </linearGradient>
+        <linearGradient id="heroLime" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#67c936" stop-opacity=".10"/>
+          <stop offset=".55" stop-color="#79d83e" stop-opacity=".72"/>
+          <stop offset="1" stop-color="#25ae5e" stop-opacity=".30"/>
+        </linearGradient>
+        <linearGradient id="heroGlow" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#f9dd3c" stop-opacity="0"/>
+          <stop offset=".55" stop-color="#ffe45c" stop-opacity=".95"/>
+          <stop offset="1" stop-color="#fff29a" stop-opacity=".76"/>
+        </linearGradient>
+        <radialGradient id="heroCornerGlow" cx="0" cy="0" r="1">
+          <stop offset="0" stop-color="#9de052" stop-opacity=".72"/>
+          <stop offset="1" stop-color="#9de052" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="heroCardClip">
+          <rect width="1200" height="300" rx="32"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#heroCardClip)">
+        <rect width="1200" height="300" fill="url(#heroBase)"/>
+        <ellipse cx="195" cy="-35" rx="300" ry="185" fill="url(#heroCornerGlow)"/>
+        <path d="M-40 264 C170 72 285 30 470 -16 L250 -25 C133 48 52 111 -40 206Z" fill="#1fac67" opacity=".22"/>
+        <path d="M580 330 C785 300 886 150 1240 58 L1240 330Z" fill="#1bb966" opacity=".42"/>
+        <path d="M705 330 C884 286 1003 193 1240 132 L1240 330Z" fill="url(#heroLime)"/>
+        <path d="M760 330 C922 274 1058 207 1240 169" fill="none" stroke="url(#heroGlow)" stroke-width="9" stroke-linecap="round"/>
+        <path d="M-55 110 C70 92 132 35 190 -18" fill="none" stroke="#f6d63b" stroke-width="3" opacity=".9"/>
+        <path d="M845 330 C1000 270 1118 248 1240 278 L1240 330Z" fill="#70cf3a" opacity=".28"/>
+        <rect width="1200" height="300" rx="32" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
+      </g>
+    </svg>
     <div class="hero-top">
       <div>
         <div class="hero-kicker">Available balance</div>
-      </div>
-      <div class="hero-top-actions">
-        <button class="hero-cta mail view-details" type="button" id="notificationToggle" aria-label="View notifications" aria-expanded="false">
-          <span class="view-details-label">View Details</span>
-          <span class="notification-badge" id="notificationBadge" style="{{ $unreadCount > 0 ? '' : 'display:none;' }}">{{ $unreadCount }}</span>
-          <span class="sr-only">View notifications</span>
-        </button>
       </div>
     </div>
     <div class="hero-balance">
       <div>
         <div class="balance-value">${{ number_format($availableBalance, 2) }}</div>
       </div>
-      <a class="hero-cta buy" href="{{ route('invest') }}">Buy Shares</a>
     </div>
   </section>
-
-  <div class="notification-panel" id="notificationPanel" aria-hidden="true">
-    <div class="notification-panel-header">
-      <strong>Recent activity</strong>
-      <button type="button" id="notificationClose">Close</button>
-    </div>
-    <div class="notification-list" id="notificationList">
-      @forelse ($notifications as $notification)
-        <div class="notification-item" data-notification-id="{{ $notification['id'] }}">
-          <div class="notification-title">{{ $notification['title'] }}</div>
-          <div class="notification-text">{{ $notification['description'] }}</div>
-          <div class="notification-time">{{ $notification['time']->diffForHumans() }}</div>
-        </div>
-      @empty
-        <div class="notification-empty">No notifications yet.</div>
-      @endforelse
-    </div>
-  </div>
 
   <div class="card">
     <div class="actions-grid" role="list">
       <a class="action" href="{{ route('send') }}">
-        <div class="icon"><img src="{{ asset('Send%20(1).png') }}" alt="Send" loading="lazy" decoding="async"></div>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.4 18-3.8-7.8L2 9.4 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9.8 13.2 5.4-5.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>Send</div>
       </a>
 
       <a class="action" href="{{ route('withdraw') }}">
-        <div class="icon"><img src="{{ asset('Withdraw.png') }}" alt="Withdraw" loading="lazy" decoding="async"></div>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div>Withdraw</div>
       </a>
 
-      <a class="action action-referrals" href="{{ route('referrals') }}">
-        <div class="icon"><img src="{{ asset('referrals.png') }}" alt="Referrals" loading="lazy" decoding="async"></div>
-        <div>Referrals</div>
+      <a class="action" href="{{ route('invest') }}">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>Investment</div>
       </a>
 
       <a class="action" href="{{ route('franchising') }}">
-        <div class="icon"><img src="{{ asset('franchisebuttong.png') }}" alt="Franchise" loading="lazy" decoding="async"></div>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5M8 10h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>Franchise</div>
       </a>
 
-      <a class="action" href="{{ route('unavailable') }}">
-        <div class="icon"><img src="{{ asset('cards.png') }}" alt="Cards" loading="lazy" decoding="async"></div>
-        <div>Cards</div>
-      </a>
-
-      <a class="action" href="{{ route('unavailable') }}">
-        <div class="icon"><img src="{{ asset('loan.png') }}" alt="Loan" loading="lazy" decoding="async"></div>
-        <div>Loan</div>
-      </a>
     </div>
-  </div>
-
-  <div class="discover-wrapper">
-    <div class="section-header">
-      <strong class="section-title">Discover</strong>
-      <a class="section-link" href="#">See All →</a>
-    </div>
-    <div class="discover">
-      <a class="discover-item" href="{{ route('unavailable') }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12h18" stroke="#c8102e" stroke-width="2" stroke-linecap="round"/></svg><div>Promos</div></a>
-      <a class="discover-item" href="{{ route('unavailable') }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2v6" stroke="#c8102e" stroke-width="2" stroke-linecap="round"/></svg><div>Insurance</div></a>
-      <a class="discover-item" href="{{ route('unavailable') }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#c8102e" stroke-width="2"/></svg><div>Nearby</div></a>
-      <a class="discover-item" href="{{ route('unavailable') }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12h18" stroke="#c8102e" stroke-width="2"/></svg><div>Food</div></a>
-      <a class="discover-item" href="{{ route('unavailable') }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M2 12h20" stroke="#c8102e" stroke-width="2"/></svg><div>Flights</div></a>
-    </div>
-  </div>
-
-  <div class="discover-banner">
-    <div class="banner-carousel" id="bannerCarousel" aria-label="Franchise and invest banner carousel">
-      <div class="banner-slide is-active" data-slide="0" data-href="{{ route('franchising') }}">
-        <div class="banner-card">
-          <img src="{{ asset('leebyung.png') }}" alt="Franchise opportunity" loading="lazy" decoding="async">
-        </div>
-      </div>
-      <div class="banner-slide" data-slide="1" data-href="{{ route('invest') }}">
-        <div class="banner-card">
-          <img src="{{ asset('korea.png') }}" alt="Korea franchise opportunity" loading="lazy" decoding="async">
-        </div>
-      </div>
-      <div class="banner-carousel-indicators" id="bannerCarouselIndicators">
-        <button type="button" class="banner-indicator is-active" data-slide="0" aria-label="Show slide 1"></button>
-        <button type="button" class="banner-indicator" data-slide="1" aria-label="Show slide 2"></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="promo">
-    <div class="promo-copy">
-      <div class="promo-title">More rewards, more ways!</div>
-      <div class="promo-subtitle">Earn points and get exclusive deals just for you.</div>
-    </div>
-    <div><a class="cta" href="#">Explore Now</a></div>
   </div>
 
 </main>
@@ -1148,31 +1137,31 @@
     <div class="fab-sheet-title">Quick actions</div>
     <div class="fab-actions">
       <a class="fab-action" href="{{ route('invest') }}">
-        <span class="fab-action-icon"><img src="{{ asset('premium.png') }}" alt="Invest"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span>Buy shares</span>
       </a>
       <a class="fab-action" href="{{ route('send') }}">
-        <span class="fab-action-icon"><img src="{{ asset('Send%20(1).png') }}" alt="Send"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.4 18-3.8-7.8L2 9.4 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
         <span>Send</span>
       </a>
       <a class="fab-action" href="{{ route('withdraw') }}">
-        <span class="fab-action-icon"><img src="{{ asset('Withdraw.png') }}" alt="Withdraw"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span>Withdraw</span>
       </a>
       <a class="fab-action" href="{{ route('referrals') }}">
-        <span class="fab-action-icon"><img src="{{ asset('referrals.png') }}" alt="Referrals"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.2 2.2-5 5.5-5s5 1.8 5.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span>Referrals</span>
       </a>
       <a class="fab-action" href="{{ route('franchising') }}">
-        <span class="fab-action-icon"><img src="{{ asset('Franchise.png') }}" alt="Franchise"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
         <span>Franchise</span>
       </a>
       <a class="fab-action" href="{{ route('unavailable') }}">
-        <span class="fab-action-icon"><img src="{{ asset('cards.png') }}" alt="Cards"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M7 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span>Cards</span>
       </a>
       <a class="fab-action" href="{{ route('unavailable') }}">
-        <span class="fab-action-icon"><img src="{{ asset('loan.png') }}" alt="Loans"></span>
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10h16M6 10V8a6 6 0 0 1 12 0v2M5 10h14v9H5v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 13v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span>Loans</span>
       </a>
     </div>
@@ -1180,27 +1169,28 @@
   </div>
 </div>
 
-<nav class="bottom-nav" aria-hidden="false">
+<nav class="bottom-nav" aria-label="Account navigation">
   <a class="nav-item active" href="{{ route('dashboard') }}">
-    <img src="{{ asset('home.png') }}" alt="Home" loading="eager" decoding="async">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-7 9 7v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
     <div>Home</div>
   </a>
-  <a class="nav-item" href="{{ route('history') }}">
-    <img src="{{ asset('history.png') }}" alt="History" loading="eager" decoding="async">
-    <div>History</div>
+  <a class="nav-item" href="{{ route('invest') }}">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>Buy Shares</div>
   </a>
-  <a class="nav-item" href="#" id="fabToggle">
+  <a class="nav-item" href="{{ route('withdraw') }}">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>Withdraw</div>
+  </a>
+  <a class="nav-item" href="{{ route('referrals') }}">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.2 2.2-5 5.5-5s5 1.8 5.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div>Referrals</div>
+  </a>
+  <a class="nav-item nav-more" href="#" id="fabToggle" aria-label="More account actions" aria-controls="fabPanel" aria-expanded="false">
     <div class="nav-scan">
-      <img src="{{ asset('menu.png') }}" alt="Menu" loading="eager" decoding="async">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#46a42d"/><path d="M8 9h8M8 12h8M8 15h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
-  </a>
-  <a class="nav-item" href="{{ route('rewards') }}">
-    <img src="{{ asset('reward.png') }}" alt="Rewards" loading="eager" decoding="async">
-    <div>Rewards</div>
-  </a>
-  <a class="nav-item" href="{{ route('profile') }}">
-    <img src="{{ asset('profile.png') }}" alt="Profile" loading="eager" decoding="async">
-    <div>Profile</div>
+    <div>More</div>
   </a>
 </nav>
 
@@ -1246,17 +1236,6 @@
 
     if (fabClose) {
       fabClose.addEventListener('click', closeFabMenu);
-    }
-
-    function closeRafflePopup() {
-      var overlay = document.getElementById('raffleOverlay');
-      if (!overlay) return;
-      overlay.style.display = 'none';
-    }
-
-    var raffleClose = document.getElementById('raffleClose');
-    if (raffleClose) {
-      raffleClose.addEventListener('click', closeRafflePopup);
     }
 
     function setBannerSlide(index) {
@@ -1374,101 +1353,5 @@
     });
   })();
 
-    (function () {
-      var notificationToggle = document.getElementById('notificationToggle');
-      var notificationPanel = document.getElementById('notificationPanel');
-      var notificationClose = document.getElementById('notificationClose');
-      var notificationBadge = document.getElementById('notificationBadge');
-      var notificationItems = Array.from(document.querySelectorAll('.notification-item'));
-      var csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-      var notificationsRead = new Set(@json($notificationsRead ?? []));
-
-      function getUnreadNotificationIds() {
-        return notificationItems
-          .filter(function (item) {
-            return !notificationsRead.has(item.dataset.notificationId);
-          })
-          .map(function (item) {
-            return item.dataset.notificationId;
-          });
-      }
-
-      function updateBadge() {
-        if (!notificationBadge) return;
-
-        var unreadCount = getUnreadNotificationIds().length;
-        notificationBadge.textContent = unreadCount;
-        notificationBadge.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
-      }
-
-      function openNotificationPanel(event) {
-        if (event) event.preventDefault();
-        if (!notificationPanel) return;
-        notificationPanel.classList.add('is-open');
-        notificationPanel.setAttribute('aria-hidden', 'false');
-        notificationToggle.setAttribute('aria-expanded', 'true');
-
-        var unreadIds = getUnreadNotificationIds();
-        if (!unreadIds.length) {
-          return;
-        }
-
-        var token = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
-        if (!token) {
-          updateBadge();
-          return;
-        }
-
-        fetch('{{ route('notifications.read_all') }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
-          },
-          body: JSON.stringify({ ids: unreadIds }),
-        })
-          .then(function (response) {
-            if (!response.ok) {
-              throw new Error('Unable to update notifications');
-            }
-            return response.json();
-          })
-          .then(function () {
-            unreadIds.forEach(function (id) { notificationsRead.add(id); });
-            updateBadge();
-          })
-          .catch(function () {
-            // Keep UI open; badge will update on next load if server update fails.
-          });
-      }
-
-      function closeNotificationPanel() {
-        if (!notificationPanel) return;
-        notificationPanel.classList.remove('is-open');
-        notificationPanel.setAttribute('aria-hidden', 'true');
-        notificationToggle.setAttribute('aria-expanded', 'false');
-      }
-
-      if (notificationToggle) {
-        notificationToggle.addEventListener('click', function (event) {
-          event.stopPropagation();
-          openNotificationPanel(event);
-        });
-      }
-      if (notificationClose) {
-        notificationClose.addEventListener('click', function (event) {
-          event.stopPropagation();
-          closeNotificationPanel();
-        });
-      }
-      document.addEventListener('click', function (event) {
-        if (!notificationPanel || !notificationToggle) return;
-        if (!notificationPanel.contains(event.target) && !notificationToggle.contains(event.target)) {
-          closeNotificationPanel();
-        }
-      });
-
-      updateBadge();
-    })();
 </script>
 @endsection

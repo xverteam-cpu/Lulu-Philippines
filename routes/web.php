@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\InvestmentApprovalController;
 use App\Http\Controllers\Admin\WithdrawalController;
 use App\Http\Controllers\InvestmentController;
-use App\Http\Controllers\PinController;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Models\Investment;
 use App\Models\User;
@@ -17,39 +16,23 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    if (Auth::check()) {
-        if (! Auth::user()->pin_hash) {
-            return redirect()->route('pin.setup');
-        }
+    return view('public.home');
+})->name('public.home');
 
-        if (! (bool) session()->get('pin_verified', false)) {
-            return redirect()->route('pin.login');
-        }
-
-        return redirect()->route(Auth::user()->is_admin ? 'admin.dashboard' : 'dashboard');
-    }
-
-    if (request()->cookie('lotteria_pin_user')) {
-        return redirect()->route('pin.login');
-    }
-
-    return view('splash');
-});
+Route::get('/investors', function () {
+    return view('public.investors');
+})->name('investors');
 
 Route::get('/home', function () {
     return view('lotteria');
 })->name('home');
 
 Route::get('/order', function () {
-    return view('order');
+    return redirect()->route('investors');
 })->name('order');
 
 Route::get('/login', function () {
-    if (request()->cookie('lotteria_pin_user')) {
-        return redirect()->route('pin.login');
-    }
-
-    return redirect()->route('order');
+    return redirect()->route('investors');
 })->name('login');
 
 Route::get('/login/google', function () {
@@ -64,11 +47,6 @@ Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::cl
 Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
 Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'reset'])->name('password.update');
-
-Route::get('/pin/setup', [PinController::class, 'setup'])->middleware('auth')->name('pin.setup');
-Route::post('/pin/setup', [PinController::class, 'store'])->middleware('auth')->name('pin.store');
-Route::get('/pin/login', [PinController::class, 'login'])->name('pin.login');
-Route::post('/pin/login', [PinController::class, 'verify'])->name('pin.verify');
 
 Route::get('/signup', function () {
     return view('signup', ['referral' => request('ref')]);
@@ -90,12 +68,6 @@ Route::get('/dashboard', function () {
     $user = Auth::user();
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user = $user->fresh();  // Refresh from database to get updated balance
-
-    $showRafflePopup = false;
-    if ($user->shouldShowRafflePopup()) {
-        $user->markRafflePopupShown();
-        $showRafflePopup = true;
-    }
 
     $recentInvestments = Investment::where('user_id', $user->id)
         ->orderByDesc('created_at')
@@ -162,12 +134,11 @@ Route::get('/dashboard', function () {
 
     return view('dashboard_user', [
         'user' => $user,
-        'showRafflePopup' => $showRafflePopup,
         'notifications' => $notifications,
         'notificationsRead' => $notificationsRead,
         'unreadCount' => $unreadCount,
     ]);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('dashboard');
+})->middleware(['auth', RestrictUserAccess::class])->name('dashboard');
 
 Route::post('/notifications/read-all', function (Illuminate\Http\Request $request) {
     $data = $request->validate([
@@ -178,7 +149,7 @@ Route::post('/notifications/read-all', function (Illuminate\Http\Request $reques
     $request->user()->markNotificationsRead($data['ids']);
 
     return response()->json(['status' => 'success']);
-})->middleware(['auth', 'pin'])->name('notifications.read_all');
+})->middleware(['auth'])->name('notifications.read_all');
 
 Route::get('/rewards', function () {
     $user = Auth::user();
@@ -188,7 +159,7 @@ Route::get('/rewards', function () {
         'signupBonusClaimed' => ! empty($user->signup_bonus_claimed_at),
         'signupBonusAmount' => 5,
     ]);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('rewards');
+})->middleware(['auth', RestrictUserAccess::class])->name('rewards');
 
 Route::post('/rewards/claim-signup-bonus', function (Illuminate\Http\Request $request) {
     $user = $request->user();
@@ -215,30 +186,142 @@ Route::post('/rewards/claim-signup-bonus', function (Illuminate\Http\Request $re
     });
 
     return redirect()->route('rewards')->with('status', 'Your $5 sign up bonus has been added to your available balance.');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('rewards.claim-signup-bonus');
+})->middleware(['auth', RestrictUserAccess::class])->name('rewards.claim-signup-bonus');
 
 // Deposit page for buying shares
 Route::get('/deposit', function () {
     return view('deposit');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('deposit');
+})->middleware(['auth', RestrictUserAccess::class])->name('deposit');
 
 Route::get('/invest', function () {
     $meta = CurrencyRateService::latestUsdToPhpWithMeta();
     $user = Auth::user();
     $totalInvestment = $user ? (float) $user->investments()->where('status', 'approved')->sum('amount') : 0;
+    $availableBalance = 0;
+    if ($user) {
+        DailyInterestAccrualService::accrueDueInterestForUser($user);
+        $user->refresh();
+        $availableBalance = (float) $user->balance + $user->investments()->latest()->get()->sum(fn ($investment) => $investment->earnedInterest());
+    }
 
     return view('invest', [
         'phpRate' => $meta['rate'],
         'phpRateUpdatedAt' => $meta['updated_at'],
         'packageSlots' => App\Support\InvestmentPackages::currentSlots(),
         'totalInvestment' => $totalInvestment,
+        'availableBalance' => $availableBalance,
     ]);
 })->name('invest');
+
+Route::get('/invest/purchase/{package}', function (string $package) {
+    $selectedPackage = App\Support\InvestmentPackages::find($package);
+    abort_unless($selectedPackage, 404);
+
+    $meta = CurrencyRateService::latestUsdToPhpWithMeta();
+
+    return view('invest-purchase', [
+        'packageKey' => $package,
+        'package' => $selectedPackage,
+        'phpRate' => $meta['rate'],
+        'phpRateUpdatedAt' => $meta['updated_at'],
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
+
+Route::get('/invest/payment/{provider}', function (string $provider) {
+    $providers = [
+        'landbank' => [
+            'name' => 'Landbank',
+            'logo' => 'Landbank.svg',
+            'qr' => 'LandbankQR.png',
+            'launch_url' => 'https://www.landbank.com/',
+            'background' => '#006b3f',
+            'accent' => '#f5c542',
+        ],
+        'bpi' => [
+            'name' => 'BPI',
+            'logo' => 'Bpi.svg',
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://online.bpi.com.ph/',
+            'background' => '#005baa',
+            'accent' => '#d71920',
+        ],
+        'bdo' => [
+            'name' => 'BDO',
+            'logo' => 'BDO.svg',
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://online.bdo.com.ph/',
+            'background' => '#003b70',
+            'accent' => '#f58220',
+        ],
+        'unionbank' => [
+            'name' => 'UnionBank',
+            'logo' => 'UnionBank.svg',
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://online.unionbankph.com/',
+            'background' => '#f36f21',
+            'accent' => '#ffb81c',
+        ],
+        'gcash' => [
+            'name' => 'GCash',
+            'logo' => null,
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://www.gcash.com/',
+            'background' => '#007cff',
+            'accent' => '#00a9e8',
+            'payment_method' => 'e_wallet',
+        ],
+        'maya' => [
+            'name' => 'Maya',
+            'logo' => null,
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://www.maya.ph/',
+            'background' => '#00a86b',
+            'accent' => '#7bdcb5',
+            'payment_method' => 'e_wallet',
+        ],
+        'grabpay' => [
+            'name' => 'GrabPay',
+            'logo' => null,
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://www.grab.com/ph/pay/',
+            'background' => '#00b14f',
+            'accent' => '#b9f227',
+            'payment_method' => 'e_wallet',
+        ],
+        'shopeepay' => [
+            'name' => 'ShopeePay',
+            'logo' => null,
+            'qr' => 'BPIQR.png',
+            'launch_url' => 'https://shopee.ph/m/shopeepay',
+            'background' => '#ee4d2d',
+            'accent' => '#ffb300',
+            'payment_method' => 'e_wallet',
+        ],
+    ];
+    abort_unless(isset($providers[$provider]), 404);
+
+    $packageKey = (string) request()->query('package');
+    $package = App\Support\InvestmentPackages::find($packageKey);
+    abort_unless($package, 404);
+
+    $amount = (float) request()->query('amount', $package['price']);
+    $currency = request()->query('currency', 'USD');
+    abort_unless(in_array($currency, ['USD', 'PHP'], true), 404);
+
+    return view('invest-payment', [
+        'providerKey' => $provider,
+        'provider' => $providers[$provider],
+        'packageKey' => $packageKey,
+        'package' => $package,
+        'amount' => $amount,
+        'currency' => $currency,
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.payment');
 
 // User actions (authenticated)
 Route::get('/send', function () {
     return view('send');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('send');
+})->middleware(['auth', RestrictUserAccess::class])->name('send');
 
 Route::get('/withdraw', function () {
     $user = Auth::user();
@@ -257,14 +340,59 @@ Route::get('/withdraw', function () {
     return view('withdraw', [
         'availableBalance' => $availableBalance,
         'recentWithdrawals' => $recentWithdrawals,
+        'withdrawalProviders' => [
+            'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
+            'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+        ],
     ]);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('withdraw');
+})->middleware(['auth', RestrictUserAccess::class])->name('withdraw');
 
 Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
+    $providers = [
+        'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
+        'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+    ];
+    $accountPatterns = [
+        'GCash' => '/^(09|\+639)\d{9}$/',
+        'Maya' => '/^(09|\+639)\d{9}$/',
+        'GrabPay' => '/^(09|\+639)\d{9}$/',
+        'ShopeePay' => '/^(09|\+639)\d{9}$/',
+        'Coins.ph' => '/^(09|\+639)\d{9}$/',
+        'BDO Unibank' => '/^\d{10}$/',
+        'BPI' => '/^\d{10}$/',
+        'Metrobank' => '/^\d{13}$/',
+        'LandBank' => '/^\d{10}$/',
+        'UnionBank' => '/^\d{12}$/',
+    ];
+
     $data = $request->validate([
         'amount' => ['required', 'numeric', 'min:20', 'max:500'],
-        'bank_name' => ['required', 'string', 'max:255'],
-        'account_number' => ['required', 'string', 'max:255'],
+        // account_type is optional for backwards compatibility with older clients.
+        'account_type' => ['nullable', 'in:bank,e_wallet'],
+        'bank_name' => [
+            'required',
+            'string',
+            'max:255',
+            function ($attribute, $value, $fail) use ($request, $providers) {
+                $type = $request->input('account_type');
+                if ($type && ! in_array($value, $providers[$type], true)) {
+                    $fail('Please select a valid withdrawal provider.');
+                }
+            },
+        ],
+        'account_number' => [
+            'required',
+            'string',
+            'max:255',
+            function ($attribute, $value, $fail) use ($request, $accountPatterns) {
+                $provider = $request->input('bank_name');
+                $pattern = $accountPatterns[$provider] ?? null;
+                // Keep accepting legacy manually-entered bank details when no account type was sent.
+                if ($request->filled('account_type') && $pattern && ! preg_match($pattern, $value)) {
+                    $fail('Enter a valid account number for the selected provider.');
+                }
+            },
+        ],
         'account_holder' => ['required', 'string', 'max:255'],
     ]);
 
@@ -287,12 +415,15 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
             'bank_name' => $data['bank_name'],
             'bank_account_number' => $data['account_number'],
             'bank_account_holder' => $data['account_holder'],
+            'withdrawal_account_type' => $data['account_type'] ?? ($user->withdrawal_account_type ?: 'bank'),
         ]);
 
         $withdrawal = App\Models\Withdrawal::create([
             'user_id' => $user->id,
             'amount' => $data['amount'],
-            'payment_method' => 'bank_transfer',
+            'payment_method' => ($data['account_type'] ?? $user->withdrawal_account_type) === 'e_wallet'
+                ? 'mobile_money'
+                : 'bank_transfer',
             'bank_name' => $data['bank_name'],
             'account_number' => $data['account_number'],
             'account_holder' => $data['account_holder'],
@@ -316,7 +447,49 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
             'status' => ucfirst($withdrawal->status),
             'submitted_at' => $withdrawal->created_at?->format('M d, Y H:i') ?? now()->format('M d, Y H:i'),
         ]);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('withdrawals.store');
+})->middleware(['auth', RestrictUserAccess::class])->name('withdrawals.store');
+
+Route::post('/withdrawal-account', function (Illuminate\Http\Request $request) {
+    $providers = [
+        'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
+        'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
+    ];
+    $patterns = [
+        'GCash' => '/^(09|\+639)\d{9}$/',
+        'Maya' => '/^(09|\+639)\d{9}$/',
+        'GrabPay' => '/^(09|\+639)\d{9}$/',
+        'ShopeePay' => '/^(09|\+639)\d{9}$/',
+        'Coins.ph' => '/^(09|\+639)\d{9}$/',
+        'BDO Unibank' => '/^\d{10}$/',
+        'BPI' => '/^\d{10}$/',
+        'Metrobank' => '/^\d{13}$/',
+        'LandBank' => '/^\d{10}$/',
+        'UnionBank' => '/^\d{12}$/',
+    ];
+
+    $data = $request->validate([
+        'account_type' => ['required', 'in:bank,e_wallet'],
+        'bank_name' => ['required', 'string', 'in:'.implode(',', array_merge($providers['bank'], $providers['e_wallet']))],
+        'account_number' => ['required', 'string', 'max:255'],
+        'account_holder' => ['required', 'string', 'max:255'],
+    ]);
+
+    if (! in_array($data['bank_name'], $providers[$data['account_type']], true)
+        || ! preg_match($patterns[$data['bank_name']], $data['account_number'])) {
+        throw Illuminate\Validation\ValidationException::withMessages([
+            'account_number' => 'Enter valid details for the selected withdrawal provider.',
+        ]);
+    }
+
+    $request->user()->update([
+        'bank_name' => $data['bank_name'],
+        'bank_account_number' => $data['account_number'],
+        'bank_account_holder' => $data['account_holder'],
+        'withdrawal_account_type' => $data['account_type'],
+    ]);
+
+    return redirect()->route('withdraw')->with('status', 'Withdrawal account saved successfully.');
+})->middleware(['auth', RestrictUserAccess::class])->name('withdrawal-account.store');
 
 Route::get('/history', function () {
     $user = Auth::user();
@@ -338,110 +511,110 @@ Route::get('/history', function () {
         'withdrawals' => $withdrawals,
         'dailyInterest' => $dailyInterest,
     ]);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('history');
+})->middleware(['auth', RestrictUserAccess::class])->name('history');
 
 Route::get('/referrals', function () {
     return view('referrals');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('referrals');
+})->middleware(['auth', RestrictUserAccess::class])->name('referrals');
 
 Route::get('/cards', function () {
     return view('cards');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('cards');
+})->middleware(['auth', RestrictUserAccess::class])->name('cards');
 
 Route::get('/loan', function () {
     return view('loan');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('loan');
+})->middleware(['auth', RestrictUserAccess::class])->name('loan');
 
 Route::get('/profile', function () {
     return view('profile');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('profile');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile');
 
 Route::get('/profile/edit', function () {
     return view('profile-edit');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('profile.edit');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile.edit');
 
 Route::get('/profile/password', function () {
     return view('change-password');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('profile.password');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile.password');
 
 Route::get('/profile/notifications', function () {
     return view('notification-settings');
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('profile.notifications');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile.notifications');
 
 Route::post('/investments', [InvestmentController::class, 'store'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('investments.store');
 
 Route::get('/admin/dashboard', function () {
     abort_unless(Auth::user()?->is_admin, 403);
 
     return app(UserManagementController::class)->index(request());
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('admin.dashboard');
+})->middleware(['auth', RestrictUserAccess::class])->name('admin.dashboard');
 
 Route::get('/admin/users/{user}', function (User $user) {
     abort_unless(Auth::user()?->is_admin, 403);
 
     return app(UserManagementController::class)->show($user);
-})->middleware(['auth', 'pin', RestrictUserAccess::class])->name('admin.users.show');
+})->middleware(['auth', RestrictUserAccess::class])->name('admin.users.show');
 
 Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.destroy');
 
 Route::post('/admin/users/{user}/restrict', [UserManagementController::class, 'restrict'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.restrict');
 
 Route::post('/admin/backup', [UserManagementController::class, 'backup'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.backup');
 
 Route::get('/admin/investments', [InvestmentApprovalController::class, 'index'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.investments');
 
 Route::get('/admin/investments/{investment}', [InvestmentApprovalController::class, 'show'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.investments.show');
 
 Route::post('/admin/investments/{investment}/approve', [InvestmentApprovalController::class, 'approve'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.investments.approve');
 
 Route::get('/admin/withdrawals', [WithdrawalController::class, 'index'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.withdrawals');
 
 Route::get('/admin/withdrawals/{withdrawal}', [WithdrawalController::class, 'show'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.withdrawals.show');
 
 Route::post('/admin/withdrawals/{withdrawal}/approve', [WithdrawalController::class, 'approve'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.withdrawals.approve');
 
 Route::post('/admin/withdrawals/{withdrawal}/reject', [WithdrawalController::class, 'reject'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.withdrawals.reject');
 
 Route::post('/admin/investments/{investment}/reject', [InvestmentApprovalController::class, 'reject'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.investments.reject');
 
 Route::post('/admin/send-package', [UserManagementController::class, 'sendPackage'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.send-package');
 
 Route::post('/admin/package-slots', [UserManagementController::class, 'updatePackageSlots'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.package-slots.update');
 
 Route::post('/admin/send-funds', [UserManagementController::class, 'sendFunds'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.send-funds');
 
 Route::post('/admin/send-promotional-email', [UserManagementController::class, 'sendPromotionalEmail'])
-    ->middleware(['auth', 'pin', RestrictUserAccess::class])
+    ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.send-promotional-email');
 
 Route::fallback(function () {

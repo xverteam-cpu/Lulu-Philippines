@@ -19,7 +19,7 @@
     position:absolute;
     inset:0 0 auto 0;
     height:10px;
-    background:linear-gradient(90deg, #c40000, #e31b23, #f5a400);
+    background:linear-gradient(90deg, #14532d, #166534, #d6a84f);
   }
   .header {
     display:flex;
@@ -29,12 +29,12 @@
   }
   .title {
     margin:0;
-    color:#c40000;
+    color:#14532d;
     font-size:28px;
     line-height:34px;
   }
   .back-link {
-    color:#c40000;
+    color:#14532d;
     font-weight:700;
     text-decoration:none;
   }
@@ -46,14 +46,14 @@
   }
   .detail-item {
     padding:14px;
-    border:1px solid #ffc5cd;
+    border:1px solid #dcefe8;
     border-radius:10px;
-    background:#fff5f5;
+    background:#f4fbf7;
   }
   .detail-label {
     display:block;
     margin-bottom:5px;
-    color:#c40000;
+    color:#14532d;
     font-size:12px;
     font-weight:700;
     text-transform:uppercase;
@@ -87,7 +87,7 @@
   }
   .section-title {
     margin:24px 0 14px;
-    color:#c40000;
+    color:#14532d;
     font-size:18px;
     font-weight:700;
   }
@@ -96,7 +96,7 @@
     gap:12px;
     margin-top:24px;
     padding-top:24px;
-    border-top:1px solid #ffc5cd;
+    border-top:1px solid #dcefe8;
   }
   .btn {
     padding:10px 20px;
@@ -128,8 +128,8 @@
     background:#fecaca;
   }
   .rejection-form {
-    background:#fff5f5;
-    border:1px solid #ffc5cd;
+    background:#f4fbf7;
+    border:1px solid #dcefe8;
     border-radius:10px;
     padding:14px;
     margin-top:12px;
@@ -141,7 +141,7 @@
   .rejection-form textarea {
     width:100%;
     padding:10px;
-    border:1px solid #ffc5cd;
+    border:1px solid #dcefe8;
     border-radius:6px;
     font-size:14px;
     font-family:inherit;
@@ -155,7 +155,7 @@
   }
   .rejection-form button {
     padding:8px 16px;
-    background:#c40000;
+    background:#14532d;
     color:white;
     border:none;
     border-radius:6px;
@@ -332,7 +332,7 @@
       </div>
 
       @if($errors->has('rejection_reason'))
-        <div style="color:#c40000;font-size:14px;margin-top:12px;">
+        <div style="color:#14532d;font-size:14px;margin-top:12px;">
           {{ $errors->first('rejection_reason') }}
         </div>
       @endif

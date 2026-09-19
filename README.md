@@ -1,4 +1,4 @@
-# Lotteria — Laravel Setup
+# Lulu — Laravel Setup
 
 This folder contains helper files to initialize a Laravel project.
 
@@ -7,7 +7,7 @@ Options
 - Local (Composer installed):
 
 ```bash
-# from inside the Lotteria folder
+# from inside the Lulu folder
 composer create-project laravel/laravel . --prefer-dist
 cp .env.example .env
 composer install

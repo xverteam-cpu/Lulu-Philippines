@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#e31b23">
+  <meta name="theme-color" content="#166534">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Lotteria">
+  <meta name="apple-mobile-web-app-title" content="Lulu">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-  <link rel="icon" type="image/png" href="{{ asset('lotterialogo.png') }}">
-  <link rel="shortcut icon" type="image/png" href="{{ asset('lotterialogo.png') }}">
-  <link rel="apple-touch-icon" href="{{ asset('lotterialogo.png') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
+  <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
+  <link rel="apple-touch-icon" href="{{ asset('LuluLogo.svg') }}">
   <link rel="manifest" href="{{ asset('manifest.json') }}">
-  <title>Lotteria Philippines</title>
+  <title>Lulu</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Open Graph Meta Tags for Social Sharing -->
-  <meta property="og:title" content="Lotteria Philippines">
-  <meta property="og:description" content="Investment packages with daily returns. Start investing with Lotteria Philippines.">
+  <meta property="og:title" content="Lulu">
+  <meta property="og:description" content="Investment packages with daily returns. Start investing with Lulu.">
   <meta property="og:image" content="{{ asset('Lotteria.png') }}">
   <meta property="og:image:secure_url" content="{{ asset('Lotteria.png') }}">
   <meta property="og:image:type" content="image/png">
@@ -29,15 +29,15 @@
   <meta property="og:url" content="{{ url('/') }}">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Lotteria Philippines">
-  <meta name="twitter:description" content="Investment packages with daily returns. Start investing with Lotteria Philippines.">
+  <meta name="twitter:title" content="Lulu">
+  <meta name="twitter:description" content="Investment packages with daily returns. Start investing with Lulu.">
   <meta name="twitter:image" content="{{ asset('Lotteria.png') }}">
-  <meta name="twitter:image:alt" content="Lotteria Philippines referral invite image">
+  <meta name="twitter:image:alt" content="Lulu referral invite image">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { background:#eef1f4; font-family:Inter, 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; margin:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
     .container { max-width:1100px; margin:0 auto; padding:18px; }
-    a { color:#d90000; }
+    a { color:#14532d; }
     .page-loader {
       position:fixed;
       inset:0;
@@ -52,8 +52,8 @@
       width:58px;
       height:58px;
       border-radius:50%;
-      border:6px solid rgba(227,27,35,0.18);
-      border-top-color:#e31b23;
+      border:6px solid rgba(22,101,52,0.18);
+      border-top-color:#166534;
       animation:page-loader-spin .8s linear infinite;
     }
     @keyframes page-loader-spin {

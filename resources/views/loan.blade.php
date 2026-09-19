@@ -7,7 +7,7 @@
   .title { font-size:22px; font-weight:900; color:#041438; margin:0 0 8px; }
   .copy { color:#64748b; margin-bottom:18px; font-weight:700; }
   .btn { display:inline-block; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:800; }
-  .btn-primary { background:#e31b23; color:#fff; }
+  .btn-primary { background:#166534; color:#fff; }
 </style>
 
 <main class="page-shell">

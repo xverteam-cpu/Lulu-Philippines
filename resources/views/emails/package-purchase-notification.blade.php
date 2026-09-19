@@ -2,7 +2,7 @@
 
   <tr>
     <td align="center" style="background:linear-gradient(90deg,#ffffff 0%,#fff7f7 100%); padding:28px 24px 24px 24px; border-bottom:2px solid #f1d0d4;">
-      <img src="{{ url('lotterialogo.png') }}" width="180" alt="Lotteria Philippines" style="display:block; border:0; outline:none; text-decoration:none; max-width:180px; height:auto;">
+      <img src="{{ url('LuluLogo.svg') }}" width="180" alt="Lulu" style="display:block; border:0; outline:none; text-decoration:none; max-width:180px; height:auto;">
     </td>
   </tr>
 
@@ -25,7 +25,7 @@
             <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:13px; line-height:20px; color:#9b6a12; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
               Invoice Status
             </p>
-            <p style="margin:6px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:20px; line-height:28px; color:#d71920; font-weight:700;">
+            <p style="margin:6px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:20px; line-height:28px; color:#166534; font-weight:700;">
               {{ $status_text }}
             </p>
             <p style="margin:6px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:22px; color:#5f6368;">
@@ -46,7 +46,7 @@
               Item
             </p>
             <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:18px; line-height:24px; color:#1f1f1f; font-weight:700;">
-              Lotteria Joint Venture Package
+              Lulu Joint Venture Package
             </p>
           </td>
         </tr>
@@ -137,7 +137,7 @@
           <td style="padding:18px; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:22px; color:#1f1f1f; font-weight:700; background-color:#f8f8f8;">
             Total Paid
           </td>
-          <td align="right" style="padding:18px; font-family:Arial, Helvetica, sans-serif; font-size:18px; line-height:24px; color:#d71920; font-weight:700; background-color:#f8f8f8;">
+          <td align="right" style="padding:18px; font-family:Arial, Helvetica, sans-serif; font-size:18px; line-height:24px; color:#166534; font-weight:700; background-color:#f8f8f8;">
             ₱{{ $package_amount }}
           </td>
         </tr>
@@ -147,7 +147,7 @@
 
   <tr>
     <td align="center" style="padding:30px 32px 8px 32px;">
-      <a href="{{ $dashboard_link }}" target="_blank" style="display:inline-block; background-color:#d71920; color:#ffffff; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:20px; font-weight:700; text-decoration:none; padding:14px 28px; border-radius:6px;">
+      <a href="{{ $dashboard_link }}" target="_blank" style="display:inline-block; background-color:#166534; color:#ffffff; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:20px; font-weight:700; text-decoration:none; padding:14px 28px; border-radius:6px;">
         View Package Details
       </a>
     </td>
@@ -156,7 +156,7 @@
   <tr>
     <td style="padding:20px 32px 30px 32px;">
       <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:13px; line-height:21px; color:#6a6a6a;">
-        This invoice confirms that a package purchase request has been generated under your Lotteria member account. Activation, documentation release, and account status updates are subject to successful payment verification and internal compliance review.
+        This invoice confirms that a package purchase request has been generated under your Lulu member account. Activation, documentation release, and account status updates are subject to successful payment verification and internal compliance review.
       </p>
     </td>
   </tr>
@@ -167,7 +167,7 @@
         <tr>
           <td style="padding:0 0 16px 0;">
             <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:18px; line-height:24px; color:#ffffff; font-weight:700;">
-              Lotteria Philippines
+              Lulu
             </p>
             <p style="margin:6px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:13px; line-height:21px; color:#c9c9c9;">
               Official Joint Venture Program Notification
@@ -178,13 +178,13 @@
         <tr>
           <td style="border-top:1px solid #4a4a4a; padding:16px 0 0 0;">
             <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:20px; color:#b8b8b8;">
-              This automated email was sent to {{ $member_email }}. Please do not reply directly to this message. For assistance, contact Lotteria Support at lotteriaphilippines@gmail.com.
+              This automated email was sent to {{ $member_email }}. Please do not reply directly to this message. For assistance, contact Lulu Support at lotteriaphilippines@gmail.com.
             </p>
             <p style="margin:12px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:18px; color:#9f9f9f;">
               Disclaimer: This email and its contents are intended only for the registered recipient. Package confirmation, account activation, and related documentation remain subject to verification, applicable terms, and official company procedures.
             </p>
             <p style="margin:14px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:18px; color:#9f9f9f;">
-              © 2026 Lotteria Philippines. All rights reserved.
+              © 2026 Lulu. All rights reserved.
             </p>
             <p style="margin:14px 0 0 0; padding:0;">
               <a href="https://www.facebook.com/lotteria.ph" target="_blank" style="display:inline-block; width:28px; height:28px; line-height:28px; text-align:center; border-radius:50%; background-color:#3b5998; color:#ffffff; text-decoration:none; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:700;">

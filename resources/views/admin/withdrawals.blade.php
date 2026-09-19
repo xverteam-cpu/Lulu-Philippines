@@ -54,13 +54,13 @@
 
   .admin-nav-btn:hover {
     background-color: #f3f4f6;
-    border-color: #c40000;
-    color: #c40000;
+    border-color: #14532d;
+    color: #14532d;
   }
 
   .admin-nav-btn.active {
-    background-color: #c40000;
-    border-color: #c40000;
+    background-color: #14532d;
+    border-color: #14532d;
     color: #ffffff;
     box-shadow: 0 2px 4px rgba(196, 0, 0, 0.15);
   }
@@ -131,7 +131,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #c40000, #e31b23);
+    background: linear-gradient(90deg, #14532d, #166534);
   }
 
   .summary-value {
@@ -178,8 +178,8 @@
   }
 
   .tab.active {
-    color: #c40000;
-    border-bottom-color: #c40000;
+    color: #14532d;
+    border-bottom-color: #14532d;
   }
 
   /* Panel */
@@ -233,14 +233,14 @@
   .search-box input:focus {
     outline: none;
     background-color: #ffffff;
-    border-color: #c40000;
+    border-color: #14532d;
     box-shadow: 0 0 0 3px rgba(196, 0, 0, 0.1);
   }
 
   .search-box button {
     padding: 0 14px;
     height: 36px;
-    background-color: #c40000;
+    background-color: #14532d;
     color: #ffffff;
     border: none;
     border-radius: 6px;
@@ -331,7 +331,7 @@
   .withdrawal-link {
     display: inline-flex;
     align-items: center;
-    color: #c40000;
+    color: #14532d;
     text-decoration: none;
     font-weight: 600;
     font-size: 12px;
@@ -379,9 +379,9 @@
   }
 
   .pagination .active {
-    background-color: #c40000;
+    background-color: #14532d;
     color: #ffffff;
-    border-color: #c40000;
+    border-color: #14532d;
   }
 
   .empty-state {
@@ -575,7 +575,7 @@
                   <span class="user-name">{{ $withdrawal->user->name }}</span>
                   <span class="user-email">{{ $withdrawal->user->email }}</span>
                 </td>
-                <td style="font-weight: 600; color: #c40000;">${{ number_format($withdrawal->amount, 2) }}</td>
+                <td style="font-weight: 600; color: #14532d;">${{ number_format($withdrawal->amount, 2) }}</td>
                 <td>{{ str_replace('_', ' ', ucfirst($withdrawal->payment_method)) }}</td>
                 <td>{{ $withdrawal->account_holder ?: '—' }}</td>
                 <td>

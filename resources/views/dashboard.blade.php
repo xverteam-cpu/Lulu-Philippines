@@ -4,16 +4,16 @@
 <style>
   body { background:#ffffff !important; }
   .dashboard-shell { max-width:1120px; margin:18px auto 36px; padding:0 12px; }
-  .account-hero { position:relative; overflow:hidden; border-radius:16px; background:#b00000; color:#fff; box-shadow:0 10px 24px rgba(176,0,0,.2); }
+  .account-hero { position:relative; overflow:hidden; border-radius:16px; background:#0f3d2e; color:#fff; box-shadow:0 10px 24px rgba(15,61,46,.2); }
   .account-hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
-  .account-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, rgba(176,0,0,.92), rgba(227,27,35,.68), rgba(245,164,0,.32)); }
+  .account-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, rgba(15,61,46,.92), rgba(22,101,52,.68), rgba(245,164,0,.32)); }
   .hero-inner { position:relative; z-index:1; padding:28px 16px 20px; }
-  .hero-kicker { margin:0 0 8px; color:#ffe0a3; font-size:12px; line-height:16px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+  .hero-kicker { margin:0 0 8px; color:#f5dfad; font-size:12px; line-height:16px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
   .balance-label { color:#ffffff !important; font-size:14px; line-height:19px; font-weight:700; text-shadow:0 1px 0 rgba(0,0,0,.25); }
   .balance-value { margin-top:4px; color:#fff; font-size:32px; line-height:38px; font-weight:800; }
   .hero-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
   .hero-action { display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 11px; border-radius:7px; border:1px solid rgba(255,255,255,.35); background:transparent; color:#fff; font-size:10px; line-height:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; cursor:pointer; }
-  .hero-action.primary { border-color:#fff; background:#fff; color:#c40000; }
+  .hero-action.primary { border-color:#fff; background:#fff; color:#14532d; }
   .notice { margin-top:14px; max-width:560px; border-radius:10px; background:rgba(255,255,255,.12); padding:12px 14px; color:#fff; font-size:13px; line-height:19px; }
   .summary-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; margin:14px 0; }
   .swipe-invest {
@@ -28,10 +28,10 @@
     padding:7px;
     border:0;
     border-radius:999px;
-    background:linear-gradient(90deg, #c40000, #e31b23);
+    background:linear-gradient(90deg, #14532d, #166534);
     color:#fff;
     text-decoration:none;
-    box-shadow:0 10px 24px rgba(196,0,0,.22);
+    box-shadow:0 10px 24px rgba(20,83,45,.22);
     touch-action:none;
     user-select:none;
     cursor:grab;
@@ -40,7 +40,7 @@
     content:'';
     position:absolute;
     inset:0;
-    background:linear-gradient(90deg, rgba(196,0,0,0) 0%, rgba(255,255,255,.18) 42%, rgba(255,255,255,.72) 74%, #ffffff 100%);
+    background:linear-gradient(90deg, rgba(20,83,45,0) 0%, rgba(255,255,255,.18) 42%, rgba(255,255,255,.72) 74%, #ffffff 100%);
     pointer-events:none;
   }
   .swipe-knob {
@@ -54,7 +54,7 @@
     align-items:center;
     justify-content:center;
     background:#fff;
-    color:#c40000;
+    color:#14532d;
     font-size:26px;
     line-height:1;
     font-weight:900;
@@ -91,25 +91,25 @@
   .swipe-hint {
     display:block;
     margin-top:2px;
-    color:#ffe0a3;
+    color:#f5dfad;
     font-size:11px;
     line-height:15px;
     font-weight:700;
   }
-  .summary-card { padding:16px; border-radius:16px; background:#fff; box-shadow:0 10px 24px rgba(15,23,42,.08); border:1px solid #ffc5cd; }
-  .summary-card.featured { background:linear-gradient(135deg, #c40000, #e31b23 62%, #f5a400); border-color:#e31b23; color:#fff; }
-  .summary-label { color:#c40000; font-size:11px; line-height:15px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
-  .summary-card.featured .summary-label { color:#ffe0a3; }
+  .summary-card { padding:16px; border-radius:16px; background:#fff; box-shadow:0 10px 24px rgba(15,23,42,.08); border:1px solid #dcefe8; }
+  .summary-card.featured { background:linear-gradient(135deg, #14532d, #166534 62%, #d6a84f); border-color:#166534; color:#fff; }
+  .summary-label { color:#14532d; font-size:11px; line-height:15px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+  .summary-card.featured .summary-label { color:#f5dfad; }
   .summary-value { margin-top:10px; color:#001a33; font-size:25px; line-height:31px; font-weight:900; }
   .summary-card.featured .summary-value { color:#fff; }
   .summary-help { margin-top:10px; color:#64748b; font-size:12px; line-height:17px; }
-  .summary-card.featured .summary-help { color:#fff8e8; }
-  .status-message { margin:14px 0 0; border-radius:14px; background:#fff8e8; border:1px solid #f5a400; padding:12px 14px; color:#c40000; font-size:13px; line-height:18px; font-weight:800; }
-  .activity-card { border-radius:18px; background:#fff; padding:16px; box-shadow:0 10px 24px rgba(15,23,42,.08); border:1px solid #ffc5cd; }
+  .summary-card.featured .summary-help { color:#fffaf0; }
+  .status-message { margin:14px 0 0; border-radius:14px; background:#fffaf0; border:1px solid #d6a84f; padding:12px 14px; color:#14532d; font-size:13px; line-height:18px; font-weight:800; }
+  .activity-card { border-radius:18px; background:#fff; padding:16px; box-shadow:0 10px 24px rgba(15,23,42,.08); border:1px solid #dcefe8; }
   .activity-head { display:block; gap:12px; }
-  .activity-title { color:#c40000; font-size:15px; line-height:20px; font-weight:800; }
-  .activity-item { display:block; gap:14px; margin-top:10px; border-radius:14px; background:#fff5f5; padding:14px 16px; color:#475569; font-size:14px; line-height:20px; }
-  .activity-item strong { display:block; color:#c40000; }
+  .activity-title { color:#14532d; font-size:15px; line-height:20px; font-weight:800; }
+  .activity-item { display:block; gap:14px; margin-top:10px; border-radius:14px; background:#f4fbf7; padding:14px 16px; color:#475569; font-size:14px; line-height:20px; }
+  .activity-item strong { display:block; color:#14532d; }
   .activity-time { color:#64748b; font-size:12px; }
   .logout-form { display:inline; }
   @media (min-width:761px) {
@@ -229,7 +229,7 @@
   <section class="activity-card">
     <div class="activity-head">
       <div class="activity-title">Recent activity</div>
-      <a href="{{ route('unavailable') }}" style="color:#c40000;text-decoration:none;font-size:13px;font-weight:800;">View all</a>
+      <a href="{{ route('unavailable') }}" style="color:#14532d;text-decoration:none;font-size:13px;font-weight:800;">View all</a>
     </div>
     @foreach ($recentInvestments as $investment)
       <div class="activity-item">
@@ -237,11 +237,11 @@
           <strong>{{ $investment->package_name }} availed</strong>
           <span class="activity-time">{{ $investment->created_at?->format('h:i A') ?: 'Now' }} - investment submitted</span>
         </div>
-        <div style="font-weight:800;color:#c40000;">${{ number_format((float) $investment->amount, 2) }}</div>
+        <div style="font-weight:800;color:#14532d;">${{ number_format((float) $investment->amount, 2) }}</div>
       </div>
     @endforeach
-    <div class="activity-item"><div><strong>Partner account created</strong><span class="activity-time">{{ $user->created_at?->format('h:i A') ?: 'Now' }} - submitted</span></div><div style="font-weight:800;color:#c40000;">{{ $user->region ?: 'N/A' }}</div></div>
-    <div class="activity-item"><div><strong>Application profile saved</strong><span class="activity-time">{{ $user->last_seen_at?->format('h:i A') ?: 'Now' }} - active</span></div><div style="font-weight:800;color:#c40000;">{{ $user->phone ?: 'N/A' }}</div></div>
+    <div class="activity-item"><div><strong>Partner account created</strong><span class="activity-time">{{ $user->created_at?->format('h:i A') ?: 'Now' }} - submitted</span></div><div style="font-weight:800;color:#14532d;">{{ $user->region ?: 'N/A' }}</div></div>
+    <div class="activity-item"><div><strong>Application profile saved</strong><span class="activity-time">{{ $user->last_seen_at?->format('h:i A') ?: 'Now' }} - active</span></div><div style="font-weight:800;color:#14532d;">{{ $user->phone ?: 'N/A' }}</div></div>
   </section>
 </main>
 <script>

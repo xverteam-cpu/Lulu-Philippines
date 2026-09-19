@@ -22,8 +22,8 @@ class PackageGiftedEmail extends Mailable
     {
         $user = $this->investment->user;
 
-        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lotteria Philippines'))
-            ->subject('Your Lotteria Package Has Been Gifted to You')
+        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lulu'))
+            ->subject('Your Lulu Package Has Been Gifted to You')
             ->view('emails.package-gifted')
             ->with([
                 'recipient_name' => $user->name ?: $user->username,

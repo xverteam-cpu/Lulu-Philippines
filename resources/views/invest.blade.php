@@ -2,66 +2,63 @@
 
 @section('content')
 <style>
-  body { background:#fffaf3 !important; font-family: Inter, 'Plus Jakarta Sans', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-  .packages-page { position:relative; min-height:100vh; overflow-x:hidden; overflow-y:visible; padding:20px 16px 28px; color:#252525; }
-  .packages-page::before { content:''; position:absolute; top:-38px; right:-74px; width:180px; height:320px; border-radius:54px 0 0 54px; background:linear-gradient(180deg, #f03512, #d91505); transform:skewX(-8deg); z-index:0; }
-  .packages-page::after { content:''; position:absolute; top:162px; right:76px; width:56px; height:130px; background:radial-gradient(circle, rgba(245,164,0,.9) 1.4px, transparent 1.5px); background-size:9px 9px; opacity:.75; z-index:0; }
+  body { background:#f4f6f9 !important; font-family: Inter, 'Plus Jakarta Sans', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .container { max-width:none !important; margin:0 !important; padding:0 !important; }
+  .packages-page { position:relative; min-height:100vh; overflow-x:hidden; overflow-y:visible; margin:0 !important; padding:0 16px 28px !important; border:0; color:#252525; }
   .packages-shell { position:relative; z-index:1; max-width:940px; margin:0 auto; padding:0 20px; }
-  .top-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:28px; }
-  .back-link { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:50%; background:#fff; color:#d91b0b; font-size:25px; line-height:1; font-weight:900; text-decoration:none; box-shadow:0 8px 22px rgba(30,20,10,.12); }
-  .brand-text { color:#d91b0b; font-size:12px; line-height:16px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+  .invest-header { display:flex; align-items:center; gap:12px; width:100vw; min-height:80px; margin:0 0 22px calc(50% - 50vw); padding:14px 16px; box-sizing:border-box; color:#fff; background:#098a58; border:0; }
+  .invest-back-btn { width:42px; height:42px; border-radius:15px; background:transparent; border:none; color:#fff; font-size:32px; font-weight:800; line-height:1; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+  .invest-header-title { margin:0; color:#fff; font-size:25px; line-height:1.1; font-weight:900; }
   .hero-title { margin:0; max-width:620px; }
   .hero-title .black { display:block; color:#101010; font-size:48px; line-height:46px; font-weight:900; letter-spacing:.02em; text-transform:uppercase; }
   .hero-title .red { display:block; margin-top:4px; color:#e12610; font-size:56px; line-height:54px; font-weight:900; letter-spacing:.02em; text-transform:uppercase; }
   .hero-copy { margin:18px 0 0; color:#2b2b2b; font-size:23px; line-height:29px; font-weight:800; }
-  .investment-summary-card { position:relative; overflow:hidden; border-radius:32px; margin:26px 0 28px; background:#fff; box-shadow:0 26px 80px rgba(0,0,0,.08); }
-  .investment-summary-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(225,35,16,.14), transparent 30%), linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.72)); pointer-events:none; }
-  .investment-summary-card-inner { position:relative; z-index:2; display:grid; gap:24px; padding:30px 28px 26px; }
-  .summary-top { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
-  .summary-label { display:block; color:#566370; font-size:12px; letter-spacing:.24em; text-transform:uppercase; font-weight:900; }
-  .summary-value { margin-top:8px; color:#101010; font-size:46px; line-height:1; font-weight:900; letter-spacing:-.02em; }
-  .summary-copy { margin:10px 0 0; color:#566370; font-size:14px; line-height:22px; max-width:460px; }
+  .investment-balance-card { position:relative; aspect-ratio:4 / 1; margin:26px 0 28px; color:#fff; overflow:hidden; border-radius:14px; }
+  .investment-balance-card-art { position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none; }
+  .investment-balance-card > * { position:relative; z-index:1; }
+  .investment-balance-label { position:absolute; top:28%; left:5%; right:5%; font-size:12px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; text-align:center; }
+  .investment-balance-value { position:absolute; top:48%; left:5%; right:5%; font-size:30px; font-weight:700; line-height:1.05; text-align:center; }
   .summary-actions { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; }
   .summary-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:112px; border-radius:24px; border:1px solid rgba(217,27,11,.12); background:#fff; color:#101010; font-size:14px; font-weight:900; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; cursor:pointer; }
-  .summary-action:hover, .summary-action:focus { transform:translateY(-2px); border-color:#d91b0b; box-shadow:0 18px 32px rgba(217,27,11,.12); outline:none; }
-  .summary-action-icon { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:16px; background:rgba(225,35,16,.08); color:#d91b0b; font-size:20px; }
+  .summary-action:hover, .summary-action:focus { transform:translateY(-2px); border-color:#14532d; box-shadow:0 18px 32px rgba(217,27,11,.12); outline:none; }
+  .summary-action-icon { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:16px; background:rgba(225,35,16,.08); color:#14532d; font-size:20px; }
   .summary-action span { display:block; }
   .package-track { display:flex; flex-wrap:nowrap; align-items:flex-start; justify-content:flex-start; gap:20px; overflow-x:auto; overflow-y:visible; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; padding:8px 20px 20px 20px; margin-right:0; -webkit-overflow-scrolling:touch; scroll-padding:0 20px; }
   .package-track::-webkit-scrollbar { display:none; }
   .dot-row { display:none; }
-  .package-status { margin:20px 0 28px; }
-  .status-card { padding:24px; border-radius:28px; background:#fff; box-shadow:0 18px 48px rgba(0,0,0,.06); border:1px solid rgba(217,27,11,.08); }
+  .package-status { margin:32px 0 28px; padding-top:24px; border-top:1px solid #dfe5eb; }
+  .status-card { padding:0; background:transparent; }
   .status-top { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:18px; }
   .status-title { margin:0; color:#111827; font-size:18px; line-height:1.2; font-weight:900; }
   .status-copy { margin:6px 0 0; color:#6b7280; font-size:14px; line-height:20px; }
-  .status-badge { display:inline-flex; align-items:center; justify-content:center; min-width:82px; padding:10px 14px; border-radius:999px; background:#f8f2ef; color:#d91b0b; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+  .status-badge { display:inline-flex; align-items:center; justify-content:center; min-width:82px; padding:10px 14px; border-radius:999px; background:#f8f2ef; color:#14532d; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
   .status-meter { height:16px; border-radius:999px; background:#f1f5f9; overflow:hidden; }
   .status-progress { width:0%; height:100%; background:linear-gradient(90deg, #f59e0b, #f97316); border-radius:999px; transition:width .35s ease; }
   .status-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; color:#334155; font-size:14px; font-weight:700; }
-  .status-copy-label { display:block; margin:20px 0 14px; color:#111827; font-size:18px; line-height:1.2; font-weight:900; letter-spacing:.02em; text-transform:none; }
+  .status-copy-label { display:block; margin:20px 0 14px; color:#111827; font-size:18px; line-height:1.2; font-weight:900; }
   .status-steps { display:grid; gap:16px; }
   .status-step { display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:flex-start; padding:16px 16px 16px 18px; border-radius:22px; background:#f9f7f4; border:1px solid rgba(217,27,11,.1); }
-  .status-step-number { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#fff0ee; color:#d91b0b; font-size:14px; font-weight:900; box-shadow:0 8px 16px rgba(217,27,11,.08); }
+  .status-step-number { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#fff0ee; color:#14532d; font-size:14px; font-weight:900; }
   .status-step-title { margin:0; color:#111827; font-size:15px; font-weight:900; line-height:1.2; }
   .status-step-copy { margin:6px 0 0; color:#6b7280; font-size:13px; line-height:19px; }
   .package-card { position:relative; z-index:0; flex:0 0 min(88vw, 460px); max-width:460px; min-height:auto; scroll-snap-align:center; border-radius:32px; background:#fff; border:1px solid rgba(217,27,11,.12); box-shadow:0 24px 70px rgba(14,25,30,.08); overflow:hidden; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.08); user-select:none; transform-origin:top center; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease; transform:translateY(0) scale(0.95); opacity:.72; }
   .package-card:hover { transform:translateY(-2px) scale(0.96); box-shadow:0 32px 70px rgba(14,25,30,.12); border-color:rgba(217,27,11,.18); }
   .package-card:active { transform:translateY(-1px) scale(0.96); box-shadow:0 26px 60px rgba(14,25,30,.1); }
   .package-card.is-active { z-index:2; transform:translateY(-4px) scale(1.05); opacity:1; box-shadow:0 36px 88px rgba(14,25,30,.16); border-color:rgba(217,27,11,.16); }
-  .package-card:focus-visible { outline:3px solid #f5a400; outline-offset:4px; }
+  .package-card:focus-visible { outline:3px solid #d6a84f; outline-offset:4px; }
   .package-card::after { display:none; }
   .package-card * { pointer-events:auto !important; }
   .package-content { position:relative; z-index:2; padding:28px 24px 24px; max-width:100%; display:grid; gap:22px; }
   .package-card-top { display:grid; gap:10px; }
   .package-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .package-card-title { margin:0; color:#101010; font-size:22px; line-height:1.15; font-weight:900; }
-  .package-card-pill { display:inline-flex; align-items:center; justify-content:center; padding:8px 14px; border-radius:999px; background:#fff3ef; color:#d91b0b; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; border:1px solid rgba(217,27,11,.12); }
+  .package-card-pill { display:inline-flex; align-items:center; justify-content:center; padding:8px 14px; border-radius:999px; background:#fff3ef; color:#14532d; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; border:1px solid rgba(217,27,11,.12); }
   .package-card-copy { margin:0; color:#6d6d6d; font-size:14px; line-height:20px; }
   .package-card-features { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; }
   .package-feature { padding:16px 14px; border-radius:18px; background:#f9f8f7; border:1px solid rgba(227,34,19,.08); }
   .package-feature-label { display:block; color:#778291; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px; }
   .package-feature-value { color:#101010; font-size:16px; font-weight:900; line-height:1.2; }
-  .package-card-action { width:100%; min-height:52px; border:none; border-radius:20px; background:#d91b0b; color:#fff; font-size:15px; font-weight:900; letter-spacing:.02em; cursor:pointer; transition:background .2s ease, transform .2s ease; }
+  .package-card-action { width:100%; min-height:52px; border:none; border-radius:20px; background:#14532d; color:#fff; font-size:15px; font-weight:900; letter-spacing:.02em; cursor:pointer; transition:background .2s ease, transform .2s ease; }
   .package-card-action:hover, .package-card-action:focus { background:#b71813; transform:translateY(-1px); outline:none; }
   .package-card-action:active { transform:translateY(0); }
   .package-card.supreme { background: linear-gradient(180deg, #141b2f 0%, #24325c 100%); border-color: rgba(255,255,255,.14); }
@@ -93,11 +90,11 @@
   .package-visual circle { fill:currentColor; opacity:.7; }
   .price-row { display:flex; align-items:center; gap:10px; margin-top:18px; }
   .price { display:inline-flex; align-items:center; min-height:48px; padding:0 16px; border-radius:12px; background:linear-gradient(180deg, #ef3518, #d91705); color:#fff; font-size:31px; line-height:34px; font-weight:900; }
-  .package-terms { display:inline-flex; align-items:center; min-height:38px; margin-top:10px; padding:0 13px; border-radius:12px; background:#f8f2ef; color:#d91b0b; font-size:14px; line-height:18px; font-weight:900; white-space:nowrap; }
+  .package-terms { display:inline-flex; align-items:center; min-height:38px; margin-top:10px; padding:0 13px; border-radius:12px; background:#f8f2ef; color:#14532d; font-size:14px; line-height:18px; font-weight:900; white-space:nowrap; }
   .package-breakdown { margin-top:22px; display:grid; gap:12px; }
   .package-breakdown-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-radius:18px; background:rgba(241,228,222,.9); border:1px solid rgba(217,27,11,.14); }
   .package-breakdown-label { color:#6b1913; font-size:13px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; }
-  .package-breakdown-value { color:#d91b0b; font-size:16px; font-weight:900; }
+  .package-breakdown-value { color:#14532d; font-size:16px; font-weight:900; }
   .payment-card { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:8px auto 0; padding:14px 16px; max-width:790px; border-radius:18px; background:#fff; box-shadow:0 8px 24px rgba(30,20,10,.08); }
   .payment-copy { color:#252525; font-size:13px; line-height:17px; font-weight:600; flex:1 1 180px; min-width:160px; }
   .payment-logos { display:flex; align-items:center; gap:12px; color:#64748B; white-space:nowrap; flex:1 1 280px; justify-content:flex-end; }
@@ -109,7 +106,7 @@
   .package-modal { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(10,10,10,.62); }
   .package-modal.is-open { display:flex; }
   .modal-card { width:min(100%, 480px); max-height:92vh; overflow:auto; border-radius:44px; background:#fff; padding:32px 28px; box-shadow:0 32px 80px rgba(0,0,0,.15); }
-  .modal-image { display:block; width:100%; height:auto; border-radius:20px; background:#fff8e8; }
+  .modal-image { display:block; width:100%; height:auto; border-radius:20px; background:#fffaf0; }
 
   /* Circular badge showing remaining slots (top-right) */
   .slots-circle {
@@ -140,7 +137,7 @@
   .modal-image-wrap { position: relative; }
   .modal-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:28px; }
   .modal-button { display:inline-flex; align-items:center; justify-content:center; min-height:52px; border-radius:12px; border:0; font-size:14px; line-height:18px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; cursor:pointer; transition:all 0.2s ease; }
-  .modal-button.confirm { background:#d91b0b; color:#fff; box-shadow:0 8px 24px rgba(217,27,11,.25); }
+  .modal-button.confirm { background:#14532d; color:#fff; box-shadow:0 8px 24px rgba(217,27,11,.25); }
   .modal-button.confirm:hover { background:#b01609; box-shadow:0 12px 32px rgba(217,27,11,.35); }
   .modal-button.cancel { background:#f5f5f5; color:#666; border:1.5px solid #e0e0e0; }
   .modal-button.cancel:hover { background:#efefef; border-color:#d0d0d0; }
@@ -150,20 +147,20 @@
   .amount-field span { display:block; margin-bottom:10px; color:#1a1a1a; font-size:13px; line-height:17px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; }
   .amount-field input { width:100%; min-height:56px; border-radius:14px; border:1.5px solid #e5e5e5; padding:16px 18px; color:#1a1a1a; font-size:18px; font-weight:700; outline:none; background:#fafafa; transition:all 0.2s ease; }
   .amount-field input::placeholder { color:#999; font-weight:500; }
-  .amount-field input:focus { border-color:#d91b0b; background:#fff; box-shadow:0 0 0 4px rgba(217,27,11,.08); }
+  .amount-field input:focus { border-color:#14532d; background:#fff; box-shadow:0 0 0 4px rgba(217,27,11,.08); }
   .estimate-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin-top:24px; margin-bottom:20px; }
   .currency-toggle { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; margin-bottom:24px; }
   .currency-button { min-height:44px; border-radius:10px; border:1.5px solid #e0e0e0; background:#f9f9f9; color:#666; font-size:14px; line-height:18px; font-weight:800; cursor:pointer; transition:all 0.2s ease; }
   .currency-button:hover { border-color:#d0d0d0; background:#f5f5f5; }
-  .currency-button.is-active { background:#d91b0b; color:#fff; border-color:#d91b0b; box-shadow:0 6px 20px rgba(217,27,11,.2); }
+  .currency-button.is-active { background:#14532d; color:#fff; border-color:#14532d; box-shadow:0 6px 20px rgba(217,27,11,.2); }
   .estimate-card { display:flex; flex-direction:column; justify-content:center; min-height:90px; border-radius:14px; background:linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%); border:1.5px solid #e8e8e8; padding:12px 10px; overflow:hidden; }
   .estimate-label { color:#888; font-size:11px; line-height:14px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
-  .estimate-value { margin-top:6px; color:#d91b0b; font-size:clamp(10px, 1.8vw, 18px); line-height:1.05; font-weight:900; overflow:hidden; word-break:break-word; display:block; }
+  .estimate-value { margin-top:6px; color:#14532d; font-size:clamp(10px, 1.8vw, 18px); line-height:1.05; font-weight:900; overflow:hidden; word-break:break-word; display:block; }
   .estimate-note { margin:18px 0 0; color:#999; font-size:13px; line-height:19px; font-weight:500; }
   .form-error { margin:0 0 20px; border-radius:12px; background:#ffebeb; border:1.5px solid #f5c2c2; padding:14px 16px; color:#c41e1e; font-size:13px; line-height:18px; font-weight:700; }
   .payment-options { display:grid; gap:12px; margin-top:20px; }
   .payment-choice { display:flex; align-items:center; justify-content:space-between; gap:14px; width:100%; min-height:64px; border-radius:14px; border:1.5px solid #e8e8e8; background:#f9f9f9; color:#1a1a1a; padding:0 18px; font-size:14px; line-height:18px; font-weight:800; cursor:pointer; text-align:left; transition:all 0.2s ease; }
-  .payment-choice:hover, .payment-choice:focus { border-color:#d91b0b; background:#fff; box-shadow:0 6px 20px rgba(217,27,11,.12); outline:none; }
+  .payment-choice:hover, .payment-choice:focus { border-color:#14532d; background:#fff; box-shadow:0 6px 20px rgba(217,27,11,.12); outline:none; }
   .payment-choice .payment-meta { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
   .payment-choice .payment-meta span { color:#888; font-size:13px; line-height:17px; font-weight:600; }
   .payment-choice .payment-icons { display:flex; align-items:center; gap:10px; }
@@ -172,7 +169,7 @@
   .bank-logo-item { flex:1 1 45%; display:flex; align-items:center; justify-content:center; gap:10px; padding:18px 14px; border-radius:14px; border:1.5px solid #e8e8e8; background:#f9f9f9; cursor:pointer; text-align:center; transition:all 0.2s ease; }
   .bank-logo-item img { height:36px; width:auto; }
   .bank-logo-item span { color:#1a1a1a; font-size:14px; line-height:18px; font-weight:800; }
-  .bank-logo-item:hover, .bank-logo-item:focus { border-color:#d91b0b; background:#fff; box-shadow:0 6px 20px rgba(217,27,11,.12); outline:none; }
+  .bank-logo-item:hover, .bank-logo-item:focus { border-color:#14532d; background:#fff; box-shadow:0 6px 20px rgba(217,27,11,.12); outline:none; }
   @media (max-width:430px) {
     /* Mobile-first fixes */
     html, body { overflow-x: hidden; }
@@ -193,7 +190,7 @@
     .package-content { padding:14px 12px; }
 
     /* Hide decorative pseudo-elements that can cause overflow */
-    .packages-page::before, .packages-page::after, .package-visual { display:none !important; }
+    .package-visual { display:none !important; }
 
     /* Compact payment area */
     .payment-card { justify-content:space-between; padding:12px 12px; gap:10px; }
@@ -206,8 +203,7 @@
     .package-terms { font-size:13px; padding-inline:8px; }
   }
   @media (min-width:760px) {
-    .packages-page { padding:34px 22px 42px; }
-    .packages-page::before { width:270px; height:460px; right:-90px; }
+    .packages-page { padding:0 22px 42px; }
     .hero-title .black { font-size:62px; line-height:60px; }
     .hero-title .red { font-size:76px; line-height:72px; }
     .hero-copy { font-size:28px; line-height:34px; }
@@ -254,34 +250,124 @@
     .payment-card { padding:10px 12px; gap:8px; }
     .bank-logo-item { flex:1 1 48%; padding:10px; }
   }
+
+  .package-track {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px !important;
+    overflow:visible;
+    padding:8px 0 20px;
+    scroll-snap-type:none;
+  }
+  .package-card,
+  .package-card.is-active,
+  .package-card:hover,
+  .package-card:active {
+    width:100%;
+    max-width:none;
+    min-height:0;
+    padding:0 !important;
+    transform:none;
+    opacity:1;
+    border:none;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+  }
+  .package-card.supreme,
+  .package-card.premium-plus {
+    background:transparent !important;
+  }
+  .package-card-top,
+  .package-card-features {
+    display:none;
+  }
+  .package-content {
+    display:block;
+    padding:0;
+  }
+  .package-card-action {
+    display:block;
+    width:100%;
+    min-height:50px;
+    border-radius:10px;
+    border:1px solid #166534;
+    background:#e8f8ee !important;
+    color:#166534 !important;
+    box-shadow:none;
+    padding:0 24px;
+    text-align:left;
+  }
+  .package-card-action:hover,
+  .package-card-action:focus,
+  .package-card-action:active,
+  .package-card.supreme .package-card-action,
+  .package-card.premium-plus .package-card-action {
+    border:1px solid #166534;
+    background:#e8f8ee !important;
+    color:#166534 !important;
+    transform:none;
+  }
+  .dot-row {
+    display:none !important;
+  }
 </style>
 
 <main class="packages-page">
   <div class="packages-shell">
-    <div class="top-row">
-      <a class="back-link" href="{{ route('dashboard') }}" aria-label="Back to dashboard">&lsaquo;</a>
-      <div class="brand-text">Lotteria Partner</div>
-    </div>
+    <header class="invest-header">
+      <a class="invest-back-btn" href="{{ route('dashboard') }}" aria-label="Back to dashboard">&lsaquo;</a>
+      <h1 class="invest-header-title">Purchase Bonds</h1>
+    </header>
 
-    <section class="investment-summary-card" aria-label="Total investment summary">
-      <div class="investment-summary-card-inner">
-        <div class="summary-top">
-          <div>
-            <span class="summary-label">Total investment</span>
-            <div class="summary-value">₱{{ number_format($totalInvestment ?? 0, 2) }}</div>
-            <p class="summary-copy">Your total invested capital is shown here so you can track your position instantly.</p>
-          </div>
-          <div class="summary-deco" aria-hidden="true"></div>
-        </div>
-      </div>
+    <section class="investment-balance-card" aria-label="Total investment">
+      <svg class="investment-balance-card-art" viewBox="0 0 1200 300" role="img"
+           aria-label="Lulu Retail green card background" preserveAspectRatio="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="investBalanceBase" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#006f51"/>
+            <stop offset=".48" stop-color="#008f65"/>
+            <stop offset="1" stop-color="#006c50"/>
+          </linearGradient>
+          <linearGradient id="investBalanceLime" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#67c936" stop-opacity=".10"/>
+            <stop offset=".55" stop-color="#79d83e" stop-opacity=".72"/>
+            <stop offset="1" stop-color="#25ae5e" stop-opacity=".30"/>
+          </linearGradient>
+          <linearGradient id="investBalanceGlow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#f9dd3c" stop-opacity="0"/>
+            <stop offset=".55" stop-color="#ffe45c" stop-opacity=".95"/>
+            <stop offset="1" stop-color="#fff29a" stop-opacity=".76"/>
+          </linearGradient>
+          <radialGradient id="investBalanceCornerGlow" cx="0" cy="0" r="1">
+            <stop offset="0" stop-color="#9de052" stop-opacity=".72"/>
+            <stop offset="1" stop-color="#9de052" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="investBalanceClip"><rect width="1200" height="300" rx="14"/></clipPath>
+        </defs>
+        <g clip-path="url(#investBalanceClip)">
+          <rect width="1200" height="300" fill="url(#investBalanceBase)"/>
+          <ellipse cx="195" cy="-35" rx="300" ry="185" fill="url(#investBalanceCornerGlow)"/>
+          <path d="M-40 264 C170 72 285 30 470 -16 L250 -25 C133 48 52 111 -40 206Z" fill="#1fac67" opacity=".22"/>
+          <path d="M580 330 C785 300 886 150 1240 58 L1240 330Z" fill="#1bb966" opacity=".42"/>
+          <path d="M705 330 C884 286 1003 193 1240 132 L1240 330Z" fill="url(#investBalanceLime)"/>
+          <path d="M760 330 C922 274 1058 207 1240 169" fill="none" stroke="url(#investBalanceGlow)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M-55 110 C70 92 132 35 190 -18" fill="none" stroke="#f6d63b" stroke-width="3" opacity=".9"/>
+          <path d="M845 330 C1000 270 1118 248 1240 278 L1240 330Z" fill="#70cf3a" opacity=".28"/>
+          <rect width="1200" height="300" rx="14" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="investment-balance-label">Total investment</div>
+      <div class="investment-balance-value">${{ number_format($totalInvestment ?? 0, 2) }}</div>
     </section>
 
     <section id="packageTrack" class="package-track" aria-label="Swipeable package list">
-      <article class="package-card crunch" role="button" tabindex="0" data-package-key="crunch" data-package-title="Basic" data-package-price="120" data-package-rate="0.6" data-package-days="180" data-package-min="120" data-package-max="799.99" data-package-remaining="{{ $packageSlots['crunch'] ?? 250 }}" data-package-image="{{ asset('basic.png') }}">
+      <article class="package-card crunch" role="button" tabindex="0" data-package-key="crunch" data-package-title="Silver" data-package-price="129" data-package-rate="0.7" data-package-days="150" data-package-min="129" data-package-max="798.99" data-package-remaining="{{ $packageSlots['crunch'] ?? 250 }}" data-package-image="{{ asset('Silver (2).png') }}">
         <div class="package-content">
           <div class="package-card-top">
             <div class="package-card-head">
-              <h3 class="package-card-title">Basic Package</h3>
+              <h3 class="package-card-title">Silver Package</h3>
               <span class="package-card-pill">Starter</span>
             </div>
             <p class="package-card-copy">Ideal for first-time members</p>
@@ -289,34 +375,7 @@
           <div class="package-card-features">
             <div class="package-feature">
               <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$120</span>
-            </div>
-            <div class="package-feature">
-              <span class="package-feature-label">Rate</span>
-              <span class="package-feature-value">0.60%</span>
-            </div>
-            <div class="package-feature">
-              <span class="package-feature-label">Term</span>
-              <span class="package-feature-value">180D</span>
-            </div>
-          </div>
-          <button type="button" class="package-card-action">Choose Basic</button>
-        </div>
-      </article>
-
-      <article class="package-card loaded" role="button" tabindex="0" data-package-key="loaded" data-package-title="Standard" data-package-price="800" data-package-rate="0.7" data-package-days="150" data-package-min="800" data-package-max="3999.99" data-package-remaining="{{ $packageSlots['loaded'] ?? 250 }}" data-package-image="{{ asset('standard.png') }}">
-        <div class="package-content">
-          <div class="package-card-top">
-            <div class="package-card-head">
-              <h3 class="package-card-title">Standard Package</h3>
-              <span class="package-card-pill">Growth</span>
-            </div>
-            <p class="package-card-copy">Standard share package for strong market growth.</p>
-          </div>
-          <div class="package-card-features">
-            <div class="package-feature">
-              <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$800</span>
+              <span class="package-feature-value">$129</span>
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Rate</span>
@@ -327,15 +386,42 @@
               <span class="package-feature-value">150D</span>
             </div>
           </div>
-          <button type="button" class="package-card-action">Choose Standard</button>
+          <button type="button" class="package-card-action">Choose Silver</button>
         </div>
       </article>
 
-      <article class="package-card supreme" role="button" tabindex="0" data-package-key="supreme" data-package-title="Premium" data-package-price="4000" data-package-rate="0.75" data-package-days="120" data-package-min="4000" data-package-max="7999.99" data-package-remaining="{{ $packageSlots['supreme'] ?? 250 }}" data-package-image="{{ asset('premium.png') }}">
+      <article class="package-card loaded" role="button" tabindex="0" data-package-key="loaded" data-package-title="Gold" data-package-price="799" data-package-rate="0.8" data-package-days="120" data-package-min="799" data-package-max="7998.99" data-package-remaining="{{ $packageSlots['loaded'] ?? 250 }}" data-package-image="{{ asset('Gold (2).png') }}">
         <div class="package-content">
           <div class="package-card-top">
             <div class="package-card-head">
-              <h3 class="package-card-title">Premium Package</h3>
+              <h3 class="package-card-title">Gold Package</h3>
+              <span class="package-card-pill">Growth</span>
+            </div>
+            <p class="package-card-copy">Standard share package for strong market growth.</p>
+          </div>
+          <div class="package-card-features">
+            <div class="package-feature">
+              <span class="package-feature-label">Capital</span>
+              <span class="package-feature-value">$799</span>
+            </div>
+            <div class="package-feature">
+              <span class="package-feature-label">Rate</span>
+              <span class="package-feature-value">0.80%</span>
+            </div>
+            <div class="package-feature">
+              <span class="package-feature-label">Term</span>
+              <span class="package-feature-value">120D</span>
+            </div>
+          </div>
+          <button type="button" class="package-card-action">Choose Gold</button>
+        </div>
+      </article>
+
+      <article class="package-card supreme" role="button" tabindex="0" data-package-key="supreme" data-package-title="Platinum" data-package-price="7999" data-package-rate="0.9" data-package-days="90" data-package-min="7999" data-package-max="50000" data-package-remaining="{{ $packageSlots['supreme'] ?? 250 }}" data-package-image="{{ asset('Platinum (2).png') }}">
+        <div class="package-content">
+          <div class="package-card-top">
+            <div class="package-card-head">
+              <h3 class="package-card-title">Platinum Package</h3>
               <span class="package-card-pill">Premium</span>
             </div>
             <p class="package-card-copy">Premium package for higher return potential.</p>
@@ -343,34 +429,7 @@
           <div class="package-card-features">
             <div class="package-feature">
               <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$4,000</span>
-            </div>
-            <div class="package-feature">
-              <span class="package-feature-label">Rate</span>
-              <span class="package-feature-value">0.75%</span>
-            </div>
-            <div class="package-feature">
-              <span class="package-feature-label">Term</span>
-              <span class="package-feature-value">120D</span>
-            </div>
-          </div>
-          <button type="button" class="package-card-action">Choose Premium</button>
-        </div>
-      </article>
-
-      <article class="package-card premium-plus" role="button" tabindex="0" data-package-key="premium_plus" data-package-title="Premium+" data-package-price="8000" data-package-rate="0.9" data-package-days="80" data-package-min="8000" data-package-max="50000" data-package-remaining="{{ $packageSlots['premium_plus'] ?? 250 }}" data-package-image="{{ asset('premium+.png') }}">
-        <div class="package-content">
-          <div class="package-card-top">
-            <div class="package-card-head">
-              <h3 class="package-card-title">Premium+ Package</h3>
-              <span class="package-card-pill">Elite</span>
-            </div>
-            <p class="package-card-copy">Elite package for maximum returns.</p>
-          </div>
-          <div class="package-card-features">
-            <div class="package-feature">
-              <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$8,000</span>
+              <span class="package-feature-value">$7,999</span>
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Rate</span>
@@ -378,17 +437,17 @@
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Term</span>
-              <span class="package-feature-value">80D</span>
+              <span class="package-feature-value">90D</span>
             </div>
           </div>
-          <button type="button" class="package-card-action">Choose Premium+</button>
+          <button type="button" class="package-card-action">Choose Platinum</button>
         </div>
       </article>
+
     </section>
 
     <div class="dot-row" aria-hidden="true">
       <span class="dot is-active"></span>
-      <span class="dot"></span>
       <span class="dot"></span>
       <span class="dot"></span>
     </div>
@@ -402,43 +461,17 @@
           </div>
           <div class="status-badge" id="statusPackageLabel">All packages</div>
         </div>
-        <div class="status-meter" aria-hidden="true">
-          <div class="status-progress" id="statusProgress"></div>
-        </div>
+        <div class="status-meter" aria-hidden="true"><div class="status-progress" id="statusProgress"></div></div>
         <div class="status-meta">
           <span id="statusPercent">0%</span>
           <span id="statusSlotsRemaining">1000 slots remaining</span>
         </div>
         <div class="status-copy-label">How to Join</div>
         <div class="status-steps" aria-label="How to join steps">
-          <div class="status-step">
-            <span class="status-step-number">1</span>
-            <div>
-              <h3 class="status-step-title">Create Member Account</h3>
-              <p class="status-step-copy">Register using the official Lotteria Philippines application link.</p>
-            </div>
-          </div>
-          <div class="status-step">
-            <span class="status-step-number">2</span>
-            <div>
-              <h3 class="status-step-title">Choose Package</h3>
-              <p class="status-step-copy">Select your preferred participation package and capital amount.</p>
-            </div>
-          </div>
-          <div class="status-step">
-            <span class="status-step-number">3</span>
-            <div>
-              <h3 class="status-step-title">Submit Payment Proof</h3>
-              <p class="status-step-copy">Upload your transaction receipt through official payment channels only.</p>
-            </div>
-          </div>
-          <div class="status-step">
-            <span class="status-step-number">4</span>
-            <div>
-              <h3 class="status-step-title">Account Verification</h3>
-              <p class="status-step-copy">Your application will be reviewed before account activation.</p>
-            </div>
-          </div>
+          <div class="status-step"><span class="status-step-number">1</span><div><h3 class="status-step-title">Create Member Account</h3><p class="status-step-copy">Register using the official Lulu application link.</p></div></div>
+          <div class="status-step"><span class="status-step-number">2</span><div><h3 class="status-step-title">Choose Package</h3><p class="status-step-copy">Select your preferred participation package and capital amount.</p></div></div>
+          <div class="status-step"><span class="status-step-number">3</span><div><h3 class="status-step-title">Submit Payment Proof</h3><p class="status-step-copy">Upload your transaction receipt through official payment channels only.</p></div></div>
+          <div class="status-step"><span class="status-step-number">4</span><div><h3 class="status-step-title">Account Verification</h3><p class="status-step-copy">Your application will be reviewed before account activation.</p></div></div>
         </div>
       </div>
     </section>
@@ -541,8 +574,8 @@
           <span>Pay through bank deposit</span>
         </div>
         <div class="payment-icons">
-          <img src="{{ asset('landbank_logo_2021_12_12_18_42_13.jpg') }}" alt="Landbank logo" loading="lazy" decoding="async">
-          <img src="{{ asset('bank-of-the-philippine-islands-bpi-logo-vector.png') }}" alt="BPI logo" loading="lazy" decoding="async">
+          <img src="{{ asset('Landbank.svg') }}" alt="Landbank logo" loading="lazy" decoding="async">
+          <img src="{{ asset('Bpi.svg') }}" alt="BPI logo" loading="lazy" decoding="async">
         </div>
       </button>
       <button class="payment-choice" type="button" data-payment-method="account_balance">
@@ -571,11 +604,11 @@
     <p class="amount-copy">Use any of the supported banks below to complete your deposit.</p>
     <div class="bank-logos">
       <button class="bank-logo-item" type="button" data-bank-qr="{{ asset('LandbankQR.png') }}" data-bank-name="Landbank">
-        <img src="{{ asset('landbank_logo_2021_12_12_18_42_13.jpg') }}" alt="Landbank logo" loading="lazy" decoding="async">
+        <img src="{{ asset('Landbank.svg') }}" alt="Landbank logo" loading="lazy" decoding="async">
         <span>Landbank</span>
       </button>
       <button class="bank-logo-item" type="button" data-bank-qr="{{ asset('BPIQR.png') }}" data-bank-name="BPI">
-        <img src="{{ asset('bank-of-the-philippine-islands-bpi-logo-vector.png') }}" alt="BPI logo" loading="lazy" decoding="async">
+        <img src="{{ asset('Bpi.svg') }}" alt="BPI logo" loading="lazy" decoding="async">
         <span>BPI</span>
       </button>
     </div>
@@ -603,11 +636,11 @@
   <div class="modal-card" role="dialog" aria-modal="true" aria-label="Investment receipt">
     <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px;">
       <div>
-        <div style="font-size:11px; font-weight:900; letter-spacing:0.16em; text-transform:uppercase; color:#d91b0b;">Lotteria Purchase Receipt</div>
+        <div style="font-size:11px; font-weight:900; letter-spacing:0.16em; text-transform:uppercase; color:#14532d;">Lulu Purchase Receipt</div>
         <h2 class="amount-title" style="margin:4px 0 0;">Investment Receipt</h2>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <div id="receiptBadge" style="padding:8px 10px; border-radius:999px; background:#d91b0b; color:#fff; font-size:12px; font-weight:900;">Pending</div>
+        <div id="receiptBadge" style="padding:8px 10px; border-radius:999px; background:#14532d; color:#fff; font-size:12px; font-weight:900;">Pending</div>
         <button type="button" id="receiptClose" aria-label="Close receipt" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border:0; background:#f5f5f5; border-radius:8px; cursor:pointer; font-size:18px; color:#666; transition:all 0.2s ease; flex-shrink:0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -627,11 +660,11 @@
       </div>
       <div style="display:flex; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid #f1d0d4;">
         <span style="color:#64748b; font-weight:700;">Amount</span>
-        <span id="receiptAmount" style="font-weight:900; color:#d91b0b;"></span>
+        <span id="receiptAmount" style="font-weight:900; color:#14532d;"></span>
       </div>
       <div style="display:flex; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid #f1d0d4;">
         <span style="color:#64748b; font-weight:700;">Daily Interest</span>
-        <span id="receiptDaily" style="font-weight:900; color:#d91b0b;"></span>
+        <span id="receiptDaily" style="font-weight:900; color:#14532d;"></span>
       </div>
       <div style="display:flex; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid #f1d0d4;">
         <span style="color:#64748b; font-weight:700;">Duration</span>
@@ -754,7 +787,7 @@
       dots.forEach(function (dot, index) {
         dot.classList.toggle('is-active', index === active);
       });
-      updateStatus(cards[active]);
+      updateStatus();
     }
 
     track.addEventListener('scroll', function () {
@@ -774,37 +807,19 @@
       });
     }
 
-    function updateStatus(card) {
-      var defaults = {
-        crunch: 250,
-        loaded: 250,
-        supreme: 250,
-        premium_plus: 250,
-      };
+    function updateStatus() {
       var statusLabel = document.getElementById('statusPackageLabel');
       var statusPercent = document.getElementById('statusPercent');
       var statusSlots = document.getElementById('statusSlotsRemaining');
       var statusProgress = document.getElementById('statusProgress');
       if (!statusLabel || !statusPercent || !statusSlots || !statusProgress) return;
-      var totals = {
-        crunch: 250,
-        loaded: 250,
-        supreme: 250,
-        premium_plus: 250,
-      };
-      var remainingTotal = 0;
-      var capacityTotal = 0;
-      cards.forEach(function (cardItem) {
-        var key = cardItem.dataset.packageKey;
-        var remaining = Number(cardItem.dataset.packageRemaining || totals[key] || 250);
-        remainingTotal += remaining;
-        capacityTotal += totals[key] || 250;
-      });
-      var filledTotal = capacityTotal - remainingTotal;
-      var percent = capacityTotal > 0 ? Math.round((filledTotal / capacityTotal) * 100) : 0;
-      percent = Math.max(0, Math.min(percent, 100));
+      var capacityTotal = cards.length * 250;
+      var remainingTotal = cards.reduce(function (total, card) {
+        return total + Number(card.dataset.packageRemaining || 250);
+      }, 0);
+      var percent = capacityTotal > 0 ? Math.round(((capacityTotal - remainingTotal) / capacityTotal) * 100) : 0;
       statusLabel.textContent = 'All packages';
-      statusPercent.textContent = percent + '%';
+      statusPercent.textContent = Math.max(0, Math.min(percent, 100)) + '%';
       statusSlots.textContent = remainingTotal + ' slots remaining';
       statusProgress.style.width = percent + '%';
     }
@@ -1004,7 +1019,10 @@
       modalCancel.addEventListener('click', closeModal);
     }
     if (modalConfirm) {
-      modalConfirm.addEventListener('click', openAmountModal);
+      modalConfirm.addEventListener('click', function () {
+        if (!selectedPackage) return;
+        window.location.href = '{{ url('/invest/purchase') }}/' + encodeURIComponent(selectedPackage.key);
+      });
     }
     if (amountModalCancel) {
       amountModalCancel.addEventListener('click', closeAmountModal);
@@ -1109,7 +1127,7 @@
       if (receiptSubmitted) receiptSubmitted.textContent = submittedAt || 'Just now';
       if (receiptBadge) {
         receiptBadge.textContent = statusText;
-        receiptBadge.style.background = statusText === 'Active' ? '#137547' : '#d91b0b';
+        receiptBadge.style.background = statusText === 'Active' ? '#137547' : '#14532d';
       }
       if (receiptModal) {
         receiptModal.classList.add('is-open');

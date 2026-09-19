@@ -2,7 +2,7 @@
 
 @section('content')
 <style>
-  :root{--lot-red:#D71920;--charcoal:#111827;--bg:#F8FAFC;--gold:#D4AF37;--text:#1F2937;--glass:rgba(255,255,255,0.90)}
+  :root{--lot-red:#166534;--charcoal:#111827;--bg:#F8FAFC;--gold:#D4AF37;--text:#1F2937;--glass:rgba(255,255,255,0.90)}
   .franchise-hero{background-image:linear-gradient(rgba(17,24,39,0.68),rgba(17,24,39,0.56)),url('{{ asset('Lotteria.png') }}');background-size:cover;background-position:center;color:#fff;padding:56px 20px;border-radius:12px;margin-bottom:28px;position:relative;overflow:hidden}
   .hero-inner{max-width:1100px;margin:0 auto;display:flex;gap:28px;align-items:center;justify-content:space-between;flex-wrap:nowrap}
   .hero-content{max-width:640px}
@@ -26,7 +26,7 @@
   .features li{margin:8px 0}
   .btn-row{display:flex;gap:12px;margin-top:12px}
   .btn-select{background:var(--lot-red);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700;flex:1}
-  .btn-view{background:#fff;color:var(--lot-red);padding:10px 14px;border-radius:10px;border:1px solid rgba(215,25,32,0.12);cursor:pointer;flex:1}
+  .btn-view{background:#fff;color:var(--lot-red);padding:10px 14px;border-radius:10px;border:1px solid rgba(22,101,52,0.12);cursor:pointer;flex:1}
 
   /* Hero media */
   .hero-media{min-width:260px;text-align:right;display:flex;align-items:center;justify-content:flex-end}
@@ -213,7 +213,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #e31b23, #ff6b4a);
+    background: linear-gradient(135deg, #166534, #ff6b4a);
     color: #fff;
     font-size: 18px;
   }
@@ -248,9 +248,9 @@
 <div class="franchise-hero">
   <div class="hero-inner container">
     <div class="hero-content">
-      <div style="color:var(--gold);font-weight:800">LOTTERIA PHILIPPINES</div>
+      <div style="color:var(--gold);font-weight:800">LULU PHILIPPINES</div>
       <h1 class="hero-title">Become Part of a Global Restaurant Brand</h1>
-      <p class="hero-sub">1,600+ Stores Worldwide · Millions of Customers Served. Own a LOTTERIA franchise today.</p>
+      <p class="hero-sub">1,600+ Stores Worldwide · Millions of Customers Served. Own a LULU franchise today.</p>
       <div class="hero-stats">
         <div class="stat"><div class="num">1,600+</div><div style="font-size:12px;color:rgba(255,255,255,0.85)">Stores Worldwide</div></div>
         <div class="stat"><div class="num">40+</div><div style="font-size:12px;color:rgba(255,255,255,0.85)">Years Experience</div></div>
@@ -259,7 +259,7 @@
       <a href="#packages" class="cta">View Franchise Packages</a>
     </div>
     <div class="hero-media">
-      <img src="{{ asset('Lotteria.png') }}" alt="Lotteria" loading="lazy" decoding="async">
+      <img src="{{ asset('Lotteria.png') }}" alt="Lulu" loading="lazy" decoding="async">
     </div>
   </div>
 </div>
@@ -273,7 +273,7 @@
       <div class="package-card" data-package="franchise_40pyeong">
         <div class="media" style="background-image:url('{{ asset('Franchise.png') }}')" loading="lazy" decoding="async"></div>
         <div class="package-body">
-          <div class="package-title">LOTTERIA EXPRESS — 40 PYEONG</div>
+          <div class="package-title">LULU EXPRESS — 40 PYEONG</div>
           <div class="package-price">₱23.5M</div>
           <div class="package-what">Ideal for shopping centers and business districts. Compact dine-in format with strong ROI potential.</div>
           <ul class="features">
@@ -293,7 +293,7 @@
         <div class="ribbon">MOST POPULAR</div>
         <div class="media" style="background-image:url('{{ asset('60pyeong.png') }}')" loading="lazy" decoding="async"></div>
         <div class="package-body">
-          <div class="package-title">LOTTERIA PREMIUM — 60 PYEONG</div>
+          <div class="package-title">LULU PREMIUM — 60 PYEONG</div>
           <div class="package-price">₱45M</div>
           <div class="package-what">Premium full-service branch with extended seating and delivery-ready operations.</div>
           <ul class="features">
@@ -341,8 +341,8 @@
     <div class="step"><div class="num">6</div><div class="desc">Grand Opening</div></div>
   </div>
 
-  <!-- Why LOTTERIA -->
-  <h3 style="margin-top:28px;color:var(--charcoal)">Why LOTTERIA</h3>
+  <!-- Why LULU -->
+  <h3 style="margin-top:28px;color:var(--charcoal)">Why LULU</h3>
   <div class="stats-grid">
     <div class="stat-card"><div class="big">1,600+</div><div>Stores Worldwide</div></div>
     <div class="stat-card"><div class="big">40+</div><div>Years Experience</div></div>

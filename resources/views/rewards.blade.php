@@ -11,7 +11,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+      background: linear-gradient(180deg, #f4fbf7 0%, #ffffff 100%);
       color: #222;
     }
     .shell {
@@ -24,7 +24,7 @@
       align-items: center;
       gap: 6px;
       margin-bottom: 16px;
-      color: #d71920;
+      color: #166534;
       text-decoration: none;
       font-weight: 700;
     }
@@ -74,7 +74,7 @@
       padding: 8px 12px;
       border-radius: 999px;
       background: #fff1f2;
-      color: #d71920;
+      color: #166534;
       font-weight: 700;
       font-size: 13px;
     }
@@ -85,7 +85,7 @@
       font-size: 15px;
       font-weight: 700;
       color: #fff;
-      background: linear-gradient(135deg, #d71920, #ff4f5c);
+      background: linear-gradient(135deg, #166534, #ff4f5c);
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;

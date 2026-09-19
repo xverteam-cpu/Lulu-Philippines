@@ -19,7 +19,7 @@
     position:absolute;
     inset:0 0 auto 0;
     height:10px;
-    background:linear-gradient(90deg, #c40000, #e31b23, #f5a400);
+    background:linear-gradient(90deg, #14532d, #166534, #d6a84f);
   }
   .user-top {
     display:flex;
@@ -29,12 +29,12 @@
   }
   .user-title {
     margin:0;
-    color:#c40000;
+    color:#14532d;
     font-size:28px;
     line-height:34px;
   }
   .back-link {
-    color:#c40000;
+    color:#14532d;
     font-weight:700;
     text-decoration:none;
   }
@@ -45,14 +45,14 @@
   }
   .detail-item {
     padding:14px;
-    border:1px solid #ffc5cd;
+    border:1px solid #dcefe8;
     border-radius:10px;
-    background:#fff5f5;
+    background:#f4fbf7;
   }
   .detail-label {
     display:block;
     margin-bottom:5px;
-    color:#c40000;
+    color:#14532d;
     font-size:12px;
     font-weight:700;
     text-transform:uppercase;
@@ -93,7 +93,7 @@
           <form action="{{ route('admin.users.destroy', $managedUser) }}" method="POST" onsubmit="return confirm('Delete this user account? This action cannot be undone.');">
             @csrf
             @method('DELETE')
-            <button type="submit" style="background:#c40000; color:#fff; border:none; border-radius:8px; padding:10px 14px; font-weight:700; cursor:pointer;">
+            <button type="submit" style="background:#14532d; color:#fff; border:none; border-radius:8px; padding:10px 14px; font-weight:700; cursor:pointer;">
               Delete account
             </button>
           </form>

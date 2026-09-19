@@ -16,11 +16,11 @@
     <div style="margin-top:12px;">
       <div class="card-item">
         <div>Visa **** 4242</div>
-        <div><a href="#" style="color:#e31b23;font-weight:800;text-decoration:none;">Manage</a></div>
+        <div><a href="#" style="color:#166534;font-weight:800;text-decoration:none;">Manage</a></div>
       </div>
       <div class="card-item">
         <div>Mastercard **** 1111</div>
-        <div><a href="#" style="color:#e31b23;font-weight:800;text-decoration:none;">Manage</a></div>
+        <div><a href="#" style="color:#166534;font-weight:800;text-decoration:none;">Manage</a></div>
       </div>
     </div>
     <div style="margin-top:18px;"><a href="{{ route('dashboard') }}" class="btn btn-ghost">Back to Dashboard</a></div>

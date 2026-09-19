@@ -47,7 +47,6 @@ class AppServiceProvider extends ServiceProvider
 
             Auth::login($user);
             request()->session()->regenerate();
-            request()->session()->forget('pin_verified');
         });
 
         if (config('database.default') !== 'sqlite') {

@@ -13,35 +13,27 @@ class InvestmentPackages
     {
         return [
             'crunch' => [
-                'name' => 'Basic',
-                'price' => 120.00,
-                'daily_interest_rate' => 0.60,
-                'duration_days' => 180,
-                'min_amount' => 120.00,
-                'max_amount' => 799.99,
-            ],
-            'loaded' => [
-                'name' => 'Standard',
-                'price' => 800.00,
+                'name' => 'Silver',
+                'price' => 129.00,
                 'daily_interest_rate' => 0.70,
                 'duration_days' => 150,
-                'min_amount' => 800.00,
-                'max_amount' => 3999.99,
+                'min_amount' => 129.00,
+                'max_amount' => 798.99,
+            ],
+            'loaded' => [
+                'name' => 'Gold',
+                'price' => 799.00,
+                'daily_interest_rate' => 0.80,
+                'duration_days' => 120,
+                'min_amount' => 799.00,
+                'max_amount' => 7998.99,
             ],
             'supreme' => [
-                'name' => 'Premium',
-                'price' => 4000.00,
-                'daily_interest_rate' => 0.75,
-                'duration_days' => 120,
-                'min_amount' => 4000.00,
-                'max_amount' => 7999.99,
-            ],
-            'premium_plus' => [
-                'name' => 'Premium+',
-                'price' => 8000.00,
+                'name' => 'Platinum',
+                'price' => 7999.00,
                 'daily_interest_rate' => 0.90,
-                'duration_days' => 80,
-                'min_amount' => 8000.00,
+                'duration_days' => 90,
+                'min_amount' => 7999.00,
                 'max_amount' => 50000.00,
             ],
         ];
@@ -58,7 +50,6 @@ class InvestmentPackages
             'crunch' => 250,
             'loaded' => 250,
             'supreme' => 250,
-            'premium_plus' => 250,
         ];
     }
 

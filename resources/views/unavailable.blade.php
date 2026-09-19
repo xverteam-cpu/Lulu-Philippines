@@ -13,7 +13,7 @@
   }
   .unavailable-title {
     margin:0;
-    color:#e31b23;
+    color:#166534;
     font-size:26px;
     line-height:32px;
     font-weight:700;
@@ -29,7 +29,7 @@
     min-width:132px;
     padding:12px 18px;
     border-radius:24px;
-    background:#e31b23;
+    background:#166534;
     color:#ffffff;
     text-decoration:none;
     font-size:14px;

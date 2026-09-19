@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class LotteriaPromotionEmail extends Mailable
+class LuluPromotionEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,8 +20,8 @@ class LotteriaPromotionEmail extends Mailable
 
     public function build(): self
     {
-        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lotteria Philippines'))
-            ->subject('Get Ready for an Exclusive LOTTERIA Experience!')
+        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lulu'))
+            ->subject('Get Ready for an Exclusive LULU Experience!')
             ->view('emails.lotteria-promotion')
             ->with([
                 'user_name' => $this->user->name ?: $this->user->username,

@@ -2,7 +2,6 @@
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
-use App\Http\Middleware\EnsurePinVerified;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Http\Middleware\TrackUserActivity;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -23,9 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
             RestrictUserAccess::class,
         ]);
 
-        $middleware->alias([
-            'pin' => EnsurePinVerified::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

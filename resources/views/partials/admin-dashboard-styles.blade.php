@@ -73,10 +73,10 @@
   }
 
   .admin-nav-btn.active {
-    background-color: #C8102E;
-    border-color: #C8102E;
+    background-color: #166534;
+    border-color: #166534;
     color: #ffffff;
-    box-shadow: 0 8px 20px rgba(200,16,46,.20);
+    box-shadow: 0 8px 20px rgba(22,101,52,.20);
   }
 
   /* Header Section */
@@ -136,7 +136,7 @@
     padding: 0 22px;
     border: none;
     border-radius: 12px;
-    background-color: #C8102E;
+    background-color: #166534;
     color: #ffffff;
     font-size: 15px;
     font-weight: 600;
@@ -148,8 +148,8 @@
 
   .header-btn:hover {
     transform: translateY(-1px);
-    background-color: #A40F25;
-    box-shadow: 0 4px 16px rgba(200,16,46,.18);
+    background-color: #0f3d2e;
+    box-shadow: 0 4px 16px rgba(22,101,52,.18);
   }
 
   .header-btn:active {
@@ -209,7 +209,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #c40000, #e31b23);
+    background: linear-gradient(90deg, #14532d, #166534);
   }
 
   .summary-card-icon {
@@ -220,7 +220,7 @@
     height: 40px;
     border-radius: 8px;
     background-color: #fef2f2;
-    color: #c40000;
+    color: #14532d;
     font-size: 20px;
     margin-bottom: 12px;
   }
@@ -312,8 +312,8 @@
   .search-input:focus {
     outline: none;
     background-color: #ffffff;
-    border-color: #C8102E;
-    box-shadow: 0 0 0 4px rgba(200,16,46,.08);
+    border-color: #166534;
+    box-shadow: 0 0 0 4px rgba(22,101,52,.08);
   }
 
   /* Table Styles */
@@ -430,7 +430,7 @@
   .view-link {
     display: inline-flex;
     align-items: center;
-    color: #C8102E;
+    color: #166534;
     font-weight: 600;
     text-decoration: none;
     font-size: 13px;
@@ -442,7 +442,7 @@
 
   .view-link:hover {
     text-decoration: underline;
-    background-color: rgba(200,16,46,.06);
+    background-color: rgba(22,101,52,.06);
   }
 
   /* Pagination */
@@ -478,9 +478,9 @@
   }
 
   .pagination .active {
-    background-color: #c40000;
+    background-color: #14532d;
     color: #ffffff;
-    border-color: #c40000;
+    border-color: #14532d;
   }
 
   .pagination .disabled {
@@ -616,7 +616,7 @@
   }
 
   .modal-action-primary {
-    background: #C8102E;
+    background: #166534;
     color: #ffffff;
     border-color: transparent;
   }

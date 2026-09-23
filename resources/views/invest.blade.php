@@ -252,65 +252,67 @@
     .bank-logo-item { flex:1 1 48%; padding:10px; }
   }
 
-  .package-track {
-    display:grid;
-    grid-template-columns:1fr;
-    gap:6px !important;
-    overflow:visible;
-    padding:8px 0 20px;
-    scroll-snap-type:none;
-  }
-  .package-card,
-  .package-card.is-active,
-  .package-card:hover,
-  .package-card:active {
-    width:100%;
-    max-width:none;
-    min-height:0;
-    padding:0 !important;
-    transform:none;
-    opacity:1;
-    border:none;
-    border-radius:0;
-    background:transparent;
-    box-shadow:none;
-  }
-  .package-card.supreme,
-  .package-card.premium-plus {
-    background:transparent !important;
-  }
-  .package-card-top,
-  .package-card-features {
-    display:none;
-  }
-  .package-content {
-    display:block;
-    padding:0;
-  }
-  .package-card-action {
-    display:block;
-    width:100%;
-    min-height:50px;
-    border-radius:10px;
-    border:1px solid #166534;
-    background:#e8f8ee !important;
-    color:#166534 !important;
-    box-shadow:none;
-    padding:0 24px;
-    text-align:left;
-  }
-  .package-card-action:hover,
-  .package-card-action:focus,
-  .package-card-action:active,
-  .package-card.supreme .package-card-action,
-  .package-card.premium-plus .package-card-action {
-    border:1px solid #166534;
-    background:#e8f8ee !important;
-    color:#166534 !important;
-    transform:none;
-  }
-  .dot-row {
-    display:none !important;
+  @media (max-width:759px) {
+    .package-track {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:6px !important;
+      overflow:visible;
+      padding:8px 0 20px;
+      scroll-snap-type:none;
+    }
+    .package-card,
+    .package-card.is-active,
+    .package-card:hover,
+    .package-card:active {
+      width:100%;
+      max-width:none;
+      min-height:0;
+      padding:0 !important;
+      transform:none;
+      opacity:1;
+      border:none;
+      border-radius:0;
+      background:transparent;
+      box-shadow:none;
+    }
+    .package-card.supreme,
+    .package-card.premium-plus {
+      background:transparent !important;
+    }
+    .package-card-top,
+    .package-card-features {
+      display:none;
+    }
+    .package-content {
+      display:block;
+      padding:0;
+    }
+    .package-card-action {
+      display:block;
+      width:100%;
+      min-height:50px;
+      border-radius:10px;
+      border:1px solid #166534;
+      background:#e8f8ee !important;
+      color:#166534 !important;
+      box-shadow:none;
+      padding:0 24px;
+      text-align:left;
+    }
+    .package-card-action:hover,
+    .package-card-action:focus,
+    .package-card-action:active,
+    .package-card.supreme .package-card-action,
+    .package-card.premium-plus .package-card-action {
+      border:1px solid #166534;
+      background:#e8f8ee !important;
+      color:#166534 !important;
+      transform:none;
+    }
+    .dot-row {
+      display:none !important;
+    }
   }
 </style>
 

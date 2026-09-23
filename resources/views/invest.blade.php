@@ -41,6 +41,7 @@
   .status-step-number { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#fff0ee; color:#14532d; font-size:14px; font-weight:900; }
   .status-step-title { margin:0; color:#111827; font-size:15px; font-weight:900; line-height:1.2; }
   .status-step-copy { margin:6px 0 0; color:#6b7280; font-size:13px; line-height:19px; }
+  .agreement-sample-link { display:inline-flex; align-items:center; justify-content:center; min-height:48px; margin-top:20px; padding:0 18px; border:1px solid #14532d; border-radius:14px; color:#14532d; background:#fff; font-size:14px; font-weight:900; text-decoration:none; }
   .package-card { position:relative; z-index:0; flex:0 0 min(88vw, 460px); max-width:460px; min-height:auto; scroll-snap-align:center; border-radius:32px; background:#fff; border:1px solid rgba(217,27,11,.12); box-shadow:0 24px 70px rgba(14,25,30,.08); overflow:hidden; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.08); user-select:none; transform-origin:top center; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease; transform:translateY(0) scale(0.95); opacity:.72; }
   .package-card:hover { transform:translateY(-2px) scale(0.96); box-shadow:0 32px 70px rgba(14,25,30,.12); border-color:rgba(217,27,11,.18); }
   .package-card:active { transform:translateY(-1px) scale(0.96); box-shadow:0 26px 60px rgba(14,25,30,.1); }
@@ -445,6 +446,8 @@
       </article>
 
     </section>
+
+    <a class="agreement-sample-link" href="{{ route('invest.agreement.sample') }}">See sample bond agreement</a>
 
     <div class="dot-row" aria-hidden="true">
       <span class="dot is-active"></span>

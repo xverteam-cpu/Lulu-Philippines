@@ -28,6 +28,13 @@
   .payment-choice span { display:block; margin-top:4px; color:#64748b; font-size:12px; font-weight:500; }
   .payment-choice.is-selected { border-color:#166534; background:#e8f8ee; color:#166534; }
   .purchase-submit { width:100%; margin-top:12px; }
+  .agreement-box { margin:22px 0 8px; padding:16px; border:1px solid #d9dee5; border-radius:14px; background:#f8fafc; }
+  .agreement-box h3 { margin:0 0 6px; font-size:16px; color:#111827; }
+  .agreement-box p { margin:0 0 12px; color:#64748b; font-size:13px; line-height:19px; }
+  .agreement-link { color:#166534; font-weight:900; text-decoration:underline; }
+  .agreement-signature { width:100%; box-sizing:border-box; margin-top:10px; padding:12px; border:1px solid #d9dee5; border-radius:10px; background:#fff; font-size:15px; }
+  .agreement-check { display:flex; gap:8px; align-items:flex-start; margin-top:12px; color:#334155; font-size:13px; line-height:19px; }
+  .agreement-preview-link { display:inline-block; margin-top:10px; color:#166534; font-size:13px; font-weight:900; text-decoration:underline; }
   .form-error { margin-bottom:16px; padding:12px; border-radius:10px; background:#fee2e2; color:#991b1b; font-size:14px; }
   .payment-modal { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(15,23,42,.58); }
   .payment-modal.is-open { display:flex; }
@@ -84,6 +91,16 @@
         <div class="estimate-card"><div class="estimate-label">Total</div><div class="estimate-value" id="purchaseTotal">$0.00</div></div>
       </div>
       <p class="estimate-note" id="purchaseNote"></p>
+
+      @if ($requiresAgreement)
+        <div class="agreement-box">
+          <h3>Sign your bond purchase agreement</h3>
+          <p>Your first bond purchase requires acceptance of the agreement. Download the <a class="agreement-link" href="{{ route('invest.agreement.sample') }}">uploaded sample bond agreement</a>, then enter your legal name as your electronic signature.</p>
+          <input class="agreement-signature" type="text" name="agreement_signature_name" maxlength="150" placeholder="Type your legal name" autocomplete="name" required>
+          <label class="agreement-check"><input type="checkbox" name="agreement_accepted" value="1" required> <span>I have read and understood the agreement and voluntarily accept its terms.</span></label>
+          <a class="agreement-preview-link" id="agreementPreviewLink" href="{{ route('invest.agreement.preview', ['package' => $packageKey, 'amount' => $package['price'], 'currency' => 'USD']) }}" target="_blank" rel="noopener">Review your populated agreement</a>
+        </div>
+      @endif
 
       <button class="purchase-submit" type="button" id="showPayment">Confirm</button>
 
@@ -181,6 +198,7 @@
     var walletModal = document.getElementById('walletModal');
     var qrModal = document.getElementById('qrModal');
     var selectedBank = null;
+    var agreementPreviewLink = document.getElementById('agreementPreviewLink');
     function money(value) {
       var converted = currency === 'PHP' ? value * phpRate : value;
       return (currency === 'PHP' ? '₱' : '$') + converted.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -193,6 +211,12 @@
       total.textContent = money(base + dailyValue * days);
       note.textContent = money(base) + ' x ' + rate.toFixed(2) + '% = ' + money(dailyValue) + ' daily. Estimated total balance after ' + days + ' days is ' + money(base + dailyValue * days) + '.';
       currencyInput.value = currency;
+      if (agreementPreviewLink) {
+        var previewUrl = new URL(agreementPreviewLink.href, window.location.origin);
+        previewUrl.searchParams.set('amount', amount.value || '0');
+        previewUrl.searchParams.set('currency', currency);
+        agreementPreviewLink.href = previewUrl.toString();
+      }
       document.querySelectorAll('[data-currency]').forEach(function (button) { button.classList.toggle('is-active', button.dataset.currency === currency); });
     }
     amount.addEventListener('input', update);

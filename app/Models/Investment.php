@@ -26,6 +26,9 @@ class Investment extends Model
         'rejection_reason',
         'interest_days_credited',
         'last_interest_accrued_at',
+        'agreement_version',
+        'agreement_signature_name',
+        'agreement_signed_at',
     ];
 
     protected function casts(): array
@@ -39,6 +42,7 @@ class Investment extends Model
             'starts_at' => 'datetime',
             'approved_at' => 'datetime',
             'last_interest_accrued_at' => 'datetime',
+            'agreement_signed_at' => 'datetime',
         ];
     }
 

@@ -20,6 +20,8 @@ class InvestmentController extends Controller
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
             'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,crypto'],
+            'agreement_signature_name' => ['nullable', 'string', 'max:150'],
+            'agreement_accepted' => ['nullable', 'accepted'],
         ]);
 
         $package = InvestmentPackages::find($data['package']);
@@ -27,6 +29,13 @@ class InvestmentController extends Controller
         if (! $package) {
             throw ValidationException::withMessages([
                 'package' => 'Please select a valid package.',
+            ]);
+        }
+
+        $hasPreviousPurchase = $request->user()->investments()->exists();
+        if (! $hasPreviousPurchase && (empty($data['agreement_signature_name']) || empty($data['agreement_accepted']))) {
+            throw ValidationException::withMessages([
+                'agreement_signature_name' => 'Please sign the bond purchase agreement before submitting your first purchase.',
             ]);
         }
 
@@ -72,6 +81,9 @@ class InvestmentController extends Controller
                 'duration_days' => $package['duration_days'],
                 'starts_at' => $isPending ? null : now(),
                 'status' => $isPending ? 'pending' : 'approved',
+                'agreement_version' => '2026-09-20',
+                'agreement_signature_name' => $data['agreement_signature_name'] ?? null,
+                'agreement_signed_at' => ! empty($data['agreement_signature_name']) ? now() : null,
             ]);
 
             if ($data['payment_method'] === 'account_balance') {

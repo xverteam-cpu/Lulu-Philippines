@@ -47,17 +47,15 @@
       Open {{ $provider['name'] }}
     </a>
     <p class="payment-help">On mobile, choose to open the {{ $provider['name'] }} app if prompted. You can enter the payment details there or upload this QR code from your gallery.</p>
-    <form class="payment-form" method="post" action="{{ route('investments.store') }}">
-      @csrf
-      <input type="hidden" name="package" value="{{ $packageKey }}">
-      <input type="hidden" name="amount" value="{{ $amount }}">
-      <input type="hidden" name="currency" value="{{ $currency }}">
-      <input type="hidden" name="payment_method" value="{{ $provider['payment_method'] ?? 'bank_transfer' }}">
-      <div class="payment-actions">
-        <a href="{{ route('invest.purchase', ['package' => $packageKey]) }}">Back</a>
-        <button class="payment-continue" type="submit">Payment completed</button>
-      </div>
-    </form>
+    <div class="payment-actions">
+      <a href="{{ route('invest.purchase', ['package' => $packageKey]) }}">Back</a>
+      <a class="payment-continue" href="{{ route('invest.agreement.sign', [
+        'package' => $packageKey,
+        'amount' => $amount,
+        'currency' => $currency,
+        'payment_method' => $provider['payment_method'] ?? 'bank_transfer',
+      ]) }}">Payment completed</a>
+    </div>
   </section>
 </main>
 @endsection

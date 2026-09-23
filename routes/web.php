@@ -224,8 +224,84 @@ Route::get('/invest/purchase/{package}', function (string $package) {
         'package' => $selectedPackage,
         'phpRate' => $meta['rate'],
         'phpRateUpdatedAt' => $meta['updated_at'],
+        'requiresAgreement' => ! Auth::user()->investments()->exists(),
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
+
+Route::get('/invest/agreement/sample', function () {
+    $path = base_path('LULU_BOND_AGREEMENT_AND_CERTIFICATE_DRAFT_TEMPLATE.docx');
+    abort_unless(is_file($path), 404, 'The uploaded bond agreement template is unavailable.');
+
+    return response()->download(
+        $path,
+        'Lulu-Bond-Agreement-and-Certificate-Draft.docx',
+        ['Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    );
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample');
+
+Route::get('/invest/agreement/preview', function (Illuminate\Http\Request $request) {
+    $package = App\Support\InvestmentPackages::find((string) $request->query('package'));
+    abort_unless($package, 404);
+
+    $currency = $request->query('currency', 'USD');
+    abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
+    $amount = (float) $request->query('amount', $package['price']);
+    $amountInUsd = $currency === 'PHP'
+        ? $amount / (float) config('currency.usd_to_php', 61.31)
+        : $amount;
+    $commencement = now()->toDateString();
+
+    return view('bond-agreement', [
+        'agreement' => [
+            'package_name' => $package['name'],
+            'amount' => '$'.number_format($amountInUsd, 2),
+            'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
+            'duration_days' => $package['duration_days'].' days',
+            'commencement_date' => $commencement,
+            'maturity_date' => now()->addDays($package['duration_days'])->toDateString(),
+            'bondholder' => $request->user()->name ?: $request->user()->email,
+            'signature_name' => null,
+        ],
+        'isSample' => false,
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.preview');
+
+Route::get('/invest/agreement/sign', function (Illuminate\Http\Request $request) {
+    $packageKey = (string) $request->query('package');
+    $package = App\Support\InvestmentPackages::find($packageKey);
+    abort_unless($package, 404);
+
+    $currency = $request->query('currency', 'USD');
+    abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
+    $amount = (float) $request->query('amount', $package['price']);
+    $amountInUsd = $currency === 'PHP'
+        ? $amount / (float) config('currency.usd_to_php', 61.31)
+        : $amount;
+    $paymentMethod = (string) $request->query('payment_method', 'bank_transfer');
+    abort_unless(in_array($paymentMethod, ['bank_transfer', 'e_wallet', 'account_balance', 'crypto'], true), 422);
+    $commencement = now()->toDateString();
+
+    return view('bond-agreement', [
+        'agreement' => [
+            'package_name' => $package['name'],
+            'amount' => '$'.number_format($amountInUsd, 2),
+            'duration_days' => $package['duration_days'].' days',
+            'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
+            'commencement_date' => $commencement,
+            'maturity_date' => now()->addDays($package['duration_days'])->toDateString(),
+            'bondholder' => $request->user()->name ?: $request->user()->email,
+            'signature_name' => null,
+        ],
+        'isSample' => false,
+        'isSigning' => true,
+        'purchase' => [
+            'package' => $packageKey,
+            'amount' => $amount,
+            'currency' => $currency,
+            'payment_method' => $paymentMethod,
+        ],
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sign');
 
 Route::get('/invest/payment/{provider}', function (string $provider) {
     $providers = [

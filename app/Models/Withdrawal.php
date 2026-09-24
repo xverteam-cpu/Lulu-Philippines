@@ -10,6 +10,9 @@ class Withdrawal extends Model
     protected $fillable = [
         'user_id',
         'amount',
+        'processing_fee',
+        'total_withdrawn',
+        'transaction_reference',
         'payment_method',
         'bank_name',
         'account_number',
@@ -24,6 +27,8 @@ class Withdrawal extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'processing_fee' => 'decimal:2',
+            'total_withdrawn' => 'decimal:2',
             'approved_at' => 'datetime',
         ];
     }

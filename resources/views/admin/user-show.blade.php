@@ -74,6 +74,10 @@
   }
 </style>
 
+<div class="admin-shell">
+  @include('partials.admin-nav', ['activeAdminPage' => 'users'])
+</div>
+
 <div class="user-shell">
   <div class="user-card">
     <div class="user-top">

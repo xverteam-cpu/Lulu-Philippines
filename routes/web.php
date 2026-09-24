@@ -13,7 +13,10 @@ use App\Support\CurrencyRateService;
 use App\Support\DailyInterestAccrualService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 Route::get('/', function () {
     return view('public.home');
@@ -500,9 +503,14 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
             'withdrawal_account_type' => $data['account_type'] ?? ($user->withdrawal_account_type ?: 'bank'),
         ]);
 
+        $withdrawalAmount = round((float) $data['amount'], 2);
+        $processingFee = round($withdrawalAmount * 0.05, 2);
         $withdrawal = App\Models\Withdrawal::create([
             'user_id' => $user->id,
-            'amount' => $data['amount'],
+            'amount' => $withdrawalAmount,
+            'transaction_reference' => 'WD-'.strtoupper((string) Str::uuid()),
+            'processing_fee' => $processingFee,
+            'total_withdrawn' => round($withdrawalAmount - $processingFee, 2),
             'payment_method' => ($data['account_type'] ?? $user->withdrawal_account_type) === 'e_wallet'
                 ? 'mobile_money'
                 : 'bank_transfer',
@@ -512,17 +520,28 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
             'status' => 'pending',
         ]);
 
-        $user->balance = max(0, ($user->balance ?? 0) - (float) $data['amount']);
+        $user->balance = max(0, ($user->balance ?? 0) - $withdrawalAmount);
         $user->save();
 
         return $withdrawal;
     });
 
+    try {
+        Mail::to($user->email)->send(new App\Mail\WithdrawalConfirmation($withdrawal->load('user')));
+    } catch (\Throwable $e) {
+        Log::warning('Failed to send withdrawal confirmation email', [
+            'withdrawal_id' => $withdrawal->id,
+            'user_id' => $withdrawal->user_id,
+            'error' => $e->getMessage(),
+        ]);
+    }
+
     return redirect()->route('withdraw')
         ->with('status', 'Withdrawal request submitted successfully.')
         ->with('receipt', [
-            'reference' => 'LOT-WD-'.str_pad((string) $withdrawal->id, 6, '0', STR_PAD_LEFT),
+            'reference' => $withdrawal->transaction_reference,
             'amount' => number_format((float) $withdrawal->amount, 2),
+            'total_withdrawn' => number_format((float) $withdrawal->total_withdrawn, 2),
             'bank_name' => $withdrawal->bank_name,
             'account_number' => $withdrawal->account_number,
             'account_holder' => $withdrawal->account_holder,

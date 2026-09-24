@@ -4,37 +4,7 @@
 @include('partials.admin-dashboard-styles')
 
 <div class="admin-shell">
-  <nav class="admin-nav">
-    <div class="admin-nav-links">
-      <a class="admin-nav-btn active" href="{{ route('admin.dashboard') }}">Users</a>
-      <a class="admin-nav-btn" href="{{ route('admin.withdrawals') }}">Withdrawals</a>
-      <a class="admin-nav-btn" href="{{ route('admin.investments', ['status' => 'pending']) }}">Deposits</a>
-      <form method="POST" action="{{ route('admin.backup') }}" style="display:inline-flex;">
-        @csrf
-        <button class="header-btn admin-backup-btn" type="submit">
-          <span>💾</span>
-          <span>Backup</span>
-        </button>
-      </form>
-      <form method="POST" action="{{ route('admin.send-promotional-email') }}" style="display:inline-flex;">
-        @csrf
-        <button class="header-btn header-btn-secondary" type="submit">
-          <span>📧</span>
-          <span>Send Promotional Email</span>
-        </button>
-      </form>
-      <button class="header-btn header-btn-secondary" type="button" onclick="toggleModal('sendPackageModal', true)">
-        <span>📦</span>
-        <span>Send Package</span>
-      </button>
-      <button class="header-btn header-btn-secondary" type="button" onclick="toggleModal('manageSlotsModal', true)">
-        Manage Slots
-      </button>
-      <button class="header-btn header-btn-secondary" type="button" onclick="toggleModal('sendFundsModal', true)">
-        Send Funds
-      </button>
-    </div>
-  </nav>
+  @include('partials.admin-nav', ['activeAdminPage' => 'users'])
 
   <div class="admin-header">
     <div class="admin-header-copy">
@@ -532,5 +502,12 @@
       closeUserModal();
     }
   });
+
+  if (window.location.hash) {
+    var actionModal = window.location.hash.substring(1);
+    if (['sendPackageModal', 'manageSlotsModal', 'sendFundsModal'].indexOf(actionModal) !== -1) {
+      toggleModal(actionModal, true);
+    }
+  }
 </script>
 @endsection

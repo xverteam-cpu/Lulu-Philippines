@@ -206,6 +206,10 @@
   }
 </style>
 
+<div class="admin-shell">
+  @include('partials.admin-nav', ['activeAdminPage' => 'deposits'])
+</div>
+
 <div class="shell">
   <div class="card">
     <div class="header">

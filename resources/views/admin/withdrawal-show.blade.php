@@ -410,15 +410,7 @@
 </style>
 
 <div class="admin-shell">
-  <nav class="admin-nav">
-    <a class="admin-nav-btn" href="{{ route('admin.dashboard') }}">📊 All Users</a>
-    <a class="admin-nav-btn active" href="{{ route('admin.withdrawals') }}">💸 Pending Withdrawals</a>
-    <a class="admin-nav-btn" href="{{ route('admin.investments', ['status' => 'pending']) }}">💰 Pending Deposits</a>
-    <form action="{{ route('logout') }}" method="post" style="display:inline;">
-      @csrf
-      <button class="admin-nav-btn" type="submit">🚪 Logout</button>
-    </form>
-  </nav>
+  @include('partials.admin-nav', ['activeAdminPage' => 'withdrawals'])
 
   <div class="admin-hero">
     <div>

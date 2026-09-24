@@ -33,6 +33,9 @@
   .agreement-box p { margin:0 0 12px; color:#64748b; font-size:13px; line-height:19px; }
   .agreement-link { color:#166534; font-weight:900; text-decoration:underline; }
   .agreement-signature { width:100%; box-sizing:border-box; margin-top:10px; padding:12px; border:1px solid #d9dee5; border-radius:10px; background:#fff; font-size:15px; }
+  .signature-pad { display:block; width:100%; height:150px; margin-top:10px; border:1px solid #94a3b8; border-radius:10px; background:#fff; touch-action:none; cursor:crosshair; }
+  .signature-actions { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px; color:#64748b; font-size:12px; }
+  .signature-clear { border:0; background:transparent; color:#166534; font-weight:900; cursor:pointer; }
   .agreement-check { display:flex; gap:8px; align-items:flex-start; margin-top:12px; color:#334155; font-size:13px; line-height:19px; }
   .agreement-preview-link { display:inline-block; margin-top:10px; color:#166534; font-size:13px; font-weight:900; text-decoration:underline; }
   .form-error { margin-bottom:16px; padding:12px; border-radius:10px; background:#fee2e2; color:#991b1b; font-size:14px; }
@@ -95,8 +98,12 @@
       @if ($requiresAgreement)
         <div class="agreement-box">
           <h3>Sign your bond purchase agreement</h3>
-          <p>Your first bond purchase requires acceptance of the agreement. Download the <a class="agreement-link" href="{{ route('invest.agreement.sample') }}">uploaded sample bond agreement</a>, then enter your legal name as your electronic signature.</p>
-          <input class="agreement-signature" type="text" name="agreement_signature_name" maxlength="150" placeholder="Type your legal name" autocomplete="name" required>
+          <p>This purchase will be recorded using the <a class="agreement-link" href="{{ route('invest.agreement.sample') }}">uploaded agreement</a>. Confirm that the name below is yours, review the populated agreement, then draw your signature in the box.</p>
+          <p><strong>Name on contract:</strong> {{ auth()->user()->name ?: auth()->user()->email }}</p>
+          <input type="hidden" name="agreement_signature_name" value="{{ auth()->user()->name ?: auth()->user()->email }}">
+          <canvas class="signature-pad" id="purchaseSignaturePad" width="900" height="300" aria-label="Draw your signature"></canvas>
+          <input type="hidden" name="agreement_signature_data" id="purchaseSignatureData">
+          <div class="signature-actions"><span>Use your finger, mouse, or stylus.</span><button class="signature-clear" type="button" id="clearPurchaseSignature">Clear signature</button></div>
           <label class="agreement-check"><input type="checkbox" name="agreement_accepted" value="1" required> <span>I have read and understood the agreement and voluntarily accept its terms.</span></label>
           <a class="agreement-preview-link" id="agreementPreviewLink" href="{{ route('invest.agreement.preview', ['package' => $packageKey, 'amount' => $package['price'], 'currency' => 'USD']) }}" target="_blank" rel="noopener">Review your populated agreement</a>
         </div>
@@ -199,6 +206,25 @@
     var qrModal = document.getElementById('qrModal');
     var selectedBank = null;
     var agreementPreviewLink = document.getElementById('agreementPreviewLink');
+    var signaturePad = document.getElementById('purchaseSignaturePad');
+    var signatureData = document.getElementById('purchaseSignatureData');
+    var signatureContext = signaturePad ? signaturePad.getContext('2d') : null;
+    var drawing = false;
+    function signaturePoint(event) {
+      var rect = signaturePad.getBoundingClientRect();
+      return { x: (event.clientX - rect.left) * signaturePad.width / rect.width, y: (event.clientY - rect.top) * signaturePad.height / rect.height };
+    }
+    function saveSignature() { if (signatureContext) signatureData.value = signaturePad.toDataURL('image/png'); }
+    if (signaturePad) {
+      signatureContext.lineWidth = 4;
+      signatureContext.lineCap = 'round';
+      signatureContext.lineJoin = 'round';
+      signatureContext.strokeStyle = '#17202a';
+      signaturePad.addEventListener('pointerdown', function (event) { drawing = true; signaturePad.setPointerCapture(event.pointerId); var point = signaturePoint(event); signatureContext.beginPath(); signatureContext.moveTo(point.x, point.y); });
+      signaturePad.addEventListener('pointermove', function (event) { if (!drawing) return; var point = signaturePoint(event); signatureContext.lineTo(point.x, point.y); signatureContext.stroke(); saveSignature(); });
+      signaturePad.addEventListener('pointerup', function () { drawing = false; saveSignature(); });
+      document.getElementById('clearPurchaseSignature').addEventListener('click', function () { signatureContext.clearRect(0, 0, signaturePad.width, signaturePad.height); signatureData.value = ''; });
+    }
     function money(value) {
       var converted = currency === 'PHP' ? value * phpRate : value;
       return (currency === 'PHP' ? '₱' : '$') + converted.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});

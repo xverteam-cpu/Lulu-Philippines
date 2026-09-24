@@ -28,6 +28,7 @@ class Investment extends Model
         'last_interest_accrued_at',
         'agreement_version',
         'agreement_signature_name',
+        'agreement_signature_data',
         'agreement_signed_at',
     ];
 

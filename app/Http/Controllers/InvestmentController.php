@@ -21,7 +21,8 @@ class InvestmentController extends Controller
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
             'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,crypto'],
             'agreement_signature_name' => ['nullable', 'string', 'max:150'],
-            'agreement_accepted' => ['nullable', 'accepted'],
+            'agreement_signature_data' => ['required', 'string', 'max:500000'],
+            'agreement_accepted' => ['required', 'accepted'],
         ]);
 
         $package = InvestmentPackages::find($data['package']);
@@ -32,10 +33,9 @@ class InvestmentController extends Controller
             ]);
         }
 
-        $hasPreviousPurchase = $request->user()->investments()->exists();
-        if (! $hasPreviousPurchase && (empty($data['agreement_signature_name']) || empty($data['agreement_accepted']))) {
+        if (! $this->isValidSignatureData($data['agreement_signature_data'])) {
             throw ValidationException::withMessages([
-                'agreement_signature_name' => 'Please sign the bond purchase agreement before submitting your first purchase.',
+                'agreement_signature_data' => 'Please draw your signature before submitting this purchase.',
             ]);
         }
 
@@ -82,8 +82,9 @@ class InvestmentController extends Controller
                 'starts_at' => $isPending ? null : now(),
                 'status' => $isPending ? 'pending' : 'approved',
                 'agreement_version' => '2026-09-20',
-                'agreement_signature_name' => $data['agreement_signature_name'] ?? null,
-                'agreement_signed_at' => ! empty($data['agreement_signature_name']) ? now() : null,
+                'agreement_signature_name' => $request->user()->name ?: $request->user()->email,
+                'agreement_signature_data' => $data['agreement_signature_data'],
+                'agreement_signed_at' => now(),
             ]);
 
             if ($data['payment_method'] === 'account_balance') {
@@ -150,5 +151,13 @@ class InvestmentController extends Controller
         return redirect()
             ->route('dashboard')
             ->with('status', $message);
+    }
+
+    private function isValidSignatureData(string $signatureData): bool
+    {
+        return (bool) preg_match(
+            '#^data:image/png;base64,[A-Za-z0-9+/]+={0,2}$#',
+            $signatureData
+        );
     }
 }

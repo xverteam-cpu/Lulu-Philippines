@@ -224,7 +224,7 @@ Route::get('/invest/purchase/{package}', function (string $package) {
         'package' => $selectedPackage,
         'phpRate' => $meta['rate'],
         'phpRateUpdatedAt' => $meta['updated_at'],
-        'requiresAgreement' => ! Auth::user()->investments()->exists(),
+        'requiresAgreement' => true,
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
 
@@ -256,11 +256,14 @@ Route::get('/invest/agreement/preview', function (Illuminate\Http\Request $reque
             'package_name' => $package['name'],
             'amount' => '$'.number_format($amountInUsd, 2),
             'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
+            'daily_interest_income' => '$'.number_format($amountInUsd * ((float) $package['daily_interest_rate'] / 100), 2),
             'duration_days' => $package['duration_days'].' days',
             'commencement_date' => $commencement,
             'maturity_date' => now()->addDays($package['duration_days'])->toDateString(),
             'bondholder' => $request->user()->name ?: $request->user()->email,
             'signature_name' => null,
+            'reference' => 'PREVIEW',
+            'contract_number' => 'PREVIEW',
         ],
         'isSample' => false,
     ]);
@@ -287,10 +290,13 @@ Route::get('/invest/agreement/sign', function (Illuminate\Http\Request $request)
             'amount' => '$'.number_format($amountInUsd, 2),
             'duration_days' => $package['duration_days'].' days',
             'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
+            'daily_interest_income' => '$'.number_format($amountInUsd * ((float) $package['daily_interest_rate'] / 100), 2),
             'commencement_date' => $commencement,
             'maturity_date' => now()->addDays($package['duration_days'])->toDateString(),
             'bondholder' => $request->user()->name ?: $request->user()->email,
             'signature_name' => null,
+            'reference' => 'PENDING',
+            'contract_number' => 'PENDING',
         ],
         'isSample' => false,
         'isSigning' => true,

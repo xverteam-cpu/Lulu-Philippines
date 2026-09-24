@@ -9,8 +9,6 @@
       <a class="admin-nav-btn active" href="{{ route('admin.dashboard') }}">Users</a>
       <a class="admin-nav-btn" href="{{ route('admin.withdrawals') }}">Withdrawals</a>
       <a class="admin-nav-btn" href="{{ route('admin.investments', ['status' => 'pending']) }}">Deposits</a>
-    </div>
-    <div class="admin-nav-actions">
       <form method="POST" action="{{ route('admin.backup') }}" style="display:inline-flex;">
         @csrf
         <button class="header-btn admin-backup-btn" type="submit">
@@ -18,15 +16,6 @@
           <span>Backup</span>
         </button>
       </form>
-    </div>
-  </nav>
-
-  <div class="admin-header">
-    <div class="admin-header-copy">
-      <h1 class="admin-title">Admin Dashboard</h1>
-      <p class="admin-copy">Monitor registered users and account activity.</p>
-    </div>
-    <div class="admin-header-actions">
       <form method="POST" action="{{ route('admin.send-promotional-email') }}" style="display:inline-flex;">
         @csrf
         <button class="header-btn header-btn-secondary" type="submit">
@@ -44,6 +33,13 @@
       <button class="header-btn header-btn-secondary" type="button" onclick="toggleModal('sendFundsModal', true)">
         Send Funds
       </button>
+    </div>
+  </nav>
+
+  <div class="admin-header">
+    <div class="admin-header-copy">
+      <h1 class="admin-title">Admin Dashboard</h1>
+      <p class="admin-copy">Monitor registered users and account activity.</p>
     </div>
   </div>
 

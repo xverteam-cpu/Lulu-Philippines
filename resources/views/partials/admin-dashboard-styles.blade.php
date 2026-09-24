@@ -20,18 +20,17 @@
   /* Top Navigation Bar */
   .admin-nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     gap: 16px;
-    padding: 20px 32px;
-    background-color: #ffffff;
-    border: 1px solid #E5E7EB;
-    border-radius: 16px;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
     position: sticky;
     top: 0;
     z-index: 100;
     flex-wrap: wrap;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.05), 0 8px 30px rgba(15,23,42,0.06);
   }
 
   .admin-nav-links {
@@ -39,12 +38,6 @@
     flex-wrap: wrap;
     gap: 16px;
     align-items: center;
-  }
-
-  .admin-nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
   }
 
   .admin-nav-btn {
@@ -808,7 +801,7 @@
 
   @media (max-width: 768px) {
     .admin-nav {
-      padding: 12px 16px;
+      padding: 0;
       gap: 6px;
     }
 
@@ -899,7 +892,7 @@
 
     .admin-nav {
       overflow-x: auto;
-      padding: 8px 12px;
+      padding: 0;
     }
 
     .admin-nav-btn {

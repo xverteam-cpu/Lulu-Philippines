@@ -11,7 +11,8 @@ class CreateAdminCommand extends Command
     protected $signature = 'admin:create
         {--email= : Email address for the admin account}
         {--username= : Username for the admin account}
-        {--name=Administrator : Display name for the admin account}';
+        {--name=Administrator : Display name for the admin account}
+        {--password= : Password for the admin account}';
 
     protected $description = 'Create or promote an admin account';
 
@@ -20,7 +21,7 @@ class CreateAdminCommand extends Command
         $email = trim((string) ($this->option('email') ?: $this->ask('Admin email')));
         $username = trim((string) ($this->option('username') ?: $this->ask('Admin username')));
         $name = trim((string) $this->option('name')) ?: 'Administrator';
-        $password = (string) $this->secret('Admin password');
+        $password = (string) ($this->option('password') ?: getenv('ADMIN_CREATE_PASSWORD') ?: $this->secret('Admin password'));
 
         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Please provide a valid email address.');

@@ -41,7 +41,22 @@
   .status-step-number { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#fff0ee; color:#14532d; font-size:14px; font-weight:900; }
   .status-step-title { margin:0; color:#111827; font-size:15px; font-weight:900; line-height:1.2; }
   .status-step-copy { margin:6px 0 0; color:#6b7280; font-size:13px; line-height:19px; }
-  .agreement-sample-link { display:inline-flex; align-items:center; justify-content:center; min-height:48px; margin-top:20px; padding:0 18px; border:1px solid #14532d; border-radius:14px; color:#14532d; background:#fff; font-size:14px; font-weight:900; text-decoration:none; }
+  .agreement-sample-link { display:inline-flex; align-items:center; justify-content:center; min-height:48px; margin-top:20px; padding:0 18px; border:1px solid #14532d; border-radius:14px; color:#14532d; background:#fff; font-family:inherit; font-size:14px; font-weight:900; text-decoration:none; cursor:pointer; }
+  .agreement-sample-modal { position:fixed; inset:0; z-index:10010; display:none; flex-direction:column; background:#f4f6f9; }
+  .agreement-sample-modal.is-open { display:flex; }
+  .agreement-sample-modal-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:64px; padding:10px 18px; color:#17202a; background:#fff; border-bottom:1px solid #d9dee5; }
+  .agreement-sample-modal-title { margin:0; font-size:17px; font-weight:900; }
+  .agreement-sample-modal-actions { display:flex; align-items:center; gap:10px; }
+  .agreement-sample-download, .agreement-sample-close { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 14px; border:1px solid #d9dee5; border-radius:10px; background:#fff; color:#166534; font-size:13px; font-weight:900; text-decoration:none; cursor:pointer; }
+  .agreement-sample-close { width:42px; padding:0; color:#17202a; font-size:24px; }
+  .agreement-sample-frame { flex:1; width:100%; min-height:0; border:0; background:#fff; }
+  @media (max-width:520px) {
+    .agreement-sample-modal-bar { min-height:58px; padding:8px 10px; gap:8px; }
+    .agreement-sample-modal-title { font-size:14px; }
+    .agreement-sample-modal-actions { gap:6px; }
+    .agreement-sample-download { min-height:38px; padding:0 9px; font-size:12px; }
+    .agreement-sample-close { width:38px; min-height:38px; }
+  }
   .package-card { position:relative; z-index:0; flex:0 0 min(88vw, 460px); max-width:460px; min-height:auto; scroll-snap-align:center; border-radius:32px; background:#fff; border:1px solid rgba(217,27,11,.12); box-shadow:0 24px 70px rgba(14,25,30,.08); overflow:hidden; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.08); user-select:none; transform-origin:top center; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease; transform:translateY(0) scale(0.95); opacity:.72; }
   .package-card:hover { transform:translateY(-2px) scale(0.96); box-shadow:0 32px 70px rgba(14,25,30,.12); border-color:rgba(217,27,11,.18); }
   .package-card:active { transform:translateY(-1px) scale(0.96); box-shadow:0 26px 60px rgba(14,25,30,.1); }
@@ -449,7 +464,7 @@
 
     </section>
 
-    <a class="agreement-sample-link" href="{{ route('invest.agreement.sample') }}">See sample bond agreement</a>
+    <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">See sample bond agreement</button>
 
     <div class="dot-row" aria-hidden="true">
       <span class="dot is-active"></span>
@@ -509,6 +524,17 @@
     </section>
   </div>
 </main>
+
+<div class="agreement-sample-modal" id="agreementSampleModal" role="dialog" aria-modal="true" aria-labelledby="agreementSampleTitle" aria-hidden="true">
+  <header class="agreement-sample-modal-bar">
+    <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
+    <div class="agreement-sample-modal-actions">
+      <a class="agreement-sample-download" href="{{ route('invest.agreement.sample.download') }}" target="_blank" rel="noopener">Download DOCX</a>
+      <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
+    </div>
+  </header>
+  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Uploaded Lulu bond agreement sample" src="{{ route('invest.agreement.sample') }}"></iframe>
+</div>
 
 <div class="package-modal" id="packageModal" aria-hidden="true">
   <div class="modal-card" role="dialog" aria-modal="true" aria-label="Package details">
@@ -1310,6 +1336,37 @@
         openAmountModal();
       }
     @endif
+  })();
+</script>
+<script>
+  (function () {
+    var modal = document.getElementById('agreementSampleModal');
+    var openButton = document.getElementById('openAgreementSample');
+    var closeButton = document.getElementById('closeAgreementSample');
+    if (!modal || !openButton || !closeButton) return;
+
+    var previousFocus = null;
+    function closeSample() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (previousFocus) previousFocus.focus();
+    }
+
+    openButton.addEventListener('click', function () {
+      previousFocus = document.activeElement;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      closeButton.focus();
+    });
+    closeButton.addEventListener('click', closeSample);
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeSample();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeSample();
+    });
   })();
 </script>
 @endsection

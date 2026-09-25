@@ -108,21 +108,39 @@
 
   .hero {
     position: relative;
-    aspect-ratio: 4 / 1;
-    padding: 0;
+    aspect-ratio: 2.5 / 1;
+    min-height: 180px;
+    box-sizing: border-box;
+    padding: 28px 22px 22px;
+    border-radius: 30px;
     color: #fff;
     overflow: hidden;
+    background: linear-gradient(135deg, #00512f 0%, #087c49 58%, #035c38 100%);
+    box-shadow: 0 20px 40px rgba(0, 86, 49, .18);
   }
 
-  .hero-card-art {
+  .hero::before,
+  .hero::after {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+    content: "";
+    border-radius: 50%;
     pointer-events: none;
-    z-index: 0;
-    transform: none;
+  }
+
+  .hero::before {
+    width: 210px;
+    height: 210px;
+    top: -65px;
+    right: -85px;
+    background: rgba(85, 255, 145, .09);
+  }
+
+  .hero::after {
+    width: 160px;
+    height: 160px;
+    right: -30px;
+    bottom: -90px;
+    background: rgba(103, 255, 165, .08);
   }
 
   .hero > * {
@@ -286,43 +304,55 @@
   .hero-top {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    position: absolute;
-    top: 42%;
-    left: 5%;
-    right: 5%;
-    margin: 0;
-    text-align: center;
+    justify-content: flex-start;
   }
 
   .hero-kicker {
+    margin: 0;
+    color: #c8ffe1;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
-    opacity: 1;
-    color: #ffffff;
   }
 
   .hero-balance {
-    position: absolute;
-    top: 52%;
-    left: 5%;
-    right: 5%;
-    bottom: auto;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 16px;
-    text-align: center;
+    margin-top: 12px;
   }
 
   .hero .balance-value {
-    font-size: 44px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 20px;
+  }
+
+  .hero-stat {
+    min-width: 0;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .1);
+  }
+
+  .hero-stat-label {
+    color: #d8f5e6;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .hero-stat-value {
+    margin-top: 2px;
+    font-size: 19px;
     font-weight: 700;
-    letter-spacing: -1px;
-    line-height: 1.05;
+    line-height: 24px;
   }
 
   .hero-cta {
@@ -357,6 +387,111 @@
   .card:hover {
     transform: translateY(-3px);
     box-shadow: 0px 4px 18px rgba(0,0,0,0.06), 0px 14px 48px rgba(0,0,0,0.04);
+  }
+
+  .package-section {
+    margin: 18px 0;
+    padding-top: 14px;
+    border-top: 3px solid #087a48;
+  }
+
+  .package-heading {
+    margin: 0 0 10px;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .package-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .package-card {
+    position: relative;
+    aspect-ratio: 1.58;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: clamp(12px, 3vw, 18px);
+    border-radius: 22px;
+    color: #fff;
+    box-shadow: 0 12px 25px rgba(0, 45, 36, .14);
+    isolation: isolate;
+  }
+
+  .package-card.crunch {
+    background: #006839 url("{{ asset('images/wallet-card-background.svg') }}") center / cover no-repeat;
+  }
+
+  .package-card.loaded {
+    background: #d6f6dc url("{{ asset('images/savings-card-background.svg') }}") center / cover no-repeat;
+    color: #0b5438;
+  }
+
+  .package-card.supreme {
+    background: #153d3f url("{{ asset('images/credit-card-background.svg') }}") center / cover no-repeat;
+  }
+
+  .package-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 24px;
+  }
+
+  .package-name {
+    overflow: hidden;
+    font-size: clamp(15px, 3vw, 22px);
+    font-weight: 800;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .package-caption {
+    margin-top: 3px;
+    font-size: 7px;
+    letter-spacing: 1.2px;
+    opacity: .76;
+  }
+
+  .package-balance {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    left: clamp(12px, 3vw, 18px);
+  }
+
+  .package-label {
+    font-size: clamp(9px, 1.6vw, 12px);
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    opacity: .82;
+  }
+
+  .package-value {
+    margin-top: 2px;
+    font-size: clamp(18px, 3.5vw, 28px);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .package-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    width: clamp(30px, 5.5vw, 42px);
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(0, 30, 25, .46);
+    color: #fff;
+    font-size: 12px;
   }
 
   .balance-card {
@@ -648,22 +783,22 @@
     left: 50%;
     right: auto;
     bottom: max(12px, env(safe-area-inset-bottom)) !important;
-    width: min(640px, calc(100vw - 24px));
+    width: min(480px, calc(100vw - 24px));
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    gap: 8px;
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 0 12px;
-    height: 86px;
+    justify-content: space-between;
+    gap: 0;
+    max-width: 480px;
+    margin: 0;
+    padding: 0 18px;
+    height: 68px;
     background: rgba(255,255,255,.95);
-    border-radius: 14px;
+    border-radius: 22px;
     border: 1px solid rgba(239,239,247,.90);
     backdrop-filter: blur(18px);
-    box-shadow: 0 8px 24px rgba(15,23,42,.06);
-    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(15,23,42,.12);
+    z-index: 140;
     visibility: visible;
     opacity: 1;
   }
@@ -672,12 +807,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    min-width: 0;
-    flex: 1 1 0;
-    color: var(--color-muted);
+    justify-content: center;
+    gap: 4px;
+    width: 54px;
+    min-width: 54px;
+    color: #66747b;
     font-weight: 500;
-    font-size: 13px;
+    font-size: 9px;
     white-space: nowrap;
     text-decoration: none;
     transition: transform .2s ease, color .2s ease;
@@ -688,11 +824,16 @@
     color: var(--color-title);
   }
 
+  .nav-item.active {
+    color: #087a48;
+    font-weight: 800;
+  }
+
   .nav-item img,
   .nav-item svg {
-    width: 22px;
-    height: 22px;
-    color: var(--color-primary);
+    width: 18px;
+    height: 18px;
+    color: currentColor;
   }
 
   .bottom-nav a {
@@ -706,15 +847,26 @@
 
   .nav-scan {
     position: relative;
-    top: 0;
-    width: 34px;
-    height: 34px;
+    top: -17px;
+    width: 58px;
+    height: 58px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    box-shadow: none;
-    transition: transform .18s ease;
+    border: 4px solid rgba(215,245,225,.96);
+    border-radius: 50%;
+    background: linear-gradient(145deg,#089552,#00683a);
+    box-shadow: 0 9px 22px rgba(0,107,59,.30);
+    color: #fff;
+    font-size: 31px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform .25s ease, background .25s ease;
+  }
+
+  .nav-more.is-open .nav-scan {
+    transform: rotate(45deg);
+    background: #075e3c;
   }
 
   .nav-scan:hover {
@@ -723,18 +875,18 @@
 
   .nav-scan img,
   .nav-scan svg {
-    width: 100%;
-    height: 100%;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
     display: block;
-    color: var(--color-primary);
+    color: #fff;
   }
 
   .fab-scrim {
     position: fixed;
     inset: 0;
     z-index: 120;
-    background: rgba(0,0,0,0.52);
+    background: rgba(15,23,42,0.16);
     opacity: 0;
     visibility: hidden;
     transition: opacity .28s ease;
@@ -747,83 +899,80 @@
 
   .fab-panel {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 50%;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    width: min(340px, calc(100vw - 32px));
     z-index: 130;
-    transform: translateY(110%);
-    transition: transform .34s cubic-bezier(.22,1,.36,1);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, 12px) scale(.96);
+    transform-origin: center bottom;
+    transition: opacity .2s ease, transform .24s cubic-bezier(.22,1,.36,1), visibility .2s ease;
   }
 
   .fab-panel.is-open {
-    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate(-50%, 0) scale(1);
   }
 
   .fab-sheet {
-    border-radius: 28px 28px 0 0;
-    padding: 18px 18px 28px;
+    border: 1px solid rgba(226,232,240,.9);
+    border-radius: 22px;
+    padding: 18px;
     background: #fff;
-    box-shadow: 0 -18px 60px rgba(3,7,18,0.14);
+    box-shadow: 0 16px 42px rgba(3,7,18,0.18);
   }
 
   .fab-sheet-handle {
-    width: 68px;
-    height: 6px;
-    margin: 0 auto 14px;
-    border-radius: 999px;
-    background: #e9e9e9;
+    display: none;
   }
 
   .fab-sheet-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
-    color: #121212;
-    text-align: center;
-    margin-bottom: 18px;
+    color: #1e293b;
+    margin: 0 0 10px;
   }
 
   .fab-actions {
     display: grid;
-    gap: 12px;
+    gap: 4px;
   }
 
   .fab-action {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 6px;
-    border-radius: 0;
-    background: transparent;
-    color: #121212;
+    padding: 10px;
+    border-radius: 14px;
+    background: #fff;
+    color: #1e293b;
     text-decoration: none;
-    font-weight: 800;
-    transition: transform .2s ease, background .2s ease;
-    transform: translateY(24px);
-    opacity: 0;
-  }
-
-  .fab-panel.is-open .fab-action {
-    transform: translateY(0);
-    opacity: 1;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background .18s ease, transform .18s ease;
   }
 
   .fab-action:hover {
-    background: transparent;
-    transform: translateY(-2px);
+    background: #f0fdf4;
+    transform: translateX(2px);
   }
 
   .fab-action-icon {
-    width: 72px;
-    height: 72px;
-    border-radius: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
+    background: #e9f7ef;
     box-shadow: none;
     overflow: hidden;
     flex-shrink: 0;
-    padding: 0;
+    padding: 8px;
   }
 
   .fab-action-icon img,
@@ -832,27 +981,18 @@
     height: 100%;
     object-fit: contain;
     display: block;
-    padding: 0;
-    border-radius: 0;
     color: var(--color-primary);
   }
 
-  .fab-action:nth-child(1) { transition-delay:.05s; }
-  .fab-action:nth-child(2) { transition-delay:.10s; }
-  .fab-action:nth-child(3) { transition-delay:.15s; }
-  .fab-action:nth-child(4) { transition-delay:.20s; }
-  .fab-action:nth-child(5) { transition-delay:.25s; }
-  .fab-action:nth-child(6) { transition-delay:.30s; }
-
   .fab-close {
-    margin-top: 16px;
+    margin-top: 10px;
     width: 100%;
     border: none;
-    border-radius: 16px;
-    padding: 14px 16px;
-    background: #f5f5f5;
-    color: #4b5563;
-    font-weight: 900;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    color: #64748b;
+    font-weight: 700;
     cursor: pointer;
   }
 
@@ -862,19 +1002,10 @@
       padding: 0 12px;
     }
     .hero {
-      aspect-ratio: 3 / 1;
-    }
-    .hero-top {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .hero-balance {
-      align-items: center;
-      gap: 16px;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      aspect-ratio: auto;
+      width: 100%;
+      min-height: 190px;
+      padding: 20px;
     }
     .hero .balance-value {
       font-size: 34px;
@@ -924,12 +1055,15 @@
     }
     .bottom-nav {
       width: calc(100vw - 16px);
-      padding: 0 8px;
-      gap: 4px;
+      padding: 0 12px;
+      gap: 0;
       bottom: max(8px, env(safe-area-inset-bottom)) !important;
     }
     .nav-scan {
-      top: 0;
+      top: -15px;
+    }
+    .fab-panel {
+      bottom: calc(82px + env(safe-area-inset-bottom));
     }
     .notification-panel {
       left: 8px;
@@ -943,10 +1077,8 @@
       padding: 0 10px;
     }
     .hero {
-      aspect-ratio: 3 / 1;
-    }
-    .hero-top {
-      gap: 10px;
+      min-height: 180px;
+      padding: 16px;
     }
     .hero .balance-value {
       font-size: 30px;
@@ -993,19 +1125,30 @@
     }
     .bottom-nav {
       width: calc(100vw - 12px);
-      padding: 0 4px;
-      gap: 2px;
-      height: 72px;
+      padding: 0 10px;
+      gap: 0;
+      height: 62px;
       bottom: max(6px, env(safe-area-inset-bottom)) !important;
     }
     .nav-item {
       gap: 3px;
-      font-size: 11px;
+      width: 48px;
+      min-width: 48px;
+      font-size: 8px;
     }
     .nav-item img,
     .nav-item svg {
-      width: 20px;
-      height: 20px;
+      width: 17px;
+      height: 17px;
+    }
+    .nav-scan {
+      top: -14px;
+      width: 52px;
+      height: 52px;
+      font-size: 28px;
+    }
+    .fab-panel {
+      bottom: calc(74px + env(safe-area-inset-bottom));
     }
     .notification-panel {
       top: 68px;
@@ -1025,12 +1168,16 @@
 @php
   $user = $user ?? auth()->user();
   $investments = $user->investments()->latest()->get();
-  $activeCapital = $investments->sum(fn($i) => (float) $i->amount);
   if (! isset($dailyInterest)) {
       $dailyInterest = $investments->sum(fn($i) => $i->dailyInterestAmount());
   }
-  $earnedIncome = $investments->sum(fn($i) => $i->earnedInterest());
-  $availableBalance = (float) $user->balance + $earnedIncome;
+  $availableBalance = (float) $user->balance;
+  $approvedInvestments = $investments->where('status', 'approved');
+  $totalAssets = $availableBalance + $approvedInvestments->sum(fn($investment) => (float) $investment->amount);
+  $packageDefinitions = \App\Support\InvestmentPackages::all();
+  $packageEarnings = $approvedInvestments
+      ->groupBy('package_key')
+      ->map(fn($packageInvestments) => $packageInvestments->sum(fn($investment) => $investment->creditedInterest()));
   $notificationsRead = $notificationsRead ?? [];
   $unreadCount = $unreadCount ?? 0;
 @endphp
@@ -1051,146 +1198,85 @@
     </a>
   </header>
 
-  <section class="hero">
-    <svg class="hero-card-art" viewBox="0 0 1200 300" role="img"
-         aria-label="Lulu Retail green card background" preserveAspectRatio="none"
-         xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="heroBase" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#006f51"/>
-          <stop offset=".48" stop-color="#008f65"/>
-          <stop offset="1" stop-color="#006c50"/>
-        </linearGradient>
-        <linearGradient id="heroLime" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stop-color="#67c936" stop-opacity=".10"/>
-          <stop offset=".55" stop-color="#79d83e" stop-opacity=".72"/>
-          <stop offset="1" stop-color="#25ae5e" stop-opacity=".30"/>
-        </linearGradient>
-        <linearGradient id="heroGlow" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#f9dd3c" stop-opacity="0"/>
-          <stop offset=".55" stop-color="#ffe45c" stop-opacity=".95"/>
-          <stop offset="1" stop-color="#fff29a" stop-opacity=".76"/>
-        </linearGradient>
-        <radialGradient id="heroCornerGlow" cx="0" cy="0" r="1">
-          <stop offset="0" stop-color="#9de052" stop-opacity=".72"/>
-          <stop offset="1" stop-color="#9de052" stop-opacity="0"/>
-        </radialGradient>
-        <clipPath id="heroCardClip">
-          <rect width="1200" height="300" rx="32"/>
-        </clipPath>
-      </defs>
-      <g clip-path="url(#heroCardClip)">
-        <rect width="1200" height="300" fill="url(#heroBase)"/>
-        <ellipse cx="195" cy="-35" rx="300" ry="185" fill="url(#heroCornerGlow)"/>
-        <path d="M-40 264 C170 72 285 30 470 -16 L250 -25 C133 48 52 111 -40 206Z" fill="#1fac67" opacity=".22"/>
-        <path d="M580 330 C785 300 886 150 1240 58 L1240 330Z" fill="#1bb966" opacity=".42"/>
-        <path d="M705 330 C884 286 1003 193 1240 132 L1240 330Z" fill="url(#heroLime)"/>
-        <path d="M760 330 C922 274 1058 207 1240 169" fill="none" stroke="url(#heroGlow)" stroke-width="9" stroke-linecap="round"/>
-        <path d="M-55 110 C70 92 132 35 190 -18" fill="none" stroke="#f6d63b" stroke-width="3" opacity=".9"/>
-        <path d="M845 330 C1000 270 1118 248 1240 278 L1240 330Z" fill="#70cf3a" opacity=".28"/>
-        <rect width="1200" height="300" rx="32" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
-      </g>
-    </svg>
+  <section class="hero" aria-label="Account balance">
     <div class="hero-top">
-      <div>
-        <div class="hero-kicker">Available balance</div>
-      </div>
+      <div class="hero-kicker">Available balance</div>
     </div>
     <div class="hero-balance">
-      <div>
-        <div class="balance-value">${{ number_format($availableBalance, 2) }}</div>
+      <div class="balance-value">${{ number_format($availableBalance, 2) }}</div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-label">Assets</div>
+        <div class="hero-stat-value">${{ number_format($totalAssets, 2) }}</div>
       </div>
     </div>
   </section>
 
-  <div class="card">
-    <div class="actions-grid" role="list">
-      <a class="action" href="{{ route('send') }}">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.4 18-3.8-7.8L2 9.4 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9.8 13.2 5.4-5.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>Send</div>
-      </a>
-
-      <a class="action" href="{{ route('withdraw') }}">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div>Withdraw</div>
-      </a>
-
-      <a class="action" href="{{ route('invest') }}">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div>Investment</div>
-      </a>
-
-      <a class="action" href="{{ route('franchising') }}">
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5M8 10h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>Franchise</div>
-      </a>
-
+  <section class="package-section" aria-labelledby="packageHeading">
+    <h2 class="package-heading" id="packageHeading">Available Bonds</h2>
+    <div class="package-grid">
+      @foreach ($packageDefinitions as $packageKey => $package)
+        <article class="package-card {{ $packageKey }}">
+          <div class="package-brand">
+            <div>
+              <div class="package-name">{{ $package['name'] }}</div>
+              <div class="package-caption">ACCOUNT PACKAGE</div>
+            </div>
+          </div>
+          <span class="package-menu" aria-hidden="true">•••</span>
+          <div class="package-balance">
+            <div class="package-label">EARNINGS</div>
+            <div class="package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
+          </div>
+        </article>
+      @endforeach
     </div>
-  </div>
+  </section>
 
 </main>
 
 <div class="fab-scrim" id="fabScrim" aria-hidden="true"></div>
 <div class="fab-panel" id="fabPanel" aria-hidden="true">
-  <div class="fab-sheet" role="dialog" aria-modal="true" aria-label="Quick actions menu">
+  <div class="fab-sheet" role="dialog" aria-label="Wallet actions">
     <div class="fab-sheet-handle"></div>
-    <div class="fab-sheet-title">Quick actions</div>
+    <div class="fab-sheet-title">Wallet actions</div>
     <div class="fab-actions">
-      <a class="fab-action" href="{{ route('invest') }}">
-        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span>Buy shares</span>
-      </a>
       <a class="fab-action" href="{{ route('send') }}">
         <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.4 18-3.8-7.8L2 9.4 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-        <span>Send</span>
+        <span>Send Funds</span>
       </a>
       <a class="fab-action" href="{{ route('withdraw') }}">
         <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span>Withdraw</span>
+        <span>Withdraw Funds</span>
       </a>
-      <a class="fab-action" href="{{ route('referrals') }}">
-        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.2 2.2-5 5.5-5s5 1.8 5.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-        <span>Referrals</span>
-      </a>
-      <a class="fab-action" href="{{ route('franchising') }}">
-        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-        <span>Franchise</span>
-      </a>
-      <a class="fab-action" href="{{ route('unavailable') }}">
-        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M7 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-        <span>Cards</span>
-      </a>
-      <a class="fab-action" href="{{ route('unavailable') }}">
-        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10h16M6 10V8a6 6 0 0 1 12 0v2M5 10h14v9H5v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 13v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-        <span>Loans</span>
+      <a class="fab-action" href="{{ route('deposit') }}">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span>Add Funds</span>
       </a>
     </div>
-    <button class="fab-close" type="button" id="fabClose">Close menu</button>
   </div>
 </div>
 
 <nav class="bottom-nav" aria-label="Account navigation">
-  <a class="nav-item active" href="{{ route('dashboard') }}">
+  <a class="nav-item" href="{{ route('home') }}">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-7 9 7v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
     <div>Home</div>
   </a>
-  <a class="nav-item" href="{{ route('invest') }}">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V5m0 14h16M7 16l3-4 3 2 5-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div>Buy Shares</div>
+  <a class="nav-item" href="{{ route('history') }}">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div>Transactions</div>
   </a>
-  <a class="nav-item" href="{{ route('withdraw') }}">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div>Withdraw</div>
+  <button class="nav-item nav-more" type="button" id="fabToggle" aria-label="Open wallet actions" aria-controls="fabPanel" aria-expanded="false">
+    <span class="nav-scan" aria-hidden="true">+</span>
+  </button>
+  <a class="nav-item" href="{{ route('franchising') }}">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
+    <div>Franchise</div>
   </a>
-  <a class="nav-item" href="{{ route('referrals') }}">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.2 2.2-5 5.5-5s5 1.8 5.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <div>Referrals</div>
-  </a>
-  <a class="nav-item nav-more" href="#" id="fabToggle" aria-label="More account actions" aria-controls="fabPanel" aria-expanded="false">
-    <div class="nav-scan">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#46a42d"/><path d="M8 9h8M8 12h8M8 15h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </div>
-    <div>More</div>
+  <a class="nav-item active" href="{{ route('dashboard') }}" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>
+    <div>Wallet</div>
   </a>
 </nav>
 
@@ -1199,7 +1285,6 @@
     var fabToggle = document.getElementById('fabToggle');
     var fabScrim = document.getElementById('fabScrim');
     var fabPanel = document.getElementById('fabPanel');
-    var fabClose = document.getElementById('fabClose');
 
     function toggleFabMenu(event) {
       if (event) event.preventDefault();
@@ -1208,13 +1293,17 @@
       if (isOpen) {
         fabScrim.classList.remove('is-open');
         fabPanel.classList.remove('is-open');
+        fabToggle.classList.remove('is-open');
         fabScrim.setAttribute('aria-hidden', 'true');
         fabPanel.setAttribute('aria-hidden', 'true');
+        fabToggle.setAttribute('aria-expanded', 'false');
       } else {
         fabScrim.classList.add('is-open');
         fabPanel.classList.add('is-open');
+        fabToggle.classList.add('is-open');
         fabScrim.setAttribute('aria-hidden', 'false');
         fabPanel.setAttribute('aria-hidden', 'false');
+        fabToggle.setAttribute('aria-expanded', 'true');
       }
     }
 
@@ -1222,6 +1311,10 @@
       if (!fabScrim || !fabPanel) return;
       fabScrim.classList.remove('is-open');
       fabPanel.classList.remove('is-open');
+      if (fabToggle) {
+        fabToggle.classList.remove('is-open');
+        fabToggle.setAttribute('aria-expanded', 'false');
+      }
       fabScrim.setAttribute('aria-hidden', 'true');
       fabPanel.setAttribute('aria-hidden', 'true');
     }
@@ -1234,9 +1327,9 @@
       fabScrim.addEventListener('click', closeFabMenu);
     }
 
-    if (fabClose) {
-      fabClose.addEventListener('click', closeFabMenu);
-    }
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeFabMenu();
+    });
 
     function setBannerSlide(index) {
       var slides = document.querySelectorAll('.banner-slide');

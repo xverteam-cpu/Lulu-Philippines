@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lulu Finance Wallet</title>
+  <style>
+    .package-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .package-section {
+      margin: 18px 0;
+      padding-top: 14px;
+      border-top: 3px solid #087a48;
+    }
+
+    .package-card {
+      position: relative;
+      aspect-ratio: 1.58;
+      min-width: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: clamp(12px, 3vw, 18px);
+      border-radius: 22px;
+      color: #fff;
+      box-shadow: 0 12px 25px rgba(0, 45, 36, .14);
+      isolation: isolate;
+    }
+
+    .package-card.silver {
+      background: #006839 url("public/images/wallet-card-background.svg") center / cover no-repeat;
+    }
+
+    .package-card.gold {
+      background: #d6f6dc url("public/images/savings-card-background.svg") center / cover no-repeat;
+      color: #0b5438;
+    }
+
+    .package-card.platinum {
+      background: #153d3f url("public/images/credit-card-background.svg") center / cover no-repeat;
+    }
+
+    .package-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 24px;
+    }
+
+    .package-name {
+      overflow: hidden;
+      font-size: clamp(15px, 3vw, 22px);
+      font-weight: 800;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .package-caption {
+      margin-top: 3px;
+      color: inherit;
+      font-size: 7px;
+      letter-spacing: 1.2px;
+      opacity: .76;
+    }
+
+    .package-balance {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      left: clamp(12px, 3vw, 18px);
+    }
+
+    .package-label {
+      font-size: clamp(9px, 1.6vw, 12px);
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      opacity: .82;
+    }
+
+    .package-value {
+      margin-top: 2px;
+      font-size: clamp(18px, 3.5vw, 28px);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .package-menu {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: grid;
+      width: clamp(30px, 5.5vw, 42px);
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(0, 30, 25, .46);
+      color: #fff;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background:#eef1ef;font-family:Arial,Helvetica,sans-serif;color:#15262d;">
+
+  <div style="max-width:768px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,#f7f9f8 0%,#eef2f0 100%);padding:24px 30px 110px 30px;box-sizing:border-box;">
+
+    <!-- STATUS BAR -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td style="font-size:18px;font-weight:700;color:#111;padding:0 4px 35px 4px;">
+          9:41
+        </td>
+        <td align="right" style="font-size:16px;font-weight:700;color:#111;padding:0 4px 35px 4px;">
+          ●●● &nbsp; WiFi &nbsp;
+          <span style="background:#22c55e;color:#fff;padding:3px 8px;border-radius:7px;">100</span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- HEADER -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td valign="middle">
+          <div style="font-size:13px;letter-spacing:3px;color:#08733d;font-weight:700;margin-bottom:5px;">
+            LULU FINANCE
+          </div>
+          <div style="font-size:38px;line-height:42px;font-weight:800;color:#13232c;">
+            Wallet
+          </div>
+        </td>
+
+        <td align="right" valign="middle">
+          <table role="presentation" cellspacing="8" cellpadding="0" border="0">
+            <tr>
+              <td>
+                <div style="width:52px;height:52px;border-radius:50%;background:#ffffff;box-shadow:0 8px 25px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;font-size:22px;color:#075e3c;position:relative;">
+                  🔔
+                  <span style="position:absolute;top:-4px;right:-3px;background:#ff514b;color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">
+                    3
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(145deg,#09874f,#006137);display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:300;box-shadow:0 9px 20px rgba(0,106,61,.18);">
+                  +
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <!-- NET WORTH CARD -->
+    <div style="margin-top:24px;background:linear-gradient(135deg,#00512f 0%,#087c49 58%,#035c38 100%);border-radius:30px;padding:28px 22px 22px 22px;color:#fff;box-shadow:0 20px 40px rgba(0,86,49,.18);position:relative;overflow:hidden;">
+
+      <div style="position:absolute;width:210px;height:210px;border-radius:50%;background:rgba(85,255,145,.09);right:-85px;top:-65px;"></div>
+      <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(103,255,165,.08);right:-30px;bottom:-90px;"></div>
+
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="position:relative;z-index:2;">
+        <tr>
+          <td style="font-size:14px;letter-spacing:2px;font-weight:700;color:#c8ffe1;">
+            AVAILABLE BALANCE
+          </td>
+          <td align="right">
+            <span style="display:inline-block;background:rgba(255,255,255,.12);padding:10px;border-radius:50%;font-size:16px;">
+              ◉
+            </span>
+            <span style="display:inline-block;background:rgba(255,255,255,.12);padding:10px 12px;border-radius:50%;font-size:16px;margin-left:4px;">
+              •••
+            </span>
+          </td>
+        </tr>
+      </table>
+
+      <div style="font-size:40px;font-weight:800;line-height:1.1;margin-top:20px;position:relative;z-index:2;">
+        ₱0.00
+      </div>
+
+      <table role="presentation" width="100%" cellspacing="8" cellpadding="0" border="0" style="margin-top:24px;position:relative;z-index:2;">
+        <tr>
+          <td width="100%" style="background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:15px 13px;">
+            <div style="font-size:13px;color:#d8f5e6;margin-bottom:5px;">Assets</div>
+            <div style="font-size:19px;font-weight:700;">₱0.00</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- CONTROL ROW -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:27px;margin-bottom:18px;">
+      <tr>
+        <td style="font-size:14px;color:#7a8484;">
+          Hold and drag to rearrange.
+        </td>
+
+        <td align="right">
+          <div style="background:#fff;border-radius:20px;padding:5px;box-shadow:0 10px 24px rgba(0,0,0,.05);display:inline-block;">
+            <span style="display:inline-block;padding:8px;color:#727b7c;">▽</span>
+            <span style="display:inline-block;padding:9px 12px;border-radius:14px;background:#087a48;color:#fff;">▦</span>
+            <span style="display:inline-block;padding:8px;color:#727b7c;">☷</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- ACCOUNT PACKAGE CARDS -->
+    <section class="package-section" aria-labelledby="packageHeading">
+      <h2 id="packageHeading" style="margin:0 0 10px;color:#14532d;font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;">Available Bonds</h2>
+      <div class="package-grid" aria-label="Available bonds">
+      <article class="package-card silver">
+        <div class="package-brand">
+          <div>
+            <div class="package-name">Silver</div>
+            <div class="package-caption">ACCOUNT PACKAGE</div>
+          </div>
+        </div>
+        <span class="package-menu" aria-hidden="true">•••</span>
+        <div class="package-balance">
+          <div class="package-label">EARNINGS</div>
+          <div class="package-value">₱0.00</div>
+        </div>
+      </article>
+
+      <article class="package-card gold">
+        <div class="package-brand">
+          <div>
+            <div class="package-name">Gold</div>
+            <div class="package-caption">ACCOUNT PACKAGE</div>
+          </div>
+        </div>
+        <span class="package-menu" aria-hidden="true">•••</span>
+        <div class="package-balance">
+          <div class="package-label">EARNINGS</div>
+          <div class="package-value">₱0.00</div>
+        </div>
+      </article>
+
+      <article class="package-card platinum">
+        <div class="package-brand">
+          <div>
+            <div class="package-name">Platinum</div>
+            <div class="package-caption">ACCOUNT PACKAGE</div>
+          </div>
+        </div>
+        <span class="package-menu" aria-hidden="true">•••</span>
+        <div class="package-balance">
+          <div class="package-label">EARNINGS</div>
+          <div class="package-value">₱0.00</div>
+        </div>
+      </article>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FIXED BOTTOM NAV -->
+  <div style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:720px;background:rgba(255,255,255,.95);border-radius:28px;box-shadow:0 12px 32px rgba(0,0,0,.12);padding:13px 10px;box-sizing:border-box;z-index:999;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="center" width="20%" style="font-size:23px;color:#606b71;">
+          ⌂
+          <div style="font-size:11px;margin-top:4px;">Home</div>
+        </td>
+
+        <td align="center" width="20%" style="font-size:21px;color:#606b71;">
+          ▭
+          <div style="font-size:11px;margin-top:4px;">Transactions</div>
+        </td>
+
+        <td align="center" width="20%">
+          <div style="width:68px;height:68px;border-radius:50%;margin-top:-35px;background:linear-gradient(145deg,#089552,#00683a);color:#fff;font-size:43px;line-height:68px;font-weight:300;box-shadow:0 10px 26px rgba(0,107,59,.30);border:6px solid rgba(215,245,225,.9);">
+            +
+          </div>
+        </td>
+
+        <td align="center" width="20%" style="font-size:21px;color:#606b71;">
+          ◎
+          <div style="font-size:11px;margin-top:4px;">Franchise</div>
+        </td>
+
+        <td align="center" width="20%" style="font-size:21px;color:#087a48;font-weight:700;">
+          ▰
+          <div style="font-size:11px;margin-top:4px;">Wallet</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</body>
+</html>

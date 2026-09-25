@@ -98,7 +98,7 @@
       @if ($requiresAgreement)
         <div class="agreement-box">
           <h3>Sign your bond purchase agreement</h3>
-          <p>This purchase will be recorded using the <a class="agreement-link" href="{{ route('invest.agreement.sample') }}">uploaded agreement</a>. Confirm that the name below is yours, review the populated agreement, then draw your signature in the box.</p>
+          <p>This purchase will be recorded using the <a class="agreement-link" href="{{ route('invest.agreement.sample.download') }}">uploaded agreement</a>. Confirm that the name below is yours, review the populated agreement, then draw your signature in the box.</p>
           <p><strong>Name on contract:</strong> {{ auth()->user()->name ?: auth()->user()->email }}</p>
           <input type="hidden" name="agreement_signature_name" value="{{ auth()->user()->name ?: auth()->user()->email }}">
           <canvas class="signature-pad" id="purchaseSignaturePad" width="900" height="300" aria-label="Draw your signature"></canvas>

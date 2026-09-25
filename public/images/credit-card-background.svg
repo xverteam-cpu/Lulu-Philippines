@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 215" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="340" y2="215" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#102c30"/>
+      <stop offset=".53" stop-color="#183d3f"/>
+      <stop offset="1" stop-color="#073c34"/>
+    </linearGradient>
+    <linearGradient id="waveA" x1="133" y1="184" x2="300" y2="122" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1b8f63"/>
+      <stop offset=".56" stop-color="#55c982"/>
+      <stop offset="1" stop-color="#9af0ad"/>
+    </linearGradient>
+    <linearGradient id="waveB" x1="210" y1="214" x2="305" y2="145" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07574b"/>
+      <stop offset="1" stop-color="#19785e"/>
+    </linearGradient>
+  </defs>
+  <rect width="340" height="215" rx="24" fill="url(#bg)"/>
+  <path d="M105 215c47-20 78-47 112-78 38-35 78-57 123-60v138H105Z" fill="#087252" fill-opacity=".38"/>
+  <path d="M115 215c52-20 87-48 122-78 38-33 69-49 103-52v77c-40 0-69 16-103 41-32 23-67 40-122 51v-39Z" fill="url(#waveB)"/>
+  <path d="M104 215c65-18 99-47 137-79 38-32 67-48 101-51" stroke="url(#waveA)" stroke-width="5"/>
+  <path d="M127 215c60-10 97-39 132-66 32-25 56-36 83-38" stroke="#8ee7a8" stroke-opacity=".38" stroke-width="1.5"/>
+  <path d="M166 215c48-9 80-31 111-52 26-18 45-26 65-29" stroke="#fff" stroke-opacity=".16" stroke-width="1"/>
+  <path d="M203 0h137v72c-39 2-73 18-101 41-25 20-46 32-77 39 27-34 41-67 41-107V0Z" fill="#fff" fill-opacity=".035"/>
+  <path d="M0 0h340v39c-61-10-112-3-163 18C109 78 52 83 0 69V0Z" fill="#fff" fill-opacity=".035"/>
+  <rect x=".75" y=".75" width="338.5" height="213.5" rx="23.25" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/>
+</svg>

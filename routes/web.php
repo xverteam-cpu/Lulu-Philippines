@@ -232,6 +232,26 @@ Route::get('/invest/purchase/{package}', function (string $package) {
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
 
 Route::get('/invest/agreement/sample', function () {
+    return view('bond-agreement', [
+        'agreement' => [
+            'package_name' => '________________________________________',
+            'amount' => '________________________________________',
+            'daily_interest_rate' => '________________________________________',
+            'daily_interest_income' => '________________________________________',
+            'duration_days' => '________________________________________',
+            'commencement_date' => '______________________________',
+            'maturity_date' => '________________________________________',
+            'bondholder' => '________________________________________',
+            'civil_status' => '__________________',
+            'residence' => '________________________________________________________________________________________',
+            'reference' => '________________________________________',
+            'contract_number' => '________________________________________',
+        ],
+        'isSample' => true,
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample');
+
+Route::get('/invest/agreement/sample/download', function () {
     $path = base_path('LULU_BOND_AGREEMENT_AND_CERTIFICATE_DRAFT_TEMPLATE.docx');
     abort_unless(is_file($path), 404, 'The uploaded bond agreement template is unavailable.');
 
@@ -240,7 +260,7 @@ Route::get('/invest/agreement/sample', function () {
         'Lulu-Bond-Agreement-and-Certificate-Draft.docx',
         ['Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
     );
-})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample');
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample.download');
 
 Route::get('/invest/agreement/preview', function (Illuminate\Http\Request $request) {
     $package = App\Support\InvestmentPackages::find((string) $request->query('package'));

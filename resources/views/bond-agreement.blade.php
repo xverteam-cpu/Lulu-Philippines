@@ -24,18 +24,21 @@
 </style>
 <main class="agreement-page">
   @if ($isSample)
-    <div class="agreement-notice">Sample agreement. The final agreement is generated with your selected package, amount, dates, and signature.</div>
+    <div class="agreement-notice">Sample agreement preview. The original uploaded DOCX is available to download from the modal toolbar.</div>
+    <p style="text-align:center;font-weight:700">Draft Contract Template</p>
   @endif
   <h1>LULU HOLDING CORP.</h1>
   <h2>Bond Purchase Agreement</h2>
   <p>This Bond Purchase Agreement (the Agreement) is executed on <strong>{{ $agreement['commencement_date'] }}</strong> by and between:</p>
-  <p><strong>LULU HOLDING CORP.</strong>, a duly organized corporation with principal business address at ______________________________, represented herein by its authorized representative, Mr. Jhon Joem Ramirez, hereinafter referred to as the Company; and</p>
-  <p><strong>{{ $agreement['bondholder'] }}</strong>, hereinafter referred to as the Bondholder.</p>
+  <p><strong>LULU HOLDING CORP.</strong>, a duly organized corporation with principal business address at ______________________________, represented herein by its authorized representative, Mr. Jhon Joem Ramirez, hereinafter referred to as the Company;</p>
+  <p>and</p>
+  <p><strong>{{ $agreement['bondholder'] }}</strong>, of legal age, with civil status {{ $agreement['civil_status'] ?? '__________________' }}, and residing at {{ $agreement['residence'] ?? '________________________________________________________________________________________' }}, hereinafter referred to as the Bondholder.</p>
   <p><strong>WITNESSETH</strong></p>
   <p>WHEREAS, the Company offers bond purchase packages that allow qualified purchasers to acquire corporate bonds subject to the selected package, contract term, and interest rate;</p>
   <p>WHEREAS, the Bondholder has expressed the intent to purchase the selected Bond Package under the terms and conditions set forth in this Agreement;</p>
   <p>NOW, THEREFORE, for and in consideration of the foregoing premises and mutual covenants, the parties agree as follows:</p>
   <h3>1. BOND PURCHASE PACKAGE</h3>
+  <p>The Bondholder has selected the following bond purchase package:</p>
   <div class="agreement-meta">
     <div><span>Bondholder</span><strong>{{ $agreement['bondholder'] }}</strong></div>
     <div><span>Package Type</span><strong>{{ $agreement['package_name'] }}</strong></div>
@@ -102,29 +105,57 @@
     <div>LULU HOLDING CORP.<br>____________________________<br>Jhon Joem Ramirez<br>Authorized Representative</div>
     <div>BONDHOLDER<br>{{ $agreement['bondholder'] }}<br>Date: {{ $agreement['commencement_date'] }}</div>
   </div>
+  <h3>SIGNED IN THE PRESENCE OF</h3>
+  <div class="agreement-sign">
+    <div>____________________________<br>Name: ______________________<br>Company Witness</div>
+    <div>____________________________<br>Name: ______________________<br>Witness for Bondholder</div>
+  </div>
+  <p>The parties confirm that they have read and understood this Agreement and voluntarily accept its terms.</p>
   <h3>ACKNOWLEDGMENT</h3>
   <p>REPUBLIC OF THE PHILIPPINES )<br>CITY OF TAGUIG ) S.S.</p>
-  <p>BEFORE ME, a Notary Public for and in the City of Taguig, personally appeared the following persons and acknowledged that this Agreement is their free and voluntary act and deed and, for the Company's representative, the act and deed of the entity represented.</p>
+  <p>BEFORE ME, a Notary Public for and in the City of Taguig, personally appeared the following persons:</p>
   <div class="agreement-meta">
-    <div><span>Company Representative</span><strong>Jhon Joem Ramirez</strong></div>
-    <div><span>Bondholder</span><strong>{{ $agreement['bondholder'] }}</strong></div>
-    <div><span>Notary Public</span><strong>____________________________</strong></div>
+    <div><span>Name</span><strong>Jhon Joem Ramirez; {{ $agreement['bondholder'] }}</strong></div>
+    <div><span>ID Type</span><strong>________________; ________________</strong></div>
+    <div><span>ID Number</span><strong>________________; ________________</strong></div>
+    <div><span>Date Issued</span><strong>________________; ________________</strong></div>
   </div>
+  <p>Known to me and identified by competent evidence of identity, the persons named above acknowledged that this Agreement is their free and voluntary act and deed and, for the Company's representative, the act and deed of the entity represented.</p>
+  <p>This Agreement consists of five (5) pages, including this acknowledgment page, and has been signed by the parties and witnesses on each page.</p>
+  <p>IN WITNESS WHEREOF, I have set my hand and affixed my notarial seal on __________________ at Taguig City, Philippines.</p>
+  <p>____________________________ Notary Public</p>
+  <p>Doc. No. ________ Page No. ________ Book No. ________ Series of ________</p>
   <h3>BOND CERTIFICATE</h3>
   <p>Issued under the Bond Purchase Agreement</p>
   <div class="agreement-meta">
-    <div><span>Certificate Number</span><strong>LOT-INV-{{ $agreement['reference'] ?? 'PENDING' }}</strong></div>
-    <div><span>Contract Number</span><strong>{{ $agreement['contract_number'] ?? 'PENDING' }}</strong></div>
+    <div><span>Certificate Number</span><strong>{{ $agreement['reference'] ?? '________________________________________' }}</strong></div>
+    <div><span>Contract Number</span><strong>{{ $agreement['contract_number'] ?? '________________________________________' }}</strong></div>
     <div><span>Bondholder</span><strong>{{ $agreement['bondholder'] }}</strong></div>
     <div><span>Bond Package</span><strong>{{ $agreement['package_name'] }}</strong></div>
     <div><span>Principal Amount</span><strong>{{ $agreement['amount'] }}</strong></div>
     <div><span>Daily Interest Rate</span><strong>{{ $agreement['daily_interest_rate'] }}</strong></div>
+    <div><span>Contract Term</span><strong>{{ $agreement['duration_days'] }}</strong></div>
+    <div><span>Commencement Date</span><strong>{{ $agreement['commencement_date'] }}</strong></div>
+    <div><span>Maturity Date</span><strong>{{ $agreement['maturity_date'] }}</strong></div>
+  </div>
+  <p><strong>CERTIFICATION.</strong> Lulu Holding Corp. certifies that the person named above is the registered holder of the bond package described in this Certificate, subject to the terms of the corresponding Bond Purchase Agreement and the Company's official bond register.</p>
+  <p>This Certificate becomes valid only after payment verification, contract activation, assignment of the certificate and contract numbers, and signature by the authorized company representative.</p>
+  <div class="agreement-meta">
+    <div><span>Verification Reference</span><strong>{{ $agreement['reference'] ?? '________________________________________' }}</strong></div>
+    <div><span>QR Code</span><strong>[ WEBSITE GENERATED QR CODE ]</strong></div>
+  </div>
+  <h3>AUTHORIZED SIGNATURES</h3>
+  <div class="agreement-sign">
+    <div>____________________________<br>Jhon Joem Ramirez<br>Authorized Representative<br>Date: ______________________</div>
+    <div>____________________________<br>Bondholder<br>Date: ______________________</div>
   </div>
 </main>
+@if (!empty($isSigning))
 <script>
   (function () {
     var pad = document.getElementById('agreementSignaturePad');
     var data = document.getElementById('agreementSignatureData');
+    if (!pad || !data) return;
     var context = pad.getContext('2d');
     var drawing = false;
     context.lineWidth = 4;
@@ -142,4 +173,5 @@
     document.getElementById('clearAgreementSignature').addEventListener('click', function () { context.clearRect(0, 0, pad.width, pad.height); data.value = ''; });
   })();
 </script>
+@endif
 @endsection

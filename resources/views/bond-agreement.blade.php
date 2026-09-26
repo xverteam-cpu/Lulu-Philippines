@@ -20,13 +20,90 @@
   .signature-clear { border:0; background:transparent; color:#166534; font-weight:900; cursor:pointer; }
   .agreement-form .agreement-check { display:flex; gap:8px; margin:12px 0; font-size:13px; line-height:18px; }
   .agreement-form button { width:100%; min-height:48px; border:0; border-radius:8px; background:#166534; color:#fff; font-size:14px; font-weight:900; cursor:pointer; }
-  @media (max-width:600px) { .agreement-meta div { display:block; } .agreement-meta strong { display:block; text-align:left; } .agreement-sign { gap:20px; } }
+  .sample-draft-shell { width:min(100%, 420px); margin:0 auto; padding:16px 0 32px; background:#2d2f34; border-radius:18px; }
+  .sample-draft-stack { display:flex; flex-direction:column; align-items:center; gap:18px; padding:8px 14px 20px; }
+  .sample-draft-item { position:relative; width:100%; max-width:340px; min-height:140px; border-radius:14px; background:#fff; box-shadow:0 10px 18px rgba(15,23,42,.18); overflow:hidden; }
+  .sample-draft-item::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg, rgba(15,118,85,.06), rgba(15,118,85,0)); pointer-events:none; }
+  .sample-draft-number { position:absolute; left:50%; top:0; transform:translate(-50%, -50%); display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:#0f172a; color:#fff; font-size:20px; font-weight:800; box-shadow:0 8px 18px rgba(15,23,42,.20); z-index:2; }
+  .sample-draft-card-body { position:relative; z-index:1; height:100%; padding:18px 14px 14px; }
+  .sample-draft-hero { height:110px; border-radius:12px; background:linear-gradient(135deg,#0f4b71 0%,#0e5b4a 35%,#9bd7be 100%); position:relative; overflow:hidden; }
+  .sample-draft-hero::before { content:""; position:absolute; inset:12px 18px 12px 18px; border-radius:10px; background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.08)); }
+  .sample-draft-hero::after { content:""; position:absolute; inset:auto 24px 12px 24px; height:18px; border-radius:999px; background:rgba(255,255,255,.2); }
+  .sample-draft-title { margin:8px 0 4px; font-size:11px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; color:#0f172a; }
+  .sample-draft-subtitle { margin:0; font-size:11px; color:#475569; }
+  .sample-draft-rows { display:grid; gap:6px; margin-top:10px; }
+  .sample-draft-row { display:flex; align-items:center; gap:8px; }
+  .sample-draft-row span { display:block; flex:1; height:6px; border-radius:999px; background:#e2e8f0; }
+  .sample-draft-row span:nth-child(2) { flex:1.4; }
+  .sample-draft-row span:nth-child(3) { flex:0.7; }
+  .sample-draft-graph { display:grid; grid-template-columns:1.3fr 1fr; gap:10px; height:88px; margin-top:10px; }
+  .sample-draft-bars { display:flex; align-items:flex-end; gap:6px; height:100%; }
+  .sample-draft-bars i { display:block; flex:1; border-radius:6px 6px 0 0; background:linear-gradient(180deg,#7dd3fc,#0f766e); }
+  .sample-draft-bars i:nth-child(2) { background:linear-gradient(180deg,#a7f3d0,#15803d); }
+  .sample-draft-pie { position:relative; border-radius:50%; background:conic-gradient(#10b981 0 42%, #a7f3d0 42% 72%, #e2e8f0 72% 100%); }
+  .sample-draft-pie::after { content:""; position:absolute; inset:18px; border-radius:50%; background:#fff; }
+  .sample-draft-mini { display:flex; align-items:center; justify-content:center; height:80px; border-radius:10px; background:#f8fafc; color:#0f172a; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  @media (max-width:600px) { .agreement-meta div { display:block; } .agreement-meta strong { display:block; text-align:left; } .agreement-sign { gap:20px; } .sample-draft-shell { width:100%; } }
 </style>
 <main class="agreement-page">
   @if ($isSample)
-    <div class="agreement-notice">Sample agreement preview. The original uploaded DOCX is available to download from the modal toolbar.</div>
-    <p style="text-align:center;font-weight:700">Draft Contract Template</p>
-  @endif
+    <div class="sample-draft-shell">
+      <div class="sample-draft-stack">
+        <div class="sample-draft-item">
+          <div class="sample-draft-number">1</div>
+          <div class="sample-draft-card-body">
+            <div class="sample-draft-hero"></div>
+            <div class="sample-draft-title">Lotte Corporation</div>
+            <p class="sample-draft-subtitle">2026 Earnings Results</p>
+          </div>
+        </div>
+        <div class="sample-draft-item">
+          <div class="sample-draft-number">2</div>
+          <div class="sample-draft-card-body">
+            <div class="sample-draft-title">Director</div>
+            <div class="sample-draft-rows">
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sample-draft-item">
+          <div class="sample-draft-number">3</div>
+          <div class="sample-draft-card-body">
+            <div class="sample-draft-title">Contents</div>
+            <div class="sample-draft-rows">
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+              <div class="sample-draft-row"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sample-draft-item">
+          <div class="sample-draft-number">4</div>
+          <div class="sample-draft-card-body">
+            <div class="sample-draft-title">Company Overview</div>
+            <div class="sample-draft-graph">
+              <div class="sample-draft-bars">
+                <i style="height:30%"></i>
+                <i style="height:52%"></i>
+                <i style="height:68%"></i>
+                <i style="height:84%"></i>
+              </div>
+              <div class="sample-draft-pie"></div>
+            </div>
+          </div>
+        </div>
+        <div class="sample-draft-item">
+          <div class="sample-draft-number">5</div>
+          <div class="sample-draft-card-body">
+            <div class="sample-draft-title">Company Overview</div>
+            <div class="sample-draft-mini">Graph</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  @else
   <h1>LULU HOLDING CORP.</h1>
   <h2>Bond Purchase Agreement</h2>
   <p>This Bond Purchase Agreement (the Agreement) is executed on <strong>{{ $agreement['commencement_date'] }}</strong> by and between:</p>
@@ -149,6 +226,7 @@
     <div>____________________________<br>Jhon Joem Ramirez<br>Authorized Representative<br>Date: ______________________</div>
     <div>____________________________<br>Bondholder<br>Date: ______________________</div>
   </div>
+  @endif
 </main>
 @if (!empty($isSigning))
 <script>

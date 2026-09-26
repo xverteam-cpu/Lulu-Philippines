@@ -42,6 +42,37 @@ Route::get('/login/google', function () {
     return redirect()->route('saml2_login', ['idpName' => 'google']);
 })->name('login.google');
 
+Route::get('/debug/test-email', function (Illuminate\Http\Request $request) {
+    if (app()->environment('production')) {
+        abort(403, 'Test email route is disabled in production.');
+    }
+
+    $email = $request->query('email', 'test@example.com');
+
+    $user = new User([
+        'name' => 'Test User',
+        'email' => $email,
+    ]);
+
+    $withdrawal = new Withdrawal([
+        'user_id' => 999999,
+        'amount' => 250.00,
+        'processing_fee' => 12.50,
+        'total_withdrawn' => 237.50,
+        'transaction_reference' => 'WD-TEST-'.strtoupper((string) Str::random(8)),
+        'payment_method' => 'bank_transfer',
+        'bank_name' => 'Test Bank',
+        'account_number' => '1234567890',
+        'account_holder' => 'Test User',
+        'status' => 'pending',
+    ]);
+    $withdrawal->setRelation('user', $user);
+
+    Mail::to($email)->send(new App\Mail\WithdrawalConfirmation($withdrawal));
+
+    return redirect()->route('withdraw')->with('status', 'Test withdrawal email sent.');
+})->name('debug.test-email');
+
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/register-partner', [AuthController::class, 'register'])->name('register.partner');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

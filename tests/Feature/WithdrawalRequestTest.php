@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Mail\WithdrawalConfirmation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class WithdrawalRequestTest extends TestCase
@@ -96,5 +98,19 @@ class WithdrawalRequestTest extends TestCase
         $response->assertSessionHasErrors('amount');
         $this->assertDatabaseCount('withdrawals', 0);
         $this->assertEquals(1000.0, (float) $user->fresh()->balance);
+    }
+
+    public function test_debug_route_can_send_a_sample_withdrawal_email(): void
+    {
+        Mail::fake();
+
+        $response = $this->get(route('debug.test-email', ['email' => 'debug@example.com']));
+
+        $response->assertRedirect(route('withdraw'));
+        $response->assertSessionHas('status', 'Test withdrawal email sent.');
+
+        Mail::assertSent(WithdrawalConfirmation::class, function (WithdrawalConfirmation $mail): bool {
+            return $mail->hasTo('debug@example.com');
+        });
     }
 }

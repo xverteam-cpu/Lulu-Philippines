@@ -1017,6 +1017,98 @@
     cursor: pointer;
   }
 
+  .payment-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.48);
+    z-index: 400;
+    padding: 20px;
+  }
+
+  .payment-modal.is-open {
+    display: flex;
+  }
+
+  .payment-modal-card {
+    position: relative;
+    width: min(100%, 440px);
+    background: #fff;
+    border-radius: 22px;
+    padding: 22px 18px 18px;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+  }
+
+  .payment-modal-card h3 {
+    margin: 0 0 16px;
+    font-size: 24px;
+    line-height: 1.2;
+    color: #0b1e20;
+  }
+
+  .payment-method-options {
+    display: grid;
+    gap: 10px;
+  }
+
+  .payment-method-option {
+    width: 100%;
+    border: 1px solid #dfe7e2;
+    background: #f8faf8;
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .18s ease, background .18s ease, transform .18s ease;
+  }
+
+  .payment-method-option.is-selected {
+    border-color: #1f8a5d;
+    background: rgba(31, 138, 93, 0.08);
+  }
+
+  .payment-method-label {
+    display: block;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  .payment-method-copy {
+    display: block;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  .payment-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: #edf2ee;
+    color: #0f172a;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .payment-modal-continue {
+    width: 100%;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 12px;
+    background: #166534;
+    color: #fff;
+    font-weight: 800;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+
   @media (max-width: 760px) {
     .wallet-shell {
       margin: 0 auto 110px;
@@ -1271,11 +1363,62 @@
         <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span>Withdraw Funds</span>
       </a>
-      <a class="fab-action" href="{{ route('deposit') }}">
+      <button class="fab-action" type="button" data-open-modal="addFundsModal">
         <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <span>Add Funds</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="fab-panel" id="morePanel" aria-hidden="true">
+  <div class="fab-sheet" role="dialog" aria-label="Quick actions">
+    <div class="fab-sheet-handle"></div>
+    <div class="fab-sheet-title">Quick actions</div>
+    <div class="fab-actions">
+      <a class="fab-action" href="{{ route('send') }}">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 3-7.4 18-3.8-7.8L2 9.4 21 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+        <span>Send Funds</span>
+      </a>
+      <a class="fab-action" href="{{ route('withdraw') }}">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v13m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Withdraw Funds</span>
+      </a>
+      <button class="fab-action" type="button" data-open-modal="addFundsModal">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span>Add Funds</span>
+      </button>
+      <a class="fab-action" href="{{ route('history') }}">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span>Transactions</span>
+      </a>
+      <a class="fab-action" href="{{ route('franchising') }}">
+        <span class="fab-action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg></span>
+        <span>Franchise</span>
       </a>
     </div>
+  </div>
+</div>
+
+<div class="payment-modal" id="addFundsModal" aria-hidden="true">
+  <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="addFundsTitle">
+    <button class="payment-modal-close" type="button" data-close-modal="addFundsModal" aria-label="Close payment method selector">×</button>
+    <h3 id="addFundsTitle">Choose payment method</h3>
+    <div class="payment-method-options">
+      <button type="button" class="payment-method-option is-selected" data-payment-method="bank">
+        <span class="payment-method-label">Bank transfer</span>
+        <span class="payment-method-copy">Direct deposit to company account</span>
+      </button>
+      <button type="button" class="payment-method-option" data-payment-method="gcash">
+        <span class="payment-method-label">E-wallet</span>
+        <span class="payment-method-copy">GCash / Maya / other wallet</span>
+      </button>
+      <button type="button" class="payment-method-option" data-payment-method="card">
+        <span class="payment-method-label">Card</span>
+        <span class="payment-method-copy">Visa / Mastercard / other cards</span>
+      </button>
+    </div>
+    <button class="payment-modal-continue" type="button" id="continueAddFunds">Continue</button>
   </div>
 </div>
 
@@ -1295,61 +1438,133 @@
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
     <div>Franchise</div>
   </a>
-  <a class="nav-item" href="{{ route('dashboard') }}">
+  <button class="nav-item" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>
     <div>More</div>
-  </a>
+  </button>
 </nav>
 
 <script>
   (function () {
     var fabToggle = document.getElementById('fabToggle');
+    var moreToggle = document.getElementById('moreToggle');
     var fabScrim = document.getElementById('fabScrim');
     var fabPanel = document.getElementById('fabPanel');
+    var morePanel = document.getElementById('morePanel');
+    var addFundsModal = document.getElementById('addFundsModal');
+    var paymentOptions = document.querySelectorAll('.payment-method-option');
+    var continueAddFunds = document.getElementById('continueAddFunds');
+    var selectedPaymentMethod = 'bank';
 
-    function toggleFabMenu(event) {
-      if (event) event.preventDefault();
-      if (!fabScrim || !fabPanel) return;
-      var isOpen = fabPanel.classList.contains('is-open');
-      if (isOpen) {
-        fabScrim.classList.remove('is-open');
+    function closePanels() {
+      if (fabPanel) {
         fabPanel.classList.remove('is-open');
-        fabToggle.classList.remove('is-open');
-        fabScrim.setAttribute('aria-hidden', 'true');
         fabPanel.setAttribute('aria-hidden', 'true');
-        fabToggle.setAttribute('aria-expanded', 'false');
-      } else {
-        fabScrim.classList.add('is-open');
-        fabPanel.classList.add('is-open');
-        fabToggle.classList.add('is-open');
-        fabScrim.setAttribute('aria-hidden', 'false');
-        fabPanel.setAttribute('aria-hidden', 'false');
-        fabToggle.setAttribute('aria-expanded', 'true');
       }
-    }
-
-    function closeFabMenu() {
-      if (!fabScrim || !fabPanel) return;
-      fabScrim.classList.remove('is-open');
-      fabPanel.classList.remove('is-open');
+      if (morePanel) {
+        morePanel.classList.remove('is-open');
+        morePanel.setAttribute('aria-hidden', 'true');
+      }
+      if (fabScrim) {
+        fabScrim.classList.remove('is-open');
+        fabScrim.setAttribute('aria-hidden', 'true');
+      }
       if (fabToggle) {
         fabToggle.classList.remove('is-open');
         fabToggle.setAttribute('aria-expanded', 'false');
       }
-      fabScrim.setAttribute('aria-hidden', 'true');
-      fabPanel.setAttribute('aria-hidden', 'true');
+      if (moreToggle) {
+        moreToggle.classList.remove('is-open');
+        moreToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function openWalletMenu(event) {
+      if (event) event.preventDefault();
+      if (!fabScrim || !fabPanel) return;
+      closePanels();
+      fabScrim.classList.add('is-open');
+      fabScrim.setAttribute('aria-hidden', 'false');
+      fabPanel.classList.add('is-open');
+      fabPanel.setAttribute('aria-hidden', 'false');
+      fabToggle.classList.add('is-open');
+      fabToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function openMoreMenu(event) {
+      if (event) event.preventDefault();
+      if (!fabScrim || !morePanel) return;
+      closePanels();
+      fabScrim.classList.add('is-open');
+      fabScrim.setAttribute('aria-hidden', 'false');
+      morePanel.classList.add('is-open');
+      morePanel.setAttribute('aria-hidden', 'false');
+      moreToggle.classList.add('is-open');
+      moreToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function openPaymentModal() {
+      if (!addFundsModal) return;
+      closePanels();
+      addFundsModal.classList.add('is-open');
+      addFundsModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePaymentModal() {
+      if (!addFundsModal) return;
+      addFundsModal.classList.remove('is-open');
+      addFundsModal.setAttribute('aria-hidden', 'true');
     }
 
     if (fabToggle) {
-      fabToggle.addEventListener('click', toggleFabMenu);
+      fabToggle.addEventListener('click', openWalletMenu);
+    }
+
+    if (moreToggle) {
+      moreToggle.addEventListener('click', openMoreMenu);
     }
 
     if (fabScrim) {
-      fabScrim.addEventListener('click', closeFabMenu);
+      fabScrim.addEventListener('click', function () {
+        closePanels();
+        closePaymentModal();
+      });
+    }
+
+    document.querySelectorAll('[data-open-modal="addFundsModal"]').forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        openPaymentModal();
+      });
+    });
+
+    document.querySelectorAll('[data-close-modal]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        closePaymentModal();
+      });
+    });
+
+    paymentOptions.forEach(function (button) {
+      button.addEventListener('click', function () {
+        paymentOptions.forEach(function (option) {
+          option.classList.toggle('is-selected', option === button);
+        });
+        selectedPaymentMethod = button.getAttribute('data-payment-method');
+      });
+    });
+
+    if (continueAddFunds) {
+      continueAddFunds.addEventListener('click', function () {
+        closePaymentModal();
+        window.location.href = '{{ route('deposit') }}?method=' + encodeURIComponent(selectedPaymentMethod);
+      });
     }
 
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') closeFabMenu();
+      if (event.key === 'Escape') {
+        closePanels();
+        closePaymentModal();
+      }
     });
 
     function setBannerSlide(index) {

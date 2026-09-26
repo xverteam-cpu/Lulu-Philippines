@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+  $selectedMethod = request('method', 'bank');
+@endphp
+
 @section('content')
 <style>
   .deposit-shell { max-width:520px; margin:28px auto; }
@@ -29,9 +33,9 @@
       <div class="field">
         <label class="label" for="method">Payment method</label>
         <select id="method" name="method" class="select">
-          <option value="gcash">Gcash</option>
-          <option value="bank">Bank Transfer</option>
-          <option value="card">Card</option>
+          <option value="gcash" {{ $selectedMethod === 'gcash' ? 'selected' : '' }}>Gcash</option>
+          <option value="bank" {{ $selectedMethod === 'bank' ? 'selected' : '' }}>Bank Transfer</option>
+          <option value="card" {{ $selectedMethod === 'card' ? 'selected' : '' }}>Card</option>
         </select>
       </div>
 

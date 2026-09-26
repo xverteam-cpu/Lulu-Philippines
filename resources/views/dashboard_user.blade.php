@@ -425,12 +425,15 @@
 
   .package-card--empty {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.34);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.52);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
     backdrop-filter: blur(2px);
+    color: #0d5d3c;
   }
 
   .package-card.crunch {
@@ -512,14 +515,7 @@
   }
 
   .package-menu {
-    display: grid;
-    width: clamp(30px, 5.5vw, 42px);
-    aspect-ratio: 1;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(0, 30, 25, .46);
-    color: #fff;
-    font-size: 12px;
+    display: none;
   }
 
   .package-card-actions {
@@ -529,7 +525,7 @@
     right: 10px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     z-index: 2;
   }
 
@@ -537,36 +533,62 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: clamp(20px, 3.8vw, 28px);
-    height: clamp(20px, 3.8vw, 28px);
+    width: clamp(22px, 4vw, 30px);
+    height: clamp(22px, 4vw, 30px);
     border: 0;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.86);
     color: #0b5d3b;
     text-decoration: none;
-    font-size: 20px;
+    font-size: clamp(18px, 3vw, 22px);
     line-height: 1;
     font-weight: 700;
-    box-shadow: 0 10px 22px rgba(15, 118, 85, 0.18);
+    box-shadow: 0 10px 20px rgba(15, 118, 85, 0.18);
   }
 
   .package-plus-action:hover {
     transform: translateY(-1px);
   }
 
+  .package-empty-card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
+    color: #0f5c3b;
+  }
+
+  .package-empty-name {
+    font-size: clamp(12px, 2.4vw, 18px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .package-empty-caption {
+    font-size: clamp(8px, 1.6vw, 11px);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
   .package-empty-action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: clamp(56px, 12vw, 88px);
-    height: clamp(56px, 12vw, 88px);
+    width: clamp(38px, 8vw, 52px);
+    height: clamp(38px, 8vw, 52px);
     border: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.78);
+    background: rgba(255, 255, 255, 0.72);
     color: #0d5d3c;
     text-decoration: none;
-    box-shadow: 0 10px 25px rgba(15, 118, 85, 0.18);
-    font-size: clamp(32px, 7vw, 52px);
+    box-shadow: 0 10px 20px rgba(15, 118, 85, 0.12);
+    font-size: clamp(24px, 5vw, 30px);
     line-height: 1;
     font-weight: 600;
     transition: transform .18s ease, box-shadow .18s ease;
@@ -574,7 +596,7 @@
 
   .package-empty-action:hover {
     transform: scale(1.04);
-    box-shadow: 0 14px 30px rgba(15, 118, 85, 0.22);
+    box-shadow: 0 12px 24px rgba(15, 118, 85, 0.18);
   }
 
   .balance-card {
@@ -892,7 +914,7 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    width: 25%;
+    width: 20%;
     min-width: 0;
     color: #66747b;
     font-weight: 500;
@@ -900,6 +922,11 @@
     white-space: nowrap;
     text-decoration: none;
     transition: transform .2s ease, color .2s ease;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
   }
 
   .nav-item:hover {
@@ -917,6 +944,36 @@
     width: 18px;
     height: 18px;
     color: currentColor;
+  }
+
+  .nav-item--scan {
+    position: relative;
+    z-index: 2;
+  }
+
+  .nav-scan {
+    position: relative;
+    top: -18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 10px 22px rgba(15,23,42,0.12);
+    border: 1px solid rgba(15,118,85,0.08);
+    color: #0f7a4e;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .nav-scan:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(15,23,42,0.14);
   }
 
   .bottom-nav a {
@@ -952,9 +1009,9 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translate(-50%, 12px) scale(.96);
+    transform: translate(-50%, 18px) scale(.88);
     transform-origin: center bottom;
-    transition: opacity .2s ease, transform .24s cubic-bezier(.22,1,.36,1), visibility .2s ease;
+    transition: opacity .22s ease, transform .28s cubic-bezier(.2,.8,.2,1), visibility .22s ease;
   }
 
   .fab-panel.is-open {
@@ -970,6 +1027,15 @@
     padding: 18px;
     background: #fff;
     box-shadow: 0 16px 42px rgba(3,7,18,0.18);
+    transform: scale(.96);
+    transform-origin: center bottom;
+    transition: transform .32s cubic-bezier(.2,.8,.2,1), border-radius .32s ease, box-shadow .32s ease;
+  }
+
+  .fab-panel.is-open .fab-sheet {
+    transform: scale(1);
+    border-radius: 24px;
+    box-shadow: 0 22px 54px rgba(3,7,18,0.2);
   }
 
   .fab-sheet-handle {
@@ -1363,7 +1429,6 @@
           <article class="package-card {{ $packageKey }}">
             <div class="package-card-actions">
               <a class="package-plus-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy another {{ $package['name'] }} package">+</a>
-              <span class="package-menu" aria-hidden="true">•••</span>
             </div>
             <div class="package-brand">
               <div>
@@ -1378,6 +1443,10 @@
           </article>
         @else
           <article class="package-card package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} package not activated">
+            <div class="package-empty-card-copy">
+              <div class="package-empty-name">{{ $package['name'] }}</div>
+              <div class="package-empty-caption">Inactive</div>
+            </div>
             <a class="package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy {{ $package['name'] }} package">+</a>
           </article>
         @endif
@@ -1469,6 +1538,9 @@
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     <div>Transactions</div>
   </a>
+  <button class="nav-item nav-item--scan" type="button" id="fabToggle" aria-label="Open wallet actions" aria-expanded="false">
+    <span class="nav-scan" aria-hidden="true">+</span>
+  </button>
   <a class="nav-item" href="{{ route('franchising') }}">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
     <div>Franchise</div>
@@ -1481,6 +1553,7 @@
 
 <script>
   (function () {
+    var fabToggle = document.getElementById('fabToggle');
     var moreToggle = document.getElementById('moreToggle');
     var fabScrim = document.getElementById('fabScrim');
     var fabPanel = document.getElementById('fabPanel');
@@ -1507,21 +1580,42 @@
         moreToggle.classList.remove('is-open');
         moreToggle.setAttribute('aria-expanded', 'false');
       }
+      if (fabToggle) {
+        fabToggle.classList.remove('is-open');
+        fabToggle.setAttribute('aria-expanded', 'false');
+      }
     }
 
     function openWalletMenu(event) {
       if (event) event.preventDefault();
       if (!fabScrim || !fabPanel) return;
+
+      var isOpen = fabPanel.classList.contains('is-open');
+      if (isOpen) {
+        closePanels();
+        return;
+      }
+
       closePanels();
       fabScrim.classList.add('is-open');
       fabScrim.setAttribute('aria-hidden', 'false');
       fabPanel.classList.add('is-open');
       fabPanel.setAttribute('aria-hidden', 'false');
+      if (fabToggle) {
+        fabToggle.setAttribute('aria-expanded', 'true');
+      }
     }
 
     function openMoreMenu(event) {
       if (event) event.preventDefault();
       if (!fabScrim || !morePanel) return;
+
+      var isOpen = morePanel.classList.contains('is-open');
+      if (isOpen) {
+        closePanels();
+        return;
+      }
+
       closePanels();
       fabScrim.classList.add('is-open');
       fabScrim.setAttribute('aria-hidden', 'false');
@@ -1542,6 +1636,13 @@
       if (!addFundsModal) return;
       addFundsModal.classList.remove('is-open');
       addFundsModal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (fabToggle) {
+      fabToggle.addEventListener('click', function (event) {
+        openWalletMenu(event);
+        fabToggle.setAttribute('aria-expanded', 'true');
+      });
     }
 
     if (moreToggle) {

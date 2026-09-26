@@ -258,7 +258,7 @@ Route::get('/invest/purchase/{package}', function (string $package) {
         'package' => $selectedPackage,
         'phpRate' => $meta['rate'],
         'phpRateUpdatedAt' => $meta['updated_at'],
-        'requiresAgreement' => true,
+        'requiresAgreement' => false,
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
 

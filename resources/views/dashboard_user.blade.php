@@ -436,6 +436,27 @@
     background: #153d3f url("{{ asset('images/credit-card-background.svg') }}") center / cover no-repeat;
   }
 
+  .package-card.crunch .package-name,
+  .package-card.crunch .package-caption,
+  .package-card.crunch .package-label,
+  .package-card.crunch .package-value {
+    color: #c0c0c0;
+  }
+
+  .package-card.loaded .package-name,
+  .package-card.loaded .package-caption,
+  .package-card.loaded .package-label,
+  .package-card.loaded .package-value {
+    color: #d4af37;
+  }
+
+  .package-card.supreme .package-name,
+  .package-card.supreme .package-caption,
+  .package-card.supreme .package-label,
+  .package-card.supreme .package-value {
+    color: #e5e4e2;
+  }
+
   .package-brand {
     display: flex;
     align-items: center;
@@ -1259,7 +1280,7 @@
 </div>
 
 <nav class="bottom-nav" aria-label="Account navigation">
-  <a class="nav-item" href="{{ route('home') }}">
+  <a class="nav-item active" href="{{ route('dashboard') }}" aria-current="page">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-7 9 7v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
     <div>Home</div>
   </a>
@@ -1274,9 +1295,9 @@
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
     <div>Franchise</div>
   </a>
-  <a class="nav-item active" href="{{ route('dashboard') }}" aria-current="page">
+  <a class="nav-item" href="{{ route('dashboard') }}">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>
-    <div>Wallet</div>
+    <div>More</div>
   </a>
 </nav>
 

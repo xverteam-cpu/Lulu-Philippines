@@ -27,7 +27,7 @@ Route::get('/investors', function () {
 })->name('investors');
 
 Route::get('/home', function () {
-    return view('lotteria');
+    return redirect()->route('public.home');
 })->name('home');
 
 Route::get('/order', function () {

@@ -1311,7 +1311,7 @@
   }
   $availableBalance = (float) $user->balance;
   $approvedInvestments = $investments->where('status', 'approved');
-  $totalAssets = $availableBalance + $approvedInvestments->sum(fn($investment) => (float) $investment->amount);
+  $totalInvestment = $approvedInvestments->sum(fn($investment) => (float) $investment->amount);
   $packageDefinitions = \App\Support\InvestmentPackages::all();
   $packageEarnings = $approvedInvestments
       ->groupBy('package_key')
@@ -1346,7 +1346,7 @@
     <div class="hero-stats">
       <div class="hero-stat">
         <div class="hero-stat-label">Assets</div>
-        <div class="hero-stat-value">${{ number_format($totalAssets, 2) }}</div>
+        <div class="hero-stat-value">${{ number_format($totalInvestment, 2) }}</div>
       </div>
     </div>
   </section>

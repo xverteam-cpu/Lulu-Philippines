@@ -423,6 +423,16 @@
     isolation: isolate;
   }
 
+  .package-card--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
+    backdrop-filter: blur(2px);
+  }
+
   .package-card.crunch {
     background: #006839 url("{{ asset('images/wallet-card-background.svg') }}") center / cover no-repeat;
   }
@@ -502,9 +512,6 @@
   }
 
   .package-menu {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     display: grid;
     width: clamp(30px, 5.5vw, 42px);
     aspect-ratio: 1;
@@ -513,6 +520,61 @@
     background: rgba(0, 30, 25, .46);
     color: #fff;
     font-size: 12px;
+  }
+
+  .package-card-actions {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  .package-plus-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(20px, 3.8vw, 28px);
+    height: clamp(20px, 3.8vw, 28px);
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.86);
+    color: #0b5d3b;
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(15, 118, 85, 0.18);
+  }
+
+  .package-plus-action:hover {
+    transform: translateY(-1px);
+  }
+
+  .package-empty-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(56px, 12vw, 88px);
+    height: clamp(56px, 12vw, 88px);
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    color: #0d5d3c;
+    text-decoration: none;
+    box-shadow: 0 10px 25px rgba(15, 118, 85, 0.18);
+    font-size: clamp(32px, 7vw, 52px);
+    line-height: 1;
+    font-weight: 600;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .package-empty-action:hover {
+    transform: scale(1.04);
+    box-shadow: 0 14px 30px rgba(15, 118, 85, 0.22);
   }
 
   .balance-card {
@@ -812,7 +874,7 @@
     gap: 0;
     max-width: 480px;
     margin: 0;
-    padding: 0 18px;
+    padding: 0 12px;
     height: 68px;
     background: rgba(255,255,255,.95);
     border-radius: 22px;
@@ -830,8 +892,8 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    width: 54px;
-    min-width: 54px;
+    width: 25%;
+    min-width: 0;
     color: #66747b;
     font-weight: 500;
     font-size: 9px;
@@ -864,43 +926,6 @@
   .discover-item,
   .section-link {
     text-decoration: none;
-  }
-
-  .nav-scan {
-    position: relative;
-    top: -17px;
-    width: 58px;
-    height: 58px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 4px solid rgba(215,245,225,.96);
-    border-radius: 50%;
-    background: linear-gradient(145deg,#089552,#00683a);
-    box-shadow: 0 9px 22px rgba(0,107,59,.30);
-    color: #fff;
-    font-size: 31px;
-    font-weight: 400;
-    line-height: 1;
-    transition: transform .25s ease, background .25s ease;
-  }
-
-  .nav-more.is-open .nav-scan {
-    transform: rotate(45deg);
-    background: #075e3c;
-  }
-
-  .nav-scan:hover {
-    transform: translateY(-2px);
-  }
-
-  .nav-scan img,
-  .nav-scan svg {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    display: block;
-    color: #fff;
   }
 
   .fab-scrim {
@@ -1330,19 +1355,32 @@
     <h2 class="package-heading" id="packageHeading">Available Bonds</h2>
     <div class="package-grid">
       @foreach ($packageDefinitions as $packageKey => $package)
-        <article class="package-card {{ $packageKey }}">
-          <div class="package-brand">
-            <div>
-              <div class="package-name">{{ $package['name'] }}</div>
-              <div class="package-caption">ACCOUNT PACKAGE</div>
+        @php
+          $hasPackageInvestment = $approvedInvestments->contains('package_key', $packageKey);
+        @endphp
+
+        @if ($hasPackageInvestment)
+          <article class="package-card {{ $packageKey }}">
+            <div class="package-card-actions">
+              <a class="package-plus-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy another {{ $package['name'] }} package">+</a>
+              <span class="package-menu" aria-hidden="true">•••</span>
             </div>
-          </div>
-          <span class="package-menu" aria-hidden="true">•••</span>
-          <div class="package-balance">
-            <div class="package-label">EARNINGS</div>
-            <div class="package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
-          </div>
-        </article>
+            <div class="package-brand">
+              <div>
+                <div class="package-name">{{ $package['name'] }}</div>
+                <div class="package-caption">ACCOUNT PACKAGE</div>
+              </div>
+            </div>
+            <div class="package-balance">
+              <div class="package-label">EARNINGS</div>
+              <div class="package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
+            </div>
+          </article>
+        @else
+          <article class="package-card package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} package not activated">
+            <a class="package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy {{ $package['name'] }} package">+</a>
+          </article>
+        @endif
       @endforeach
     </div>
   </section>
@@ -1431,9 +1469,6 @@
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     <div>Transactions</div>
   </a>
-  <button class="nav-item nav-more" type="button" id="fabToggle" aria-label="Open wallet actions" aria-controls="fabPanel" aria-expanded="false">
-    <span class="nav-scan" aria-hidden="true">+</span>
-  </button>
   <a class="nav-item" href="{{ route('franchising') }}">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
     <div>Franchise</div>
@@ -1446,7 +1481,6 @@
 
 <script>
   (function () {
-    var fabToggle = document.getElementById('fabToggle');
     var moreToggle = document.getElementById('moreToggle');
     var fabScrim = document.getElementById('fabScrim');
     var fabPanel = document.getElementById('fabPanel');
@@ -1469,10 +1503,6 @@
         fabScrim.classList.remove('is-open');
         fabScrim.setAttribute('aria-hidden', 'true');
       }
-      if (fabToggle) {
-        fabToggle.classList.remove('is-open');
-        fabToggle.setAttribute('aria-expanded', 'false');
-      }
       if (moreToggle) {
         moreToggle.classList.remove('is-open');
         moreToggle.setAttribute('aria-expanded', 'false');
@@ -1487,8 +1517,6 @@
       fabScrim.setAttribute('aria-hidden', 'false');
       fabPanel.classList.add('is-open');
       fabPanel.setAttribute('aria-hidden', 'false');
-      fabToggle.classList.add('is-open');
-      fabToggle.setAttribute('aria-expanded', 'true');
     }
 
     function openMoreMenu(event) {
@@ -1514,10 +1542,6 @@
       if (!addFundsModal) return;
       addFundsModal.classList.remove('is-open');
       addFundsModal.setAttribute('aria-hidden', 'true');
-    }
-
-    if (fabToggle) {
-      fabToggle.addEventListener('click', openWalletMenu);
     }
 
     if (moreToggle) {

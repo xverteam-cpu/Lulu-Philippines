@@ -14,8 +14,14 @@ class DailyInterestAccrualService
 
         $investments = Investment::query()
             ->where('status', 'approved')
-            ->whereNotNull('starts_at')
-            ->where('starts_at', '<=', now())
+            ->where(function ($query) {
+                $query->whereNotNull('starts_at')
+                    ->orWhereNotNull('approved_at');
+            })
+            ->where(function ($query) {
+                $query->where('starts_at', '<=', now())
+                    ->orWhere('approved_at', '<=', now());
+            })
             ->get();
 
         foreach ($investments as $investment) {
@@ -31,8 +37,14 @@ class DailyInterestAccrualService
 
         $investments = $user->investments()
             ->where('status', 'approved')
-            ->whereNotNull('starts_at')
-            ->where('starts_at', '<=', now())
+            ->where(function ($query) {
+                $query->whereNotNull('starts_at')
+                    ->orWhereNotNull('approved_at');
+            })
+            ->where(function ($query) {
+                $query->where('starts_at', '<=', now())
+                    ->orWhere('approved_at', '<=', now());
+            })
             ->get();
 
         foreach ($investments as $investment) {

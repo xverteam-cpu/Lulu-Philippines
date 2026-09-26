@@ -62,15 +62,18 @@ class Investment extends Model
         return (float) $this->amount * ((float) $this->daily_interest_rate / 100);
     }
 
+    public function effectiveStartDate(): Carbon
+    {
+        return $this->starts_at ?? $this->approved_at ?? $this->created_at ?? now();
+    }
+
     public function elapsedInterestDays(): int
     {
-        if (! $this->starts_at) {
-            return 0;
-        }
+        $startDate = $this->effectiveStartDate();
 
         return min(
             $this->duration_days,
-            max(0, (int) floor($this->starts_at->diffInDays(now())))
+            max(0, (int) floor($startDate->diffInDays(now())))
         );
     }
 
@@ -86,8 +89,15 @@ class Investment extends Model
 
     public function accrueDailyInterest(): float
     {
-        if ($this->status !== 'approved' || ! $this->starts_at) {
+        $effectiveStartDate = $this->effectiveStartDate();
+
+        if ($this->status !== 'approved' || ! $effectiveStartDate) {
             return 0.0;
+        }
+
+        if (! $this->starts_at && $this->approved_at) {
+            $this->starts_at = $this->approved_at;
+            $this->saveQuietly();
         }
 
         $creditedDays = (int) $this->interest_days_credited;
@@ -96,7 +106,7 @@ class Investment extends Model
         }
 
         $today = now()->startOfDay();
-        $startDate = $this->starts_at->startOfDay();
+        $startDate = ($this->starts_at ?? $effectiveStartDate)->startOfDay();
         $nextDueDate = $this->last_interest_accrued_at
             ? $this->last_interest_accrued_at->copy()->startOfDay()->addDay()
             : $startDate->copy()->addDay();
@@ -105,7 +115,7 @@ class Investment extends Model
             return 0.0;
         }
 
-        $daysDue = $today->diffInDays($nextDueDate) + 1;
+        $daysDue = $nextDueDate->diffInDays($today) + 1;
         $daysDue = min($daysDue, $this->duration_days - $creditedDays);
 
         if ($daysDue <= 0) {

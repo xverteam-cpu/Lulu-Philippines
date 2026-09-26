@@ -57,4 +57,31 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('$20.00')
             ->assertDontSee('$80.00');
     }
+
+    public function test_approved_investments_without_starts_at_use_approved_at_for_accrual(): void
+    {
+        $user = User::factory()->create([
+            'balance' => 0,
+        ]);
+
+        $investment = Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 100,
+            'payment_method' => 'account_balance',
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'starts_at' => null,
+            'approved_at' => now()->subDays(2),
+            'status' => 'approved',
+        ]);
+
+        $accrued = \App\Support\DailyInterestAccrualService::accrueDueInterestForUser($user);
+
+        $this->assertGreaterThan(0, $accrued);
+        $this->assertGreaterThan(0, (float) $investment->fresh()->interest_days_credited);
+        $this->assertGreaterThan(0, (float) $user->fresh()->balance);
+    }
 }

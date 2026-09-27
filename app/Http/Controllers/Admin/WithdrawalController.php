@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WithdrawalConfirmation;
 use App\Models\Withdrawal;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class WithdrawalController extends Controller
@@ -14,6 +17,7 @@ class WithdrawalController extends Controller
     {
         $this->middleware(function ($request, $next) {
             abort_unless($request->user()?->is_admin, 403);
+
             return $next($request);
         });
     }
@@ -70,6 +74,18 @@ class WithdrawalController extends Controller
             'approved_by' => $request->user()->id,
             'approved_at' => now(),
         ]);
+
+        try {
+            $withdrawal->load('user');
+            Mail::to($withdrawal->user->email)
+                ->send(new WithdrawalConfirmation($withdrawal));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to send approved withdrawal email', [
+                'withdrawal_id' => $withdrawal->id,
+                'user_id' => $withdrawal->user_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()
             ->back()

@@ -93,12 +93,59 @@ class WithdrawalRequestTest extends TestCase
             $html = $mail->render();
 
             $this->assertTrue($mail->hasTo($user->email));
+            $this->assertStringContainsString('withdrawal request has been received successfully', $html);
+            $this->assertStringNotContainsString('Withdrawal Successful', $html);
+            $this->assertStringContainsString('data:image/jpeg;base64,', $html);
             $this->assertStringContainsString('Profile Client Name', $html);
             $this->assertStringContainsString((string) $withdrawal->transaction_reference, $html);
             $this->assertStringContainsString($withdrawal->created_at->format('F j, Y'), $html);
             $this->assertStringContainsString('Pending', $html);
             $this->assertStringContainsString('Test Bank', $html);
             $this->assertStringContainsString('1234567890', $html);
+            $this->assertStringNotContainsString('Dwell Realty', $html);
+            $this->assertStringNotContainsString('SD5461SFDF', $html);
+            $this->assertStringContainsString('$125.00', $html);
+            $this->assertStringContainsString('-$6.25', $html);
+            $this->assertStringContainsString('$118.75', $html);
+
+            return true;
+        });
+    }
+
+    public function test_approval_sends_the_supplied_success_image_template_with_current_withdrawal_details(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create(['name' => 'Approved Client']);
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'amount' => 125,
+            'transaction_reference' => 'WD-APPROVED-TEST',
+            'processing_fee' => 6.25,
+            'total_withdrawn' => 118.75,
+            'payment_method' => 'bank_transfer',
+            'bank_name' => 'Test Bank',
+            'account_number' => '1234567890',
+            'account_holder' => 'Approved Client',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.withdrawals.approve', $withdrawal))
+            ->assertSessionHas('status', 'Withdrawal approved successfully.');
+
+        $this->assertSame('approved', $withdrawal->fresh()->status);
+        Mail::assertSent(WithdrawalConfirmation::class, function (WithdrawalConfirmation $mail) use ($user, $withdrawal): bool {
+            $html = $mail->render();
+
+            $this->assertTrue($mail->hasTo($user->email));
+            $this->assertStringContainsString('Withdrawal successful', $html);
+            $this->assertStringContainsString('Approved Client', $html);
+            $this->assertStringContainsString('WD-APPROVED-TEST', $html);
+            $this->assertStringContainsString($withdrawal->fresh()->approved_at->format('F j, Y'), $html);
+            $this->assertStringContainsString('Approved', $html);
+            $this->assertStringContainsString('data:image/jpeg;base64,', $html);
             $this->assertStringContainsString('$125.00', $html);
             $this->assertStringContainsString('-$6.25', $html);
             $this->assertStringContainsString('$118.75', $html);

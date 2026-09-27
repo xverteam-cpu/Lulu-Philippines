@@ -25,6 +25,9 @@ class WithdrawalConfirmation extends Mailable
         $processingFee = round($withdrawalAmount * self::PROCESSING_FEE_RATE, 2);
         $totalWithdrawn = round($withdrawalAmount - $processingFee, 2);
         $clientName = $user->name ?: $user->email;
+        $view = $this->withdrawal->status === 'approved'
+            ? 'emails.withdrawal-confirmation'
+            : 'emails.withdrawal-request-confirmation';
 
         return $this->from(
             config('mail.from.address', 'lotteriaph@gmail.com'),
@@ -32,7 +35,7 @@ class WithdrawalConfirmation extends Mailable
         )
             ->to($user->email, $clientName)
             ->subject('Your Lulu withdrawal confirmation')
-            ->view('emails.withdrawal-confirmation')
+            ->view($view)
             ->with([
                 'clientName' => $clientName,
                 'transactionReference' => $this->withdrawal->transaction_reference
@@ -44,7 +47,8 @@ class WithdrawalConfirmation extends Mailable
                 'processingFee' => number_format($processingFee, 2),
                 'totalWithdrawn' => number_format($totalWithdrawn, 2),
                 'status' => ucfirst($this->withdrawal->status),
-                'withdrawalDate' => $this->withdrawal->created_at?->format('F j, Y') ?? now()->format('F j, Y'),
+                'withdrawalDate' => ($this->withdrawal->approved_at ?? $this->withdrawal->created_at)?->format('F j, Y')
+                    ?? now()->format('F j, Y'),
                 'dashboardUrl' => url('/dashboard'),
             ]);
     }

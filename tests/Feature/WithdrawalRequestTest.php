@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\WithdrawalConfirmation;
 use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -65,6 +66,45 @@ class WithdrawalRequestTest extends TestCase
         $this->assertSame('1234567890', $user->fresh()->bank_account_number);
         $this->assertSame('Test User', $user->fresh()->bank_account_holder);
         $this->assertEquals(450.0, (float) $user->fresh()->balance);
+    }
+
+    public function test_withdrawal_email_uses_the_users_details_and_shows_the_five_percent_net_amount(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create([
+            'name' => 'Profile Client Name',
+            'balance' => 500,
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        $this->actingAs($user);
+        $this->withSession(['pin_verified' => true]);
+        $this->post('/withdrawals', [
+            'amount' => 125,
+            'bank_name' => 'Test Bank',
+            'account_number' => '1234567890',
+            'account_holder' => 'Different Account Holder',
+        ]);
+
+        $withdrawal = Withdrawal::query()->firstOrFail();
+
+        Mail::assertSent(WithdrawalConfirmation::class, function (WithdrawalConfirmation $mail) use ($user, $withdrawal): bool {
+            $html = $mail->render();
+
+            $this->assertTrue($mail->hasTo($user->email));
+            $this->assertStringContainsString('Profile Client Name', $html);
+            $this->assertStringContainsString((string) $withdrawal->transaction_reference, $html);
+            $this->assertStringContainsString($withdrawal->created_at->format('F j, Y'), $html);
+            $this->assertStringContainsString('Pending', $html);
+            $this->assertStringContainsString('Test Bank', $html);
+            $this->assertStringContainsString('1234567890', $html);
+            $this->assertStringContainsString('$125.00', $html);
+            $this->assertStringContainsString('-$6.25', $html);
+            $this->assertStringContainsString('$118.75', $html);
+
+            return true;
+        });
     }
 
     public function test_user_cannot_withdraw_below_the_minimum_or_above_the_maximum(): void

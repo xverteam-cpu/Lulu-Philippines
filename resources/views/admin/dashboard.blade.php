@@ -61,12 +61,71 @@
   .users-page .search-box {
     flex: 0 1 520px;
     min-width: min(320px, 100%);
+    position: relative;
   }
 
   .users-page .search-input {
     width: 100%;
     box-sizing: border-box;
     background: #fff;
+  }
+
+  .user-search-suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    left: 0;
+    z-index: 120;
+    display: none;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, .14);
+  }
+
+  .user-search-suggestions.is-open {
+    display: block;
+  }
+
+  .user-search-suggestion {
+    display: block;
+    width: 100%;
+    padding: 11px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #0f172a;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .user-search-suggestion:hover,
+  .user-search-suggestion:focus-visible,
+  .user-search-suggestion.is-active {
+    outline: none;
+    background: #f1f5f9;
+  }
+
+  .user-search-suggestion-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .user-search-suggestion-meta {
+    display: block;
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .user-search-suggestions-empty {
+    padding: 12px;
+    color: #64748b;
+    font-size: 13px;
   }
 
   .users-page .toolbar-actions {
@@ -314,16 +373,26 @@
         <p class="users-page-subtitle">{{ $users->total() }} matching accounts</p>
       </div>
       <div class="search-box">
-          <form class="search-form" method="get" action="{{ route('admin.dashboard') }}">
-            <input
-              class="search-input"
-              name="search"
-              value="{{ $search }}"
-              type="search"
-              placeholder="Search by name, email, phone..."
-              aria-label="Search users"
-            >
-          </form>
+        <form class="search-form" id="user-search-form" method="get" action="{{ route('admin.dashboard') }}" autocomplete="off">
+          <input
+            class="search-input"
+            id="user-search-input"
+            name="search"
+            value="{{ $search }}"
+            type="search"
+            placeholder="Search by name, email, phone..."
+            aria-label="Search users"
+            aria-autocomplete="list"
+            aria-controls="user-search-suggestions"
+            aria-expanded="false"
+          >
+        </form>
+        <div
+          class="user-search-suggestions"
+          id="user-search-suggestions"
+          role="listbox"
+          aria-label="Matching users"
+        ></div>
       </div>
     </header>
 
@@ -592,6 +661,140 @@
 
 <script>
   (function () {
+    var searchInput = document.getElementById('user-search-input');
+    var searchForm = document.getElementById('user-search-form');
+    var suggestions = document.getElementById('user-search-suggestions');
+    var suggestionUrl = @json(route('admin.user-search-suggestions'));
+    var debounceTimer;
+    var activeIndex = -1;
+    var currentUsers = [];
+    var requestNumber = 0;
+
+    function closeSuggestions() {
+      suggestions.classList.remove('is-open');
+      searchInput.setAttribute('aria-expanded', 'false');
+      searchInput.removeAttribute('aria-activedescendant');
+      activeIndex = -1;
+    }
+
+    function showSuggestions() {
+      suggestions.classList.add('is-open');
+      searchInput.setAttribute('aria-expanded', 'true');
+    }
+
+    function chooseSuggestion(index) {
+      var user = currentUsers[index];
+      if (!user) return;
+
+      searchInput.value = user.name;
+      closeSuggestions();
+      searchForm.submit();
+    }
+
+    function renderSuggestions(users) {
+      currentUsers = users;
+      activeIndex = -1;
+      suggestions.replaceChildren();
+
+      if (!users.length) {
+        var emptyMessage = document.createElement('div');
+        emptyMessage.className = 'user-search-suggestions-empty';
+        emptyMessage.textContent = 'No matching users found.';
+        suggestions.appendChild(emptyMessage);
+        showSuggestions();
+        return;
+      }
+
+      users.forEach(function (user, index) {
+        var option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'user-search-suggestion';
+        option.id = 'user-search-option-' + user.id;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.addEventListener('mousedown', function (event) {
+          event.preventDefault();
+          chooseSuggestion(index);
+        });
+
+        var name = document.createElement('span');
+        name.className = 'user-search-suggestion-name';
+        name.textContent = user.name || 'Unnamed user';
+
+        var meta = document.createElement('span');
+        meta.className = 'user-search-suggestion-meta';
+        meta.textContent = [user.email, user.phone].filter(Boolean).join(' · ');
+
+        option.appendChild(name);
+        option.appendChild(meta);
+        suggestions.appendChild(option);
+      });
+
+      showSuggestions();
+    }
+
+    if (searchInput && searchForm && suggestions) {
+      searchInput.addEventListener('input', function () {
+        window.clearTimeout(debounceTimer);
+        var query = searchInput.value.trim();
+        var thisRequest = ++requestNumber;
+
+        if (query.length < 2) {
+          currentUsers = [];
+          closeSuggestions();
+          return;
+        }
+
+        debounceTimer = window.setTimeout(function () {
+          fetch(suggestionUrl + '?q=' + encodeURIComponent(query), {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+          }).then(function (response) {
+            if (!response.ok) throw new Error('User suggestions failed with status ' + response.status);
+            return response.json();
+          }).then(function (result) {
+            if (thisRequest !== requestNumber || query !== searchInput.value.trim()) return;
+            renderSuggestions(result.users);
+          }).catch(function (error) {
+            if (thisRequest === requestNumber) {
+              closeSuggestions();
+              console.error(error);
+            }
+          });
+        }, 200);
+      });
+
+      searchInput.addEventListener('keydown', function (event) {
+        if (!suggestions.classList.contains('is-open') || !currentUsers.length) {
+          if (event.key === 'Escape') closeSuggestions();
+          return;
+        }
+
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          var direction = event.key === 'ArrowDown' ? 1 : -1;
+          activeIndex = activeIndex < 0
+            ? (direction === 1 ? 0 : currentUsers.length - 1)
+            : (activeIndex + direction + currentUsers.length) % currentUsers.length;
+          suggestions.querySelectorAll('.user-search-suggestion').forEach(function (option, index) {
+            var isActive = index === activeIndex;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-selected', String(isActive));
+          });
+          searchInput.setAttribute('aria-activedescendant', 'user-search-option-' + currentUsers[activeIndex].id);
+        } else if (event.key === 'Enter' && activeIndex >= 0) {
+          event.preventDefault();
+          chooseSuggestion(activeIndex);
+        } else if (event.key === 'Escape') {
+          closeSuggestions();
+        }
+      });
+
+      searchInput.addEventListener('blur', function () {
+        window.setTimeout(closeSuggestions, 120);
+      });
+    }
+
     var activityUrl = @json(route('admin.user-activity'));
     var countElement = document.querySelector('[data-online-users-count]');
 

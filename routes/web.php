@@ -717,6 +717,10 @@ Route::get('/admin/user-activity', function () {
     return app(UserManagementController::class)->activity();
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.user-activity');
 
+Route::get('/admin/user-search-suggestions', [UserManagementController::class, 'searchSuggestions'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.user-search-suggestions');
+
 Route::get('/admin/users/{user}', function (User $user) {
     abort_unless(Auth::user()?->is_admin, 403);
 

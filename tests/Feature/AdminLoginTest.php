@@ -128,6 +128,43 @@ class AdminLoginTest extends TestCase
         $response->assertSeeInOrder(['Newest User', 'Oldest User']);
     }
 
+    public function test_admin_user_search_suggestions_match_user_details(): void
+    {
+        $admin = User::factory()->create([
+            'pin_hash' => Hash::make('123456'),
+            'is_admin' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'name' => 'Jane Partner',
+            'email' => 'jane@example.com',
+            'phone' => '555-0199',
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->getJson(route('admin.user-search-suggestions', ['q' => 'jane']))
+            ->assertOk()
+            ->assertJsonPath('users.0.id', $user->id)
+            ->assertJsonPath('users.0.name', 'Jane Partner')
+            ->assertJsonPath('users.0.email', 'jane@example.com');
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->getJson(route('admin.user-search-suggestions', ['q' => '5']))
+            ->assertOk()
+            ->assertExactJson(['users' => []]);
+    }
+
+    public function test_non_admin_cannot_get_user_search_suggestions(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->getJson(route('admin.user-search-suggestions', ['q' => 'ja']))
+            ->assertForbidden();
+    }
+
     public function test_admin_can_download_a_backup_snapshot(): void
     {
         $admin = User::factory()->create([

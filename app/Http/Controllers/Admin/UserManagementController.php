@@ -80,6 +80,28 @@ class UserManagementController extends Controller
         ]);
     }
 
+    public function searchSuggestions(Request $request): JsonResponse
+    {
+        $search = trim((string) $request->query('q', ''));
+
+        if (mb_strlen($search) < 2) {
+            return response()->json(['users' => []]);
+        }
+
+        $users = User::query()
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('region', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->limit(8)
+            ->get(['id', 'name', 'email', 'phone']);
+
+        return response()->json(['users' => $users]);
+    }
+
     public function show(User $user): View
     {
         return view('admin.user-show', [

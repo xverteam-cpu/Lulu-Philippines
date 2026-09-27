@@ -1,22 +1,27 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\InvestmentApprovalController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\WithdrawalController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Middleware\RestrictUserAccess;
+use App\Mail\WithdrawalConfirmation;
 use App\Models\Investment;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\CurrencyRateService;
 use App\Support\DailyInterestAccrualService;
+use App\Support\InvestmentPackages;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 Route::get('/', function () {
     return view('public.home');
@@ -42,7 +47,7 @@ Route::get('/login/google', function () {
     return redirect()->route('saml2_login', ['idpName' => 'google']);
 })->name('login.google');
 
-Route::get('/debug/test-email', function (Illuminate\Http\Request $request) {
+Route::get('/debug/test-email', function (Request $request) {
     if (app()->environment('production')) {
         abort(403, 'Test email route is disabled in production.');
     }
@@ -68,7 +73,7 @@ Route::get('/debug/test-email', function (Illuminate\Http\Request $request) {
     ]);
     $withdrawal->setRelation('user', $user);
 
-    Mail::to($email)->send(new App\Mail\WithdrawalConfirmation($withdrawal));
+    Mail::to($email)->send(new WithdrawalConfirmation($withdrawal));
 
     return redirect()->route('withdraw')->with('status', 'Test withdrawal email sent.');
 })->name('debug.test-email');
@@ -76,11 +81,14 @@ Route::get('/debug/test-email', function (Illuminate\Http\Request $request) {
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/register-partner', [AuthController::class, 'register'])->name('register.partner');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/activity/heartbeat', function () {
+    return response()->noContent();
+})->middleware(['auth', RestrictUserAccess::class])->name('activity.heartbeat');
 
-Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
-Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
-Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'reset'])->name('password.update');
+Route::get('/forgot-password', [PasswordResetController::class, 'requestForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 Route::get('/signup', function () {
     return view('signup', ['referral' => request('ref')]);
@@ -174,7 +182,7 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('dashboard');
 
-Route::post('/notifications/read-all', function (Illuminate\Http\Request $request) {
+Route::post('/notifications/read-all', function (Request $request) {
     $data = $request->validate([
         'ids' => ['required', 'array'],
         'ids.*' => ['string'],
@@ -195,7 +203,7 @@ Route::get('/rewards', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('rewards');
 
-Route::post('/rewards/claim-signup-bonus', function (Illuminate\Http\Request $request) {
+Route::post('/rewards/claim-signup-bonus', function (Request $request) {
     $user = $request->user();
 
     if (! empty($user->signup_bonus_claimed_at)) {
@@ -208,7 +216,7 @@ Route::post('/rewards/claim-signup-bonus', function (Illuminate\Http\Request $re
             'signup_bonus_claimed_at' => now(),
         ])->save();
 
-        App\Models\Withdrawal::create([
+        Withdrawal::create([
             'user_id' => $user->id,
             'amount' => 5,
             'payment_method' => 'account_balance',
@@ -241,14 +249,14 @@ Route::get('/invest', function () {
     return view('invest', [
         'phpRate' => $meta['rate'],
         'phpRateUpdatedAt' => $meta['updated_at'],
-        'packageSlots' => App\Support\InvestmentPackages::currentSlots(),
+        'packageSlots' => InvestmentPackages::currentSlots(),
         'totalInvestment' => $totalInvestment,
         'availableBalance' => $availableBalance,
     ]);
 })->name('invest');
 
 Route::get('/invest/purchase/{package}', function (string $package) {
-    $selectedPackage = App\Support\InvestmentPackages::find($package);
+    $selectedPackage = InvestmentPackages::find($package);
     abort_unless($selectedPackage, 404);
 
     $meta = CurrencyRateService::latestUsdToPhpWithMeta();
@@ -293,8 +301,8 @@ Route::get('/invest/agreement/sample/download', function () {
     );
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample.download');
 
-Route::get('/invest/agreement/preview', function (Illuminate\Http\Request $request) {
-    $package = App\Support\InvestmentPackages::find((string) $request->query('package'));
+Route::get('/invest/agreement/preview', function (Request $request) {
+    $package = InvestmentPackages::find((string) $request->query('package'));
     abort_unless($package, 404);
 
     $currency = $request->query('currency', 'USD');
@@ -323,9 +331,9 @@ Route::get('/invest/agreement/preview', function (Illuminate\Http\Request $reque
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.preview');
 
-Route::get('/invest/agreement/sign', function (Illuminate\Http\Request $request) {
+Route::get('/invest/agreement/sign', function (Request $request) {
     $packageKey = (string) $request->query('package');
-    $package = App\Support\InvestmentPackages::find($packageKey);
+    $package = InvestmentPackages::find($packageKey);
     abort_unless($package, 404);
 
     $currency = $request->query('currency', 'USD');
@@ -437,7 +445,7 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
     abort_unless(isset($providers[$provider]), 404);
 
     $packageKey = (string) request()->query('package');
-    $package = App\Support\InvestmentPackages::find($packageKey);
+    $package = InvestmentPackages::find($packageKey);
     abort_unless($package, 404);
 
     $amount = (float) request()->query('amount', $package['price']);
@@ -483,7 +491,7 @@ Route::get('/withdraw', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdraw');
 
-Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
+Route::post('/withdrawals', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
         'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
@@ -541,7 +549,7 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
     $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
 
     if ($availableBalance < (float) $data['amount']) {
-        throw Illuminate\Validation\ValidationException::withMessages([
+        throw ValidationException::withMessages([
             'amount' => 'Insufficient balance for this withdrawal request.',
         ]);
     }
@@ -556,7 +564,7 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
 
         $withdrawalAmount = round((float) $data['amount'], 2);
         $processingFee = round($withdrawalAmount * 0.05, 2);
-        $withdrawal = App\Models\Withdrawal::create([
+        $withdrawal = Withdrawal::create([
             'user_id' => $user->id,
             'amount' => $withdrawalAmount,
             'transaction_reference' => 'WD-'.strtoupper((string) Str::uuid()),
@@ -578,8 +586,8 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
     });
 
     try {
-        Mail::to($user->email)->send(new App\Mail\WithdrawalConfirmation($withdrawal->load('user')));
-    } catch (\Throwable $e) {
+        Mail::to($user->email)->send(new WithdrawalConfirmation($withdrawal->load('user')));
+    } catch (Throwable $e) {
         Log::warning('Failed to send withdrawal confirmation email', [
             'withdrawal_id' => $withdrawal->id,
             'user_id' => $withdrawal->user_id,
@@ -601,7 +609,7 @@ Route::post('/withdrawals', function (Illuminate\Http\Request $request) {
         ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdrawals.store');
 
-Route::post('/withdrawal-account', function (Illuminate\Http\Request $request) {
+Route::post('/withdrawal-account', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
         'bank' => ['BDO Unibank', 'BPI', 'Metrobank', 'LandBank', 'UnionBank'],
@@ -628,7 +636,7 @@ Route::post('/withdrawal-account', function (Illuminate\Http\Request $request) {
 
     if (! in_array($data['bank_name'], $providers[$data['account_type']], true)
         || ! preg_match($patterns[$data['bank_name']], $data['account_number'])) {
-        throw Illuminate\Validation\ValidationException::withMessages([
+        throw ValidationException::withMessages([
             'account_number' => 'Enter valid details for the selected withdrawal provider.',
         ]);
     }
@@ -703,6 +711,12 @@ Route::get('/admin/dashboard', function () {
     return app(UserManagementController::class)->index(request());
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.dashboard');
 
+Route::get('/admin/user-activity', function () {
+    abort_unless(Auth::user()?->is_admin, 403);
+
+    return app(UserManagementController::class)->activity();
+})->middleware(['auth', RestrictUserAccess::class])->name('admin.user-activity');
+
 Route::get('/admin/users/{user}', function (User $user) {
     abort_unless(Auth::user()?->is_admin, 403);
 
@@ -716,6 +730,14 @@ Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'
 Route::post('/admin/users/{user}/restrict', [UserManagementController::class, 'restrict'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.restrict');
+
+Route::post('/admin/users/{user}/block-ip', [UserManagementController::class, 'blockIp'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.users.block-ip');
+
+Route::delete('/admin/blocked-ips/{blockedIp}', [UserManagementController::class, 'unblockIp'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.blocked-ips.destroy');
 
 Route::post('/admin/backup', [UserManagementController::class, 'backup'])
     ->middleware(['auth', RestrictUserAccess::class])

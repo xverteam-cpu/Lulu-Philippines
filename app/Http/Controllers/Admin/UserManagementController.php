@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\PackageGiftedEmail;
 use App\Mail\LuluPromotionEmail;
+use App\Mail\PackageGiftedEmail;
+use App\Models\BlockedIp;
 use App\Models\Investment;
 use App\Models\PackageSlot;
 use App\Models\ReferralEarning;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\InvestmentPackages;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,18 +48,35 @@ class UserManagementController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
+        $blockedIps = BlockedIp::query()
+            ->whereIn('ip_address', $users->getCollection()->pluck('last_ip_address')->filter()->unique())
+            ->get()
+            ->keyBy('ip_address');
 
         return view('admin.dashboard', [
             'users' => $users,
+            'blockedIps' => $blockedIps,
             'totalUsers' => User::count(),
             'newUsersCount' => User::where('created_at', '>=', now()->subDay())->count(),
             'adminUsersCount' => User::where('is_admin', true)->count(),
-            'onlineUsersCount' => User::where('last_seen_at', '>=', now()->subMinutes(5))->count(),
+            'onlineUsersCount' => User::where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES))->count(),
             'approvedDepositTotal' => Investment::where('status', 'approved')->sum('amount'),
             'pendingWithdrawalsCount' => Withdrawal::where('status', 'pending')->count(),
             'search' => $search,
             'packages' => InvestmentPackages::all(),
             'packageSlots' => InvestmentPackages::currentSlots(),
+        ]);
+    }
+
+    public function activity(): JsonResponse
+    {
+        $onlineUserIds = User::query()
+            ->where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES))
+            ->pluck('id');
+
+        return response()->json([
+            'online_user_ids' => $onlineUserIds,
+            'online_users_count' => $onlineUserIds->count(),
         ]);
     }
 
@@ -67,7 +87,7 @@ class UserManagementController extends Controller
         ]);
     }
 
-    public function backup(): \Illuminate\Http\JsonResponse
+    public function backup(): JsonResponse
     {
         $backupPayload = [
             'exported_at' => now()->toIso8601String(),
@@ -121,6 +141,43 @@ class UserManagementController extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('status', 'User access restricted successfully.');
+    }
+
+    public function blockIp(User $user, Request $request): RedirectResponse
+    {
+        if ($user->is_admin) {
+            return back()->withErrors(['user' => 'Admin IP addresses cannot be blocked from the user list.']);
+        }
+
+        $ipAddress = $user->last_ip_address;
+
+        if (! $ipAddress || filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
+            return back()->withErrors(['ip_address' => 'This user does not have a valid recorded IP address to block.']);
+        }
+
+        if ($ipAddress === $request->ip()) {
+            return back()->withErrors(['ip_address' => 'You cannot block the IP address you are currently using.']);
+        }
+
+        BlockedIp::firstOrCreate(
+            ['ip_address' => $ipAddress],
+            [
+                'user_id' => $user->id,
+                'blocked_by' => $request->user()->id,
+            ]
+        );
+
+        return redirect()->route('admin.dashboard')
+            ->with('status', "IP address {$ipAddress} blocked successfully.");
+    }
+
+    public function unblockIp(BlockedIp $blockedIp): RedirectResponse
+    {
+        $ipAddress = $blockedIp->ip_address;
+        $blockedIp->delete();
+
+        return redirect()->route('admin.dashboard')
+            ->with('status', "IP address {$ipAddress} unblocked successfully.");
     }
 
     public function sendPackage(Request $request)
@@ -217,6 +274,7 @@ class UserManagementController extends Controller
         return redirect()->route('admin.dashboard')
             ->with('status', "Sent \${$amount} to {$user->name} successfully! New balance: \${$user->balance}");
     }
+
     public function sendPromotionalEmail()
     {
         $sentCount = 0;
@@ -240,4 +298,5 @@ class UserManagementController extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('status', "Promotional email has been sent to {$sentCount} users.");
-    }}
+    }
+}

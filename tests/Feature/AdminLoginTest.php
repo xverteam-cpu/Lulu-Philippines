@@ -10,6 +10,7 @@ use Tests\TestCase;
 class AdminLoginTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_admin_can_login_and_reach_admin_dashboard(): void
     {
         $user = User::factory()->create([
@@ -87,6 +88,17 @@ class AdminLoginTest extends TestCase
         $response->assertSee('Withdraw History');
         $response->assertSee('Income History');
         $response->assertSee('IP Location');
+        $response->assertSee('data-user-online-status', false);
+        $response->assertSee('data-online-users-count', false);
+        $response->assertSee('user-activity', false);
+        $response->assertSee('setInterval(refreshOnlineStatus, 30000)', false);
+        $response->assertSee('View details');
+        $response->assertSee('Block IP address');
+        $response->assertSee('class="users-page"', false);
+        $response->assertDontSee('Admin Dashboard');
+        $response->assertDontSee('class="summary-grid"', false);
+        $response->assertDontSee('class="users-panel"', false);
+        $response->assertSee('ACTIONS');
     }
 
     public function test_admin_dashboard_user_list_is_ordered_by_newest_accounts_first(): void

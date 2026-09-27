@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Application;
+use App\Http\Middleware\BlockBlockedIp;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Http\Middleware\TrackUserActivity;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            BlockBlockedIp::class,
             TrackUserActivity::class,
             RestrictUserAccess::class,
         ]);

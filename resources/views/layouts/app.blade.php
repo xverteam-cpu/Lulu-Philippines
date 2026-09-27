@@ -65,9 +65,45 @@
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader-circle"></div>
   </div>
-  <div class="container">
+  <div class="container{{ request()->routeIs('admin.dashboard') ? ' admin-page-container' : '' }}">
     @yield('content')
   </div>
+  @auth
+  <script>
+    (function () {
+      var heartbeatUrl = @json(route('activity.heartbeat'));
+      var csrfToken = document.querySelector('meta[name="csrf-token"]');
+      var sending = false;
+
+      function sendHeartbeat() {
+        if (sending || !csrfToken) return;
+        sending = true;
+
+        fetch(heartbeatUrl, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(function (response) {
+          if (!response.ok) throw new Error('Activity heartbeat failed with status ' + response.status);
+        }).catch(function (error) {
+          console.error(error);
+        }).finally(function () {
+          sending = false;
+        });
+      }
+
+      window.setInterval(sendHeartbeat, 60000);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') sendHeartbeat();
+      });
+      window.addEventListener('focus', sendHeartbeat);
+    })();
+  </script>
+  @endauth
   <script>
     (function () {
       var loader = document.querySelector('.page-loader');

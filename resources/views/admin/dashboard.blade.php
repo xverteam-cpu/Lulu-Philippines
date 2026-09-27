@@ -3,15 +3,164 @@
 @section('content')
 @include('partials.admin-dashboard-styles')
 
+<style>
+  .admin-page-container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+  }
+
+  .admin-shell {
+    width: 100%;
+    max-width: 1680px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 20px clamp(16px, 3vw, 48px) 48px;
+  }
+
+  .admin-shell .admin-nav {
+    position: sticky;
+    top: 0;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+  }
+
+  .admin-shell .admin-nav-links {
+    gap: 8px;
+  }
+
+  .users-page {
+    margin-top: 28px;
+  }
+
+  .users-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 22px;
+  }
+
+  .users-page-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+  }
+
+  .users-page-subtitle {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  .users-page .search-box {
+    flex: 0 1 520px;
+    min-width: min(320px, 100%);
+  }
+
+  .users-page .search-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+  }
+
+  .users-page .toolbar-actions {
+    display: none;
+  }
+
+  .users-page .table-wrap {
+    overflow-x: auto;
+    border-top: 1px solid #dbe2ea;
+    border-bottom: 1px solid #dbe2ea;
+    background: #fff;
+  }
+
+  .users-page .users-table {
+    min-width: 900px;
+  }
+
+  .users-page .users-table thead {
+    background: #f1f5f9;
+  }
+
+  .users-page .users-table tbody tr:hover,
+  .users-page .user-row:hover,
+  .users-page .user-row:focus-visible {
+    background: #f8fafc;
+  }
+
+  .users-page .user-details-btn {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #fff;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .users-page .user-details-btn:hover {
+    border-color: #166534;
+    color: #14532d;
+  }
+
+  .users-page .pagination {
+    padding: 18px 0;
+    border: 0;
+  }
+
+  @media (max-width: 768px) {
+    .admin-page-container {
+      padding: 0;
+    }
+
+    .admin-shell {
+      padding: 12px 12px 32px;
+    }
+
+    .admin-shell .admin-nav {
+      padding: 10px;
+    }
+
+    .admin-shell .admin-nav-links {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      width: 100%;
+      padding-bottom: 2px;
+    }
+
+    .users-page {
+      margin-top: 22px;
+    }
+
+    .users-page-header {
+      align-items: stretch;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .users-page-title {
+      font-size: 24px;
+    }
+
+    .users-page .search-box {
+      flex: auto;
+      min-width: 0;
+      width: 100%;
+    }
+  }
+</style>
+
 <div class="admin-shell">
   @include('partials.admin-nav', ['activeAdminPage' => 'users'])
-
-  <div class="admin-header">
-    <div class="admin-header-copy">
-      <h1 class="admin-title">Admin Dashboard</h1>
-      <p class="admin-copy">Monitor registered users and account activity.</p>
-    </div>
-  </div>
 
   @if (session('status'))
     <div class="alert alert-success">{{ session('status') }}</div>
@@ -26,25 +175,6 @@
       </ul>
     </div>
   @endif
-
-  <section class="summary-grid">
-    <div class="summary-card">
-      <span class="summary-label">Total Accounts</span>
-      <strong class="summary-value">{{ number_format($totalUsers) }}</strong>
-    </div>
-    <div class="summary-card">
-      <span class="summary-label">Active Now</span>
-      <strong class="summary-value">{{ number_format($onlineUsersCount) }}</strong>
-    </div>
-    <div class="summary-card">
-      <span class="summary-label">Approved Deposits</span>
-      <strong class="summary-value">₱{{ number_format($approvedDepositTotal, 2) }}</strong>
-    </div>
-    <div class="summary-card">
-      <span class="summary-label">Pending Withdrawals</span>
-      <strong class="summary-value">{{ number_format($pendingWithdrawalsCount) }}</strong>
-    </div>
-  </section>
 
   <!-- Send Package Modal -->
   <div id="sendPackageModal" class="modal-overlay" aria-hidden="true">
@@ -177,17 +307,13 @@
     </div>
   </div>
 
-  <!-- Content Area -->
-  <div class="admin-content">
-    <!-- Users Panel -->
-    <div class="users-panel">
-      <div class="users-panel-header">
-        <div class="users-panel-copy">
-          <span class="section-label">User Management</span>
-          <h2 class="section-title">All registered accounts</h2>
-          <p class="section-subtitle">{{ $users->total() }} matching accounts</p>
-        </div>
-        <div class="search-box">
+  <section class="users-page" aria-labelledby="users-page-title">
+    <header class="users-page-header">
+      <div>
+        <h1 class="users-page-title" id="users-page-title">User management</h1>
+        <p class="users-page-subtitle">{{ $users->total() }} matching accounts</p>
+      </div>
+      <div class="search-box">
           <form class="search-form" method="get" action="{{ route('admin.dashboard') }}">
             <input
               class="search-input"
@@ -198,30 +324,22 @@
               aria-label="Search users"
             >
           </form>
-          <div class="toolbar-actions">
-            <button class="toolbar-btn" type="button">Status ▼</button>
-            <button class="toolbar-btn" type="button">Date ▼</button>
-            <button class="toolbar-btn" type="button">Balance ▼</button>
-            <button class="toolbar-btn toolbar-btn-secondary" type="button">Export CSV</button>
-          </div>
-        </div>
       </div>
+    </header>
 
-      <!-- Data Table -->
-      <div class="table-card">
-        <div class="table-card-header">Users</div>
-        <div class="table-wrap">
-          <table class="users-table">
-            <thead>
-              <tr>
-                <th>USER</th>
-                <th>REFERRER</th>
-                <th>BALANCE</th>
-                <th>STATUS</th>
-                <th>REGISTERED</th>
-              </tr>
-            </thead>
-            <tbody>
+    <div class="table-wrap">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>USER</th>
+            <th>REFERRER</th>
+            <th>BALANCE</th>
+            <th>STATUS</th>
+            <th>REGISTERED</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
               @forelse ($users as $user)
                 <tr
                   class="user-row"
@@ -255,7 +373,7 @@
                   <!-- Status Badges -->
                   <td>
                     <div class="status-badges">
-                      <span class="status-badge {{ $user->isOnline() ? 'online' : 'offline' }}">
+                      <span class="status-badge {{ $user->isOnline() ? 'online' : 'offline' }}" data-user-online-status data-user-id="{{ $user->id }}">
                         {{ $user->isOnline() ? 'Online' : 'Offline' }}
                       </span>
                       @if ($user->created_at && $user->created_at->greaterThan(now()->subDay()))
@@ -270,25 +388,29 @@
                   <td class="text-nowrap">
                     {{ $user->created_at?->format('M d, Y') ?: '—' }}
                   </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="user-details-btn"
+                      onclick="event.stopPropagation(); openUserModal('userModal-{{ $user->id }}')"
+                    >View details</button>
+                  </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="5" class="empty-state">
+                  <td colspan="6" class="empty-state">
                     <p class="empty-message">No users found. Try adjusting your search filters.</p>
                   </td>
                 </tr>
               @endforelse
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        {{ $users->links() }}
-      </div>
+        </tbody>
+      </table>
     </div>
-  </div>
+
+    <div class="pagination">
+      {{ $users->links() }}
+    </div>
+  </section>
 </div>
 
 @foreach ($users as $user)
@@ -300,7 +422,7 @@
           <h2 class="modal-title">{{ $user->name }}</h2>
           <p class="modal-subtitle">Registered {{ $user->created_at?->format('M d, Y h:i A') ?: '—' }}</p>
         </div>
-        <span class="status-badge {{ $user->isOnline() ? 'online' : 'offline' }}">
+        <span class="status-badge {{ $user->isOnline() ? 'online' : 'offline' }}" data-user-online-status data-user-id="{{ $user->id }}">
           {{ $user->isOnline() ? 'Online' : 'Offline' }}
         </span>
       </div>
@@ -348,6 +470,17 @@
           <span class="modal-label">IP Address</span>
           <div class="modal-value">{{ $user->last_ip_address ?: '—' }}</div>
         </div>
+        @php $blockedIp = $user->last_ip_address ? $blockedIps->get($user->last_ip_address) : null; @endphp
+        <div class="modal-field">
+          <span class="modal-label">IP Access</span>
+          @if ($blockedIp)
+            <div class="modal-value" style="color:#b91c1c;font-weight:700;">Blocked</div>
+          @elseif ($user->last_ip_address)
+            <div class="modal-value" style="color:#166534;font-weight:700;">Allowed</div>
+          @else
+            <div class="modal-value">No IP recorded</div>
+          @endif
+        </div>
         <div class="modal-field">
           <span class="modal-label">IP Location</span>
           <div class="modal-value">{{ $user->region ?: $user->address ?: 'Not available' }}</div>
@@ -357,6 +490,21 @@
           <div class="modal-value">{{ $user->last_seen_at?->format('M d, Y h:i A') ?: '—' }}</div>
         </div>
       </div>
+
+      @if ($blockedIp)
+        <form action="{{ route('admin.blocked-ips.destroy', $blockedIp) }}" method="POST" style="margin:20px 0;">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="admin-nav-btn" onclick="return confirm('Unblock IP address {{ $blockedIp->ip_address }}?')">Unblock IP address</button>
+        </form>
+      @elseif ($user->last_ip_address && ! $user->is_admin)
+        <form action="{{ route('admin.users.block-ip', $user) }}" method="POST" style="margin:20px 0;">
+          @csrf
+          <button type="submit" class="admin-nav-btn" style="border-color:#b91c1c;color:#b91c1c;" onclick="return confirm('Block IP address {{ $user->last_ip_address }}? All requests from this IP will be denied, including access to the site before login.')">Block IP address</button>
+        </form>
+      @else
+        <p class="empty-message" style="margin:20px 0;">An IP address must be recorded before it can be blocked.</p>
+      @endif
 
       <details class="user-history-section">
         <summary class="user-history-title">Deposit / Investment History</summary>
@@ -441,6 +589,48 @@
     </div>
   </template>
 @endforeach
+
+<script>
+  (function () {
+    var activityUrl = @json(route('admin.user-activity'));
+    var countElement = document.querySelector('[data-online-users-count]');
+
+    function refreshOnlineStatus() {
+      fetch(activityUrl, {
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      }).then(function (response) {
+        if (!response.ok) throw new Error('User activity refresh failed with status ' + response.status);
+        return response.json();
+      }).then(function (activity) {
+        var onlineIds = new Set(activity.online_user_ids.map(String));
+
+        function updateBadges(root) {
+          root.querySelectorAll('[data-user-online-status]').forEach(function (badge) {
+            var online = onlineIds.has(badge.dataset.userId);
+            badge.textContent = online ? 'Online' : 'Offline';
+            badge.classList.toggle('online', online);
+            badge.classList.toggle('offline', !online);
+          });
+        }
+
+        updateBadges(document);
+        document.querySelectorAll('template').forEach(function (template) {
+          updateBadges(template.content);
+        });
+
+        if (countElement) {
+          countElement.textContent = Number(activity.online_users_count).toLocaleString();
+        }
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
+
+    refreshOnlineStatus();
+    window.setInterval(refreshOnlineStatus, 30000);
+  })();
+</script>
 
 <div id="userDetailsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="userDetailsTitle">
   <div id="userDetailsModalBody" class="modal-card"></div>

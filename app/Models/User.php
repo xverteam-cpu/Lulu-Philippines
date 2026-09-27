@@ -14,6 +14,8 @@ use Illuminate\Support\Carbon;
 
 class User extends Authenticatable
 {
+    public const ONLINE_WINDOW_MINUTES = 5;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -96,7 +98,7 @@ class User extends Authenticatable
     public function isOnline(): bool
     {
         return $this->last_seen_at
-            && $this->last_seen_at->greaterThan(now()->subMinutes(5));
+            && $this->last_seen_at->greaterThanOrEqualTo(now()->subMinutes(self::ONLINE_WINDOW_MINUTES));
     }
 
     public function investments(): HasMany

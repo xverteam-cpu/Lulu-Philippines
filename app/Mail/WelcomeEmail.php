@@ -27,6 +27,8 @@ class WelcomeEmail extends Mailable
                 'user_name' => $this->user->name ?: $this->user->username,
                 'login_link' => url('/login'),
                 'dashboard_link' => url('/dashboard'),
+                'investors_link' => route('investors'),
+                'notification_settings_link' => url('/profile/notifications'),
             ]);
     }
 }

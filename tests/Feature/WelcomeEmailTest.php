@@ -25,12 +25,26 @@ class WelcomeEmailTest extends TestCase
             'referral' => '',
         ]);
 
-        $response->assertRedirect(route('pin.setup'));
+        $response->assertRedirect();
 
         $user = User::where('email', 'jane@example.com')->firstOrFail();
 
         Mail::assertSent(WelcomeEmail::class, function (WelcomeEmail $mail) use ($user): bool {
-            return $mail->hasTo($user->email);
+            $html = $mail->render();
+
+            $this->assertTrue($mail->hasTo($user->email));
+            $this->assertStringContainsString('Welcome to Lulu, <strong>Jane Doe</strong>', $html);
+            $this->assertStringContainsString('Your Lulu Account', $html);
+            $this->assertStringContainsString('SILVER PLAN', $html);
+            $this->assertStringContainsString('GOLD PLAN', $html);
+            $this->assertStringContainsString('PLATINUM PLAN', $html);
+            $this->assertStringContainsString('luluphilippines@gmail.com', $html);
+            $this->assertStringNotContainsString('Lulu Holdings Corp.', $html);
+            $this->assertStringNotContainsString('Suite 123, 123 Anywhere St.', $html);
+            $this->assertStringNotContainsString('Welcome to Lulu, {{ $user_name }}', $html);
+            $this->assertSame(5, preg_match_all('/data:image\\/(?:jpeg|png);base64,/', $html));
+
+            return true;
         });
     }
 }

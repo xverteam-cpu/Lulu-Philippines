@@ -10,7 +10,7 @@
     </head>
 <body class="lulu-site">
 <header class="lulu-header" id="top"><div class="lulu-container lulu-nav">
-    <a class="lulu-brand" href="#top" aria-label="Lulu Philippines home"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px;height:52px;object-fit:contain;"></a>
+    <a class="lulu-brand" href="#top" aria-label="Lulu Retail home"><img src="{{ asset('LuluLogo.svg') }}" alt="Lulu Retail"></a>
     <button class="lulu-menu-toggle" type="button" aria-label="Toggle navigation"><span>☰</span></button>
     <nav class="lulu-nav-links" aria-label="Primary navigation">
         <a href="#about">About Us</a><a href="#businesses">Businesses</a><a href="#global">Global operations</a><a href="#impact">Impact</a><a href="#news">Media</a><a href="#careers">Careers</a><a href="{{ route('investors') }}">Investors</a><a class="lulu-nav-contact" href="#footer">Contact us</a>

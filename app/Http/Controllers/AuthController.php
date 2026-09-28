@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -77,6 +78,49 @@ class AuthController extends Controller
         return redirect()->route($user->is_admin ? 'admin.dashboard' : 'dashboard');
     }
 
+    public function redirectToGoogle(): RedirectResponse
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback(Request $request): RedirectResponse
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return redirect()->route('investors')
+                ->withErrors(['google' => 'Google sign-in could not be completed. Please try again.']);
+        }
+
+        $email = $googleUser->getEmail();
+        if (! is_string($email) || $email === '' || ($googleUser->getRaw()['verified_email'] ?? false) !== true) {
+            return redirect()->route('investors')
+                ->withErrors(['google' => 'A verified Google email address is required.']);
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (! $user) {
+            $user = User::create([
+                'name' => Str::limit($googleUser->getName() ?: $email, 255, ''),
+                'username' => $this->generateUniqueUsername($email),
+                'email' => $email,
+                'email_verified_at' => now(),
+                'password' => Str::random(40),
+                'is_admin' => false,
+            ]);
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(
+            $user->is_admin ? route('admin.dashboard') : route('dashboard')
+        );
+    }
+
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -100,5 +144,19 @@ class AuthController extends Controller
         }
 
         return $email;
+    }
+
+    private function generateUniqueUsername(string $email): string
+    {
+        $base = Str::slug((string) Str::before($email, '@')) ?: 'google-user';
+        $username = $base;
+        $counter = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = $base.'-'.$counter;
+            $counter++;
+        }
+
+        return $username;
     }
 }

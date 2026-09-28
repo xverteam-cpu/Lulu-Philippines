@@ -7,14 +7,14 @@
   "theme_color": "#166534",
   "icons": [
     {
-      "src": "/LuluLogo.svg",
+      "src": "/icons/lulu-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/LuluLogo.svg",
+      "src": "/icons/lulu-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }

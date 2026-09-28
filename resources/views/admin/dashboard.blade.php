@@ -4,6 +4,13 @@
 @include('partials.admin-dashboard-styles')
 
 <style>
+  .admin-shell {
+    color: #172b23;
+    background: linear-gradient(180deg, #f7faf8 0, #f3f7f5 100%);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    letter-spacing: .002em;
+  }
+
   .admin-page-container {
     width: 100%;
     max-width: none;
@@ -21,19 +28,20 @@
   .admin-shell .admin-nav {
     position: sticky;
     top: 0;
-    padding: 14px 16px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+    padding: 13px 16px;
+    background: rgba(255, 255, 255, .96);
+    border: 1px solid #e1e9e4;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(17, 47, 31, .07), 0 1px 2px rgba(15, 23, 42, .04);
+    backdrop-filter: blur(12px);
   }
 
   .admin-shell .admin-nav-links {
-    gap: 8px;
+    gap: 9px;
   }
 
   .users-page {
-    margin-top: 28px;
+    margin-top: 34px;
   }
 
   .users-page-header {
@@ -46,15 +54,15 @@
 
   .users-page-title {
     margin: 0;
-    color: #0f172a;
-    font-size: 28px;
+    color: #14251c;
+    font-size: 30px;
     font-weight: 700;
-    letter-spacing: -.03em;
+    letter-spacing: -.035em;
   }
 
   .users-page-subtitle {
     margin: 6px 0 0;
-    color: #64748b;
+    color: #687a70;
     font-size: 14px;
   }
 
@@ -68,6 +76,16 @@
     width: 100%;
     box-sizing: border-box;
     background: #fff;
+    border-color: #dce6df;
+    border-radius: 11px;
+    color: #172b23;
+    box-shadow: 0 2px 5px rgba(17, 47, 31, .035);
+  }
+
+  .users-page .search-input:focus {
+    border-color: #4b8a62;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(22, 101, 52, .10), 0 4px 12px rgba(17, 47, 31, .06);
   }
 
   .user-search-suggestions {
@@ -80,10 +98,10 @@
     max-height: 360px;
     overflow-y: auto;
     padding: 6px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1px solid #e1e9e4;
+    border-radius: 13px;
     background: #fff;
-    box-shadow: 0 16px 36px rgba(15, 23, 42, .14);
+    box-shadow: 0 18px 42px rgba(17, 47, 31, .15), 0 3px 10px rgba(15, 23, 42, .05);
   }
 
   .user-search-suggestions.is-open {
@@ -97,7 +115,7 @@
     border: 0;
     border-radius: 8px;
     background: transparent;
-    color: #0f172a;
+    color: #172b23;
     text-align: left;
     cursor: pointer;
   }
@@ -106,7 +124,7 @@
   .user-search-suggestion:focus-visible,
   .user-search-suggestion.is-active {
     outline: none;
-    background: #f1f5f9;
+    background: #f1f7f3;
   }
 
   .user-search-suggestion-name {
@@ -118,7 +136,7 @@
   .user-search-suggestion-meta {
     display: block;
     margin-top: 3px;
-    color: #64748b;
+    color: #687a70;
     font-size: 12px;
   }
 
@@ -134,41 +152,59 @@
 
   .users-page .table-wrap {
     overflow-x: auto;
-    border-top: 1px solid #dbe2ea;
-    border-bottom: 1px solid #dbe2ea;
+    border-top: 1px solid #dce6df;
+    border-bottom: 1px solid #dce6df;
     background: #fff;
+    box-shadow: 0 12px 34px rgba(17, 47, 31, .055), 0 2px 6px rgba(15, 23, 42, .025);
   }
 
   .users-page .users-table {
     min-width: 900px;
+    font-variant-numeric: tabular-nums;
   }
 
   .users-page .users-table thead {
-    background: #f1f5f9;
+    background: #f4f7f5;
+  }
+
+  .users-page .users-table th {
+    color: #627469;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .09em;
+  }
+
+  .users-page .users-table td {
+    color: #43564b;
+    border-bottom-color: #edf1ee;
   }
 
   .users-page .users-table tbody tr:hover,
   .users-page .user-row:hover,
   .users-page .user-row:focus-visible {
-    background: #f8fafc;
+    background: #f7faf8;
   }
 
   .users-page .user-details-btn {
     min-height: 34px;
     padding: 0 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 7px;
+    border: 1px solid #d2dfd6;
+    border-radius: 8px;
     background: #fff;
-    color: #334155;
+    color: #315441;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(17, 47, 31, .04);
+    transition: all .18s ease;
   }
 
   .users-page .user-details-btn:hover {
-    border-color: #166534;
+    border-color: #78a487;
+    background: #f5faf6;
     color: #14532d;
+    box-shadow: 0 4px 10px rgba(22, 101, 52, .09);
   }
 
   .users-page .pagination {

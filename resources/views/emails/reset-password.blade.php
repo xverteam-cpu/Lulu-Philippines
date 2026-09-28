@@ -1,7 +1,7 @@
 <table width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px; background-color:#ffffff; border-collapse:collapse; border-radius:14px; overflow:hidden;">
   <tr>
     <td align="center" style="background-color:#166534; padding:28px 24px 22px 24px;">
-      <img src="{{ url('LuluLogo.svg') }}" width="180" alt="Lulu" style="display:block; border:0; outline:none; text-decoration:none; max-width:180px; height:auto;">
+      <img src="{{ url('icons/lulu-512.png') }}" width="180" alt="Lulu Philippines" style="display:block; border:0; outline:none; text-decoration:none; max-width:180px; height:auto;">
     </td>
   </tr>
   <tr>

@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-  <link rel="icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
-  <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}">
-  <link rel="apple-touch-icon" href="{{ asset('LuluLogo.svg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
+  <link rel="shortcut icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}">
   <link rel="manifest" href="{{ asset('manifest.json') }}">
   <title>Lulu</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">

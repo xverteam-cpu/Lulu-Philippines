@@ -43,9 +43,9 @@ Route::get('/login', function () {
     return redirect()->route('investors');
 })->name('login');
 
-Route::get('/login/google', function () {
-    return redirect()->route('saml2_login', ['idpName' => 'google']);
-})->name('login.google');
+Route::get('/login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
+    ->name('login.google.callback');
 
 Route::get('/debug/test-email', function (Request $request) {
     if (app()->environment('production')) {

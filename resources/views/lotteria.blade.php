@@ -7,9 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Lulu">
-  <link rel="icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}" />
-  <link rel="shortcut icon" type="image/svg+xml" href="{{ asset('LuluLogo.svg') }}" />
-  <link rel="apple-touch-icon" href="{{ asset('LuluLogo.svg') }}" />
+  <link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}" />
+  <link rel="shortcut icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}" />
+  <link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}" />
   <link rel="manifest" href="{{ asset('manifest.json') }}" />
   <title>Lulu</title>
 
@@ -83,7 +83,7 @@
           <table width="100%" border="0" cellspacing="0" cellpadding="0">
             <tr>
               <td align="left" width="90">
-                <img src="/LuluLogo.svg" width="60" alt="Lulu" style="display:block; border:0; width:60px; max-width:60px; height:auto; border-radius:12px;">
+                <img src="/icons/lulu-192.png" width="60" alt="Lulu Philippines" style="display:block; border:0; width:60px; max-width:60px; height:auto; border-radius:12px;">
               </td>
               <td align="right">
                 <table border="0" cellspacing="0" cellpadding="0" align="right">

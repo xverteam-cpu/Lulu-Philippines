@@ -399,7 +399,7 @@
     gap: 12px;
   }
 
-  .bond-card-link {
+  .dashboard-card-link {
     position: relative;
     display: block;
     width: 100%;
@@ -409,16 +409,31 @@
     background: #fff;
   }
 
-  .bond-card-link img {
+  .dashboard-card-link img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
-  .bond-card-link:focus-visible {
+  .franchise-card-link {
+    margin-top: 14px;
+  }
+
+  .dashboard-card-link:focus-visible {
     outline: 3px solid #087a48;
     outline-offset: 3px;
+  }
+
+  .dashboard-card-link.is-stomping {
+    animation: dashboard-card-stomp .46s cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes dashboard-card-stomp {
+    0%, 100% { transform: translateY(0) scale(1); }
+    28% { transform: translateY(5px) scale(.97, .95); }
+    58% { transform: translateY(-7px) scale(1.02, 1.02); }
+    82% { transform: translateY(1px) scale(.99, .99); }
   }
 
   #Cards101 {
@@ -1022,7 +1037,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .nav-item,
-    .nav-item::before {
+    .nav-item::before,
+    .dashboard-card-link {
       animation: none !important;
       transition: none !important;
     }
@@ -1518,8 +1534,11 @@
   </section>
 
   <section class="package-section" aria-label="Bond purchase">
-    <a class="bond-card-link" href="{{ route('invest') }}" aria-label="View bond details and purchase bonds">
+    <a class="dashboard-card-link" href="{{ route('invest') }}" aria-label="View bond details and purchase bonds">
       <img src="{{ asset('images/dashboard-bond-card.svg') }}" alt="Lulu Purchase Bonds. Grow your future with secure and reliable investment opportunities.">
+    </a>
+    <a class="dashboard-card-link franchise-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
+      <img src="{{ asset('images/dashboard-franchise-card.svg') }}" alt="Franchise opportunities">
     </a>
     <div id="Cards101" hidden>
       <div class="package-grid">
@@ -1667,6 +1686,24 @@
     var continueAddFunds = document.getElementById('continueAddFunds');
     var selectedPaymentMethod = 'bank';
     var bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+    var dashboardCardLinks = document.querySelectorAll('.dashboard-card-link');
+
+    dashboardCardLinks.forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          return;
+        }
+
+        event.preventDefault();
+        link.classList.remove('is-stomping');
+        void link.offsetWidth;
+        link.classList.add('is-stomping');
+        window.setTimeout(function () {
+          window.location.assign(link.href);
+        }, 460);
+      });
+    });
 
     bottomNavItems.forEach(function (item) {
       item.addEventListener('click', function () {

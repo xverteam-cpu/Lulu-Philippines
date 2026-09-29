@@ -403,17 +403,22 @@
     position: relative;
     display: block;
     width: 100%;
-    aspect-ratio: 1024.5 / 396.75;
+    aspect-ratio: 1.86;
     overflow: hidden;
-    border-radius: 16px;
-    background: #fff;
+    border-radius: 18px;
+    background: transparent;
   }
 
   .dashboard-card-link img {
+    position: absolute;
+    top: -1.65%;
+    left: -21.8%;
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    width: 143.6%;
+    max-width: none;
+    height: 103.4%;
+    object-fit: fill;
+    pointer-events: none;
   }
 
   .franchise-card-link {
@@ -1664,9 +1669,9 @@
   <button class="nav-item nav-item--scan" type="button" id="fabToggle" aria-label="Open wallet actions" aria-expanded="false">
     <span class="nav-scan" aria-hidden="true">+</span>
   </button>
-  <a class="nav-item" href="{{ route('franchising') }}" aria-label="Franchise">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
-    <div>Franchise</div>
+  <a class="nav-item" href="{{ route('referrals') }}" aria-label="Referral and affiliates">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.3 2.3-5 5.5-5 2.4 0 4 .9 4.9 2.8M16 8a3 3 0 1 1 0 6m1.2 1c2.1.6 3.2 2.2 3.6 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div>Referral</div>
   </a>
   <button class="nav-item" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>

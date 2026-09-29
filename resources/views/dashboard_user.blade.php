@@ -902,104 +902,178 @@
     position: fixed !important;
     left: 50%;
     right: auto;
-    bottom: calc(4px + env(safe-area-inset-bottom)) !important;
+    bottom: calc(12px + env(safe-area-inset-bottom)) !important;
     width: min(440px, calc(100vw - 32px));
     transform: translateX(-50%);
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
     max-width: 440px;
     margin: 0;
-    padding: 0 !important;
-    height: auto !important;
-    aspect-ratio: 1024.5 / 225;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    backdrop-filter: none;
-    box-shadow: none;
+    padding: 0 12px;
+    height: 68px;
+    background: rgba(255,255,255,.95);
+    border-radius: 22px;
+    border: 1px solid rgba(239,239,247,.90);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 10px 30px rgba(15,23,42,.12);
     z-index: 140;
     visibility: visible;
     opacity: 1;
   }
 
-  .bottom-nav-art {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
   .nav-item {
-    position: absolute;
-    top: 24%;
-    height: 76%;
-    width: 20%;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0;
+    gap: 4px;
+    width: 20%;
     min-width: 0;
-    color: transparent !important;
+    color: #66747b;
     font-weight: 500;
-    font-size: 0;
+    font-size: 9px;
     white-space: nowrap;
     text-decoration: none;
-    transition: none;
+    transition: transform .18s cubic-bezier(.2,.8,.2,1);
     border: 0;
     background: transparent;
     cursor: pointer;
     padding: 0;
     font-family: inherit;
-    z-index: 1;
+    z-index: 0;
+    isolation: isolate;
+    touch-action: manipulation;
   }
 
-  .nav-item--home {
-    left: 0;
+  .nav-item::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 34px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(8, 122, 72, .14);
+    box-shadow: 0 5px 14px rgba(8, 122, 72, .16);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.45);
+    transition: opacity .16s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+    z-index: 0;
   }
 
-  .nav-item--transactions {
-    left: 20%;
+  @media (hover: hover) {
+    .nav-item:hover {
+      transform: translateY(-2px);
+      color: var(--color-title);
+    }
+
+    .nav-item:hover::before {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .nav-item:active {
+    transform: translateY(2px) scale(.92, .88);
+  }
+
+  .nav-item:focus-visible::before {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .nav-item.is-stomping {
+    animation: nav-stomp-target .46s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .nav-item.is-stomping svg,
+  .nav-item.is-stomping .nav-scan {
+    animation: nav-stomp-icon .46s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .nav-item.is-stomping::before {
+    animation: nav-stomp-pulse .46s ease-out;
+  }
+
+  @keyframes nav-stomp-target {
+    0%, 100% { transform: translateY(0) scale(1); }
+    28% { transform: translateY(2px) scale(.9, .82); }
+    58% { transform: translateY(-5px) scale(1.08, 1.1); }
+    82% { transform: translateY(1px) scale(.97, .96); }
+  }
+
+  @keyframes nav-stomp-pulse {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+    24% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    58% { opacity: .8; transform: translate(-50%, -50%) scale(.88); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.28); }
+  }
+
+  @keyframes nav-stomp-icon {
+    0%, 100% { transform: translateY(0) scale(1); }
+    28% { transform: translateY(3px) scale(.78, .72); }
+    58% { transform: translateY(-4px) scale(1.12, 1.16); }
+    82% { transform: translateY(1px) scale(.96, .94); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-item,
+    .nav-item::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  .nav-item.active {
+    color: #087a48;
+    font-weight: 800;
   }
 
   .nav-item--scan {
-    top: 0;
-    left: 40%;
-    height: 100%;
-    width: 20%;
+    position: relative;
+    z-index: 2;
   }
 
-  .nav-item--franchise {
-    left: 60%;
-  }
-
-  .nav-item--more {
-    left: 80%;
-  }
-
-  .nav-item img,
-  .nav-item svg {
-    display: none;
-  }
-
-  .nav-item > div,
   .nav-scan {
-    opacity: 0;
+    position: relative;
+    top: -18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 10px 22px rgba(15,23,42,0.12);
+    border: 1px solid rgba(15,118,85,0.08);
+    color: #0f7a4e;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .nav-scan:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(15,23,42,0.14);
   }
 
   .nav-item:focus-visible {
     outline: 3px solid #087a48;
-    outline-offset: -5px;
+    outline-offset: 2px;
     border-radius: 14px;
   }
 
-  .nav-item--scan {
-    position: absolute;
-  }
-
-  .nav-scan {
-    display: none;
+  .nav-item img,
+  .nav-item svg {
+    width: 18px;
+    height: 18px;
+    color: currentColor;
   }
 
   .bottom-nav a {
@@ -1285,7 +1359,12 @@
     }
     .bottom-nav {
       width: calc(100vw - 32px);
-      bottom: calc(4px + env(safe-area-inset-bottom)) !important;
+      padding: 0 12px;
+      gap: 0;
+      bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+    }
+    .nav-scan {
+      top: -15px;
     }
     .fab-panel {
       bottom: calc(82px + env(safe-area-inset-bottom));
@@ -1350,7 +1429,27 @@
     }
     .bottom-nav {
       width: calc(100vw - 32px);
-      bottom: calc(4px + env(safe-area-inset-bottom)) !important;
+      padding: 0 10px;
+      gap: 0;
+      height: 62px;
+      bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+    }
+    .nav-item {
+      gap: 3px;
+      width: 20%;
+      min-width: 0;
+      font-size: 8px;
+    }
+    .nav-item img,
+    .nav-item svg {
+      width: 17px;
+      height: 17px;
+    }
+    .nav-scan {
+      top: -14px;
+      width: 52px;
+      height: 52px;
+      font-size: 28px;
     }
     .fab-panel {
       bottom: calc(74px + env(safe-area-inset-bottom));
@@ -1535,23 +1634,22 @@
 </div>
 
 <nav class="bottom-nav" aria-label="Account navigation">
-  <img class="bottom-nav-art" src="{{ asset('images/dashboard-navbutton.svg') }}" alt="" aria-hidden="true">
-  <a class="nav-item nav-item--home active" href="{{ route('dashboard') }}" aria-label="Home" aria-current="page">
+  <a class="nav-item active" href="{{ route('dashboard') }}" aria-label="Home" aria-current="page">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-7 9 7v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
     <div>Home</div>
   </a>
-  <a class="nav-item nav-item--transactions" href="{{ route('history') }}" aria-label="Transactions">
+  <a class="nav-item" href="{{ route('history') }}" aria-label="Transactions">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     <div>Transactions</div>
   </a>
   <button class="nav-item nav-item--scan" type="button" id="fabToggle" aria-label="Open wallet actions" aria-expanded="false">
     <span class="nav-scan" aria-hidden="true">+</span>
   </button>
-  <a class="nav-item nav-item--franchise" href="{{ route('franchising') }}" aria-label="Franchise">
+  <a class="nav-item" href="{{ route('franchising') }}" aria-label="Franchise">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m9 6h-3m-6 9v-3m-9-6h3" stroke="currentColor" stroke-width="1.5"/></svg>
     <div>Franchise</div>
   </a>
-  <button class="nav-item nav-item--more" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
+  <button class="nav-item" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>
     <div>More</div>
   </button>
@@ -1568,6 +1666,18 @@
     var paymentOptions = document.querySelectorAll('.payment-method-option');
     var continueAddFunds = document.getElementById('continueAddFunds');
     var selectedPaymentMethod = 'bank';
+    var bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+
+    bottomNavItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        item.classList.remove('is-stomping');
+        void item.offsetWidth;
+        item.classList.add('is-stomping');
+        window.setTimeout(function () {
+          item.classList.remove('is-stomping');
+        }, 460);
+      });
+    });
 
     function closePanels() {
       if (fabPanel) {

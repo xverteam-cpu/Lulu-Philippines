@@ -67,6 +67,10 @@
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-4A4.5 4.5 0 0 0 3 18.5V20"/><circle cx="9.5" cy="7" r="4"/><path d="M16 3.3a4 4 0 0 1 0 7.4M21 20v-1.5a4.5 4.5 0 0 0-3.5-4.4"/></svg></span>
       <span>Users</span>
     </a>
+    <a class="admin-nav-btn {{ $activeAdminPage === 'franchises' ? 'active' : '' }}" href="{{ route('admin.franchises') }}">
+      <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01"/></svg></span>
+      <span>Franchise</span>
+    </a>
     <a class="admin-nav-btn {{ $activeAdminPage === 'withdrawals' ? 'active' : '' }}" href="{{ route('admin.withdrawals') }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v3h16v-3"/></svg></span>
       <span>Withdrawals</span>

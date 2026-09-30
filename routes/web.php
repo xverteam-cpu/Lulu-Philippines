@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\InvestmentApprovalController;
+use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseApplicationController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\WithdrawalController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FranchiseApplicationController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Middleware\RestrictUserAccess;
@@ -97,6 +99,10 @@ Route::get('/signup', function () {
 Route::get('/franchising', function () {
     return view('franchising', ['referral' => request('ref')]);
 })->name('franchising');
+
+Route::post('/franchise-applications', [FranchiseApplicationController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('franchise-applications.store');
 
 Route::get('/unavailable', function () {
     return view('unavailable');
@@ -710,6 +716,14 @@ Route::get('/admin/dashboard', function () {
 
     return app(UserManagementController::class)->index(request());
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.dashboard');
+
+Route::get('/admin/franchises', [AdminFranchiseApplicationController::class, 'index'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.franchises');
+
+Route::get('/admin/franchises/{franchiseApplication}', [AdminFranchiseApplicationController::class, 'show'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.franchises.show');
 
 Route::get('/admin/user-activity', function () {
     abort_unless(Auth::user()?->is_admin, 403);

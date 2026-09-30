@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#166534">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Lulu">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -104,6 +105,7 @@
     })();
   </script>
   @endauth
+  @env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv
   <script>
     (function () {
       var loader = document.querySelector('.page-loader');

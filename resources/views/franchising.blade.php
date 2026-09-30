@@ -132,7 +132,7 @@
   .franchise-header-embed {
     position: relative;
     width: 100vw;
-    aspect-ratio: 1024.5 / 397.5;
+    aspect-ratio: 100 / 54.612;
     margin-top: -18px;
     margin-left: calc(50% - 50vw);
     overflow: hidden;

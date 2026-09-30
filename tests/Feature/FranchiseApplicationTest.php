@@ -13,12 +13,18 @@ class FranchiseApplicationTest extends TestCase
 
     public function test_franchise_page_displays_a_real_application_form(): void
     {
-        $this->get(route('franchising', ['package' => '60']))
+        $this->app['env'] = 'production';
+
+        $this->get(route('franchising'))
             ->assertOk()
+            ->assertSee('public-protection.js')
+            ->assertSee('src="https://www.canva.com/design/DAHWplRk3gs/uzYiq8rFZP0ax_GEVfbMiA/view?embed"', false)
+            ->assertSee('franchiseHeader.classList.add(\'is-raised\')', false)
+            ->assertSee('franchise-header-embed.is-raised .franchise-header-mask', false)
+            ->assertDontSee('by X Twitter')
             ->assertSee('id="franchise-application"', false)
             ->assertSee('name="full_name"', false)
-            ->assertSee('name="preferred_package"', false)
-            ->assertSee('<option value="60" selected>', false)
+            ->assertDontSee('name="preferred_package"', false)
             ->assertSee('Submit Application');
     }
 
@@ -36,7 +42,7 @@ class FranchiseApplicationTest extends TestCase
             'full_name' => 'Jane Franchise Applicant',
             'email' => 'jane@example.com',
             'phone_number' => '+639171234567',
-            'preferred_package' => '40',
+            'preferred_package' => null,
             'location' => 'Makati City',
             'business_background' => 'I have operated local restaurants.',
             'investment_capacity' => '₱25 million',
@@ -61,10 +67,29 @@ class FranchiseApplicationTest extends TestCase
         $this->get(route('admin.franchises.show', $application))
             ->assertOk()
             ->assertSee('jane@example.com')
+            ->assertSee('Not specified')
             ->assertSee('Makati City')
             ->assertSee('I have operated local restaurants.')
             ->assertSee('₱25 million')
             ->assertSee('Please contact me in the morning.');
+    }
+
+    public function test_applications_from_a_package_link_keep_the_package_without_showing_a_selector(): void
+    {
+        $this->get(route('franchising', ['package' => '60']))
+            ->assertOk()
+            ->assertSee('name="preferred_package" value="60"', false)
+            ->assertDontSee('<select id="preferred_package"', false);
+
+        $this->post(route('franchise-applications.store'), [
+            ...$this->validApplication(),
+            'preferred_package' => '60',
+        ])->assertRedirect(route('franchising').'#franchise-application');
+
+        $this->assertDatabaseHas('franchise_applications', [
+            'email' => 'jane@example.com',
+            'preferred_package' => '60',
+        ]);
     }
 
     public function test_signed_in_applicant_is_linked_to_their_account(): void
@@ -118,7 +143,6 @@ class FranchiseApplicationTest extends TestCase
             'full_name' => 'Jane Franchise Applicant',
             'email' => 'jane@example.com',
             'phone_number' => '+639171234567',
-            'preferred_package' => '40',
             'location' => 'Makati City',
             'business_background' => 'I have operated local restaurants.',
             'investment_capacity' => '₱25 million',

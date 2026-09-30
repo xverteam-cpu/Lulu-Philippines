@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('email');
             $table->string('phone_number', 40);
-            $table->string('preferred_package', 2);
+            $table->string('preferred_package', 2)->nullable();
             $table->string('location');
             $table->text('business_background')->nullable();
             $table->string('investment_capacity', 100)->nullable();

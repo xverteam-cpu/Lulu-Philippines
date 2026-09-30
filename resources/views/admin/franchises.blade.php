@@ -50,7 +50,7 @@
                 <td><a href="{{ route('admin.franchises.show', $application) }}">{{ $application->full_name }}</a></td>
                 <td>{{ $application->email }}</td>
                 <td>{{ $application->phone_number }}</td>
-                <td>{{ $application->preferred_package }} Pyeong</td>
+                <td>{{ $application->preferred_package ? $application->preferred_package.' Pyeong' : 'Not specified' }}</td>
                 <td>{{ $application->created_at->format('M j, Y g:i A') }}</td>
               </tr>
             @endforeach

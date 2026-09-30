@@ -78,8 +78,22 @@ class AuthController extends Controller
         return redirect()->route($user->is_admin ? 'admin.dashboard' : 'dashboard');
     }
 
-    public function redirectToGoogle(): RedirectResponse
+    public function redirectToGoogle(Request $request): RedirectResponse
     {
+        $request->session()->forget('google_referrer_id');
+
+        $referral = trim((string) $request->query('ref', ''));
+        if ($referral !== '') {
+            $referrer = User::query()
+                ->where('username', $referral)
+                ->orWhere('email', $referral)
+                ->first();
+
+            if ($referrer) {
+                $request->session()->put('google_referrer_id', $referrer->id);
+            }
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -89,6 +103,7 @@ class AuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $exception) {
             report($exception);
+            $request->session()->forget('google_referrer_id');
 
             return redirect()->route('investors')
                 ->withErrors(['google' => 'Google sign-in could not be completed. Please try again.']);
@@ -96,10 +111,13 @@ class AuthController extends Controller
 
         $email = $googleUser->getEmail();
         if (! is_string($email) || $email === '' || ($googleUser->getRaw()['verified_email'] ?? false) !== true) {
+            $request->session()->forget('google_referrer_id');
+
             return redirect()->route('investors')
                 ->withErrors(['google' => 'A verified Google email address is required.']);
         }
 
+        $referrerId = $request->session()->pull('google_referrer_id');
         $user = User::where('email', $email)->first();
 
         if (! $user) {
@@ -110,6 +128,7 @@ class AuthController extends Controller
                 'email_verified_at' => now(),
                 'password' => Str::random(40),
                 'is_admin' => false,
+                'referred_by' => $referrerId,
             ]);
         }
 

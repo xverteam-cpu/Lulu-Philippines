@@ -22,6 +22,16 @@ class AuthSignupTest extends TestCase
         $response->assertDontSee('Email');
     }
 
+    public function test_signup_page_preserves_the_referrer_in_the_google_signup_link(): void
+    {
+        $referrer = User::factory()->create(['username' => 'referrer']);
+
+        $this->get(route('signup', ['ref' => $referrer->username]))
+            ->assertOk()
+            ->assertSee('Continue with Google')
+            ->assertSee(route('login.google', ['ref' => $referrer->username]), false);
+    }
+
     public function test_signup_form_can_create_a_user_with_the_simplified_fields(): void
     {
         $response = $this->post('/register-partner', [

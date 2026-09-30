@@ -46,7 +46,7 @@
       </div>
       <div class="franchise-detail-item">
         <span class="franchise-detail-label">Preferred package</span>
-        <div class="franchise-detail-value">{{ $application->preferred_package }} Pyeong</div>
+        <div class="franchise-detail-value">{{ $application->preferred_package ? $application->preferred_package.' Pyeong' : 'Not specified' }}</div>
       </div>
       <div class="franchise-detail-item full">
         <span class="franchise-detail-label">Location / proposed site</span>

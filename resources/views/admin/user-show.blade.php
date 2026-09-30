@@ -138,6 +138,18 @@
         <span class="detail-label">Account Role</span>
         <span class="detail-value">{{ $managedUser->is_admin ? 'Admin' : 'Partner user' }}</span>
       </div>
+      <div class="detail-item">
+        <span class="detail-label">Referred By</span>
+        @if ($managedUser->referrer)
+          <span class="detail-value">
+            <a href="{{ route('admin.users.show', $managedUser->referrer) }}">
+              {{ $managedUser->referrer->name }}{{ $managedUser->referrer->username ? ' (@'.$managedUser->referrer->username.')' : '' }}
+            </a>
+          </span>
+        @else
+          <span class="detail-value">No referrer linked</span>
+        @endif
+      </div>
       <div class="detail-item" style="grid-column:1 / -1;">
         <span class="detail-label">Message</span>
         <span class="detail-value">{{ $managedUser->message ?: 'No message submitted' }}</span>

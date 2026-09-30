@@ -15,7 +15,7 @@ class FranchiseApplicationController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'phone_number' => ['required', 'string', 'max:40'],
-            'preferred_package' => ['required', 'string', Rule::in(['40', '60'])],
+            'preferred_package' => ['nullable', 'string', Rule::in(['40', '60'])],
             'location' => ['required', 'string', 'max:255'],
             'business_background' => ['nullable', 'string', 'max:5000'],
             'investment_capacity' => ['nullable', 'string', 'max:100'],

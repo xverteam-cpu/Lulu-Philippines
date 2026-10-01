@@ -42,6 +42,9 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('data-payment="e_wallet"', false)
             ->assertSee('data-payment="account_balance"', false)
             ->assertSee('data-payment="crypto"', false)
+            ->assertSee('.payment-choice-icon svg { display:block; width:22px; height:22px; }', false)
+            ->assertSee('.payment-choice-check svg { display:block; width:12px; height:12px; }', false)
+            ->assertDontSee('.payment-choice span {', false)
             ->assertDontSee('1.5% fee');
 
         Cache::forget('usd_to_php_rate_meta_v2');

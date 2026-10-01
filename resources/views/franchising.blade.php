@@ -56,15 +56,16 @@
     position: sticky;
     top: 0;
     z-index: 5;
-    padding: 10px 16px 12px;
-    background: rgba(242, 245, 243, .88);
-    backdrop-filter: saturate(180%) blur(18px);
-    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(10, 31, 23, .06);
+    background: rgba(242, 245, 243, .94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .franchise-nav {
     display: grid;
-    grid-template-columns: 40px 1fr 40px;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
   }
@@ -87,20 +88,23 @@
 
   .franchise-brand {
     gap: 8px;
+    justify-self: center;
     color: var(--fr-ink);
-    font: 800 16px/1 "Plus Jakarta Sans", Inter, sans-serif;
+    white-space: nowrap;
+    font: 800 15px/1 "Plus Jakarta Sans", Inter, sans-serif;
   }
 
   .franchise-brand-mark {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    border-radius: 10px;
-    color: #fff;
-    background: linear-gradient(145deg, #14a86d, #075a3b);
-    box-shadow: 0 4px 10px rgba(14, 138, 90, .3);
-    font-size: 15px;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .franchise-page-label {
+    color: #64756d;
+    font: 700 11px/1 Inter, sans-serif;
+    white-space: nowrap;
   }
 
   .franchise-main { padding: 6px 20px 0; }
@@ -387,10 +391,10 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>
         </a>
         <a class="franchise-brand" href="{{ url('/') }}" aria-label="LuLu home">
-          <span class="franchise-brand-mark" aria-hidden="true">L</span>
-          <span>LuLu</span>
+          <img class="franchise-brand-mark" src="{{ asset('logo.png') }}" alt="">
+          <span>LuLu Philippines</span>
         </a>
-        <span aria-hidden="true"></span>
+        <span class="franchise-page-label">Franchise</span>
       </nav>
     </header>
 

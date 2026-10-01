@@ -26,7 +26,6 @@
   .estimate-note { margin:0 0 22px; color:#64748b; font-size:14px; line-height:21px; }
   .payment-section { display:none; }
   .payment-choice { padding:10px; text-align:left; }
-  .payment-choice span { display:block; margin-top:4px; color:#64748b; font-size:12px; font-weight:500; }
   .payment-choice.is-selected { border-color:#166534; background:#e8f8ee; color:#166534; }
   .purchase-submit { width:100%; margin-top:12px; }
   .agreement-box { margin:22px 0 8px; padding:16px; border:1px solid #d9dee5; border-radius:14px; background:#f8fafc; }
@@ -186,10 +185,12 @@
   .payment-choice:active { transform:scale(.985); }
   .payment-choice.is-selected { background:#f2fbf6; box-shadow:inset 0 0 0 2px #0e8a5a,0 4px 12px -6px rgba(14,138,90,.35); }
   .payment-choice-icon { display:grid; width:40px; height:40px; flex:0 0 40px; place-items:center; border-radius:13px; color:#0e8a5a; background:#e6f7ef; }
+  .payment-choice-icon svg { display:block; width:22px; height:22px; }
   .payment-choice-copy { display:block; flex:1; min-width:0; }
   .payment-choice-title { display:block; font-size:13px; font-weight:750; }
   .payment-choice-description { display:block; margin-top:4px; color:#718078; font-size:11px; font-weight:500; line-height:1.35; }
-  .payment-choice-check { display:grid; width:20px; height:20px; flex:0 0 20px; place-items:center; border:1.5px solid #c9d3ce; border-radius:50%; color:transparent; }
+  .payment-choice-check { display:grid; width:22px; height:22px; flex:0 0 22px; place-items:center; border:1.5px solid #c9d3ce; border-radius:50%; color:transparent; transition:background .18s ease,border-color .18s ease,transform .18s ease; }
+  .payment-choice-check svg { display:block; width:12px; height:12px; }
   .payment-choice.is-selected .payment-choice-check { border-color:#0e8a5a; color:#fff; background:#0e8a5a; }
   .payment-order-summary { margin-top:12px; padding:4px 16px; border-radius:20px; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06),inset 0 0 0 1px rgba(10,31,23,.04); }
   .payment-order-row { display:flex; justify-content:space-between; gap:12px; padding:12px 0; color:#4b5b54; font-size:13px; }

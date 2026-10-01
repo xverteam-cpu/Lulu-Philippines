@@ -307,9 +307,9 @@
 
     <div class="summary-grid">
       <div class="summary-card">
-        <div class="summary-label">Daily Interest Earned</div>
+        <div class="summary-label">Interest Earned To Date</div>
         <div class="summary-value">${{ number_format($dailyInterest, 2) }}</div>
-        <p class="summary-note">Sum of daily interest from all approved investments.</p>
+        <p class="summary-note">Total interest credited from approved investments.</p>
       </div>
       <div class="summary-card">
         <div class="summary-label">Investment History</div>
@@ -434,14 +434,10 @@
           <span class="accordion-toggle">+</span>
         </button>
         <div id="daily-interest" class="accordion-body">
-          @php
-            $dailyList = $investments->where('status', 'approved');
-          @endphp
-
-          @if ($dailyList->isEmpty())
+          @if ($dailyInterestEntries->isEmpty())
             <div class="empty-state">
               <strong>No daily interest records yet.</strong>
-              <p>Approved investments will show daily interest here.</p>
+              <p>Interest starts accruing the day after an investment is approved.</p>
             </div>
           @else
             <table class="history-table">
@@ -453,11 +449,11 @@
                 </tr>
               </thead>
               <tbody>
-                @foreach ($dailyList as $inv)
+                @foreach ($dailyInterestEntries as $entry)
                   <tr>
-                    <td>{{ $inv->created_at->format('M d, Y') }}</td>
-                    <td>{{ $inv->package_name }}</td>
-                    <td>${{ number_format($inv->dailyInterestAmount(), 2) }}</td>
+                    <td>{{ $entry['date']->format('M d, Y') }}</td>
+                    <td>{{ $entry['investment']->package_name }}</td>
+                    <td>${{ number_format($entry['amount'], 2) }}</td>
                   </tr>
                 @endforeach
               </tbody>

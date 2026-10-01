@@ -663,6 +663,7 @@ Route::post('/withdrawal-account', function (Request $request) {
 
 Route::get('/history', function () {
     $user = Auth::user();
+    DailyInterestAccrualService::accrueDueInterestForUser($user);
 
     $investments = Investment::where('user_id', $user->id)
         ->orderByDesc('created_at')
@@ -672,14 +673,35 @@ Route::get('/history', function () {
         ->orderByDesc('created_at')
         ->get();
 
-    $dailyInterest = $investments
-        ->where('status', 'approved')
-        ->sum(fn ($investment) => $investment->dailyInterestAmount());
+    $approvedInvestments = $investments->where('status', 'approved');
+    $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->creditedInterest());
+    $dailyInterestEntries = collect();
+
+    foreach ($approvedInvestments as $investment) {
+        $creditedDays = min(
+            (int) ($investment->interest_days_credited ?? 0),
+            (int) $investment->duration_days
+        );
+        $firstInterestDate = $investment->effectiveStartDate()->copy()->startOfDay()->addDay();
+
+        for ($day = 0; $day < $creditedDays; $day++) {
+            $dailyInterestEntries->push([
+                'date' => $firstInterestDate->copy()->addDays($day),
+                'investment' => $investment,
+                'amount' => $investment->dailyInterestAmount(),
+            ]);
+        }
+    }
+
+    $dailyInterestEntries = $dailyInterestEntries
+        ->sortByDesc(fn (array $entry) => $entry['date'])
+        ->values();
 
     return view('history', [
         'investments' => $investments,
         'withdrawals' => $withdrawals,
         'dailyInterest' => $dailyInterest,
+        'dailyInterestEntries' => $dailyInterestEntries,
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('history');
 

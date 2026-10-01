@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Investment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class DashboardBondEarningsTest extends TestCase
@@ -104,5 +105,50 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertGreaterThan(0, $accrued);
         $this->assertGreaterThan(0, (float) $investment->fresh()->interest_days_credited);
         $this->assertGreaterThan(0, (float) $user->fresh()->balance);
+    }
+
+    public function test_interest_starts_the_day_after_investment_and_history_shows_each_credited_day(): void
+    {
+        Carbon::setTestNow('2026-09-23 15:00:00');
+        $user = User::factory()->create(['balance' => 0]);
+        $investment = Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 129,
+            'payment_method' => 'account_balance',
+            'daily_interest_rate' => 0.7,
+            'duration_days' => 30,
+            'starts_at' => now(),
+            'approved_at' => now(),
+            'status' => 'approved',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('history'))
+            ->assertOk()
+            ->assertViewHas('dailyInterestEntries', fn ($entries) => $entries->isEmpty())
+            ->assertViewHas('dailyInterest', 0.0);
+
+        $this->assertSame(0, (int) $investment->fresh()->interest_days_credited);
+        $this->assertSame(0.0, (float) $user->fresh()->balance);
+
+        Carbon::setTestNow('2026-10-01 15:00:00');
+
+        $this->get(route('history'))
+            ->assertOk()
+            ->assertViewHas('dailyInterest', 7.2)
+            ->assertViewHas('dailyInterestEntries', function ($entries) {
+                return $entries->count() === 8
+                    && $entries->first()['date']->toDateString() === '2026-10-01'
+                    && $entries->last()['date']->toDateString() === '2026-09-24'
+                    && $entries->every(fn (array $entry) => $entry['amount'] === 0.9);
+            })
+            ->assertSee('Interest Earned To Date')
+            ->assertSee('$7.20');
+
+        $this->assertSame(8, (int) $investment->fresh()->interest_days_credited);
+        $this->assertSame(7.2, (float) $user->fresh()->balance);
     }
 }

@@ -59,7 +59,7 @@ class Investment extends Model
 
     public function dailyInterestAmount(): float
     {
-        return (float) $this->amount * ((float) $this->daily_interest_rate / 100);
+        return round((float) $this->amount * ((float) $this->daily_interest_rate / 100), 2);
     }
 
     public function effectiveStartDate(): Carbon
@@ -69,11 +69,16 @@ class Investment extends Model
 
     public function elapsedInterestDays(): int
     {
-        $startDate = $this->effectiveStartDate();
+        $firstInterestDate = $this->effectiveStartDate()->copy()->startOfDay()->addDay();
+        $today = now()->startOfDay();
+
+        if ($today->lt($firstInterestDate)) {
+            return 0;
+        }
 
         return min(
             $this->duration_days,
-            max(0, (int) floor($startDate->diffInDays(now())))
+            (int) $firstInterestDate->diffInDays($today) + 1
         );
     }
 

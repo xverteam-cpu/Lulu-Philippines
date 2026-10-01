@@ -58,6 +58,27 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('$80.00');
     }
 
+    public function test_dashboard_purchase_bonds_action_shows_advertisement_before_investing(): void
+    {
+        $user = User::factory()->create();
+
+        $this->get(route('invest.advertisement'))
+            ->assertRedirect(route('login'));
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee(route('invest.advertisement'), false);
+
+        $this->get(route('invest.advertisement'))
+            ->assertOk()
+            ->assertSee(asset('images/lulu-bonds-investment-advertisement.png'), false)
+            ->assertSee('href="'.route('invest').'"', false)
+            ->assertSee('>Next</a>', false);
+
+        $this->assertFileExists(public_path('images/lulu-bonds-investment-advertisement.png'));
+    }
+
     public function test_approved_investments_without_starts_at_use_approved_at_for_accrual(): void
     {
         $user = User::factory()->create([

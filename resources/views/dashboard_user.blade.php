@@ -1539,7 +1539,7 @@
   </section>
 
   <section class="package-section" aria-label="Bond purchase">
-    <a class="dashboard-card-link" href="{{ route('invest') }}" aria-label="View bond details and purchase bonds">
+    <a class="dashboard-card-link" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
       <img src="{{ asset('images/dashboard-bond-card.svg') }}" alt="Lulu Purchase Bonds. Grow your future with secure and reliable investment opportunities.">
     </a>
     <a class="dashboard-card-link franchise-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">

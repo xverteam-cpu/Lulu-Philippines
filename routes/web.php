@@ -241,6 +241,10 @@ Route::get('/deposit', function () {
     return view('deposit');
 })->middleware(['auth', RestrictUserAccess::class])->name('deposit');
 
+Route::get('/invest/advertisement', function () {
+    return view('invest-advertisement');
+})->middleware(['auth', RestrictUserAccess::class])->name('invest.advertisement');
+
 Route::get('/invest', function () {
     $meta = CurrencyRateService::latestUsdToPhpWithMeta();
     $user = Auth::user();

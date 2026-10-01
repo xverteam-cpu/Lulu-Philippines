@@ -520,7 +520,6 @@
 
 @foreach ($users as $user)
   <template id="userModal-{{ $user->id }}">
-    <div class="modal-card">
       <button class="modal-close" type="button" onclick="closeUserModal()" aria-label="Close user details">&times;</button>
       <div class="modal-header">
         <div>
@@ -691,7 +690,6 @@
           </div>
         @endif
       </details>
-    </div>
   </template>
 @endforeach
 

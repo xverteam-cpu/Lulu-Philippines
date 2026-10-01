@@ -14,6 +14,31 @@ class WithdrawalRequestTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_withdrawal_details_does_not_render_detached_css_as_page_text(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'amount' => 25,
+            'payment_method' => 'bank_transfer',
+            'bank_name' => 'Test Bank',
+            'account_number' => '1234567890',
+            'account_holder' => $user->name,
+            'status' => 'rejected',
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['status' => 'Withdrawal rejected successfully.'])
+            ->get(route('admin.withdrawals.show', $withdrawal))
+            ->assertOk()
+            ->assertSee('Withdrawal rejected successfully.')
+            ->assertSee('.grid-2 {', false)
+            ->assertSee('.alert-error {', false)
+            ->assertDontSee('background:#dcfce7;')
+            ->assertDontSee('</style>background:#dcfce7;', false);
+    }
+
     public function test_user_must_provide_bank_details_before_requesting_withdrawal(): void
     {
         $user = User::factory()->create([

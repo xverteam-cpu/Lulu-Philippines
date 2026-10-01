@@ -30,7 +30,7 @@ class WithdrawalConfirmation extends Mailable
             : 'emails.withdrawal-request-confirmation';
 
         return $this->from(
-            config('mail.from.address', 'lotteriaph@gmail.com'),
+            config('mail.from.address', 'official@luluphilippines.com'),
             config('mail.from.name', 'Lulu')
         )
             ->to($user->email, $clientName)

@@ -20,7 +20,7 @@ class LuluPromotionEmail extends Mailable
 
     public function build(): self
     {
-        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lulu'))
+        return $this->from(config('mail.from.address', 'official@luluphilippines.com'), config('mail.from.name', 'Lulu'))
             ->subject('Get Ready for an Exclusive LULU Experience!')
             ->view('emails.lotteria-promotion')
             ->with([

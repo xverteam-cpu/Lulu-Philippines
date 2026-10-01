@@ -24,7 +24,7 @@ class PackagePurchaseNotification extends Mailable
         $user = $this->investment->user;
         $dashboardUrl = url('/dashboard');
 
-        return $this->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lulu'))
+        return $this->from(config('mail.from.address', 'official@luluphilippines.com'), config('mail.from.name', 'Lulu'))
             ->subject('Your Lulu Package Purchase Confirmation')
             ->view('emails.package-purchase-notification')
             ->with([

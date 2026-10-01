@@ -29,7 +29,7 @@ class ResetPasswordNotification extends Notification
         $expireMinutes = config('auth.passwords.'.config('auth.defaults.passwords').'.expire');
 
         return (new MailMessage)
-            ->from(config('mail.from.address', 'lotteriaph@gmail.com'), config('mail.from.name', 'Lulu'))
+            ->from(config('mail.from.address', 'official@luluphilippines.com'), config('mail.from.name', 'Lulu'))
             ->subject('Reset Your Lulu Password')
             ->view('emails.reset-password', [
                 'resetUrl' => $resetUrl,

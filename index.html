@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Purchase Bonds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F2F5F3;
+    --surface:#FFFFFF;
+    --ink:#0A1F17;
+    --ink-2:#4B5B54;
+    --ink-3:#8A9892;
+    --line:#E2E9E5;
+    --em-950:#021A12;
+    --em-900:#04321F;
+    --em-800:#075A3B;
+    --em-600:#0E8A5A;
+    --em-500:#14A86D;
+    --mint:#3EE0A1;
+    --mint-50:#E6F7EF;
+    --lime:#C6F36B;
+    --display:"Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+    --ui:"Inter", system-ui, -apple-system, sans-serif;
+    --shadow-sm:0 1px 2px rgba(6,40,28,.06), 0 2px 6px -2px rgba(6,40,28,.06);
+    --shadow-md:0 1px 2px rgba(6,40,28,.05), 0 6px 16px -6px rgba(6,40,28,.12), 0 18px 36px -18px rgba(6,40,28,.18);
+    --shadow-lg:0 2px 4px rgba(4,30,20,.08), 0 12px 24px -8px rgba(4,30,20,.22), 0 32px 56px -24px rgba(4,30,20,.38);
+    --ease:cubic-bezier(.2,.8,.2,1);
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --brushed:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003 .9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 .55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--ui);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;background-attachment:fixed;
+    display:flex;justify-content:center;align-items:flex-start;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+      #E7ECE9;
+  }
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .num{font-family:var(--ui);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"cv11" 1,"ss01" 1}
+
+  /* ---------- Phone frame ---------- */
+  .phone{
+    position:relative;width:390px;min-height:844px;margin:40px 0;
+    background:var(--bg);
+    border-radius:54px;
+    overflow:clip;
+    box-shadow:0 0 0 10px #0D1411, 0 0 0 11px #2A332F, 0 30px 60px -20px rgba(2,26,18,.40), 0 60px 100px -50px rgba(2,26,18,.30);
+  }
+  @media (min-width:521px){
+    body{align-items:center;padding:40px 0}
+    .phone{height:844px;margin:0;overflow-y:auto;scrollbar-width:none}
+    .phone::-webkit-scrollbar{display:none}
+  }
+  @media (max-width:520px){
+    body{background:var(--bg)}
+    .phone{width:100%;margin:0;border-radius:0;box-shadow:none}
+  }
+
+  /* ---------- Top chrome ---------- */
+  .chrome{
+    position:sticky;top:0;z-index:30;
+    background:rgba(242,245,243,.78);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  }
+  .statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}
+  .statusbar time{font:600 16px/1 var(--ui);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .statusbar .sys{display:flex;gap:6px;align-items:center}
+  .nav{height:52px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 16px 4px}
+  .nav h1{font:700 17px/1 var(--display);letter-spacing:-.015em;text-align:center}
+  .back{
+    width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    background:var(--surface);box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(10,31,23,.05);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .back:hover{box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.06)}
+  .back:active{transform:scale(.92)}
+
+  main{padding:10px 20px 24px}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;isolation:isolate;overflow:hidden;
+    border-radius:28px;padding:22px 22px 18px;color:#fff;
+    background:
+      radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.55), transparent 55%),
+      radial-gradient(70% 70% at -10% 110%, rgba(198,243,107,.28), transparent 60%),
+      radial-gradient(60% 50% at 40% 40%, rgba(20,168,109,.35), transparent 70%),
+      linear-gradient(160deg, #0B6A47 0%, #054A31 42%, #022418 100%);
+    box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.07);
+  }
+  .hero::before{ /* noise */
+    content:"";position:absolute;inset:0;z-index:-1;background:var(--noise);opacity:.09;mix-blend-mode:overlay;
+  }
+  .hero::after{ /* glass top sheen */
+    content:"";position:absolute;inset:0 0 55% 0;z-index:-1;
+    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0));
+    border-radius:28px 28px 0 0;
+  }
+  .hero__waves{position:absolute;right:-30px;bottom:-10px;width:300px;z-index:-1;opacity:.9}
+  .hero__top{display:flex;justify-content:space-between;align-items:center}
+  .eyebrow{font:600 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase}
+  .hero .eyebrow{color:rgba(232,255,244,.72);display:flex;align-items:center;gap:8px}
+  .hero .eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px rgba(62,224,161,.22),0 0 10px var(--mint)}
+  .glass-ico{
+    width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.3), inset 0 0 0 1px rgba(255,255,255,.1);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  }
+  .amount{margin-top:16px;font-weight:700;font-size:48px;line-height:1;letter-spacing:-.04em;display:flex;align-items:flex-start;text-shadow:0 2px 18px rgba(0,0,0,.18)}
+  .amount .cur{font-size:26px;margin:5px 3px 0 0;letter-spacing:0;color:rgba(255,255,255,.8);font-weight:600}
+  .amount .dec{color:rgba(255,255,255,.55)}
+  .hero__sub{margin-top:8px;font:500 13px/1.3 var(--ui);color:rgba(232,255,244,.62)}
+  .hero__stats{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{
+    padding:12px 14px;border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.07);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  }
+  .stat .lbl{font:600 10px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:rgba(232,255,244,.6)}
+  .stat .val{margin-top:8px;font-size:17px;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;gap:6px}
+  .stat .val.mint{color:#7BF2C2}
+  .stat .val small{font-size:12px;font-weight:500;color:rgba(232,255,244,.55)}
+
+  /* ---------- Section heads ---------- */
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin:30px 2px 14px}
+  .sec-head h2{font:750 20px/1.1 var(--display);letter-spacing:-.025em}
+  .sec-head .meta{font:600 12px/1 var(--ui);color:var(--ink-3);letter-spacing:.01em}
+  .sec-head .meta b{color:var(--em-600);font-weight:700}
+
+  /* ---------- Metal cards ---------- */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{
+    --rx:0deg;--ry:0deg;--mx:50%;--my:50%;--lift:0px;
+    position:relative;isolation:isolate;border-radius:22px;overflow:hidden;
+    transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+    transition:transform .5s var(--ease), box-shadow .4s var(--ease);
+    box-shadow:var(--shadow-md);
+    outline:none;cursor:pointer;
+  }
+  .card.is-tilting{transition:transform .08s linear, box-shadow .4s var(--ease)}
+  .card:hover{--lift:-3px;box-shadow:var(--shadow-lg)}
+  .card:active{transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(.985)}
+  .card:focus-visible{box-shadow:var(--shadow-lg),0 0 0 3px var(--bg),0 0 0 5px var(--em-500)}
+  .card--wide{grid-column:1/-1;aspect-ratio:1.62/1}
+  .card--tall{aspect-ratio:.76/1}
+  .face{position:absolute;inset:0;z-index:-2}
+  .face::before{content:"";position:absolute;inset:0;background:var(--brushed);background-size:420px 260px;mix-blend-mode:overlay;opacity:.55}
+  .face::after{ /* static specular band */
+    content:"";position:absolute;inset:-40% -20%;
+    background:linear-gradient(115deg, transparent 38%, rgba(255,255,255,.38) 47%, rgba(255,255,255,.08) 52%, transparent 60%);
+    transform:translateX(-18%);transition:transform 1.1s var(--ease);
+  }
+  .card:hover .face::after{transform:translateX(22%)}
+  .shine{ /* pointer-follow glare */
+    position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
+    background:radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,.55), rgba(255,255,255,0) 55%);
+    mix-blend-mode:soft-light;
+  }
+  .card:hover .shine{opacity:1}
+  .edge{position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.75), inset 0 0 0 1px rgba(255,255,255,.28), inset 0 -1px 0 rgba(0,0,0,.12)}
+
+  .card-body{position:relative;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:18px 18px 16px}
+  .brand{font:800 22px/1 var(--display);letter-spacing:-.03em}
+  .kicker{margin-top:6px;font:600 9.5px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+  .row{display:flex;justify-content:space-between;align-items:flex-start}
+  .row--end{align-items:flex-end}
+
+  /* Silver */
+  .card--silver{color:#17212B}
+  .card--silver .face{background:
+      radial-gradient(120% 140% at 0% 0%, rgba(255,255,255,.9), transparent 45%),
+      linear-gradient(128deg, #F4F6F8 0%, #C8CED5 24%, #EEF1F4 46%, #A9B1BA 72%, #DDE2E7 100%)}
+  .card--silver .emblem{color:#8D97A2}
+  .val-lg{font-size:28px;font-weight:700;letter-spacing:-.035em;line-height:1;margin-top:8px}
+  .val-lg .cur{font-size:17px;font-weight:600;margin-right:1px;opacity:.7;vertical-align:4px}
+  .pill-active{
+    display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:99px;
+    font:700 10px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:#065A3A;
+    background:rgba(255,255,255,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8), 0 1px 2px rgba(0,0,0,.08);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  }
+  .pill-active i{width:7px;height:7px;border-radius:50%;background:#12B76A;box-shadow:0 0 0 3px rgba(18,183,106,.2)}
+  .icon-btn{
+    width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(180deg,#123D2C,#062218);color:#fff;
+    box-shadow:0 4px 10px -2px rgba(4,30,20,.45), inset 0 1px 0 rgba(255,255,255,.18);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .icon-btn:hover{transform:scale(1.08) rotate(90deg)}
+  .icon-btn:active{transform:scale(.9)}
+  .chiprow{display:flex;align-items:center;gap:10px}
+  .actions{display:flex;gap:8px;align-items:center}
+  .emblem{position:absolute;right:-26px;bottom:-30px;width:170px;height:170px;z-index:-1;pointer-events:none}
+
+  /* Gold */
+  .card--gold{color:#3A2706}
+  .card--gold .face{background:
+      radial-gradient(110% 90% at 0% 0%, rgba(255,247,214,.95), transparent 50%),
+      linear-gradient(140deg, #FCEBB9 0%, #E6C26A 26%, #B98A33 52%, #F1D48A 74%, #A57426 100%)}
+  .card--gold .emblem{color:#8E6420}
+
+  /* Platinum */
+  .card--platinum{color:#ECF0F4}
+  .card--platinum .face{background:
+      radial-gradient(120% 80% at 100% 0%, rgba(160,175,190,.35), transparent 55%),
+      linear-gradient(155deg, #474E57 0%, #23282E 36%, #121518 70%, #2E343B 100%)}
+  .card--platinum .face::before{opacity:.35}
+  .card--platinum .face::after{background:linear-gradient(115deg, transparent 38%, rgba(220,232,245,.2) 47%, rgba(255,255,255,.04) 53%, transparent 60%)}
+  .card--platinum .edge{box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.08)}
+  .card--platinum .emblem{color:#9AA6B2}
+  .card--platinum .kicker{opacity:.6}
+
+  /* Locked state */
+  .card--locked .face{filter:saturate(.62) brightness(.97)}
+  .card--locked .veil{position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,0) 30%, rgba(20,14,4,.18) 100%)}
+  .card--platinum.card--locked .veil{background:linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.35) 100%)}
+  .card--locked .brand, .card--locked .kicker{opacity:.78}
+  .card--locked .kicker{opacity:.55}
+  .card--tall .brand{font-size:20px}
+  .card--tall .card-body{padding:16px 16px 14px}
+  .lock{
+    position:absolute;top:14px;right:14px;
+    width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;
+    background:rgba(255,255,255,.42);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6), 0 2px 6px rgba(0,0,0,.08);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  }
+  .card--platinum .lock{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+  .chip-sm{display:block;margin-top:auto;margin-bottom:auto;opacity:.92}
+  .locked-meta{display:flex;align-items:center;gap:6px;font:700 9.5px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;opacity:.72;margin-bottom:10px}
+  .locked-meta::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5}
+  .activate{
+    width:100%;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:6px;
+    font:650 13.5px/1 var(--ui);letter-spacing:-.005em;
+    transition:transform .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .card--gold .activate{background:rgba(255,253,245,.82);color:#3A2706;box-shadow:0 4px 12px -4px rgba(90,60,10,.35), inset 0 0 0 1px rgba(255,255,255,.9)}
+  .card--gold .activate:hover{background:#FFFDF6}
+  .card--platinum .activate{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.12)}
+  .card--platinum .activate:hover{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.1))}
+  .activate:active{transform:scale(.95)}
+  .activate svg{transition:transform .25s var(--ease)}
+  .activate:hover svg{transform:rotate(90deg)}
+
+  /* ---------- Secondary button ---------- */
+  .btn-secondary{
+    margin-top:16px;width:100%;height:60px;border-radius:18px;padding:0 14px 0 12px;
+    display:flex;align-items:center;gap:12px;text-align:left;
+    background:var(--surface);box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--line);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .btn-secondary:hover{box-shadow:var(--shadow-md), inset 0 0 0 1px #D3DDD8;transform:translateY(-1px)}
+  .btn-secondary:active{transform:scale(.985)}
+  .btn-secondary .ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--mint-50);color:var(--em-600);flex:none}
+  .btn-secondary .txt{flex:1;font:600 15px/1.2 var(--ui);letter-spacing:-.01em}
+  .btn-secondary .chev{color:var(--ink-3);transition:transform .2s var(--ease)}
+  .btn-secondary:hover .chev{transform:translateX(3px)}
+
+  /* ---------- Panels ---------- */
+  .panel{
+    background:var(--surface);border-radius:24px;padding:20px;
+    box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04);
+  }
+  .panel h3{font:750 19px/1.15 var(--display);letter-spacing:-.025em}
+  .panel--section{margin-top:28px}
+  .panel .desc{margin-top:5px;font:450 13.5px/1.45 var(--ui);color:var(--ink-2)}
+  .ps-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .tag{
+    flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:99px;
+    font:700 9.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:#0B6B45;
+    background:var(--mint-50);box-shadow:inset 0 0 0 1px rgba(14,138,90,.14);
+  }
+  .ps-figs{margin-top:20px;display:flex;justify-content:space-between;align-items:flex-end}
+  .ps-figs .big{font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:1}
+  .ps-figs .big small{font-size:13px;font-weight:550;color:var(--ink-3);letter-spacing:0;margin-left:6px}
+  .ps-figs .right{text-align:right}
+  .ps-figs .right b{display:block;font-size:17px;font-weight:700;letter-spacing:-.02em}
+  .ps-figs .right span{font:600 10px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .track{
+    position:relative;margin-top:14px;height:12px;border-radius:99px;
+    background:repeating-linear-gradient(90deg, #E8EEEB 0 calc(10% - 2px), #F6F9F7 calc(10% - 2px) 10%);
+    box-shadow:inset 0 1px 2px rgba(6,40,28,.08), inset 0 0 0 1px rgba(6,40,28,.04);
+  }
+  .fill{position:absolute;inset:0 auto 0 0;border-radius:inherit;background:linear-gradient(90deg,var(--em-600),var(--mint));box-shadow:0 0 12px rgba(62,224,161,.6)}
+  .knob{position:absolute;top:50%;width:18px;height:18px;margin-left:-3px;transform:translateY(-50%);border-radius:50%;
+    background:#fff;box-shadow:0 1px 3px rgba(6,40,28,.25), 0 0 0 4px rgba(20,168,109,.14), inset 0 0 0 5px var(--em-600)}
+  .scale{margin-top:8px;display:flex;justify-content:space-between;font:600 10.5px/1 var(--ui);color:var(--ink-3)}
+
+  .steps{list-style:none;margin-top:2px}
+  .steps li{position:relative;display:flex;gap:14px;padding:14px 0}
+  .steps li + li{border-top:1px solid #EEF2F0}
+  .steps .n{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font:700 13px/1 var(--ui);
+    color:var(--em-800);background:linear-gradient(180deg,#EDFAF3,#DDF3E8);box-shadow:inset 0 0 0 1px rgba(14,138,90,.14)}
+  .steps h4{font:650 15px/1.25 var(--ui);letter-spacing:-.01em}
+  .steps p{margin-top:3px;font:450 13px/1.45 var(--ui);color:var(--ink-2)}
+
+  /* ---------- Bottom CTA ---------- */
+  .cta-bar{
+    position:sticky;bottom:0;z-index:20;padding:18px 20px 30px;
+    background:linear-gradient(180deg, rgba(242,245,243,0) 0%, rgba(242,245,243,.92) 32%, var(--bg) 100%);
+  }
+  .cta{
+    width:100%;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;
+    font:650 16px/1 var(--ui);letter-spacing:-.01em;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#11905E 0%,#0A6A45 100%);
+    box-shadow:0 10px 24px -8px rgba(10,106,69,.55), 0 2px 4px rgba(10,106,69,.2), inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease), filter .2s;
+  }
+  .cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-110%);transition:transform .8s var(--ease)}
+  .cta:hover::after{transform:translateX(110%)}
+  .cta:hover{filter:brightness(1.05);box-shadow:0 14px 30px -8px rgba(10,106,69,.6), 0 2px 4px rgba(10,106,69,.2), inset 0 1px 0 rgba(255,255,255,.25)}
+  .cta:active{transform:scale(.98)}
+  .home{width:134px;height:5px;border-radius:99px;background:#0A1F17;margin:14px auto 0;opacity:.9}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status bar + nav -->
+  <header class="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="back" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <h1>Purchase Bonds</h1>
+      <span></span>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" aria-label="Total investment">
+      <svg class="hero__waves" viewBox="0 0 300 200" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wv1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C6F36B" stop-opacity="0"/><stop offset=".6" stop-color="#C6F36B" stop-opacity=".65"/><stop offset="1" stop-color="#F3E27A" stop-opacity=".9"/></linearGradient>
+          <linearGradient id="wv2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3EE0A1" stop-opacity="0"/><stop offset="1" stop-color="#3EE0A1" stop-opacity=".45"/></linearGradient>
+        </defs>
+        <path d="M0 170C70 168 120 140 170 108S260 50 310 42" stroke="url(#wv1)" stroke-width="1.6"/>
+        <path d="M10 196C90 190 140 162 190 128S270 80 310 74" stroke="url(#wv2)" stroke-width="1.2"/>
+        <path d="M40 210C110 206 160 182 210 150S280 108 310 104" stroke="url(#wv2)" stroke-width=".9" opacity=".7"/>
+      </svg>
+      <div class="hero__top">
+        <span class="eyebrow"><i></i>Total investment</span>
+        <span class="glass-ico" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8FFF4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18M12 3l9 5H3l9-5Z"/></svg>
+        </span>
+      </div>
+      <div class="amount num"><span class="cur">$</span>129<span class="dec">.00</span></div>
+      <div class="hero__stats">
+        <div class="stat">
+          <div class="lbl">Silver earnings</div>
+          <div class="val mint num">$6.30</div>
+        </div>
+        <div class="stat">
+          <div class="lbl">Active packages</div>
+          <div class="val num">1 <small>of 3</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your Bonds -->
+    <div class="sec-head" id="bonds">
+      <h2>Your Bonds</h2>
+      <span class="meta"><b>1</b> active · 2 available</span>
+    </div>
+
+    <div class="cards">
+      <!-- Silver (active) -->
+      <article class="card card--silver card--wide" data-tilt tabindex="0" aria-label="Silver account package, active, earnings $6.30">
+        <div class="face"></div>
+        <svg class="emblem" viewBox="0 0 170 170" fill="none" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="1.4" opacity=".55">
+            <circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="62"/><circle cx="85" cy="85" r="44"/><circle cx="85" cy="85" r="26"/>
+          </g>
+          <g stroke="#fff" stroke-width="1.4" opacity=".7" transform="translate(-1 -1)">
+            <circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="62"/><circle cx="85" cy="85" r="44"/><circle cx="85" cy="85" r="26"/>
+          </g>
+        </svg>
+        <div class="shine"></div><div class="edge"></div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <div class="brand">Silver</div>
+              <div class="kicker">Account package</div>
+            </div>
+            <div class="actions">
+              <span class="pill-active"><i></i>Active</span>
+              <button class="icon-btn" aria-label="Add to Silver package">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="chiprow" aria-hidden="true">
+            <svg width="40" height="30" viewBox="0 0 40 30">
+              <defs><linearGradient id="chipS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F8EBC0"/><stop offset=".45" stop-color="#C9A24E"/><stop offset=".7" stop-color="#EBD08A"/><stop offset="1" stop-color="#B58D3E"/></linearGradient></defs>
+              <rect x=".5" y=".5" width="39" height="29" rx="6.5" fill="url(#chipS)" stroke="rgba(70,48,8,.35)"/>
+              <path d="M0 10h13M0 20h13M27 10h13M27 20h13M13 0v30M27 0v30M13 15h14" stroke="rgba(80,55,10,.42)" fill="none"/>
+              <rect x="13" y="8" width="14" height="14" rx="3.5" fill="none" stroke="rgba(80,55,10,.42)"/>
+            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E5A66" stroke-width="1.8" stroke-linecap="round" opacity=".7"><path d="M8.5 6.5a8 8 0 0 1 0 11M12 4a12 12 0 0 1 0 16M15.5 1.5a16 16 0 0 1 0 21" transform="translate(-2 0)"/></svg>
+          </div>
+          <div class="row row--end">
+            <div>
+              <div class="kicker">Earnings</div>
+              <div class="val-lg num"><span class="cur">$</span>6.30</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Gold (locked) -->
+      <article class="card card--gold card--tall card--locked" data-tilt tabindex="0" aria-label="Gold account package, inactive">
+        <div class="face"></div>
+        <svg class="emblem" viewBox="0 0 170 170" fill="none" aria-hidden="true" style="right:-48px;bottom:46px;width:150px;height:150px">
+          <g stroke="currentColor" stroke-width="1.4" opacity=".5"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+          <g stroke="#FFF6D8" stroke-width="1.4" opacity=".7" transform="translate(-1 -1)"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+        </svg>
+        <div class="veil"></div><div class="shine"></div><div class="edge"></div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <div class="brand">Gold</div>
+              <div class="kicker">Account package</div>
+            </div>
+            <span class="lock" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A2706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+          </div>
+          <svg class="chip-sm" width="34" height="26" viewBox="0 0 40 30" aria-hidden="true">
+            <defs><linearGradient id="chipG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF4CF"/><stop offset="0.45" stop-color="#D9AE55"/><stop offset="0.7" stop-color="#F5DD98"/><stop offset="1" stop-color="#B98A33"/></linearGradient></defs>
+            <rect x=".5" y=".5" width="39" height="29" rx="6.5" fill="url(#chipG)" stroke="rgba(90,60,10,.4)"/>
+            <path d="M0 10h13M0 20h13M27 10h13M27 20h13M13 0v30M27 0v30M13 15h14" stroke="rgba(90,60,10,.4)" fill="none"/>
+            <rect x="13" y="8" width="14" height="14" rx="3.5" fill="none" stroke="rgba(90,60,10,.4)"/>
+          </svg>
+          <div>
+            <div class="locked-meta">Inactive</div>
+            <button class="activate" aria-label="Activate Gold package">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Activate
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Platinum (locked) -->
+      <article class="card card--platinum card--tall card--locked" data-tilt tabindex="0" aria-label="Platinum account package, inactive">
+        <div class="face"></div>
+        <svg class="emblem" viewBox="0 0 170 170" fill="none" aria-hidden="true" style="right:-48px;bottom:46px;width:150px;height:150px">
+          <g stroke="#000" stroke-width="1.4" opacity=".5" transform="translate(1 1)"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+          <g stroke="currentColor" stroke-width="1.2" opacity=".35"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+        </svg>
+        <div class="veil"></div><div class="shine"></div><div class="edge"></div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <div class="brand">Platinum</div>
+              <div class="kicker">Account package</div>
+            </div>
+            <span class="lock" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E6EBF0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+          </div>
+          <svg class="chip-sm" width="34" height="26" viewBox="0 0 40 30" aria-hidden="true">
+            <defs><linearGradient id="chipP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9EDF1"/><stop offset="0.45" stop-color="#9AA4AE"/><stop offset="0.7" stop-color="#D5DBE1"/><stop offset="1" stop-color="#7D8792"/></linearGradient></defs>
+            <rect x=".5" y=".5" width="39" height="29" rx="6.5" fill="url(#chipP)" stroke="rgba(20,24,28,.45)"/>
+            <path d="M0 10h13M0 20h13M27 10h13M27 20h13M13 0v30M27 0v30M13 15h14" stroke="rgba(20,24,28,.45)" fill="none"/>
+            <rect x="13" y="8" width="14" height="14" rx="3.5" fill="none" stroke="rgba(20,24,28,.45)"/>
+          </svg>
+          <div>
+            <div class="locked-meta">Inactive</div>
+            <button class="activate" aria-label="Activate Platinum package">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Activate
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Agreement -->
+    <button class="btn-secondary">
+      <span class="ico" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+      </span>
+      <span class="txt">See sample bond agreement</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+
+    <!-- Program Status -->
+    <section class="panel panel--section" aria-label="Program status">
+      <div class="ps-head">
+        <div>
+          <h3>Program Status</h3>
+          <p class="desc">Membership slots filled across all packages.</p>
+        </div>
+        <span class="tag">All packages</span>
+      </div>
+      <div class="ps-figs">
+        <div class="big num">0%<small>filled</small></div>
+        <div class="right"><b class="num">748</b><span>slots remaining</span></div>
+      </div>
+      <div class="track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Slots filled">
+        <div class="fill" style="width:0%"></div>
+        <div class="knob" style="left:0%"></div>
+      </div>
+      <div class="scale num"><span>0%</span><span>50%</span><span>100%</span></div>
+    </section>
+
+    <!-- How to Join -->
+    <section class="panel panel--section" style="padding:20px 20px 6px" aria-label="How to join">
+      <h3>How to Join</h3>
+      <ol class="steps" style="margin-top:6px">
+        <li><span class="n num">1</span><div><h4>Choose a package</h4><p>Pick Silver, Gold or Platinum.</p></div></li>
+        <li><span class="n num">2</span><div><h4>Review the agreement</h4><p>Read the sample bond agreement first.</p></div></li>
+        <li><span class="n num">3</span><div><h4>Activate and track</h4><p>Tap Activate, then track earnings here.</p></div></li>
+      </ol>
+    </section>
+  </main>
+
+  <div class="cta-bar">
+    <button class="cta" id="cta">
+      Activate a package
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="home" aria-hidden="true"></div>
+  </div>
+</div>
+
+<script>
+  // Subtle 3D tilt + pointer-follow glare on metal cards
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    if (reduce) return;
+    card.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.classList.add('is-tilting');
+      card.style.setProperty('--ry', ((x - .5) * 10).toFixed(2) + 'deg');
+      card.style.setProperty('--rx', ((.5 - y) * 8).toFixed(2) + 'deg');
+      card.style.setProperty('--mx', (x * 100) + '%');
+      card.style.setProperty('--my', (y * 100) + '%');
+    });
+    card.addEventListener('pointerleave', () => {
+      card.classList.remove('is-tilting');
+      card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg');
+    });
+  });
+  document.getElementById('cta').addEventListener('click', () =>
+    document.getElementById('bonds').scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'start'}));
+</script>
+</body>
+</html>

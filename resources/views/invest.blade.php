@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet">
 <style>
   body { background:#f4f6f9 !important; font-family: Inter, 'Plus Jakarta Sans', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   .container { max-width:none !important; margin:0 !important; padding:0 !important; }
@@ -362,83 +363,191 @@
       display:none !important;
     }
   }
+
+  .packages-page.invest-layout-redesign { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:0 !important; color:#0a1f17; background:radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),#e7ece9; }
+  .invest-layout-redesign .packages-shell { width:min(390px, 100%); max-width:none; height:844px; min-height:844px; margin:40px 0; padding:0; overflow-y:auto; overflow-x:hidden; border-radius:54px; background:#f2f5f3; box-shadow:0 0 0 10px #0d1411,0 0 0 11px #2a332f,0 30px 60px -20px rgba(2,26,18,.4),0 60px 100px -50px rgba(2,26,18,.3); scrollbar-width:none; }
+  .invest-layout-redesign .packages-shell::-webkit-scrollbar { display:none; }
+  .invest-layout-redesign .invest-header { position:sticky; top:0; z-index:30; display:block; width:100%; min-height:102px; margin:0; padding:8px 16px 4px; color:#0a1f17; background:rgba(242,245,243,.88); border:0; backdrop-filter:blur(20px); }
+  .invest-layout-redesign .invest-statusbar { display:flex; height:36px; align-items:center; justify-content:space-between; padding:0 16px; font-size:14px; font-weight:700; }
+  .invest-layout-redesign .invest-status-icons { display:flex; align-items:center; gap:7px; }
+  .invest-layout-redesign .invest-nav { display:grid; height:52px; grid-template-columns:40px 1fr 40px; align-items:center; padding:0 0 3px; }
+  .invest-layout-redesign .invest-back-btn { display:grid; width:38px; height:38px; place-items:center; border-radius:50%; color:#0a1f17; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06); font-size:0; }
+  .invest-layout-redesign .invest-header-title { color:#0a1f17; font:700 17px/1 'Plus Jakarta Sans',Inter,system-ui,sans-serif; text-align:center; }
+  .invest-layout-redesign .invest-main { padding:10px 20px 8px; }
+  .invest-layout-redesign .investment-balance-card { min-height:230px; aspect-ratio:auto; margin:0; padding:22px; overflow:hidden; border-radius:28px; isolation:isolate; background:radial-gradient(120% 90% at 105% -10%,rgba(62,224,161,.55),transparent 55%),radial-gradient(70% 70% at -10% 110%,rgba(198,243,107,.28),transparent 60%),linear-gradient(160deg,#0b6a47 0%,#054a31 42%,#022418 100%); box-shadow:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38),inset 0 1px 0 rgba(255,255,255,.22); }
+  .invest-layout-redesign .investment-balance-card::before { position:absolute; inset:0; z-index:-1; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); content:""; opacity:.08; mix-blend-mode:overlay; }
+  .invest-layout-redesign .investment-balance-card > * { position:relative; z-index:1; }
+  .invest-layout-redesign .investment-balance-card-art { position:absolute; inset:auto -30px -10px auto; z-index:0; width:220px; height:150px; pointer-events:none; }
+  .invest-layout-redesign .investment-balance-label { position:static; display:flex; align-items:center; gap:8px; color:rgba(232,255,244,.72); font-size:11px; font-weight:600; letter-spacing:.14em; text-align:left; }
+  .invest-layout-redesign .investment-balance-label::before { width:6px; height:6px; border-radius:50%; background:#3ee0a1; box-shadow:0 0 0 3px rgba(62,224,161,.22),0 0 10px #3ee0a1; content:""; }
+  .invest-layout-redesign .investment-balance-value { position:static; margin-top:16px; font-size:42px; font-weight:700; letter-spacing:-.04em; line-height:1; text-align:left; text-shadow:0 2px 18px rgba(0,0,0,.18); }
+  .invest-layout-redesign .account-package-section { margin:26px 0 0; }
+  .invest-layout-redesign .account-package-title { margin:0; color:#0a1f17; font:750 20px/1.1 'Plus Jakarta Sans',Inter,system-ui,sans-serif; letter-spacing:-.025em; }
+  .invest-layout-redesign .account-package-heading { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:0 2px 14px; }
+  .invest-layout-redesign .account-package-meta { color:#8a9892; font-size:11px; font-weight:600; white-space:nowrap; }
+  .invest-layout-redesign .account-package-meta strong { color:#0e8a5a; }
+  .invest-layout-redesign .account-package-grid { grid-template-columns:1fr 1fr; gap:12px; }
+  .invest-layout-redesign .account-package-card { position:relative; min-height:0; aspect-ratio:.76/1; padding:16px; border-radius:22px; box-shadow:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18); transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease; }
+  .invest-layout-redesign .account-package-card:hover { transform:translateY(-3px); box-shadow:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38); }
+  .invest-layout-redesign .account-package-card::after { position:absolute; right:-42px; bottom:-48px; width:170px; height:170px; border:1px solid rgba(255,255,255,.38); border-radius:50%; box-shadow:0 0 0 18px rgba(255,255,255,.05),0 0 0 38px rgba(255,255,255,.04),0 0 0 58px rgba(255,255,255,.03); content:""; pointer-events:none; }
+  .invest-layout-redesign .account-package-card.crunch { color:#17212b; background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.9),transparent 45%),linear-gradient(128deg,#f4f6f8 0%,#c8ced5 24%,#eef1f4 46%,#a9b1ba 72%,#dde2e7 100%); }
+  .invest-layout-redesign .account-package-card.loaded { color:#3a2706; background:radial-gradient(110% 90% at 0% 0%,rgba(255,247,214,.95),transparent 50%),linear-gradient(140deg,#fcebb9 0%,#e6c26a 26%,#b98a33 52%,#f1d48a 74%,#a57426 100%); }
+  .invest-layout-redesign .account-package-card.supreme { color:#ecf0f4; background:radial-gradient(120% 80% at 100% 0%,rgba(160,175,190,.35),transparent 55%),linear-gradient(155deg,#474e57 0%,#23282e 36%,#121518 70%,#2e343b 100%); }
+  .invest-layout-redesign .account-package-card--active { grid-column:1/-1; aspect-ratio:1.62/1; }
+  .invest-layout-redesign .account-package-card--empty { display:flex; flex-direction:column; align-items:stretch; justify-content:space-between; border:0; background:inherit; backdrop-filter:none; }
+  .invest-layout-redesign .account-package-card--empty.supreme { background:radial-gradient(120% 80% at 100% 0%,rgba(160,175,190,.35),transparent 55%),linear-gradient(155deg,#474e57 0%,#23282e 36%,#121518 70%,#2e343b 100%); }
+  .invest-layout-redesign .account-package-card--empty.crunch { background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.9),transparent 45%),linear-gradient(128deg,#f4f6f8 0%,#c8ced5 24%,#eef1f4 46%,#a9b1ba 72%,#dde2e7 100%); }
+  .invest-layout-redesign .account-package-card--empty.loaded { background:radial-gradient(110% 90% at 0% 0%,rgba(255,247,214,.95),transparent 50%),linear-gradient(140deg,#fcebb9 0%,#e6c26a 26%,#b98a33 52%,#f1d48a 74%,#a57426 100%); }
+  .invest-layout-redesign .account-package-card--empty.supreme .account-package-empty-copy { color:#ecf0f4; }
+  .invest-layout-redesign .account-package-card--empty.crunch .account-package-empty-copy { color:#17212b; }
+  .invest-layout-redesign .account-package-card--empty.loaded .account-package-empty-copy { color:#3a2706; }
+  .invest-layout-redesign .account-package-name { font:800 22px/1 'Plus Jakarta Sans',Inter,system-ui,sans-serif; letter-spacing:-.03em; }
+  .invest-layout-redesign .account-package-caption { margin-top:6px; font-size:9px; letter-spacing:.16em; text-transform:uppercase; }
+  .invest-layout-redesign .account-package-card--active .account-package-name,
+  .invest-layout-redesign .account-package-card--active .account-package-caption { color:inherit; }
+  .invest-layout-redesign .account-package-actions { top:14px; right:14px; left:14px; }
+  .invest-layout-redesign .account-package-action { width:34px; height:34px; color:#fff; background:linear-gradient(180deg,#123d2c,#062218); box-shadow:0 4px 10px -2px rgba(4,30,20,.45),inset 0 1px 0 rgba(255,255,255,.18); }
+  .invest-layout-redesign .account-package-earnings { z-index:1; right:16px; bottom:16px; left:16px; }
+  .invest-layout-redesign .account-package-label { color:inherit; font-size:9px; letter-spacing:.16em; text-transform:uppercase; }
+  .invest-layout-redesign .account-package-value { color:inherit; font-size:28px; font-weight:700; }
+  .invest-layout-redesign .account-package-locked-header { display:flex; justify-content:space-between; align-items:flex-start; }
+  .invest-layout-redesign .account-package-lock { display:grid; width:30px; height:30px; place-items:center; border-radius:50%; background:rgba(255,255,255,.42); box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 2px 6px rgba(0,0,0,.08); }
+  .invest-layout-redesign .supreme .account-package-lock { background:rgba(255,255,255,.08); box-shadow:inset 0 0 0 1px rgba(255,255,255,.16); }
+  .invest-layout-redesign .account-package-card--empty .account-package-name { font-size:20px; }
+  .invest-layout-redesign .account-package-empty-caption { display:flex; align-items:center; gap:6px; margin:0 0 10px; color:inherit; font-size:9px; font-weight:700; letter-spacing:.16em; }
+  .invest-layout-redesign .account-package-empty-caption::before { width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.5; content:""; }
+  .invest-layout-redesign .account-package-empty-action { width:100%; height:38px; border-radius:12px; color:inherit; background:rgba(255,255,255,.78); box-shadow:0 4px 12px -4px rgba(90,60,10,.35),inset 0 0 0 1px rgba(255,255,255,.9); font-size:13px; font-weight:650; }
+  .invest-layout-redesign .supreme .account-package-empty-action { color:#fff; background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07)); box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.12); }
+  .invest-layout-redesign .account-package-empty-action svg { width:14px; height:14px; }
+  .invest-layout-redesign .account-package-card--empty .account-package-empty-action { display:flex; align-items:center; justify-content:center; gap:6px; text-decoration:none; }
+  .invest-layout-redesign .account-package-empty-copy { text-align:left; color:inherit; }
+  .invest-layout-redesign .account-package-active-row { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .invest-layout-redesign .account-package-status { display:inline-flex; height:26px; align-items:center; gap:6px; padding:0 10px 0 8px; border-radius:99px; color:#065a3a; background:rgba(255,255,255,.72); box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 1px 2px rgba(0,0,0,.08); font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
+  .invest-layout-redesign .account-package-status::before { width:7px; height:7px; border-radius:50%; background:#12b76a; box-shadow:0 0 0 3px rgba(18,183,106,.2); content:""; }
+  .invest-layout-redesign .account-package-chip { width:40px; height:30px; margin-top:24px; border:1px solid rgba(80,55,10,.35); border-radius:7px; background:linear-gradient(135deg,#f8ebc0,#c9a24e 45%,#ebd08a 70%,#b58d3e); box-shadow:inset 0 0 0 1px rgba(255,255,255,.35); }
+  .invest-layout-redesign .account-package-card--empty .account-package-chip { width:34px; height:26px; margin:0; }
+  .invest-layout-redesign .account-package-hero-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
+  .invest-layout-redesign .account-package-hero-stat { padding:12px 14px; border-radius:16px; background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04)); box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(255,255,255,.07); backdrop-filter:blur(12px); }
+  .invest-layout-redesign .account-package-hero-label { color:rgba(232,255,244,.6); font-size:9px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+  .invest-layout-redesign .account-package-hero-value { margin-top:7px; color:#7bf2c2; font-size:16px; font-weight:650; }
+  .invest-layout-redesign .agreement-sample-link { display:flex; width:100%; align-items:center; justify-content:flex-start; gap:12px; min-height:60px; margin-top:16px; padding:0 14px 0 12px; border:0; border-radius:18px; color:#0a1f17; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),inset 0 0 0 1px #e2e9e5; text-align:left; }
+  .invest-layout-redesign .agreement-sample-link .summary-action-icon { width:36px; height:36px; flex:none; border-radius:11px; color:#0e8a5a; background:#e6f7ef; }
+  .invest-layout-redesign .agreement-sample-link .txt { flex:1; font-size:15px; font-weight:600; }
+  .invest-layout-redesign .agreement-sample-link .chev { flex:none; color:#8a9892; }
+  .invest-layout-redesign .package-status { margin:28px 0 0; padding:20px; border:0; border-radius:24px; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18); }
+  .invest-layout-redesign .status-title,.invest-layout-redesign .status-copy-label { color:#0a1f17; font-family:'Plus Jakarta Sans',Inter,system-ui,sans-serif; }
+  .invest-layout-redesign .status-badge { color:#0b6b45; background:#e6f7ef; }
+  .invest-layout-redesign .status-meter { height:12px; margin-top:20px; background:repeating-linear-gradient(90deg,#e8eeeb 0 calc(10% - 2px),#f6f9f7 calc(10% - 2px) 10%); box-shadow:inset 0 1px 2px rgba(6,40,28,.08); }
+  .invest-layout-redesign .status-progress { background:linear-gradient(90deg,#0e8a5a,#3ee0a1); box-shadow:0 0 12px rgba(62,224,161,.6); }
+  .invest-layout-redesign .status-copy-label { margin-top:24px; }
+  .invest-layout-redesign .status-step-number { color:#075a3b; background:linear-gradient(180deg,#edfaf3,#ddf3e8); }
+  .invest-layout-redesign .payment-card { margin:16px 0 0; background:#fff; }
+  .invest-layout-redesign .cta-bar { position:sticky; bottom:0; z-index:20; padding:16px 20px max(24px, env(safe-area-inset-bottom)); background:linear-gradient(180deg,rgba(242,245,243,0),rgba(242,245,243,.92) 32%,#f2f5f3); }
+  .invest-layout-redesign .invest-cta { display:flex; width:100%; height:58px; align-items:center; justify-content:center; gap:10px; border-radius:18px; color:#fff; background:linear-gradient(180deg,#11905e,#0a6a45); box-shadow:0 10px 24px -8px rgba(10,106,69,.55),0 2px 4px rgba(10,106,69,.2),inset 0 1px 0 rgba(255,255,255,.25); font-size:15px; font-weight:650; text-decoration:none; }
+  .invest-layout-redesign .invest-home-indicator { width:134px; height:5px; margin:14px auto 0; border-radius:99px; background:#0a1f17; opacity:.9; }
+  @media (max-width:520px) { .packages-page.invest-layout-redesign { background:#f2f5f3; } .invest-layout-redesign .packages-shell { width:100%; height:auto; min-height:100vh; margin:0; border-radius:0; box-shadow:none; } .invest-layout-redesign .account-package-card { padding:14px; border-radius:20px; } }
+  @media (prefers-reduced-motion:reduce) { .invest-layout-redesign .account-package-card { transition:none; } }
 </style>
 
-<main class="packages-page">
+@php
+  $accountPackages = \App\Support\InvestmentPackages::all();
+  $activePackageCount = $approvedInvestments->pluck('package_key')->unique()->count();
+  $totalPackageEarnings = (float) $packageEarnings->sum();
+  $totalRemainingSlots = array_sum($packageSlots);
+  $totalPackageSlots = array_sum(\App\Support\InvestmentPackages::defaults());
+  $filledSlotsPercent = $totalPackageSlots > 0
+      ? (int) round((($totalPackageSlots - $totalRemainingSlots) / $totalPackageSlots) * 100)
+      : 0;
+  $filledSlotsPercent = max(0, min(100, $filledSlotsPercent));
+@endphp
+
+<main class="packages-page invest-layout-redesign">
   <div class="packages-shell">
     <header class="invest-header">
-      <a class="invest-back-btn" href="{{ route('dashboard') }}" aria-label="Back to dashboard">&lsaquo;</a>
-      <h1 class="invest-header-title">Purchase Bonds</h1>
+      <div class="invest-statusbar" aria-label="Current time">
+        <time>{{ now()->format('g:i') }}</time>
+        <span class="invest-status-icons" aria-hidden="true">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="#0a1f17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="#0a1f17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/></svg>
+          <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0a1f17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0a1f17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0a1f17" opacity=".45"/></svg>
+        </span>
+      </div>
+      <nav class="invest-nav" aria-label="Invest page navigation">
+        <a class="invest-back-btn" href="{{ route('dashboard') }}" aria-label="Back to dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        </a>
+        <h1 class="invest-header-title">Purchase Bonds</h1>
+        <span></span>
+      </nav>
     </header>
 
+    <div class="invest-main">
     <section class="investment-balance-card" aria-label="Total investment">
-      <svg class="investment-balance-card-art" viewBox="0 0 1200 300" role="img"
-           aria-label="Lulu Retail green card background" preserveAspectRatio="none"
-           xmlns="http://www.w3.org/2000/svg">
+      <svg class="investment-balance-card-art" viewBox="0 0 300 200" fill="none" aria-hidden="true">
         <defs>
-          <linearGradient id="investBalanceBase" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#006f51"/>
-            <stop offset=".48" stop-color="#008f65"/>
-            <stop offset="1" stop-color="#006c50"/>
-          </linearGradient>
-          <linearGradient id="investBalanceLime" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0" stop-color="#67c936" stop-opacity=".10"/>
-            <stop offset=".55" stop-color="#79d83e" stop-opacity=".72"/>
-            <stop offset="1" stop-color="#25ae5e" stop-opacity=".30"/>
-          </linearGradient>
-          <linearGradient id="investBalanceGlow" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#f9dd3c" stop-opacity="0"/>
-            <stop offset=".55" stop-color="#ffe45c" stop-opacity=".95"/>
-            <stop offset="1" stop-color="#fff29a" stop-opacity=".76"/>
-          </linearGradient>
-          <radialGradient id="investBalanceCornerGlow" cx="0" cy="0" r="1">
-            <stop offset="0" stop-color="#9de052" stop-opacity=".72"/>
-            <stop offset="1" stop-color="#9de052" stop-opacity="0"/>
-          </radialGradient>
-          <clipPath id="investBalanceClip"><rect width="1200" height="300" rx="14"/></clipPath>
+          <linearGradient id="investWaveOne" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c6f36b" stop-opacity="0"/><stop offset=".6" stop-color="#c6f36b" stop-opacity=".65"/><stop offset="1" stop-color="#f3e27a" stop-opacity=".9"/></linearGradient>
+          <linearGradient id="investWaveTwo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3ee0a1" stop-opacity="0"/><stop offset="1" stop-color="#3ee0a1" stop-opacity=".45"/></linearGradient>
         </defs>
-        <g clip-path="url(#investBalanceClip)">
-          <rect width="1200" height="300" fill="url(#investBalanceBase)"/>
-          <ellipse cx="195" cy="-35" rx="300" ry="185" fill="url(#investBalanceCornerGlow)"/>
-          <path d="M-40 264 C170 72 285 30 470 -16 L250 -25 C133 48 52 111 -40 206Z" fill="#1fac67" opacity=".22"/>
-          <path d="M580 330 C785 300 886 150 1240 58 L1240 330Z" fill="#1bb966" opacity=".42"/>
-          <path d="M705 330 C884 286 1003 193 1240 132 L1240 330Z" fill="url(#investBalanceLime)"/>
-          <path d="M760 330 C922 274 1058 207 1240 169" fill="none" stroke="url(#investBalanceGlow)" stroke-width="9" stroke-linecap="round"/>
-          <path d="M-55 110 C70 92 132 35 190 -18" fill="none" stroke="#f6d63b" stroke-width="3" opacity=".9"/>
-          <path d="M845 330 C1000 270 1118 248 1240 278 L1240 330Z" fill="#70cf3a" opacity=".28"/>
-          <rect width="1200" height="300" rx="14" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
-        </g>
+        <path d="M0 170C70 168 120 140 170 108S260 50 310 42" stroke="url(#investWaveOne)" stroke-width="1.6"/>
+        <path d="M10 196C90 190 140 162 190 128S270 80 310 74" stroke="url(#investWaveTwo)" stroke-width="1.2"/>
+        <path d="M40 210C110 206 160 182 210 150S280 108 310 104" stroke="url(#investWaveTwo)" stroke-width=".9" opacity=".7"/>
       </svg>
       <div class="investment-balance-label">Total investment</div>
       <div class="investment-balance-value">${{ number_format($totalInvestment ?? 0, 2) }}</div>
+      <div class="account-package-hero-stats">
+        <div class="account-package-hero-stat">
+          <div class="account-package-hero-label">Total earnings</div>
+          <div class="account-package-hero-value">${{ number_format($totalPackageEarnings, 2) }}</div>
+        </div>
+        <div class="account-package-hero-stat">
+          <div class="account-package-hero-label">Active packages</div>
+          <div class="account-package-hero-value">{{ $activePackageCount }} <small style="color:rgba(232,255,244,.62);font-size:11px;font-weight:500;">of {{ count($accountPackages) }}</small></div>
+        </div>
+      </div>
     </section>
 
-    @php($accountPackages = \App\Support\InvestmentPackages::all())
     <section class="account-package-section" aria-labelledby="account-package-title">
-      <h2 class="account-package-title" id="account-package-title">Your Bonds</h2>
+      <div class="account-package-heading" id="bonds">
+        <h2 class="account-package-title" id="account-package-title">Your Bonds</h2>
+        <span class="account-package-meta"><strong>{{ $activePackageCount }}</strong> active · {{ count($accountPackages) - $activePackageCount }} available</span>
+      </div>
       <div class="account-package-grid">
         @foreach ($accountPackages as $packageKey => $package)
           @if ($approvedInvestments->contains('package_key', $packageKey))
-            <article class="account-package-card {{ $packageKey }}">
-              <div class="account-package-actions">
-                <a class="account-package-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy another {{ $package['name'] }} package">+</a>
-              </div>
-              <div class="account-package-brand">
+            <article class="account-package-card account-package-card--active {{ $packageKey }}" data-tilt tabindex="0" aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}">
+              <div class="account-package-active-row">
                 <div class="account-package-name">{{ $package['name'] }}</div>
-                <div class="account-package-caption">ACCOUNT PACKAGE</div>
+                <div class="account-package-actions">
+                  <span class="account-package-status">Active</span>
+                  <a class="account-package-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Add to {{ $package['name'] }} package">+</a>
+                </div>
               </div>
+              <div class="account-package-caption">ACCOUNT PACKAGE</div>
+              <div class="account-package-chip" aria-hidden="true"></div>
               <div class="account-package-earnings">
                 <div class="account-package-label">EARNINGS</div>
                 <div class="account-package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
               </div>
             </article>
           @else
-            <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} package not activated">
-              <div class="account-package-empty-copy">
-                <div class="account-package-empty-name">{{ $package['name'] }}</div>
-                <div class="account-package-empty-caption">Inactive</div>
+            <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} account package, inactive" data-tilt>
+              <div class="account-package-locked-header">
+                <div>
+                  <div class="account-package-name">{{ $package['name'] }}</div>
+                  <div class="account-package-caption">ACCOUNT PACKAGE</div>
+                </div>
+                <span class="account-package-lock" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+                </span>
               </div>
-              <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy {{ $package['name'] }} package">+</a>
+              <div class="account-package-chip" aria-hidden="true"></div>
+              <div>
+                <div class="account-package-empty-caption">Inactive</div>
+                <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Activate {{ $package['name'] }} package">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  Activate
+                </a>
+              </div>
             </article>
           @endif
         @endforeach
@@ -529,7 +638,13 @@
 
     </section>
 
-    <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">See sample bond agreement</button>
+    <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">
+      <span class="summary-action-icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+      </span>
+      <span class="txt">See sample bond agreement</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
 
     <div class="dot-row" aria-hidden="true" hidden>
       <span class="dot is-active"></span>
@@ -546,10 +661,12 @@
           </div>
           <div class="status-badge" id="statusPackageLabel">All packages</div>
         </div>
-        <div class="status-meter" aria-hidden="true"><div class="status-progress" id="statusProgress"></div></div>
+        <div class="status-meter" role="progressbar" aria-valuenow="{{ $filledSlotsPercent }}" aria-valuemin="0" aria-valuemax="100" aria-label="Membership slots filled">
+          <div class="status-progress" id="statusProgress" style="width:{{ $filledSlotsPercent }}%"></div>
+        </div>
         <div class="status-meta">
-          <span id="statusPercent">0%</span>
-          <span id="statusSlotsRemaining">1000 slots remaining</span>
+          <span id="statusPercent">{{ $filledSlotsPercent }}% filled</span>
+          <span id="statusSlotsRemaining">{{ $totalRemainingSlots }} slots remaining</span>
         </div>
         <div class="status-copy-label">How to Join</div>
         <div class="status-steps" aria-label="How to join steps">
@@ -587,6 +704,14 @@
         </span>
       </div>
     </section>
+    </div>
+    <div class="cta-bar">
+      <a class="invest-cta" href="#bonds">
+        Choose a package
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <div class="invest-home-indicator" aria-hidden="true"></div>
+    </div>
   </div>
 </main>
 

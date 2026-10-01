@@ -86,11 +86,14 @@ class DashboardBondEarningsTest extends TestCase
         $response = $this->actingAs($user)->get(route('invest'));
 
         $response->assertOk()
+            ->assertSee('invest-layout-redesign')
             ->assertSee('Your Bonds')
             ->assertSee('ACCOUNT PACKAGE')
             ->assertSee('Inactive')
+            ->assertSee('Total earnings')
             ->assertSee('$1.80')
-            ->assertSee('aria-label="Buy another Silver package"', false);
+            ->assertSee('aria-label="Add to Silver package"', false)
+            ->assertSee('aria-label="Activate Gold package"', false);
 
         $html = $response->getContent();
         $this->assertStringContainsString(

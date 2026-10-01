@@ -1397,6 +1397,303 @@
     }
   }
 
+  .dashboard-shell {
+    max-width: 430px;
+    min-height: calc(100vh - 24px);
+    margin: 12px auto 120px;
+    padding: 0 16px 24px;
+    overflow: hidden;
+    border: 1px solid #e7ede7;
+    border-radius: 30px;
+    background: #f7f9f6;
+    box-shadow: 0 18px 55px rgba(10, 31, 23, .1);
+  }
+
+  .dashboard-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 -16px 18px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, .96);
+    border-bottom: 1px solid #e9eee8;
+  }
+
+  .dashboard-logo {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #e3eee4;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .dashboard-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .dashboard-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px 8px 8px;
+    border: 1px solid #e3eae3;
+    border-radius: 999px;
+    background: #fff;
+    color: #244a39;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .dashboard-profile-icon {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    background: #eaf5e9;
+  }
+
+  .dashboard-profile svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .dashboard-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 23px 21px 18px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 27px;
+    background: linear-gradient(128deg, #092b20 0%, #0c563a 57%, #14804f 100%);
+    color: #fff;
+    box-shadow: 0 16px 35px rgba(8, 78, 49, .2);
+  }
+
+  .dashboard-hero::before,
+  .dashboard-hero::after {
+    position: absolute;
+    z-index: -1;
+    width: 220px;
+    height: 220px;
+    border: 1px solid rgba(192, 241, 125, .15);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+  }
+
+  .dashboard-hero::before {
+    top: -148px;
+    right: -48px;
+    box-shadow: 0 0 0 18px rgba(192, 241, 125, .035), 0 0 0 38px rgba(192, 241, 125, .025);
+  }
+
+  .dashboard-hero::after {
+    right: -112px;
+    bottom: -166px;
+    width: 270px;
+    height: 270px;
+    border-color: rgba(87, 232, 170, .22);
+  }
+
+  .dashboard-hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dashboard-hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #d5f4df;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+
+  .dashboard-hero-label::before {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #bff16d;
+    box-shadow: 0 0 12px rgba(191, 241, 109, .7);
+    content: "";
+  }
+
+  .dashboard-balance-toggle {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .dashboard-balance-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dashboard-balance {
+    margin-top: 13px;
+    color: #fff;
+    font-size: clamp(34px, 9vw, 42px);
+    font-weight: 800;
+    letter-spacing: -.045em;
+    line-height: 1.12;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .balance-masked {
+    display: none;
+    letter-spacing: .12em;
+  }
+
+  .dashboard-hero.is-hidden .balance-readable,
+  .dashboard-hero.is-hidden .asset-readable {
+    display: none;
+  }
+
+  .dashboard-hero.is-hidden .balance-masked,
+  .dashboard-hero.is-hidden .asset-masked {
+    display: inline;
+  }
+
+  .dashboard-assets {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: 22px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, .2);
+  }
+
+  .dashboard-assets-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .1);
+  }
+
+  .dashboard-assets-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .dashboard-assets-label {
+    color: #c4e5d1;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dashboard-assets-value {
+    margin-top: 2px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dashboard-promos {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .dashboard-promo {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 2.24 / 1;
+    border-radius: 23px;
+    background: #e8eee8;
+    box-shadow: 0 9px 20px rgba(15, 39, 26, .1);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  .dashboard-promo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dashboard-promo:focus-visible {
+    outline: 3px solid #13814d;
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    .dashboard-promo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 13px 26px rgba(15, 39, 26, .14);
+    }
+  }
+
+  .bottom-nav {
+    width: min(410px, calc(100vw - 28px));
+    height: 66px;
+    padding: 0 12px;
+    border: 1px solid rgba(227, 235, 227, .95);
+    border-radius: 23px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 12px 32px rgba(14, 45, 29, .16);
+  }
+
+  .nav-item.active {
+    color: #11804e;
+  }
+
+  .nav-scan {
+    background: #12804f;
+    border: 4px solid #f7f9f6;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(14, 110, 66, .28);
+  }
+
+  @media (max-width: 600px) {
+    .dashboard-shell {
+      min-height: 100vh;
+      margin: 0 auto 110px;
+      padding: 0 14px 20px;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .dashboard-topbar {
+      margin: 0 -14px 16px;
+      padding: 12px 16px;
+    }
+
+    .dashboard-hero {
+      padding: 21px 19px 17px;
+      border-radius: 25px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-promo {
+      transition: none;
+    }
+  }
+
   @media (max-width: 480px) {
     .wallet-shell {
       padding: 0 10px;
@@ -1507,44 +1804,63 @@
   $unreadCount = $unreadCount ?? 0;
 @endphp
 
-<main class="wallet-shell">
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">
-        <img src="https://www.realclipart.com/png/middle/222-2226460_price-age-lulu-group-international-lulu-logo.png" alt="Lulu logo">
-      </div>
-    </div>
-    <a class="account-profile-link" href="{{ route('profile') }}">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M5 20c.7-3.5 3-5.5 7-5.5s6.3 2 7 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
+<main class="wallet-shell dashboard-shell">
+  <header class="dashboard-topbar">
+    <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
+      <img src="{{ asset('icons/lulu-192.png') }}" alt="LuLu Philippines">
+    </a>
+    <a class="dashboard-profile" href="{{ route('profile') }}">
+      <span class="dashboard-profile-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="3.5"/>
+          <path d="M5 20c.7-3.5 3-5.5 7-5.5s6.3 2 7 5.5"/>
+        </svg>
+      </span>
       <span>Profile</span>
     </a>
   </header>
 
-  <section class="hero" aria-label="Account balance">
-    <div class="hero-top">
-      <div class="hero-kicker">Available balance</div>
+  <section class="dashboard-hero" id="dashboardBalance" aria-label="Account balance">
+    <div class="dashboard-hero-top">
+      <div class="dashboard-hero-label">Available balance</div>
+      <button class="dashboard-balance-toggle" id="dashboardBalanceToggle" type="button" aria-label="Hide balance" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
     </div>
-    <div class="hero-balance">
-      <div class="balance-value">${{ number_format($availableBalance, 2) }}</div>
+    <div class="dashboard-balance" aria-live="polite">
+      <span class="balance-readable">${{ number_format($availableBalance, 2) }}</span>
+      <span class="balance-masked" aria-hidden="true">••••••</span>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-label">Assets</div>
-        <div class="hero-stat-value">${{ number_format($totalInvestment, 2) }}</div>
+    <div class="dashboard-assets">
+      <span class="dashboard-assets-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/>
+          <path d="m3 12 9 4.5 9-4.5M3 16.5 12 21l9-4.5"/>
+        </svg>
+      </span>
+      <div>
+        <div class="dashboard-assets-label">Assets</div>
+        <div class="dashboard-assets-value">
+          <span class="asset-readable">${{ number_format($totalInvestment, 2) }}</span>
+          <span class="balance-masked asset-masked" aria-hidden="true">••••</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="package-section" aria-label="Bond purchase">
-    <a class="dashboard-card-link" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
+  <section class="dashboard-promos" aria-label="Explore LuLu opportunities">
+    <a class="dashboard-promo" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
       <img src="{{ asset('images/dashboard-bond-card.svg') }}" alt="Lulu Purchase Bonds. Grow your future with secure and reliable investment opportunities.">
     </a>
-    <a class="dashboard-card-link franchise-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
+    <a class="dashboard-promo" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
       <img src="{{ asset('images/dashboard-franchise-card.svg') }}" alt="Franchise opportunities">
     </a>
+  </section>
+
+  <section class="package-section" aria-label="Account packages">
     <div id="Cards101" hidden>
       <div class="package-grid">
       @foreach ($packageDefinitions as $packageKey => $package)
@@ -1681,6 +1997,8 @@
 
 <script>
   (function () {
+    var dashboardBalance = document.getElementById('dashboardBalance');
+    var dashboardBalanceToggle = document.getElementById('dashboardBalanceToggle');
     var fabToggle = document.getElementById('fabToggle');
     var moreToggle = document.getElementById('moreToggle');
     var fabScrim = document.getElementById('fabScrim');
@@ -1692,6 +2010,14 @@
     var selectedPaymentMethod = 'bank';
     var bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
     var dashboardCardLinks = document.querySelectorAll('.dashboard-card-link');
+
+    if (dashboardBalance && dashboardBalanceToggle) {
+      dashboardBalanceToggle.addEventListener('click', function () {
+        var hidden = dashboardBalance.classList.toggle('is-hidden');
+        dashboardBalanceToggle.setAttribute('aria-pressed', String(hidden));
+        dashboardBalanceToggle.setAttribute('aria-label', hidden ? 'Show balance' : 'Hide balance');
+      });
+    }
 
     dashboardCardLinks.forEach(function (link) {
       link.addEventListener('click', function (event) {

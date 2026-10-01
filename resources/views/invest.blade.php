@@ -464,14 +464,6 @@
 <main class="packages-page invest-layout-redesign">
   <div class="packages-shell">
     <header class="invest-header">
-      <div class="invest-statusbar" aria-label="Current time">
-        <time>{{ now()->format('g:i') }}</time>
-        <span class="invest-status-icons" aria-hidden="true">
-          <svg width="18" height="12" viewBox="0 0 18 12" fill="#0a1f17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="#0a1f17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/></svg>
-          <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0a1f17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0a1f17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0a1f17" opacity=".45"/></svg>
-        </span>
-      </div>
       <nav class="invest-nav" aria-label="Invest page navigation">
         <a class="invest-back-btn" href="{{ route('dashboard') }}" aria-label="Back to dashboard">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>

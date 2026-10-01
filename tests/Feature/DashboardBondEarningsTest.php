@@ -60,6 +60,24 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('$80.00');
     }
 
+    public function test_dashboard_uses_live_account_values_and_dashboard_mockup_layout(): void
+    {
+        $user = User::factory()->create([
+            'balance' => 82.5,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('class="wallet-shell dashboard-shell"', false)
+            ->assertSee('id="dashboardBalanceToggle"', false)
+            ->assertSee('$82.50')
+            ->assertSee('$0.00')
+            ->assertSee(route('invest.advertisement'), false)
+            ->assertSee(route('franchising'), false)
+            ->assertDontSee('$906.31');
+    }
+
     public function test_invest_page_shows_account_package_cards_under_total_investment(): void
     {
         Carbon::setTestNow('2026-10-01 15:00:00');

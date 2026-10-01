@@ -41,9 +41,9 @@ class InvestmentController extends Controller
         }
 
         $currency = $data['currency'] ?? 'USD';
-        $amountInUsd = $currency === 'PHP'
+        $amountInUsd = round($currency === 'PHP'
             ? (float) $data['amount'] / CurrencyRateService::latestUsdToPhp()
-            : (float) $data['amount'];
+            : (float) $data['amount'], 2);
 
         if ($amountInUsd < $package['min_amount']) {
             throw ValidationException::withMessages([
@@ -76,7 +76,7 @@ class InvestmentController extends Controller
                 'package_key' => $data['package'],
                 'package_name' => $package['name'],
                 'package_price' => $package['price'],
-                'amount' => round($amountInUsd, 2),
+                'amount' => $amountInUsd,
                 'payment_method' => $data['payment_method'],
                 'daily_interest_rate' => $package['daily_interest_rate'],
                 'duration_days' => $package['duration_days'],
@@ -90,7 +90,7 @@ class InvestmentController extends Controller
 
             if ($data['payment_method'] === 'account_balance') {
                 $user = $request->user();
-                $user->balance = max(0, ($user->balance ?? 0) - (float) $data['amount']);
+                $user->balance = max(0, ($user->balance ?? 0) - $amountInUsd);
                 $user->save();
             }
 

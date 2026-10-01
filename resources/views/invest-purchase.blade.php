@@ -61,39 +61,206 @@
   @media (min-width:760px) { .purchase-shell { margin-top:36px; } }
 </style>
 
+<style>
+  :root {
+    --bp-ink:#0a1f17; --bp-muted:#617169; --bp-line:#e2e9e5; --bp-green:#075a3b;
+    --bp-green-bright:#0e8a5a; --bp-mint:#e6f7ef; --bp-surface:#fff;
+    --bp-shadow:0 12px 32px rgba(2,26,18,.08);
+  }
+  html { scroll-behavior:smooth; }
+  body { display:block !important; min-height:100vh; padding:0 !important; background:#e7ece9 !important; color:var(--bp-ink); }
+  .container { max-width:none !important; margin:0 !important; padding:0 !important; }
+  .purchase-page { width:min(100%, 520px); min-height:100vh; margin:0 auto; padding-bottom:32px; background:#f2f5f3; color:var(--bp-ink); box-shadow:0 0 40px rgba(2,26,18,.07); }
+  .bp-topbar { position:sticky; top:0; z-index:20; display:grid; grid-template-columns:42px 1fr auto; align-items:center; gap:12px; padding:14px 18px; background:rgba(242,245,243,.94); backdrop-filter:blur(16px); border-bottom:1px solid rgba(10,31,23,.06); }
+  .bp-back { display:grid; place-items:center; width:40px; height:40px; border-radius:50%; background:#fff; color:var(--bp-ink); box-shadow:0 2px 8px rgba(2,26,18,.08); text-decoration:none; font-size:22px; }
+  .bp-brand { display:flex; align-items:center; justify-self:center; gap:8px; font-size:15px; font-weight:800; letter-spacing:-.02em; }
+  .bp-brand img { width:26px; height:26px; object-fit:contain; border-radius:8px; }
+  .bp-top-tag { color:var(--bp-muted); font-size:11px; font-weight:700; }
+  .bp-content { padding:22px 20px 32px; }
+  .bp-eyebrow { color:#718078; font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  .bp-title { margin:8px 0 0; color:var(--bp-ink); font-size:28px; font-weight:850; line-height:1.1; letter-spacing:-.04em; }
+  .bp-card { position:relative; isolation:isolate; display:flex; min-height:156px; flex-direction:column; justify-content:space-between; overflow:hidden; margin-top:18px; padding:18px; border-radius:22px; color:#3a2706; background:radial-gradient(120% 90% at 0 0,rgba(255,247,214,.92),transparent 48%),linear-gradient(140deg,#fcebb9 0%,#e6c26a 28%,#b98a33 56%,#f1d48a 78%,#a57426 100%); box-shadow:0 10px 24px rgba(65,46,11,.2),inset 0 1px 0 rgba(255,255,255,.72); }
+  .bp-card::before { position:absolute; z-index:-1; right:-44px; bottom:-105px; width:240px; height:240px; border:1px solid rgba(255,255,255,.55); border-radius:50%; box-shadow:0 0 0 17px rgba(142,100,32,.12),0 0 0 35px rgba(255,255,255,.18),0 0 0 53px rgba(142,100,32,.09); content:""; }
+  .bp-card-top,.bp-card-stats { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+  .bp-card-name { font-size:22px; font-weight:850; letter-spacing:-.03em; }
+  .bp-card-caption { margin-top:5px; color:rgba(58,39,6,.68); font-size:10px; font-weight:750; letter-spacing:.13em; text-transform:uppercase; }
+  .bp-card-chip { display:grid; width:39px; height:29px; place-items:center; border:1px solid rgba(90,60,10,.3); border-radius:7px; background:linear-gradient(135deg,#fff4cf,#d9ae55 52%,#f5dd98); }
+  .bp-card-chip::before { width:17px; height:17px; border:1px solid rgba(90,60,10,.38); border-radius:4px; content:""; }
+  .bp-stat-label { color:rgba(58,39,6,.7); font-size:9px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+  .bp-stat-value { margin-top:5px; color:#3a2706; font-size:22px; font-weight:850; font-variant-numeric:tabular-nums; }
+  .bp-stat-value small { margin-left:4px; font-size:11px; font-weight:750; }
+  .bp-lede { margin:16px 2px 20px; color:#4b5b54; font-size:14px; line-height:1.55; }
+  .bp-lede strong { color:var(--bp-ink); }
+  .bp-panel { padding:17px; border:1px solid rgba(10,31,23,.06); border-radius:20px; background:#fff; box-shadow:0 2px 10px rgba(6,40,28,.04); }
+  .bp-panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:13px; }
+  .bp-label { color:#65746d; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+  .bp-currency { display:flex; gap:3px; padding:3px; border:1px solid var(--bp-line); border-radius:11px; background:#f3f6f4; }
+  .bp-currency button { min-width:47px; padding:7px 9px; border-radius:8px; color:#64746c; font-size:11px; font-weight:800; }
+  .bp-currency button.is-active { background:#fff; color:var(--bp-green); box-shadow:0 1px 4px rgba(2,26,18,.12); }
+  .bp-amount-field { display:flex; align-items:center; gap:8px; min-height:63px; padding:0 15px; border:1px solid #dce5df; border-radius:15px; background:#fbfcfb; }
+  .bp-amount-field:focus-within { border-color:#0e8a5a; box-shadow:0 0 0 3px rgba(14,138,90,.12); }
+  .bp-symbol { color:#617169; font-size:17px; font-weight:800; }
+  .bp-amount { min-width:0; width:100%; border:0; outline:0; background:transparent; color:var(--bp-ink); font-size:27px; font-weight:850; letter-spacing:-.035em; font-variant-numeric:tabular-nums; }
+  .bp-limits { display:flex; justify-content:space-between; gap:8px; margin:9px 1px 0; color:#7d8983; font-size:10px; }
+  .bp-limits strong { color:#495b52; font-variant-numeric:tabular-nums; }
+  .bp-error { display:none; margin-top:8px; color:#b42318; font-size:12px; line-height:1.45; }
+  .bp-error.is-visible { display:block; }
+  .bp-chips { display:flex; gap:7px; overflow-x:auto; margin:14px 0 6px; scrollbar-width:none; }
+  .bp-chip { flex:0 0 auto; padding:8px 10px; border:1px solid var(--bp-line); border-radius:99px; background:#fff; color:#53645b; font-size:10px; font-weight:750; font-variant-numeric:tabular-nums; }
+  .bp-chip.is-active { border-color:#bce8d2; background:var(--bp-mint); color:var(--bp-green); }
+  .bp-range { width:100%; margin:7px 0 0; accent-color:var(--bp-green-bright); }
+  .bp-range-scale { display:flex; justify-content:space-between; margin-top:2px; color:#87948d; font-size:9px; font-variant-numeric:tabular-nums; }
+  .bp-fx { display:flex; gap:7px; align-items:flex-start; margin-top:12px; padding:10px; border-radius:11px; background:#f2f7f4; color:#617169; font-size:10px; line-height:1.45; }
+  .bp-fx[hidden] { display:none; }
+  .bp-fx strong { color:#3b5145; }
+  .bp-section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin:23px 2px 10px; }
+  .bp-section-heading h2 { color:var(--bp-ink); font-size:16px; font-weight:850; letter-spacing:-.02em; }
+  .bp-section-heading span { color:#85928b; font-size:9px; }
+  .bp-projection { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .bp-tile { min-height:91px; padding:13px; border:1px solid rgba(10,31,23,.05); border-radius:16px; background:#fff; }
+  .bp-tile-dark { color:#fff; border-color:#06462e; background:radial-gradient(120% 90% at 100% 0,rgba(62,224,161,.35),transparent 55%),linear-gradient(150deg,#0b6a47,#04321f); }
+  .bp-tile-wide { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:76px; }
+  .bp-tile-label { color:#84928a; font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; }
+  .bp-tile-dark .bp-tile-label { color:rgba(232,255,244,.65); }
+  .bp-tile-value { margin-top:8px; color:var(--bp-green); font-size:20px; font-weight:850; font-variant-numeric:tabular-nums; letter-spacing:-.03em; }
+  .bp-tile-dark .bp-tile-value { color:#fff; }
+  .bp-tile-sub { margin-top:4px; color:#829087; font-size:9px; }
+  .bp-tile-dark .bp-tile-sub { color:rgba(232,255,244,.65); }
+  .bp-formula { margin:10px 3px 0; color:#87948d; font-size:10px; line-height:1.45; }
+  .bp-disclosure { margin-top:17px; padding:14px; border:1px solid #e5e8dc; border-radius:15px; background:#fffdf6; }
+  .bp-disclosure h3 { margin:0 0 6px; color:#3a3424; font-size:12px; font-weight:850; }
+  .bp-disclosure p { margin:0; color:#736b58; font-size:10px; line-height:1.5; }
+  .bp-doc-link { display:inline-block; margin-top:9px; color:var(--bp-green); font-size:10px; font-weight:800; text-decoration:underline; }
+  .agreement-box { margin:13px 0 0; padding:14px; border:1px solid var(--bp-line); border-radius:15px; background:#fff; }
+  .agreement-box h3 { margin:0 0 6px; color:var(--bp-ink); font-size:13px; font-weight:850; }
+  .agreement-box p { margin:0 0 9px; color:#64746c; font-size:10px; line-height:1.5; }
+  .agreement-link,.agreement-preview-link { color:var(--bp-green); font-weight:800; }
+  .signature-pad { height:110px; margin-top:8px; border:1px solid #cdd8d1; border-radius:10px; background:#fbfcfb; }
+  .signature-actions { color:#7d8983; font-size:10px; }
+  .signature-clear { color:var(--bp-green); font-size:10px; }
+  .agreement-check { color:#43534b; font-size:10px; line-height:1.45; }
+  .agreement-preview-link { font-size:10px; }
+  .form-error { margin-bottom:13px; padding:11px; border-radius:10px; background:#fee2e2; color:#991b1b; font-size:12px; }
+  .bp-cta-wrap { position:sticky; bottom:0; z-index:10; margin:18px -20px -32px; padding:12px 20px 17px; border-top:1px solid rgba(10,31,23,.06); background:rgba(242,245,243,.96); backdrop-filter:blur(14px); }
+  .bp-cta-hint { margin-bottom:8px; color:#78867e; font-size:10px; }
+  .purchase-submit { display:flex; align-items:center; justify-content:center; gap:9px; width:100%; min-height:52px; margin:0; border:0; border-radius:15px; background:linear-gradient(135deg,#0e8a5a,#04321f); color:#fff; font-size:14px; font-weight:850; box-shadow:0 7px 18px rgba(7,90,59,.2); }
+  .purchase-submit:disabled { opacity:.48; cursor:not-allowed; box-shadow:none; }
+  @media (max-width:380px) { .bp-content { padding-right:15px; padding-left:15px; } .bp-topbar { padding-right:14px; padding-left:14px; } .bp-cta-wrap { margin-right:-15px; margin-left:-15px; padding-right:15px; padding-left:15px; } .bp-amount { font-size:24px; } }
+</style>
+
+@php
+  $initialCurrency = old('currency') === 'PHP' ? 'PHP' : 'USD';
+  $initialAmount = old('amount', $package['price']);
+  $midpointAmount = round(($package['min_amount'] + $package['max_amount']) / 2, 2);
+@endphp
+
 <main class="purchase-page">
-  <header class="purchase-header">
-    <a class="purchase-back" href="{{ route('invest') }}" aria-label="Back to packages">&lsaquo;</a>
-    <h1>Purchase {{ $package['name'] }} Bond</h1>
+  <header class="bp-topbar">
+    <a class="bp-back" href="{{ route('invest') }}" aria-label="Back to investment packages">&lsaquo;</a>
+    <div class="bp-brand"><img src="{{ asset('logo.png') }}" alt="">LuLu Philippines</div>
+    <span class="bp-top-tag">Bond purchase</span>
   </header>
 
-  <div class="purchase-shell">
-    <form class="purchase-card" method="post" action="{{ route('investments.store') }}" id="purchaseForm">
+  <div class="bp-content">
+    <div class="bp-eyebrow">Investment package</div>
+    <h1 class="bp-title">Purchase {{ $package['name'] }} Bond</h1>
+
+    <article class="bp-card" aria-label="{{ $package['name'] }} package: {{ number_format($package['daily_interest_rate'], 2) }} percent daily for {{ $package['duration_days'] }} days">
+      <div class="bp-card-top">
+        <div>
+          <div class="bp-card-name">{{ $package['name'] }}</div>
+          <div class="bp-card-caption">LuLu investment bond</div>
+        </div>
+        <span class="bp-card-chip" aria-hidden="true"></span>
+      </div>
+      <div class="bp-card-stats">
+        <div>
+          <div class="bp-stat-label">Daily interest</div>
+          <div class="bp-stat-value">{{ number_format($package['daily_interest_rate'], 2) }}<small>% daily</small></div>
+        </div>
+        <div>
+          <div class="bp-stat-label">Duration</div>
+          <div class="bp-stat-value">{{ $package['duration_days'] }}<small>days</small></div>
+        </div>
+      </div>
+    </article>
+
+    <p class="bp-lede">Choose an amount from <strong>${{ number_format($package['min_amount'], 2) }}</strong> to <strong>${{ number_format($package['max_amount'], 2) }}</strong>. The estimates below use this package's <strong>{{ number_format($package['daily_interest_rate'], 2) }}% daily rate</strong> and {{ $package['duration_days'] }}-day duration.</p>
+
+    <form method="post" action="{{ route('investments.store') }}" id="purchaseForm">
       @csrf
       <input type="hidden" name="package" value="{{ $packageKey }}">
-      <input type="hidden" name="currency" id="purchaseCurrency" value="USD">
+      <input type="hidden" name="currency" id="purchaseCurrency" value="{{ $initialCurrency }}">
       <input type="hidden" name="payment_method" id="purchasePaymentMethod" value="">
       @if ($errors->any())
-        <div class="form-error">{{ $errors->first() }}</div>
+        <div class="form-error" role="alert">{{ $errors->first() }}</div>
       @endif
-      <h2 class="purchase-title">{{ $package['name'] }}</h2>
-      <p class="purchase-copy">Investment range: ${{ number_format($package['min_amount'], 2) }} to ${{ number_format($package['max_amount'], 2) }} with {{ number_format($package['daily_interest_rate'], 2) }}% daily interest for {{ $package['duration_days'] }} days.</p>
 
-      <label class="purchase-label" for="purchaseAmount">Amount in USD</label>
-      <input class="purchase-input" id="purchaseAmount" type="number" name="amount" min="{{ $package['min_amount'] }}" max="{{ $package['max_amount'] }}" step="0.01" value="{{ old('amount', $package['price']) }}" required>
-      <div class="purchase-range"><span>Min: ${{ number_format($package['min_amount'], 2) }}</span><span>Max: ${{ number_format($package['max_amount'], 2) }}</span></div>
+      <section class="bp-panel" aria-label="Investment amount">
+        <div class="bp-panel-head">
+          <label class="bp-label" id="amountLabel" for="purchaseAmount">Amount in {{ $initialCurrency }}</label>
+          <div class="bp-currency" role="group" aria-label="Display currency">
+            <button type="button" data-currency="USD" aria-pressed="{{ $initialCurrency === 'USD' ? 'true' : 'false' }}">USD</button>
+            <button type="button" data-currency="PHP" aria-pressed="{{ $initialCurrency === 'PHP' ? 'true' : 'false' }}">PHP</button>
+          </div>
+        </div>
+        <label class="bp-amount-field" for="purchaseAmount">
+          <span class="bp-symbol" id="purchaseCurrencySymbol">$</span>
+          <input class="bp-amount" id="purchaseAmount" type="text" name="amount" inputmode="decimal" autocomplete="off" value="{{ $initialAmount }}" aria-labelledby="amountLabel" aria-describedby="purchaseLimits purchaseAmountError" required>
+        </label>
+        <div class="bp-limits" id="purchaseLimits">
+          <span>Min <strong id="purchaseMin">${{ number_format($package['min_amount'], 2) }}</strong></span>
+          <span>Max <strong id="purchaseMax">${{ number_format($package['max_amount'], 2) }}</strong></span>
+        </div>
+        <p class="bp-error" id="purchaseAmountError" role="alert"></p>
+        <div class="bp-chips" role="group" aria-label="Suggested investment amounts">
+          <button class="bp-chip" type="button" data-amount="{{ $package['min_amount'] }}">Minimum</button>
+          <button class="bp-chip" type="button" data-amount="{{ $midpointAmount }}">Midpoint</button>
+          <button class="bp-chip" type="button" data-amount="{{ $package['max_amount'] }}">Maximum</button>
+        </div>
+        <input class="bp-range" id="purchaseRange" type="range" min="{{ $package['min_amount'] }}" max="{{ $package['max_amount'] }}" step="0.01" value="{{ $package['price'] }}" aria-label="Adjust investment amount in US dollars">
+        <div class="bp-range-scale"><span>${{ number_format($package['min_amount'], 2) }}</span><span>${{ number_format($package['max_amount'], 2) }}</span></div>
+        <div class="bp-fx" id="purchaseFx" hidden>
+          <span aria-hidden="true">i</span>
+          <span>Converted using the live rate of <strong>US$1 = ₱{{ number_format($phpRate, 4) }}</strong> (updated {{ $phpRateUpdatedAt }}). The selected currency and amount will be validated at checkout.</span>
+        </div>
+      </section>
 
-      <div class="currency-toggle" aria-label="Currency">
-        <button class="currency-button is-active" type="button" data-currency="USD">USD</button>
-        <button class="currency-button" type="button" data-currency="PHP">PHP</button>
+      <div class="bp-section-heading"><h2>Estimated projection</h2><span>Simple interest estimate</span></div>
+      <div class="bp-projection" aria-live="polite">
+        <div class="bp-tile">
+          <div class="bp-tile-label">Daily interest</div>
+          <div class="bp-tile-value" id="purchaseDaily">$0.00</div>
+          <div class="bp-tile-sub">At the package daily rate</div>
+        </div>
+        <div class="bp-tile">
+          <div class="bp-tile-label">Estimated interest</div>
+          <div class="bp-tile-value" id="purchaseInterest">$0.00</div>
+          <div class="bp-tile-sub">Over the full package duration</div>
+        </div>
+        <div class="bp-tile bp-tile-dark">
+          <div class="bp-tile-label">Estimated at maturity</div>
+          <div class="bp-tile-value" id="purchaseTotal">$0.00</div>
+          <div class="bp-tile-sub">Principal plus simple interest</div>
+        </div>
+        <div class="bp-tile bp-tile-wide">
+          <div>
+            <div class="bp-tile-label">Estimated maturity date</div>
+            <div class="bp-tile-value" id="purchaseMaturityDate">—</div>
+          </div>
+          <div>
+            <div class="bp-tile-label">Duration</div>
+            <div class="bp-tile-value">{{ $package['duration_days'] }} days</div>
+          </div>
+        </div>
       </div>
+      <p class="bp-formula" id="purchaseNote"></p>
 
-      <div class="estimate-grid">
-        <div class="estimate-card"><div class="estimate-label">Daily</div><div class="estimate-value" id="purchaseDaily">$0.00</div></div>
-        <div class="estimate-card"><div class="estimate-label">Weekly</div><div class="estimate-value" id="purchaseWeekly">$0.00</div></div>
-        <div class="estimate-card"><div class="estimate-label">Total</div><div class="estimate-value" id="purchaseTotal">$0.00</div></div>
-      </div>
-      <p class="estimate-note" id="purchaseNote"></p>
+      <section class="bp-disclosure" aria-label="Risks and disclosures">
+        <h3>Important information</h3>
+        <p>Returns shown are estimates based on the selected amount, package daily rate, and duration. The maturity date is estimated from today; actual dates and investment terms are governed by the signed agreement.</p>
+        <a class="bp-doc-link" href="{{ route('invest.agreement.sample.download') }}">Read the bond agreement</a>
+      </section>
 
       @if ($requiresAgreement)
         <div class="agreement-box">
@@ -104,13 +271,18 @@
           <canvas class="signature-pad" id="purchaseSignaturePad" width="900" height="300" aria-label="Draw your signature"></canvas>
           <input type="hidden" name="agreement_signature_data" id="purchaseSignatureData">
           <div class="signature-actions"><span>Use your finger, mouse, or stylus.</span><button class="signature-clear" type="button" id="clearPurchaseSignature">Clear signature</button></div>
-          <label class="agreement-check"><input type="checkbox" name="agreement_accepted" value="1" required> <span>I have read and understood the agreement and voluntarily accept its terms.</span></label>
-          <a class="agreement-preview-link" id="agreementPreviewLink" href="{{ route('invest.agreement.preview', ['package' => $packageKey, 'amount' => $package['price'], 'currency' => 'USD']) }}" target="_blank" rel="noopener">Review your populated agreement</a>
+          <label class="agreement-check"><input type="checkbox" name="agreement_accepted" value="1" {{ old('agreement_accepted') ? 'checked' : '' }} required> <span>I have read and understood the agreement and voluntarily accept its terms.</span></label>
+          <a class="agreement-preview-link" id="agreementPreviewLink" href="{{ route('invest.agreement.preview', ['package' => $packageKey, 'amount' => $initialAmount, 'currency' => $initialCurrency]) }}" target="_blank" rel="noopener">Review your populated agreement</a>
         </div>
       @endif
 
-      <button class="purchase-submit" type="button" id="showPayment">Confirm</button>
-
+      <div class="bp-cta-wrap">
+        <p class="bp-cta-hint" id="purchaseHint">Review the estimate and continue to choose a payment method.</p>
+        <button class="purchase-submit" type="button" id="showPayment" disabled>
+          Continue to payment
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
     </form>
   </div>
 </main>
@@ -131,20 +303,20 @@
       <button class="payment-modal-submit" type="button" id="submitPurchase" disabled>Continue</button>
     </div>
   </div>
+</div>
 
-  <div class="payment-modal" id="walletModal" aria-hidden="true">
-    <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="walletModalTitle">
-      <h2 class="payment-modal-title" id="walletModalTitle">Choose your e-wallet</h2>
-      <p class="payment-modal-copy">Select the wallet you will use for your payment.</p>
-      <div class="bank-list">
-        <button class="bank-option" type="button" data-wallet-name="GCash"><strong class="bank-text-logo wallet-text-logo-gcash">GCash</strong><span>GCash</span></button>
-        <button class="bank-option" type="button" data-wallet-name="Maya"><strong class="bank-text-logo wallet-text-logo-maya">Maya</strong><span>Maya</span></button>
-        <button class="bank-option" type="button" data-wallet-name="GrabPay"><strong class="bank-text-logo wallet-text-logo-grabpay">GrabPay</strong><span>GrabPay</span></button>
-        <button class="bank-option" type="button" data-wallet-name="ShopeePay"><strong class="bank-text-logo wallet-text-logo-shopeepay">ShopeePay</strong><span>ShopeePay</span></button>
-      </div>
-      <div class="payment-modal-actions">
-        <button type="button" id="walletModalBack">Back</button>
-      </div>
+<div class="payment-modal" id="walletModal" aria-hidden="true">
+  <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="walletModalTitle">
+    <h2 class="payment-modal-title" id="walletModalTitle">Choose your e-wallet</h2>
+    <p class="payment-modal-copy">Select the wallet you will use for your payment.</p>
+    <div class="bank-list">
+      <button class="bank-option" type="button" data-wallet-name="GCash"><strong class="bank-text-logo wallet-text-logo-gcash">GCash</strong><span>GCash</span></button>
+      <button class="bank-option" type="button" data-wallet-name="Maya"><strong class="bank-text-logo wallet-text-logo-maya">Maya</strong><span>Maya</span></button>
+      <button class="bank-option" type="button" data-wallet-name="GrabPay"><strong class="bank-text-logo wallet-text-logo-grabpay">GrabPay</strong><span>GrabPay</span></button>
+      <button class="bank-option" type="button" data-wallet-name="ShopeePay"><strong class="bank-text-logo wallet-text-logo-shopeepay">ShopeePay</strong><span>ShopeePay</span></button>
+    </div>
+    <div class="payment-modal-actions">
+      <button type="button" id="walletModalBack">Back</button>
     </div>
   </div>
 </div>
@@ -190,14 +362,25 @@
     var rate = {{ (float) $package['daily_interest_rate'] }};
     var days = {{ (int) $package['duration_days'] }};
     var phpRate = {{ (float) $phpRate }};
-    var currency = 'USD';
+    var minUsd = {{ (float) $package['min_amount'] }};
+    var maxUsd = {{ (float) $package['max_amount'] }};
+    var currency = document.getElementById('purchaseCurrency').value;
     var amount = document.getElementById('purchaseAmount');
     var currencyInput = document.getElementById('purchaseCurrency');
     var paymentInput = document.getElementById('purchasePaymentMethod');
     var daily = document.getElementById('purchaseDaily');
-    var weekly = document.getElementById('purchaseWeekly');
     var total = document.getElementById('purchaseTotal');
     var note = document.getElementById('purchaseNote');
+    var range = document.getElementById('purchaseRange');
+    var amountError = document.getElementById('purchaseAmountError');
+    var minLabel = document.getElementById('purchaseMin');
+    var maxLabel = document.getElementById('purchaseMax');
+    var currencySymbol = document.getElementById('purchaseCurrencySymbol');
+    var currencyLabel = document.getElementById('amountLabel');
+    var fxNote = document.getElementById('purchaseFx');
+    var maturityDate = document.getElementById('purchaseMaturityDate');
+    var confirmButton = document.getElementById('showPayment');
+    var purchaseHint = document.getElementById('purchaseHint');
     var paymentModal = document.getElementById('paymentModal');
     var paymentModalCancel = document.getElementById('paymentModalCancel');
     var submitPurchase = document.getElementById('submitPurchase');
@@ -208,48 +391,168 @@
     var agreementPreviewLink = document.getElementById('agreementPreviewLink');
     var signaturePad = document.getElementById('purchaseSignaturePad');
     var signatureData = document.getElementById('purchaseSignatureData');
+    var agreementCheckbox = document.querySelector('[name="agreement_accepted"]');
     var signatureContext = signaturePad ? signaturePad.getContext('2d') : null;
     var drawing = false;
+    var signatureHasInk = false;
+    var presets = document.querySelectorAll('[data-amount]');
+
+    function currentAmount() {
+      var value = Number(String(amount.value).replace(/,/g, '').trim());
+      return Number.isFinite(value) ? value : NaN;
+    }
+    function asUsd(displayAmount) {
+      return currency === 'PHP' ? displayAmount / phpRate : displayAmount;
+    }
+    function fromUsd(usdAmount) {
+      return currency === 'PHP' ? usdAmount * phpRate : usdAmount;
+    }
+    function roundUpCent(value) { return Math.ceil(value * 100 - 1e-8) / 100; }
+    function roundDownCent(value) { return Math.floor(value * 100 + 1e-8) / 100; }
+    function limits() {
+      return currency === 'PHP'
+        ? { min: roundUpCent(minUsd * phpRate), max: roundDownCent(maxUsd * phpRate) }
+        : { min: minUsd, max: maxUsd };
+    }
+    function inputForUsd(usdAmount) {
+      var displayAmount = fromUsd(usdAmount);
+      if (currency === 'PHP') {
+        var currentLimits = limits();
+        displayAmount = usdAmount <= minUsd + 1e-7 ? currentLimits.min :
+          usdAmount >= maxUsd - 1e-7 ? currentLimits.max :
+            Math.min(currentLimits.max, Math.max(currentLimits.min, Math.round(displayAmount * 100) / 100));
+      }
+      return displayAmount.toFixed(2);
+    }
+    function formatMoney(value) {
+      return (currency === 'PHP' ? '₱' : '$') + Number(value).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+    function hasValidSignature() {
+      return !signaturePad || (signatureHasInk && Boolean(signatureData.value));
+    }
+    function amountIsValid() {
+      var entered = currentAmount();
+      var usd = asUsd(entered);
+      return Number.isFinite(usd) && usd >= minUsd - 1e-7 && usd <= maxUsd + 1e-7;
+    }
+    function updateConfirmation() {
+      var valid = amountIsValid();
+      var signed = hasValidSignature();
+      var accepted = !agreementCheckbox || agreementCheckbox.checked;
+      confirmButton.disabled = !(valid && signed && accepted);
+      amountError.classList.toggle('is-visible', !valid && amount.value.trim() !== '');
+      amountError.textContent = valid ? '' : 'Enter an amount between ' + formatMoney(limits().min) + ' and ' + formatMoney(limits().max) + '.';
+      if (!valid) {
+        purchaseHint.textContent = 'Choose an amount within the package limits.';
+      } else if (!signed) {
+        purchaseHint.textContent = 'Draw your signature and accept the agreement to continue.';
+      } else if (!accepted) {
+        purchaseHint.textContent = 'Accept the agreement to continue.';
+      } else {
+        purchaseHint.textContent = 'Review the estimate and continue to choose a payment method.';
+      }
+    }
+    function continueToAgreement() {
+      var agreementUrl = new URL('{{ route('invest.agreement.sign') }}', window.location.origin);
+      agreementUrl.searchParams.set('package', '{{ $packageKey }}');
+      agreementUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');
+      agreementUrl.searchParams.set('currency', currency);
+      agreementUrl.searchParams.set('payment_method', paymentInput.value);
+      window.location.href = agreementUrl.toString();
+    }
+
     function signaturePoint(event) {
       var rect = signaturePad.getBoundingClientRect();
       return { x: (event.clientX - rect.left) * signaturePad.width / rect.width, y: (event.clientY - rect.top) * signaturePad.height / rect.height };
     }
-    function saveSignature() { if (signatureContext) signatureData.value = signaturePad.toDataURL('image/png'); }
+    function saveSignature() {
+      if (!signatureContext) return;
+      signatureData.value = signaturePad.toDataURL('image/png');
+      updateConfirmation();
+    }
     if (signaturePad) {
       signatureContext.lineWidth = 4;
       signatureContext.lineCap = 'round';
       signatureContext.lineJoin = 'round';
       signatureContext.strokeStyle = '#17202a';
       signaturePad.addEventListener('pointerdown', function (event) { drawing = true; signaturePad.setPointerCapture(event.pointerId); var point = signaturePoint(event); signatureContext.beginPath(); signatureContext.moveTo(point.x, point.y); });
-      signaturePad.addEventListener('pointermove', function (event) { if (!drawing) return; var point = signaturePoint(event); signatureContext.lineTo(point.x, point.y); signatureContext.stroke(); saveSignature(); });
-      signaturePad.addEventListener('pointerup', function () { drawing = false; saveSignature(); });
-      document.getElementById('clearPurchaseSignature').addEventListener('click', function () { signatureContext.clearRect(0, 0, signaturePad.width, signaturePad.height); signatureData.value = ''; });
-    }
-    function money(value) {
-      var converted = currency === 'PHP' ? value * phpRate : value;
-      return (currency === 'PHP' ? '₱' : '$') + converted.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+      signaturePad.addEventListener('pointermove', function (event) { if (!drawing) return; signatureHasInk = true; var point = signaturePoint(event); signatureContext.lineTo(point.x, point.y); signatureContext.stroke(); saveSignature(); });
+      signaturePad.addEventListener('pointerup', function () { drawing = false; if (signatureHasInk) saveSignature(); else updateConfirmation(); });
+      signaturePad.addEventListener('pointercancel', function () { drawing = false; });
+      document.getElementById('clearPurchaseSignature').addEventListener('click', function () { signatureContext.clearRect(0, 0, signaturePad.width, signaturePad.height); signatureData.value = ''; signatureHasInk = false; updateConfirmation(); });
     }
     function update() {
-      var base = Number(amount.value || 0);
-      var dailyValue = base * rate / 100;
-      daily.textContent = money(dailyValue);
-      weekly.textContent = money(dailyValue * 7);
-      total.textContent = money(base + dailyValue * days);
-      note.textContent = money(base) + ' x ' + rate.toFixed(2) + '% = ' + money(dailyValue) + ' daily. Estimated total balance after ' + days + ' days is ' + money(base + dailyValue * days) + '.';
+      var entered = currentAmount();
+      var base = Number.isFinite(entered) ? asUsd(entered) : 0;
+      var dailyValue = Math.round(base * rate + Number.EPSILON) / 100;
+      var interestValue = dailyValue * days;
+      daily.textContent = formatMoney(fromUsd(dailyValue));
+      document.getElementById('purchaseInterest').textContent = formatMoney(fromUsd(interestValue));
+      total.textContent = formatMoney(fromUsd(base + interestValue));
+      note.textContent = formatMoney(entered || 0) + ' x ' + rate.toFixed(2) + '% daily for ' + days + ' days. Estimated simple interest: ' + formatMoney(fromUsd(interestValue)) + '. Estimates are not guaranteed returns.';
       currencyInput.value = currency;
+      currencySymbol.textContent = currency === 'PHP' ? '₱' : '$';
+      currencyLabel.textContent = 'Amount in ' + currency;
+      var currentLimits = limits();
+      minLabel.textContent = formatMoney(currentLimits.min);
+      maxLabel.textContent = formatMoney(currentLimits.max);
+      fxNote.hidden = currency !== 'PHP';
+      range.value = Math.min(maxUsd, Math.max(minUsd, Number.isFinite(base) ? base : minUsd));
+      presets.forEach(function (preset) {
+        var presetUsd = Number(preset.dataset.amount);
+        var presetValue = currency === 'PHP' && presetUsd <= minUsd + 1e-7 ? currentLimits.min :
+          currency === 'PHP' && presetUsd >= maxUsd - 1e-7 ? currentLimits.max : fromUsd(presetUsd);
+        preset.textContent = preset.dataset.amount === String(minUsd) ? 'Minimum ' + formatMoney(presetValue) :
+          preset.dataset.amount === String(maxUsd) ? 'Maximum ' + formatMoney(presetValue) : 'Midpoint ' + formatMoney(presetValue);
+        preset.classList.toggle('is-active', Number.isFinite(base) && Math.abs(base - presetUsd) < 0.005);
+      });
+      if (maturityDate) {
+        var maturity = new Date();
+        maturity.setDate(maturity.getDate() + days);
+        maturityDate.textContent = maturity.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+      }
       if (agreementPreviewLink) {
         var previewUrl = new URL(agreementPreviewLink.href, window.location.origin);
-        previewUrl.searchParams.set('amount', amount.value || '0');
+        previewUrl.searchParams.set('amount', Number.isFinite(entered) ? entered.toFixed(2) : '0');
         previewUrl.searchParams.set('currency', currency);
         agreementPreviewLink.href = previewUrl.toString();
       }
-      document.querySelectorAll('[data-currency]').forEach(function (button) { button.classList.toggle('is-active', button.dataset.currency === currency); });
+      document.querySelectorAll('[data-currency]').forEach(function (button) {
+        var active = button.dataset.currency === currency;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      updateConfirmation();
     }
     amount.addEventListener('input', update);
+    range.addEventListener('input', function () {
+      amount.value = inputForUsd(Number(range.value));
+      update();
+    });
+    presets.forEach(function (preset) {
+      preset.addEventListener('click', function () {
+        amount.value = inputForUsd(Number(preset.dataset.amount));
+        update();
+      });
+    });
     document.querySelectorAll('[data-currency]').forEach(function (button) {
-      button.addEventListener('click', function () { currency = button.dataset.currency; update(); });
+      button.addEventListener('click', function () {
+        var usdAmount = asUsd(currentAmount());
+        currency = button.dataset.currency;
+        amount.value = Number.isFinite(usdAmount) ? inputForUsd(usdAmount) : '';
+        update();
+      });
+    });
+    if (agreementCheckbox) agreementCheckbox.addEventListener('change', updateConfirmation);
+    amount.addEventListener('blur', function () {
+      if (Number.isFinite(currentAmount())) amount.value = currentAmount().toFixed(2);
+      update();
     });
     document.getElementById('showPayment').addEventListener('click', function () {
+      if (!amountIsValid() || !hasValidSignature() || (agreementCheckbox && !agreementCheckbox.checked)) {
+        updateConfirmation();
+        return;
+      }
       paymentModal.classList.add('is-open');
       paymentModal.setAttribute('aria-hidden', 'false');
     });
@@ -297,19 +600,19 @@
         var providerKey = selectedBank.toLowerCase().replace(/\s+/g, '');
         var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
         paymentUrl.searchParams.set('package', '{{ $packageKey }}');
-        paymentUrl.searchParams.set('amount', amount.value);
+        paymentUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');
         paymentUrl.searchParams.set('currency', currency);
         window.location.href = paymentUrl.toString();
       });
-      document.querySelectorAll('[data-wallet-name]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          var providerKey = button.dataset.walletName.toLowerCase().replace(/\s+/g, '');
-          var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
-          paymentUrl.searchParams.set('package', '{{ $packageKey }}');
-          paymentUrl.searchParams.set('amount', amount.value);
-          paymentUrl.searchParams.set('currency', currency);
-          window.location.href = paymentUrl.toString();
-        });
+    });
+    document.querySelectorAll('[data-wallet-name]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var providerKey = button.dataset.walletName.toLowerCase().replace(/\s+/g, '');
+        var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
+        paymentUrl.searchParams.set('package', '{{ $packageKey }}');
+        paymentUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');
+        paymentUrl.searchParams.set('currency', currency);
+        window.location.href = paymentUrl.toString();
       });
     });
     document.getElementById('qrModalBack').addEventListener('click', function () {
@@ -321,10 +624,10 @@
     document.getElementById('qrModalConfirm').addEventListener('click', function () {
       qrModal.classList.remove('is-open');
       qrModal.setAttribute('aria-hidden', 'true');
-      document.getElementById('purchaseForm').submit();
+      continueToAgreement();
     });
     submitPurchase.addEventListener('click', function () {
-      if (paymentInput.value) document.getElementById('purchaseForm').submit();
+      if (paymentInput.value) continueToAgreement();
     });
     update();
   })();

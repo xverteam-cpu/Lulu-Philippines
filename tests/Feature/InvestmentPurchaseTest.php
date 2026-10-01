@@ -5,12 +5,49 @@ namespace Tests\Feature;
 use App\Models\PackageSlot;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class InvestmentPurchaseTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_loaded_purchase_page_uses_live_package_details_and_preserves_the_agreement_flow(): void
+    {
+        $this->fakeUsdToPhpRate();
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->get('/invest/purchase/loaded');
+
+        $response->assertOk()
+            ->assertSee('Purchase Gold Bond')
+            ->assertSee('0.80% daily')
+            ->assertSee('120 days')
+            ->assertSee('$799.00')
+            ->assertSee('$7,998.99')
+            ->assertSee('Estimated at maturity')
+            ->assertSee('invest/agreement/sign')
+            ->assertDontSee('id="purchaseSignaturePad"')
+            ->assertSee('Continue to payment');
+
+        Cache::forget('usd_to_php_rate_meta_v2');
+    }
+
+    public function test_direct_payment_methods_continue_to_the_existing_agreement_signing_page(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/invest/agreement/sign?package=loaded&amount=799&currency=USD&payment_method=account_balance')
+            ->assertOk()
+            ->assertSee('Gold')
+            ->assertSee('agreement_signature_data')
+            ->assertSee('agreement_accepted')
+            ->assertSee('Sign agreement and submit investment');
+    }
 
     public function test_bank_transfer_investment_is_created_as_pending_and_returns_receipt_payload(): void
     {
@@ -22,8 +59,10 @@ class InvestmentPurchaseTest extends TestCase
             ->withSession(['pin_verified' => true])
             ->post('/investments', [
                 'package' => 'crunch',
-                'amount' => 120,
+                'amount' => 129,
                 'payment_method' => 'bank_transfer',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
             ], [
                 'Accept' => 'application/json',
                 'X-Requested-With' => 'XMLHttpRequest',
@@ -33,7 +72,7 @@ class InvestmentPurchaseTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('investment.status', 'pending')
             ->assertJsonPath('investment.payment_method', 'bank_transfer')
-            ->assertJsonPath('investment.package_name', 'Basic');
+            ->assertJsonPath('investment.package_name', 'Silver');
 
         $this->assertDatabaseHas('investments', [
             'user_id' => $user->id,
@@ -45,6 +84,7 @@ class InvestmentPurchaseTest extends TestCase
 
     public function test_php_amount_is_converted_to_usd_before_investment_is_stored(): void
     {
+        $this->fakeUsdToPhpRate();
         $user = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
             'balance' => 5000,
@@ -54,9 +94,11 @@ class InvestmentPurchaseTest extends TestCase
             ->withSession(['pin_verified' => true])
             ->post('/investments', [
                 'package' => 'crunch',
-                'amount' => 7500,
+                'amount' => 8000,
                 'currency' => 'PHP',
                 'payment_method' => 'account_balance',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
             ]);
 
         $response->assertRedirect('/dashboard');
@@ -64,10 +106,12 @@ class InvestmentPurchaseTest extends TestCase
         $this->assertDatabaseHas('investments', [
             'user_id' => $user->id,
             'package_key' => 'crunch',
-            'amount' => 122.33,
+            'amount' => 130.48,
             'status' => 'approved',
             'payment_method' => 'account_balance',
         ]);
+        $investment = $user->investments()->firstOrFail();
+        $this->assertEquals(5000 - (float) $investment->amount, (float) $user->fresh()->balance);
     }
 
     public function test_account_balance_activation_reduces_package_slots(): void
@@ -83,6 +127,8 @@ class InvestmentPurchaseTest extends TestCase
                 'package' => 'loaded',
                 'amount' => 800,
                 'payment_method' => 'account_balance',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
             ]);
 
         $response->assertRedirect('/dashboard');
@@ -165,7 +211,18 @@ class InvestmentPurchaseTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'id' => $referrer->id,
-            'balance' => 6.00,
+            'balance' => 6.45,
+        ]);
+    }
+
+    private function fakeUsdToPhpRate(): void
+    {
+        Cache::forget('usd_to_php_rate_meta_v2');
+        Http::fake([
+            'api.frankfurter.dev/v1/latest*' => Http::response([
+                'date' => '2026-06-15',
+                'rates' => ['PHP' => 61.31],
+            ]),
         ]);
     }
 }

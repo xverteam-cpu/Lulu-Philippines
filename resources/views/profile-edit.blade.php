@@ -30,21 +30,28 @@
     <div class="action-title">Edit Profile</div>
     <div class="action-sub">Update your public account name, email address, and profile details.</div>
 
-    <form action="#" method="post">
+    @if (session('status'))
+      <div role="status" style="margin-bottom:16px; color:#166534; font-weight:700;">{{ session('status') }}</div>
+    @endif
+
+    <form action="{{ route('profile.update') }}" method="post">
       @csrf
       <div class="input-group">
         <label class="input-label" for="name">Name</label>
-        <input class="input-field" id="name" name="name" type="text" value="{{ auth()->user()->name }}">
+        <input class="input-field" id="name" name="name" type="text" value="{{ old('name', auth()->user()->name) }}" required maxlength="255">
+        @error('name') <div role="alert" style="color:#b91c1c;">{{ $message }}</div> @enderror
       </div>
 
       <div class="input-group">
         <label class="input-label" for="email">Email</label>
-        <input class="input-field" id="email" name="email" type="email" value="{{ auth()->user()->email }}">
+        <input class="input-field" id="email" name="email" type="email" value="{{ old('email', auth()->user()->email) }}" required maxlength="255">
+        @error('email') <div role="alert" style="color:#b91c1c;">{{ $message }}</div> @enderror
       </div>
 
       <div class="input-group">
         <label class="input-label" for="region">Region</label>
-        <input class="input-field" id="region" name="region" type="text" value="{{ auth()->user()->region ?: '' }}">
+        <input class="input-field" id="region" name="region" type="text" value="{{ old('region', auth()->user()->region ?: '') }}" maxlength="255">
+        @error('region') <div role="alert" style="color:#b91c1c;">{{ $message }}</div> @enderror
       </div>
 
       <button class="primary-btn" type="submit">Save changes</button>

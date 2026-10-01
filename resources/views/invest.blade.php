@@ -18,6 +18,37 @@
   .investment-balance-card > * { position:relative; z-index:1; }
   .investment-balance-label { position:absolute; top:28%; left:5%; right:5%; font-size:12px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; text-align:center; }
   .investment-balance-value { position:absolute; top:48%; left:5%; right:5%; font-size:30px; font-weight:700; line-height:1.05; text-align:center; }
+  .account-package-section { margin:0 0 28px; }
+  .account-package-title { margin:0 0 12px; color:#111827; font-size:18px; font-weight:900; }
+  .account-package-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
+  .account-package-card { position:relative; min-width:0; aspect-ratio:1.58; overflow:hidden; box-sizing:border-box; padding:clamp(12px, 3vw, 18px); border-radius:22px; color:#fff; box-shadow:0 12px 25px rgba(0,45,36,.14); isolation:isolate; }
+  .account-package-card.crunch { background:#006839 url("{{ asset('images/wallet-card-background.svg') }}") center / cover no-repeat; }
+  .account-package-card.loaded { background:#d6f6dc url("{{ asset('images/savings-card-background.svg') }}") center / cover no-repeat; color:#0b5438; }
+  .account-package-card.supreme { background:#153d3f url("{{ asset('images/credit-card-background.svg') }}") center / cover no-repeat; }
+  .account-package-name { overflow:hidden; font-size:clamp(15px, 3vw, 22px); font-weight:800; line-height:1.15; text-overflow:ellipsis; white-space:nowrap; }
+  .account-package-caption { margin-top:3px; font-size:7px; letter-spacing:1.2px; opacity:.76; }
+  .account-package-earnings { position:absolute; right:12px; bottom:12px; left:clamp(12px, 3vw, 18px); }
+  .account-package-label { font-size:clamp(9px, 1.6vw, 12px); font-weight:700; letter-spacing:1.1px; opacity:.82; }
+  .account-package-value { margin-top:2px; font-size:clamp(18px, 3.5vw, 28px); font-weight:800; line-height:1.1; }
+  .account-package-card.crunch .account-package-name,
+  .account-package-card.crunch .account-package-caption,
+  .account-package-card.crunch .account-package-label,
+  .account-package-card.crunch .account-package-value { color:#c0c0c0; }
+  .account-package-card.loaded .account-package-name,
+  .account-package-card.loaded .account-package-caption,
+  .account-package-card.loaded .account-package-label,
+  .account-package-card.loaded .account-package-value { color:#d4af37; }
+  .account-package-card.supreme .account-package-name,
+  .account-package-card.supreme .account-package-caption,
+  .account-package-card.supreme .account-package-label,
+  .account-package-card.supreme .account-package-value { color:#e5e4e2; }
+  .account-package-actions { position:absolute; top:10px; right:10px; left:10px; display:flex; align-items:center; justify-content:flex-end; z-index:2; }
+  .account-package-action { display:inline-flex; width:clamp(22px, 4vw, 30px); height:clamp(22px, 4vw, 30px); flex:0 0 auto; align-items:center; justify-content:center; border:0; border-radius:50%; background:rgba(255,255,255,.86); color:#0b5d3b; font-size:clamp(18px, 3vw, 22px); line-height:1; font-weight:700; text-decoration:none; box-shadow:0 10px 20px rgba(15,118,85,.18); }
+  .account-package-card--empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; border:1px solid rgba(255,255,255,.52); background:rgba(255,255,255,.18); box-shadow:inset 0 0 0 1px rgba(255,255,255,.22); backdrop-filter:blur(2px); color:#0d5d3c; }
+  .account-package-empty-copy { text-align:center; color:#0f5c3b; }
+  .account-package-empty-name { font-size:clamp(12px, 2.4vw, 18px); font-weight:800; line-height:1.1; letter-spacing:.04em; text-transform:uppercase; }
+  .account-package-empty-caption { margin-top:2px; font-size:clamp(8px, 1.6vw, 11px); font-weight:700; letter-spacing:.12em; text-transform:uppercase; opacity:.7; }
+  .account-package-empty-action { display:inline-flex; width:clamp(38px, 8vw, 52px); height:clamp(38px, 8vw, 52px); align-items:center; justify-content:center; border:0; border-radius:50%; background:rgba(255,255,255,.72); color:#0d5d3c; text-decoration:none; box-shadow:0 10px 20px rgba(15,118,85,.12); font-size:clamp(24px, 5vw, 30px); line-height:1; font-weight:600; }
   .summary-actions { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; }
   .summary-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:112px; border-radius:24px; border:1px solid rgba(217,27,11,.12); background:#fff; color:#101010; font-size:14px; font-weight:900; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; cursor:pointer; }
   .summary-action:hover, .summary-action:focus { transform:translateY(-2px); border-color:#14532d; box-shadow:0 18px 32px rgba(217,27,11,.12); outline:none; }
@@ -26,6 +57,8 @@
   .package-track { display:flex; flex-wrap:nowrap; align-items:flex-start; justify-content:flex-start; gap:20px; overflow-x:auto; overflow-y:visible; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; padding:8px 20px 20px 20px; margin-right:0; -webkit-overflow-scrolling:touch; scroll-padding:0 20px; }
   .package-track::-webkit-scrollbar { display:none; }
   .dot-row { display:none; }
+  #packageTrack[hidden],
+  .dot-row[hidden] { display:none !important; }
   .package-status { margin:32px 0 28px; padding-top:24px; border-top:1px solid #dfe5eb; }
   .status-card { padding:0; background:transparent; }
   .status-top { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:18px; }
@@ -380,7 +413,39 @@
       <div class="investment-balance-value">${{ number_format($totalInvestment ?? 0, 2) }}</div>
     </section>
 
-    <section id="packageTrack" class="package-track" aria-label="Swipeable package list">
+    @php($accountPackages = \App\Support\InvestmentPackages::all())
+    <section class="account-package-section" aria-labelledby="account-package-title">
+      <h2 class="account-package-title" id="account-package-title">Your Bonds</h2>
+      <div class="account-package-grid">
+        @foreach ($accountPackages as $packageKey => $package)
+          @if ($approvedInvestments->contains('package_key', $packageKey))
+            <article class="account-package-card {{ $packageKey }}">
+              <div class="account-package-actions">
+                <a class="account-package-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy another {{ $package['name'] }} package">+</a>
+              </div>
+              <div class="account-package-brand">
+                <div class="account-package-name">{{ $package['name'] }}</div>
+                <div class="account-package-caption">ACCOUNT PACKAGE</div>
+              </div>
+              <div class="account-package-earnings">
+                <div class="account-package-label">EARNINGS</div>
+                <div class="account-package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
+              </div>
+            </article>
+          @else
+            <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} package not activated">
+              <div class="account-package-empty-copy">
+                <div class="account-package-empty-name">{{ $package['name'] }}</div>
+                <div class="account-package-empty-caption">Inactive</div>
+              </div>
+              <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Buy {{ $package['name'] }} package">+</a>
+            </article>
+          @endif
+        @endforeach
+      </div>
+    </section>
+
+    <section id="packageTrack" class="package-track" aria-label="Swipeable package list" hidden>
       <article class="package-card crunch" role="button" tabindex="0" data-package-key="crunch" data-package-title="Silver" data-package-price="129" data-package-rate="0.7" data-package-days="150" data-package-min="129" data-package-max="798.99" data-package-remaining="{{ $packageSlots['crunch'] ?? 250 }}" data-package-image="{{ asset('Silver (2).png') }}">
         <div class="package-content">
           <div class="package-card-top">
@@ -466,7 +531,7 @@
 
     <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">See sample bond agreement</button>
 
-    <div class="dot-row" aria-hidden="true">
+    <div class="dot-row" aria-hidden="true" hidden>
       <span class="dot is-active"></span>
       <span class="dot"></span>
       <span class="dot"></span>

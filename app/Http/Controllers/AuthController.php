@@ -28,7 +28,7 @@ class AuthController extends Controller
             ->orWhere('email', $loginField)
             ->first();
 
-        if (! $user || ! Auth::attempt(['email' => $user->email, 'password' => $password])) {
+        if (! $user || ! Auth::attempt(['email' => $user->email, 'password' => $password], true)) {
             return back()
                 ->withErrors(['email' => 'The provided login details are incorrect.'])
                 ->onlyInput('email');
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         Mail::to($user->email)->send(new WelcomeEmail($user));
 
-        Auth::login($user);
+        Auth::login($user, true);
         $request->session()->regenerate();
         return redirect()->route($user->is_admin ? 'admin.dashboard' : 'dashboard');
     }
@@ -132,7 +132,7 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($user);
+        Auth::login($user, true);
         $request->session()->regenerate();
 
         return redirect()->intended(

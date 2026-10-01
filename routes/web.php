@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 Route::get('/', function () {
@@ -249,11 +250,18 @@ Route::get('/invest', function () {
     $meta = CurrencyRateService::latestUsdToPhpWithMeta();
     $user = Auth::user();
     $totalInvestment = $user ? (float) $user->investments()->where('status', 'approved')->sum('amount') : 0;
+    $approvedInvestments = collect();
+    $packageEarnings = collect();
     $availableBalance = 0;
     if ($user) {
         DailyInterestAccrualService::accrueDueInterestForUser($user);
         $user->refresh();
-        $availableBalance = (float) $user->balance + $user->investments()->latest()->get()->sum(fn ($investment) => $investment->earnedInterest());
+        $investments = $user->investments()->latest()->get();
+        $approvedInvestments = $investments->where('status', 'approved');
+        $packageEarnings = $approvedInvestments
+            ->groupBy('package_key')
+            ->map(fn ($packageInvestments) => $packageInvestments->sum(fn ($investment) => $investment->creditedInterest()));
+        $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
     }
 
     return view('invest', [
@@ -262,6 +270,8 @@ Route::get('/invest', function () {
         'packageSlots' => InvestmentPackages::currentSlots(),
         'totalInvestment' => $totalInvestment,
         'availableBalance' => $availableBalance,
+        'approvedInvestments' => $approvedInvestments,
+        'packageEarnings' => $packageEarnings,
     ]);
 })->name('invest');
 
@@ -726,6 +736,19 @@ Route::get('/profile', function () {
 Route::get('/profile/edit', function () {
     return view('profile-edit');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.edit');
+
+Route::post('/profile/edit', function (Request $request) {
+    $user = $request->user();
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+        'region' => ['nullable', 'string', 'max:255'],
+    ]);
+
+    $user->update($validated);
+
+    return redirect()->route('profile.edit')->with('status', 'Profile updated successfully.');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile.update');
 
 Route::get('/profile/password', function () {
     return view('change-password');

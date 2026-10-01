@@ -32,6 +32,27 @@ class AuthSignupTest extends TestCase
             ->assertSee(route('login.google', ['ref' => $referrer->username]), false);
     }
 
+    public function test_authenticated_user_sees_a_continue_link_to_their_dashboard_on_investor_page(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+
+        $this->actingAs($user)
+            ->get(route('investors'))
+            ->assertOk()
+            ->assertSee('class="investors-dashboard-continue" href="'.route('dashboard').'"', false)
+            ->assertSee('.investors-login-form > :not(.investors-dashboard-continue)', false);
+    }
+
+    public function test_authenticated_admin_continue_link_opens_the_admin_dashboard(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('investors'))
+            ->assertOk()
+            ->assertSee('class="investors-dashboard-continue" href="'.route('admin.dashboard').'"', false);
+    }
+
     public function test_signup_form_can_create_a_user_with_the_simplified_fields(): void
     {
         $response = $this->post('/register-partner', [
@@ -43,10 +64,29 @@ class AuthSignupTest extends TestCase
         ]);
 
         $response->assertRedirect('/pin/setup');
+        $user = User::where('username', 'jane')->firstOrFail();
         $this->assertDatabaseHas('users', [
             'username' => 'jane',
             'name' => 'Jane Doe',
         ]);
+        $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
+    }
+
+    public function test_password_login_remembers_the_user_across_browser_sessions(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'jane-login',
+            'email' => 'jane-login@example.com',
+            'password' => 'password123',
+            'remember_token' => null,
+        ]);
+
+        $this->post(route('login.submit'), [
+            'email' => $user->username,
+            'password' => 'password123',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertNotEmpty($user->fresh()->remember_token);
     }
 }

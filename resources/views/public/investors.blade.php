@@ -2,6 +2,25 @@
 <body class="investors-page"><header class="lulu-header investors-header"><div class="lulu-container lulu-nav"><a class="lulu-brand" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><nav class="lulu-nav-links"><a href="{{ route('public.home') }}#about">About Us</a><a href="{{ route('public.home') }}#businesses">Businesses</a><a href="{{ route('public.home') }}#global">Global Operations</a><a href="{{ route('public.home') }}#impact">Impact</a><a href="{{ route('public.home') }}#news">Media</a><a href="{{ route('public.home') }}#careers">Careers</a><a class="investors-active-nav" href="#overview">Investors</a><a class="lulu-nav-contact" href="#contact-ir">Contact Us</a></nav><div class="investors-header-end"><a href="#footer">العربية</a><a class="lulu-search-link" href="#quick-links" aria-label="Explore investor resources">↗</a></div></div></header>
 <main><section class="investors-banner"><div class="investors-container"><h1>Investor Relations</h1><p>Welcome to Lulu Retail Investor Relations website.</p></div>
 <div class="investors-login-card" id="investor-login"><form class="investors-login-form" method="post" action="{{ route('login.submit') }}" autocomplete="off" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}">@csrf
+@auth
+<style>
+  .investors-login-form > :not(.investors-dashboard-continue),
+  .investors-login-error,
+  .investors-mode-button,
+  .investors-login-terms { display:none !important; }
+  .investors-login-card { height:auto !important; }
+  .investors-login-form .investors-dashboard-continue {
+    display:flex; width:100%; min-height:46px; align-items:center; justify-content:center;
+    margin-top:0; padding:12px 14px; border:0; border-radius:999px;
+    background:#fff; color:#166534; font:700 14px Satoshi,sans-serif;
+    text-decoration:none; cursor:pointer;
+  }
+  .investors-login-form .investors-dashboard-continue:hover {
+    background:#f1f5f3; transform:translateY(-1px);
+  }
+</style>
+<a class="investors-dashboard-continue" href="{{ route(auth()->user()->is_admin ? 'admin.dashboard' : 'dashboard') }}">Continue</a>
+@endauth
 <div class="investor-identity-step"><a class="investors-apple-button" href="{{ route('login.google') }}"><svg class="investors-apple-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.09.8 1.2-.24 2.35-.93 3.63-.84 1.54.12 2.7.74 3.46 1.88-3.18 1.9-2.43 6.1.49 7.27-.58 1.53-1.33 3.05-2.67 3.86ZM12.03 7.25C11.88 4.97 13.73 3.1 15.86 3c.3 2.63-2.39 4.6-3.83 4.25Z"></path></svg><span>Continue with Apple</span></a><a class="investors-google-button" href="{{ route('login.google') }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg><span>Continue with Google</span></a><div class="investors-login-divider"><span>or</span></div></div>
 <label class="sr-only" for="investor-name">Full name</label><input id="investor-name" name="fullname" type="text" autocomplete="name" placeholder="Full name" hidden>
 <label class="sr-only" for="investor-email">Email or username</label><input id="investor-email" name="email" type="text" autocomplete="new-password" placeholder="Email or username" required>

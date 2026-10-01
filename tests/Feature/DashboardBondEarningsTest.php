@@ -6,6 +6,7 @@ use App\Models\Investment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DashboardBondEarningsTest extends TestCase
@@ -59,6 +60,53 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('$80.00');
     }
 
+    public function test_invest_page_shows_account_package_cards_under_total_investment(): void
+    {
+        Carbon::setTestNow('2026-10-01 15:00:00');
+        Http::fake([
+            'api.frankfurter.dev/*' => Http::response(['rates' => ['PHP' => 62.5]], 200),
+        ]);
+
+        $user = User::factory()->create();
+        Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 129,
+            'payment_method' => 'account_balance',
+            'daily_interest_rate' => 0.7,
+            'duration_days' => 30,
+            'starts_at' => now()->subDays(2),
+            'status' => 'approved',
+            'interest_days_credited' => 2,
+            'last_interest_accrued_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('invest'));
+
+        $response->assertOk()
+            ->assertSee('Your Bonds')
+            ->assertSee('ACCOUNT PACKAGE')
+            ->assertSee('Inactive')
+            ->assertSee('$1.80')
+            ->assertSee('aria-label="Buy another Silver package"', false);
+
+        $html = $response->getContent();
+        $this->assertStringContainsString(
+            '<section id="packageTrack" class="package-track" aria-label="Swipeable package list" hidden>',
+            $html
+        );
+        $this->assertLessThan(
+            strpos($html, 'Your Bonds'),
+            strpos($html, '<section class="investment-balance-card"')
+        );
+        $this->assertLessThan(
+            strpos($html, 'id="packageTrack"'),
+            strpos($html, 'class="account-package-grid"')
+        );
+    }
+
     public function test_dashboard_purchase_bonds_action_shows_advertisement_before_investing(): void
     {
         $user = User::factory()->create();
@@ -74,6 +122,8 @@ class DashboardBondEarningsTest extends TestCase
         $this->get(route('invest.advertisement'))
             ->assertOk()
             ->assertSee(asset('images/lulu-bonds-investment-advertisement.png'), false)
+            ->assertSee('width:min(100vw, calc(100svh - 88px))', false)
+            ->assertSee('padding:0 0 max(12px, env(safe-area-inset-bottom))', false)
             ->assertSee('href="'.route('invest').'"', false)
             ->assertSee('>Next</a>', false);
 

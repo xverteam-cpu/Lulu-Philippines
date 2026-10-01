@@ -51,6 +51,7 @@ class GoogleOAuthLoginTest extends TestCase
         $user = User::where('email', 'google.user@example.com')->firstOrFail();
         $this->assertAuthenticatedAs($user);
         $this->assertFalse($user->is_admin);
+        $this->assertNotEmpty($user->remember_token);
         $response->assertRedirect(route('dashboard'));
     }
 

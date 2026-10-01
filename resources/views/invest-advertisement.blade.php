@@ -9,15 +9,17 @@
     display:flex;
     flex-direction:column;
     align-items:center;
+    justify-content:space-between;
     min-height:100vh;
-    padding:24px 16px;
+    min-height:100svh;
+    padding:0 0 max(12px, env(safe-area-inset-bottom));
   }
   .bond-advertisement-image {
     display:block;
-    width:min(100%, 900px);
+    width:min(100vw, calc(100svh - 88px));
+    max-width:100vw;
     height:auto;
-    border-radius:16px;
-    box-shadow:0 16px 40px rgba(15, 23, 42, .16);
+    object-fit:contain;
   }
   .bond-advertisement-next {
     display:inline-flex;
@@ -25,7 +27,7 @@
     justify-content:center;
     min-width:180px;
     min-height:52px;
-    margin-top:auto;
+    margin:12px 16px 0;
     padding:0 28px;
     border:0;
     border-radius:14px;

@@ -1,6 +1,7 @@
 <?php
 
 use App\Support\DailyInterestAccrualService;
+use App\Support\CurrencyRateService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -16,4 +17,4 @@ Artisan::command('interest:accrue', function () {
 Artisan::command('currency:refresh', function () {
     $rate = CurrencyRateService::latestUsdToPhp();
     $this->info('USD to PHP rate refreshed: ' . $rate);
-})->describe('Refresh the USD to PHP conversion rate from exchangerate.host');
+})->describe('Refresh the USD to PHP conversion rate from Frankfurter');

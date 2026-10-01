@@ -318,8 +318,9 @@ Route::get('/invest/agreement/preview', function (Request $request) {
     $currency = $request->query('currency', 'USD');
     abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
     $amount = (float) $request->query('amount', $package['price']);
+    $phpRate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : null;
     $amountInUsd = $currency === 'PHP'
-        ? $amount / (float) config('currency.usd_to_php', 61.31)
+        ? $amount / $phpRate
         : $amount;
     $commencement = now()->toDateString();
 
@@ -349,8 +350,9 @@ Route::get('/invest/agreement/sign', function (Request $request) {
     $currency = $request->query('currency', 'USD');
     abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
     $amount = (float) $request->query('amount', $package['price']);
+    $phpRate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : null;
     $amountInUsd = $currency === 'PHP'
-        ? $amount / (float) config('currency.usd_to_php', 61.31)
+        ? $amount / $phpRate
         : $amount;
     $paymentMethod = (string) $request->query('payment_method', 'bank_transfer');
     abort_unless(in_array($paymentMethod, ['bank_transfer', 'e_wallet', 'account_balance', 'crypto'], true), 422);

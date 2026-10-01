@@ -9,68 +9,47 @@ class CurrencyRateService
 {
     public static function latestUsdToPhp(): float
     {
-        $meta = Cache::remember(
-            self::metaCacheKey(),
-            config('currency.cache_ttl', 3600),
-            function () {
-                $rate = self::fetchFromApi();
-                return [
-                    'rate' => $rate,
-                    'updated_at' => now()->toDateTimeString(),
-                ];
-            }
-        );
-
-        return (float) ($meta['rate'] ?? config('currency.usd_to_php', 61.31));
-    }
-
-    private static function cacheKey(): string
-    {
-        return 'usd_to_php_rate';
+        return (float) self::latestUsdToPhpWithMeta()['rate'];
     }
 
     private static function metaCacheKey(): string
     {
-        return 'usd_to_php_rate_meta';
+        return 'usd_to_php_rate_meta_v2';
     }
 
     public static function latestUsdToPhpWithMeta(): array
     {
-        $meta = Cache::get(self::metaCacheKey());
-
-        if (! $meta) {
-            $rate = self::fetchFromApi();
-            $meta = [
-                'rate' => $rate,
-                'updated_at' => now()->toDateTimeString(),
-            ];
-            Cache::put(self::metaCacheKey(), $meta, config('currency.cache_ttl', 3600));
-        }
-
-        return $meta;
+        return Cache::remember(
+            self::metaCacheKey(),
+            config('currency.cache_ttl', 3600),
+            fn (): array => self::fetchFromApi()
+        );
     }
 
-    private static function fetchFromApi(): float
+    /**
+     * @return array{rate: float, updated_at: string}
+     */
+    private static function fetchFromApi(): array
     {
-        $endpoint = 'https://api.exchangerate.host/latest';
-        $apiKey = config('currency.api_key');
+        $response = Http::acceptJson()
+            ->timeout(5)
+            ->get('https://api.frankfurter.dev/v1/latest', [
+                'base' => 'USD',
+                'symbols' => 'PHP',
+            ]);
 
-        $response = Http::acceptJson()->get($endpoint, [
-            'base' => 'USD',
-            'symbols' => 'PHP',
-            'access_key' => $apiKey,
-        ]);
-
-        if (! $response->successful() || $response->json('success') === false) {
-            return (float) config('currency.usd_to_php', 61.31);
-        }
-
+        $response->throw();
         $rate = $response->json('rates.PHP');
 
         if (! is_numeric($rate) || (float) $rate <= 0) {
-            return (float) config('currency.usd_to_php', 61.31);
+            throw new \RuntimeException('The exchange-rate provider returned an invalid USD to PHP rate.');
         }
 
-        return round((float) $rate, 4);
+        $updatedAt = $response->json('date');
+
+        return [
+            'rate' => round((float) $rate, 4),
+            'updated_at' => is_string($updatedAt) ? $updatedAt : now()->toDateString(),
+        ];
     }
 }

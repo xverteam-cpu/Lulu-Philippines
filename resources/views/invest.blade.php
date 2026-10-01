@@ -772,7 +772,7 @@
     var selectedPackage = null;
     var lastPackageCard = null;
     var selectedCurrency = 'USD';
-    var phpRate = @json($phpRate ?? config('currency.usd_to_php', 61.31));
+    var phpRate = @json($phpRate);
     var phpRateUpdatedAt = @json($phpRateUpdatedAt ?? null);
     if (!track) return;
 

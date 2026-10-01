@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Investment;
+use App\Support\CurrencyRateService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -31,7 +32,7 @@ class PackagePurchaseNotification extends Mailable
                 'member_email' => $user->email,
                 'member_id' => $user->id,
                 'package_name' => $this->investment->package_name,
-                'package_amount' => number_format((float) $this->investment->amount * (float) config('currency.usd_to_php', 61.31), 2),
+                'package_amount' => number_format((float) $this->investment->amount * CurrencyRateService::latestUsdToPhp(), 2),
                 'purchase_date' => $this->investment->created_at?->format('F j, Y') ?? now()->format('F j, Y'),
                 'payment_method' => match ($this->investment->payment_method) {
                     'bank_transfer' => 'Bank Transfer',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PackagePurchaseNotification;
+use App\Support\CurrencyRateService;
 use App\Support\InvestmentPackages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class InvestmentController extends Controller
 
         $currency = $data['currency'] ?? 'USD';
         $amountInUsd = $currency === 'PHP'
-            ? (float) $data['amount'] / (float) config('currency.usd_to_php', 61.31)
+            ? (float) $data['amount'] / CurrencyRateService::latestUsdToPhp()
             : (float) $data['amount'];
 
         if ($amountInUsd < $package['min_amount']) {

@@ -172,6 +172,42 @@
   .bond-review-edit:active { transform:scale(.97); }
   .bond-review-confirm { background:linear-gradient(135deg,#1fb97a,#054a31); color:#fff; box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); }
   @media (min-width:600px) { .bond-review { align-items:center; padding:24px; } .bond-review-sheet { max-height:min(88vh,820px); border-radius:30px; } .bond-review-actions { bottom:-30px; } }
+
+  .payment-modal { display:flex; align-items:flex-end; justify-content:center; padding:0; background:rgba(2,26,18,.42); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .3s ease,visibility 0s linear .45s; }
+  .payment-modal.is-open { display:flex; opacity:1; visibility:visible; pointer-events:auto; transition:opacity .3s ease,visibility 0s; }
+  .payment-modal-card { width:min(100%,520px); max-height:calc(100% - 24px); overflow-y:auto; overscroll-behavior:contain; padding:10px 20px max(24px,env(safe-area-inset-bottom)); border-radius:30px 30px 0 0; background:#f2f5f3; box-shadow:0 -20px 50px -10px rgba(2,26,18,.35),inset 0 1px 0 rgba(255,255,255,.9); transform:translateY(105%); transition:transform .4s cubic-bezier(.2,.9,.2,1); }
+  .payment-modal.is-open .payment-modal-card { transform:none; }
+  .payment-modal-handle { width:40px; height:5px; margin:0 auto 16px; border-radius:99px; background:#c9d3ce; }
+  .payment-modal-title { margin:0; color:#0a1f17; font-size:21px; font-weight:800; line-height:1.1; letter-spacing:-.03em; }
+  .payment-modal-copy { margin:7px 0 14px; color:#4b5b54; font-size:13px; line-height:1.4; }
+  .payment-options { display:grid; grid-template-columns:1fr; gap:8px; margin:14px 0 12px; }
+  .payment-choice { display:flex; align-items:center; gap:11px; min-height:68px; padding:11px 13px 11px 12px; border:0; border-radius:18px; background:#fff; color:#0a1f17; text-align:left; box-shadow:inset 0 0 0 1px #e2e9e5,0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06); transition:transform .15s ease,box-shadow .2s ease,background .2s ease; }
+  .payment-choice:hover { box-shadow:inset 0 0 0 1px #cbd8d1,0 6px 16px -6px rgba(6,40,28,.12); }
+  .payment-choice:active { transform:scale(.985); }
+  .payment-choice.is-selected { background:#f2fbf6; box-shadow:inset 0 0 0 2px #0e8a5a,0 4px 12px -6px rgba(14,138,90,.35); }
+  .payment-choice-icon { display:grid; width:40px; height:40px; flex:0 0 40px; place-items:center; border-radius:13px; color:#0e8a5a; background:#e6f7ef; }
+  .payment-choice-copy { display:block; flex:1; min-width:0; }
+  .payment-choice-title { display:block; font-size:13px; font-weight:750; }
+  .payment-choice-description { display:block; margin-top:4px; color:#718078; font-size:11px; font-weight:500; line-height:1.35; }
+  .payment-choice-check { display:grid; width:20px; height:20px; flex:0 0 20px; place-items:center; border:1.5px solid #c9d3ce; border-radius:50%; color:transparent; }
+  .payment-choice.is-selected .payment-choice-check { border-color:#0e8a5a; color:#fff; background:#0e8a5a; }
+  .payment-order-summary { margin-top:12px; padding:4px 16px; border-radius:20px; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06),inset 0 0 0 1px rgba(10,31,23,.04); }
+  .payment-order-row { display:flex; justify-content:space-between; gap:12px; padding:12px 0; color:#4b5b54; font-size:13px; }
+  .payment-order-row + .payment-order-row { border-top:1px solid #eef2f0; }
+  .payment-order-row strong { color:#0a1f17; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .payment-method-note { margin:11px 2px 12px; color:#8a9892; font-size:11px; line-height:1.4; }
+  .payment-modal-actions { position:sticky; bottom:-24px; display:grid; grid-template-columns:1fr 2fr; gap:10px; margin:0 -20px -24px; padding:12px 20px max(24px,env(safe-area-inset-bottom)); background:#f2f5f3; }
+  .payment-modal-actions button { min-height:54px; border:0; border-radius:18px; background:#fff; color:#0a1f17; box-shadow:inset 0 0 0 1px #e2e9e5,0 1px 2px rgba(6,40,28,.06); font-size:14px; font-weight:650; }
+  .payment-modal-actions .payment-modal-submit { color:#fff; background:linear-gradient(135deg,#1fb97a,#054a31); box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); }
+  .payment-modal-actions .payment-modal-submit:disabled { color:#8fa39a; background:#dfe7e3; box-shadow:inset 0 0 0 1px rgba(10,31,23,.05); cursor:not-allowed; }
+  .bank-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .bank-option { min-height:112px; border:0; border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1px #e2e9e5,0 1px 2px rgba(6,40,28,.06); }
+  .payment-modal-actions button:focus-visible,.payment-choice:focus-visible,.bank-option:focus-visible { outline:3px solid rgba(20,168,109,.38); outline-offset:2px; }
+  @media (min-width:600px) {
+    .payment-modal { align-items:center; padding:24px; }
+    .payment-modal-card { max-height:min(88vh,820px); border-radius:30px; }
+    .payment-modal-actions { bottom:-24px; }
+  }
   @media (max-width:380px) { .bp-content { padding-right:15px; padding-left:15px; } .bp-topbar { padding-right:14px; padding-left:14px; } .bp-cta-wrap { margin-right:-15px; margin-left:-15px; padding-right:15px; padding-left:15px; } .bp-amount { font-size:24px; } }
 </style>
 
@@ -344,17 +380,38 @@
 
 <div class="payment-modal" id="paymentModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
-    <h2 class="payment-modal-title" id="paymentModalTitle" tabindex="-1">Mode of payment</h2>
-    <p class="payment-modal-copy">Choose how you want to pay for this investment.</p>
-    <div class="payment-options">
-      <button class="payment-choice" type="button" data-payment="bank_transfer">Bank transfer<span>Pay through bank deposit</span></button>
-      <button class="payment-choice" type="button" data-payment="e_wallet">E-wallet<span>Pay using GCash, Maya, GrabPay, or ShopeePay</span></button>
-      <button class="payment-choice" type="button" data-payment="account_balance">Account balance<span>Use available account funds</span></button>
-      <button class="payment-choice" type="button" data-payment="crypto">Crypto<span>Pay using cryptocurrency</span></button>
+    <div class="payment-modal-handle" aria-hidden="true"></div>
+    <h2 class="payment-modal-title" id="paymentModalTitle" tabindex="-1">Choose payment method</h2>
+    <p class="payment-modal-copy">Choose how you want to pay for this {{ strtolower($package['name']) }} bond.</p>
+    <div class="payment-options" role="group" aria-label="Payment methods">
+      <button class="payment-choice" type="button" data-payment="account_balance" aria-pressed="false">
+        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4h-12A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/><path d="M3 6.5A2.5 2.5 0 0 0 5.5 9h13A1.5 1.5 0 0 1 20 10.5V15h-4a2 2 0 0 1 0-4h4"/></svg></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">Account balance</span><span class="payment-choice-description">Use your available LuLu account funds</span></span>
+        <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+      <button class="payment-choice" type="button" data-payment="bank_transfer" aria-pressed="false">
+        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18M12 3l9 5H3l9-5Z"/></svg></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">Bank transfer</span><span class="payment-choice-description">Choose Landbank, BPI, BDO, or UnionBank</span></span>
+        <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+      <button class="payment-choice" type="button" data-payment="e_wallet" aria-pressed="false">
+        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3M9.5 9.5h5"/></svg></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">E-wallet</span><span class="payment-choice-description">Choose GCash, Maya, GrabPay, or ShopeePay</span></span>
+        <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+      <button class="payment-choice" type="button" data-payment="crypto" aria-pressed="false">
+        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 8h4a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9m1-10v12m4-12v1m0 10v1"/></svg></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">Crypto</span><span class="payment-choice-description">Continue to review and sign your agreement</span></span>
+        <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
     </div>
-
+    <div class="payment-order-summary" aria-live="polite">
+      <div class="payment-order-row"><span>Investment amount</span><strong id="paymentModalAmount">$0.00</strong></div>
+      <div class="payment-order-row"><span>Payment provider fees</span><strong>Shown by provider, if applicable</strong></div>
+    </div>
+    <p class="payment-method-note">No additional payment fees are calculated on this screen.</p>
     <div class="payment-modal-actions">
-      <button type="button" id="paymentModalCancel">Cancel</button>
+      <button type="button" id="paymentModalCancel">Back</button>
       <button class="payment-modal-submit" type="button" id="submitPurchase" disabled>Continue</button>
     </div>
   </div>
@@ -362,6 +419,7 @@
 
 <div class="payment-modal" id="walletModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="walletModalTitle">
+    <div class="payment-modal-handle" aria-hidden="true"></div>
     <h2 class="payment-modal-title" id="walletModalTitle">Choose your e-wallet</h2>
     <p class="payment-modal-copy">Select the wallet you will use for your payment.</p>
     <div class="bank-list">
@@ -378,6 +436,7 @@
 
 <div class="payment-modal" id="bankModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="bankModalTitle">
+    <div class="payment-modal-handle" aria-hidden="true"></div>
     <h2 class="payment-modal-title" id="bankModalTitle">Choose your bank</h2>
     <p class="payment-modal-copy">Select the bank you will use for your transfer.</p>
     <div class="bank-list">
@@ -402,6 +461,7 @@
 
 <div class="payment-modal" id="qrModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="payment-modal-handle" aria-hidden="true"></div>
     <h2 class="payment-modal-title" id="qrModalTitle">Bank QR code</h2>
     <p class="payment-modal-copy">Scan this QR code to complete your bank transfer.</p>
     <img class="qr-image" id="qrImage" src="" alt="Bank transfer QR code">
@@ -538,6 +598,8 @@
     }
     function openPaymentMethods() {
       closeBondReview();
+      document.documentElement.classList.add('scroll-locked');
+      document.getElementById('paymentModalAmount').textContent = formatMoney(currentAmount());
       paymentModal.classList.add('is-open');
       paymentModal.setAttribute('aria-hidden', 'false');
       document.getElementById('paymentModalTitle').focus();
@@ -645,40 +707,33 @@
     document.querySelectorAll('#paymentModal [data-payment]').forEach(function (button) {
       button.addEventListener('click', function () {
         paymentInput.value = button.dataset.payment;
-        if (button.dataset.payment === 'bank_transfer') {
-          paymentModal.classList.remove('is-open');
-          paymentModal.setAttribute('aria-hidden', 'true');
-          bankModal.classList.add('is-open');
-          bankModal.setAttribute('aria-hidden', 'false');
-          return;
-        }
-        if (button.dataset.payment === 'e_wallet') {
-          paymentModal.classList.remove('is-open');
-          paymentModal.setAttribute('aria-hidden', 'true');
-          walletModal.classList.add('is-open');
-          walletModal.setAttribute('aria-hidden', 'false');
-          return;
-        }
-        document.querySelectorAll('#paymentModal [data-payment]').forEach(function (item) { item.classList.remove('is-selected'); });
-        button.classList.add('is-selected');
+        document.querySelectorAll('#paymentModal [data-payment]').forEach(function (item) {
+          var selected = item === button;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
         submitPurchase.disabled = false;
       });
     });
     paymentModalCancel.addEventListener('click', function () {
       paymentModal.classList.remove('is-open');
       paymentModal.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('scroll-locked');
+      confirmButton.focus();
     });
     document.getElementById('bankModalBack').addEventListener('click', function () {
       bankModal.classList.remove('is-open');
       bankModal.setAttribute('aria-hidden', 'true');
       paymentModal.classList.add('is-open');
       paymentModal.setAttribute('aria-hidden', 'false');
+      document.getElementById('paymentModalTitle').focus();
     });
     document.getElementById('walletModalBack').addEventListener('click', function () {
       walletModal.classList.remove('is-open');
       walletModal.setAttribute('aria-hidden', 'true');
       paymentModal.classList.add('is-open');
       paymentModal.setAttribute('aria-hidden', 'false');
+      document.getElementById('paymentModalTitle').focus();
     });
     document.querySelectorAll('[data-bank-name]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -713,7 +768,37 @@
       continueToAgreement();
     });
     submitPurchase.addEventListener('click', function () {
-      if (paymentInput.value) continueToAgreement();
+      if (!paymentInput.value) return;
+      if (paymentInput.value === 'bank_transfer') {
+        paymentModal.classList.remove('is-open');
+        paymentModal.setAttribute('aria-hidden', 'true');
+        bankModal.classList.add('is-open');
+        bankModal.setAttribute('aria-hidden', 'false');
+        document.getElementById('bankModalTitle').focus();
+        return;
+      }
+      if (paymentInput.value === 'e_wallet') {
+        paymentModal.classList.remove('is-open');
+        paymentModal.setAttribute('aria-hidden', 'true');
+        walletModal.classList.add('is-open');
+        walletModal.setAttribute('aria-hidden', 'false');
+        document.getElementById('walletModalTitle').focus();
+        return;
+      }
+      paymentModal.classList.remove('is-open');
+      paymentModal.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('scroll-locked');
+      continueToAgreement();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      if (bankModal.classList.contains('is-open')) {
+        document.getElementById('bankModalBack').click();
+      } else if (walletModal.classList.contains('is-open')) {
+        document.getElementById('walletModalBack').click();
+      } else if (paymentModal.classList.contains('is-open')) {
+        paymentModalCancel.click();
+      }
     });
     update();
   })();

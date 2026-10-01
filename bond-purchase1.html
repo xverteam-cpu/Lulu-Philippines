@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Purchase Gold Bond · Mossquill (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F2F5F3; --surface:#FFFFFF;
+    --ink:#0A1F17; --ink-2:#4B5B54; --ink-3:#8A9892; --line:#E2E9E5;
+    --em-950:#021A12; --em-900:#04321F; --em-800:#075A3B; --em-600:#0E8A5A; --em-500:#14A86D;
+    --mint:#3EE0A1; --mint-50:#E6F7EF; --lime:#C6F36B;
+    --gold-ink:#3A2706; --amber-50:#FFF7E6; --amber-600:#B26B00;
+    --display:"Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+    --ui:"Inter", system-ui, -apple-system, sans-serif;
+    --shadow-sm:0 1px 2px rgba(6,40,28,.06), 0 2px 6px -2px rgba(6,40,28,.06);
+    --shadow-md:0 1px 2px rgba(6,40,28,.05), 0 6px 16px -6px rgba(6,40,28,.12), 0 18px 36px -18px rgba(6,40,28,.18);
+    --shadow-lg:0 2px 4px rgba(4,30,20,.08), 0 12px 24px -8px rgba(4,30,20,.22), 0 32px 56px -24px rgba(4,30,20,.38);
+    --ease:cubic-bezier(.2,.8,.2,1);
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --brushed:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003 .9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 .55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  html.scroll-locked, html.scroll-locked body{overflow:hidden;overscroll-behavior:none}
+  body{
+    font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;justify-content:center;align-items:center;padding:40px 0;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+      #E7ECE9;
+  }
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  a{color:inherit}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"cv11" 1,"ss01" 1}
+
+  /* ---------- Phone frame (device clips, screen scrolls) ---------- */
+  .phone{
+    position:relative;width:390px;height:844px;background:var(--bg);border-radius:54px;
+    overflow:hidden;overflow:clip; /* clip = never programmatically scrollable */
+    box-shadow:0 0 0 10px #0D1411, 0 0 0 11px #2A332F, 0 30px 60px -20px rgba(2,26,18,.40), 0 60px 100px -50px rgba(2,26,18,.30);
+  }
+  .screen{height:100%;overflow-y:auto;scrollbar-width:none;overscroll-behavior:contain}
+  .screen::-webkit-scrollbar{display:none}
+  /* Overlay layer: pinned to the visible phone screen, outside the scroll container */
+  .layer{position:absolute;inset:0;z-index:50;pointer-events:none;overflow:hidden;overflow:clip;border-radius:inherit}
+  .layer > *{pointer-events:auto}
+  .is-locked .screen{overflow:hidden}
+  @media (min-width:521px) and (max-height:940px){
+    body{padding:16px 0}
+    .phone{height:calc(100vh - 32px);min-height:600px}
+  }
+  @media (max-width:520px){
+    body{background:var(--bg);padding:0;display:block}
+    .phone{width:100%;height:auto;min-height:100vh;border-radius:0;box-shadow:none;overflow:visible}
+    .screen{height:auto;overflow:visible}
+    .layer{position:fixed;inset:0;border-radius:0}
+    .is-locked .screen{overflow:visible}
+  }
+
+  /* ---------- Top chrome ---------- */
+  .chrome{position:sticky;top:0;z-index:30;background:rgba(242,245,243,.8);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+  .chrome.is-scrolled{box-shadow:0 1px 0 rgba(10,31,23,.06)}
+  .statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}
+  .statusbar time{font:600 16px/1 var(--ui);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .statusbar .sys{display:flex;gap:6px;align-items:center}
+  .nav{height:52px;display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:12px;padding:0 16px 4px}
+  .back{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);
+    box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(10,31,23,.05);transition:transform .2s var(--ease), box-shadow .2s var(--ease)}
+  .back:hover{box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.06)}
+  .back:active{transform:scale(.92)}
+  .brandmark{display:flex;align-items:center;gap:8px;justify-self:center;font:750 16px/1 var(--display);letter-spacing:-.02em}
+  .brandmark svg{filter:drop-shadow(0 3px 6px rgba(14,138,90,.35))}
+  .concept{height:26px;display:inline-flex;align-items:center;gap:5px;padding:0 10px;border-radius:99px;
+    font:700 9.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--amber-600);
+    background:var(--amber-50);box-shadow:inset 0 0 0 1px rgba(178,107,0,.22)}
+  .concept i{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+  main{padding:6px 20px 8px}
+  .eyebrow{font:600 10.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  h1{margin-top:8px;font:800 28px/1.08 var(--display);letter-spacing:-.035em}
+
+  /* ---------- Mini metallic gold tier card ---------- */
+  .card{
+    --rx:0deg;--ry:0deg;--mx:50%;--my:50%;--lift:0px;
+    position:relative;isolation:isolate;border-radius:22px;overflow:hidden;margin-top:18px;height:150px;color:var(--gold-ink);
+    transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+    transition:transform .5s var(--ease), box-shadow .4s var(--ease);box-shadow:var(--shadow-md);
+  }
+  .card.is-tilting{transition:transform .08s linear, box-shadow .4s var(--ease)}
+  .card:hover{--lift:-3px;box-shadow:var(--shadow-lg)}
+  .face{position:absolute;inset:0;z-index:-2;background:
+      radial-gradient(110% 90% at 0% 0%, rgba(255,247,214,.95), transparent 50%),
+      linear-gradient(140deg, #FCEBB9 0%, #E6C26A 26%, #B98A33 52%, #F1D48A 74%, #A57426 100%)}
+  .face::before{content:"";position:absolute;inset:0;background:var(--brushed);background-size:420px 260px;mix-blend-mode:overlay;opacity:.55}
+  .face::after{content:"";position:absolute;inset:-40% -20%;
+    background:linear-gradient(115deg, transparent 38%, rgba(255,255,255,.4) 47%, rgba(255,255,255,.08) 52%, transparent 60%);
+    transform:translateX(-18%);transition:transform 1.1s var(--ease)}
+  .card:hover .face::after{transform:translateX(22%)}
+  .shine{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
+    background:radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,.55), rgba(255,255,255,0) 55%);mix-blend-mode:soft-light}
+  .card:hover .shine{opacity:1}
+  .edge{position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.75), inset 0 0 0 1px rgba(255,255,255,.28), inset 0 -1px 0 rgba(0,0,0,.12)}
+  .emblem{position:absolute;right:-38px;bottom:-62px;width:200px;height:200px;z-index:-1;pointer-events:none;color:#8E6420}
+  .card-body{height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .tier{font:800 22px/1 var(--display);letter-spacing:-.03em}
+  .kicker{margin-top:6px;font:600 9.5px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;opacity:.68}
+  .card-bottom{display:flex;align-items:flex-end;justify-content:space-between}
+  .card-stats{display:flex;gap:18px}
+  .card-stats .k{font:600 9px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;opacity:.62}
+  .card-stats .v{margin-top:6px;font-size:18px;font-weight:750;letter-spacing:-.03em;line-height:1}
+  .card-stats .v small{font-size:11px;font-weight:600;opacity:.7;margin-left:2px;letter-spacing:0}
+  .lede{margin-top:16px;font:450 14px/1.5 var(--ui);color:var(--ink-2)}
+  .lede b{color:var(--ink);font-weight:650}
+
+  /* ---------- Panels ---------- */
+  .panel{margin-top:18px;background:var(--surface);border-radius:24px;padding:18px;box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .panel-head{display:flex;justify-content:space-between;align-items:center}
+  .label{font:650 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+
+  /* Segmented control */
+  .seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;border-radius:12px;background:#EAF0ED;box-shadow:inset 0 1px 2px rgba(6,40,28,.06)}
+  .seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/var(--n,2));border-radius:9px;background:#fff;
+    box-shadow:0 1px 2px rgba(6,40,28,.1), 0 3px 8px -2px rgba(6,40,28,.12);transform:translateX(calc(100% * var(--i,0)));transition:transform .35s var(--ease)}
+  .seg button{position:relative;z-index:1;height:30px;padding:0 14px;font:650 12.5px/1 var(--ui);color:var(--ink-3);transition:color .2s}
+  .seg button[aria-pressed="true"]{color:var(--ink)}
+  .seg--wide{display:grid;width:100%}
+  .seg--wide button{height:36px}
+
+  /* Amount input */
+  .amount-field{
+    margin-top:14px;display:flex;align-items:center;gap:6px;height:76px;padding:0 18px;border-radius:18px;
+    background:linear-gradient(180deg,#F8FBF9,#F3F7F5);box-shadow:inset 0 0 0 1.5px var(--line);
+    transition:box-shadow .2s var(--ease), background .2s;
+  }
+  .amount-field:focus-within{background:#fff;box-shadow:inset 0 0 0 2px var(--em-500), 0 0 0 5px rgba(20,168,109,.12)}
+  .amount-field.is-error{box-shadow:inset 0 0 0 2px #D14343, 0 0 0 5px rgba(209,67,67,.1)}
+  .amount-field .cur{font:650 26px/1 var(--ui);color:var(--ink-3)}
+  .amount-field input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:750 38px/1 var(--ui);letter-spacing:-.035em;color:var(--ink);font-variant-numeric:tabular-nums}
+  .amount-field .clear{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E3EAE6;color:var(--ink-2);opacity:.85;transition:transform .2s var(--ease)}
+  .amount-field .clear:active{transform:scale(.88)}
+  .limits{margin-top:10px;display:flex;justify-content:space-between;font:550 12px/1.2 var(--ui);color:var(--ink-3)}
+  .limits b{color:var(--ink-2);font-weight:650}
+  .err{display:none;margin-top:8px;font:550 12.5px/1.3 var(--ui);color:#B42318}
+  .is-invalid .err{display:block}
+
+  .chips{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .chip{height:40px;border-radius:12px;font:650 13.5px/1 var(--ui);color:var(--ink);background:#fff;
+    box-shadow:inset 0 0 0 1px var(--line), var(--shadow-sm);transition:transform .2s var(--ease), box-shadow .2s, background .2s, color .2s}
+  .chip:hover{box-shadow:inset 0 0 0 1px #CBD8D1, var(--shadow-md)}
+  .chip:active{transform:scale(.95)}
+  .chip.is-on{color:var(--em-800);background:var(--mint-50);box-shadow:inset 0 0 0 1.5px rgba(14,138,90,.45)}
+
+  .range{--p:0%;margin-top:20px;width:100%;height:28px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+  .range::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--em-600),var(--mint)) 0/var(--p) 100% no-repeat, #E5ECE8;box-shadow:inset 0 1px 2px rgba(6,40,28,.08)}
+  .range::-moz-range-track{height:8px;border-radius:99px;background:#E5ECE8}
+  .range::-moz-range-progress{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--em-600),var(--mint))}
+  .range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-9px;border-radius:50%;background:#fff;
+    box-shadow:0 2px 6px rgba(6,40,28,.25), inset 0 0 0 6px var(--em-600), 0 0 0 6px rgba(20,168,109,.12);transition:transform .15s var(--ease)}
+  .range:active::-webkit-slider-thumb{transform:scale(1.12)}
+  .range::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(6,40,28,.25), inset 0 0 0 6px var(--em-600)}
+  .range-scale{display:flex;justify-content:space-between;margin-top:4px;font:600 10.5px/1 var(--ui);color:var(--ink-3)}
+  .fx{margin-top:14px;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:#F5F8F6;font:500 11.5px/1.4 var(--ui);color:var(--ink-2)}
+  .fx svg{flex:none;margin-top:1px;color:var(--ink-3)}
+  .fx[hidden]{display:none}
+
+  /* Projection */
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin:28px 2px 12px}
+  .sec-head h2{font:750 19px/1.1 var(--display);letter-spacing:-.025em}
+  .sec-head .meta{font:600 11.5px/1 var(--ui);color:var(--ink-3)}
+  .payout{margin-bottom:12px}
+  .proj{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{position:relative;padding:16px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04);overflow:hidden;transition:transform .2s var(--ease), box-shadow .2s var(--ease)}
+  .tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .tile .k{font:650 9.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .tile .v{margin-top:10px;font-size:20px;font-weight:750;letter-spacing:-.03em;line-height:1.05}
+  .tile .s{margin-top:6px;font:500 11.5px/1.3 var(--ui);color:var(--ink-3)}
+  .tile--interest .v{color:var(--em-600)}
+  .tile--dark{color:#fff;background:
+      radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.5), transparent 55%),
+      radial-gradient(70% 70% at -10% 110%, rgba(198,243,107,.22), transparent 60%),
+      linear-gradient(160deg, #0B6A47 0%, #054A31 45%, #022418 100%);
+    box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.2)}
+  .tile--dark::before{content:"";position:absolute;inset:0;background:var(--noise);opacity:.08;mix-blend-mode:overlay;pointer-events:none}
+  .tile--dark .k{color:rgba(232,255,244,.62)}
+  .tile--dark .s{color:rgba(232,255,244,.6)}
+  .tile--wide{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .timeline{flex:1;max-width:150px}
+  .tl-track{position:relative;height:6px;border-radius:99px;background:linear-gradient(90deg,var(--em-600),var(--mint));opacity:.9}
+  .tl-dots{position:absolute;inset:0}
+  .tl-dots i{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;box-shadow:0 0 0 2.5px var(--em-600);transition:opacity .3s, transform .3s var(--ease)}
+  .tl-dots i.q{width:8px;height:8px;margin:-4px 0 0 -4px;box-shadow:0 0 0 2px var(--em-500);opacity:0;transform:scale(.4)}
+  .is-quarterly .tl-dots i.q{opacity:1;transform:none}
+  .tl-labels{display:flex;justify-content:space-between;margin-top:9px;font:600 10px/1 var(--ui);color:var(--ink-3)}
+  .formula{margin:12px 2px 0;font:500 12.5px/1.5 var(--ui);color:var(--ink-2)}
+  .formula code{font:inherit;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:650}
+
+  /* Disclosure */
+  .disclose{margin-top:24px;padding:18px;border-radius:24px;background:linear-gradient(180deg,#FFFDF7,#FFF9EC);box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(178,107,0,.16)}
+  .disclose-head{display:flex;gap:12px;align-items:center}
+  .warn{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;color:var(--amber-600);background:#FFEFCF;box-shadow:inset 0 0 0 1px rgba(178,107,0,.2)}
+  .disclose h3{font:750 16px/1.2 var(--display);letter-spacing:-.02em}
+  .disclose p{margin-top:12px;font:500 13px/1.5 var(--ui);color:#5A4A2E}
+  .docs{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .doc{height:44px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;white-space:nowrap;border-radius:12px;text-decoration:none;font:650 13px/1 var(--ui);
+    background:#fff;box-shadow:inset 0 0 0 1px rgba(178,107,0,.18), 0 1px 2px rgba(80,50,0,.06);transition:transform .2s var(--ease), box-shadow .2s}
+  .doc svg{color:var(--em-600);flex:none}
+  .doc .ext{margin-left:auto;color:var(--ink-3)}
+  .doc:hover{box-shadow:inset 0 0 0 1px rgba(178,107,0,.3), 0 4px 10px -4px rgba(80,50,0,.2);transform:translateY(-1px)}
+  .doc:active{transform:scale(.97)}
+  .check{position:relative;margin-top:14px;display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;cursor:pointer;background:rgba(255,255,255,.7);
+    box-shadow:inset 0 0 0 1px rgba(178,107,0,.14);transition:background .2s, box-shadow .2s}
+  .check:hover{background:#fff}
+  .check input{position:absolute;left:12px;top:12px;width:22px;height:22px;margin:0;opacity:0;pointer-events:none}
+  .box{flex:none;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 1.5px #C9D3CE;transition:background .2s, box-shadow .2s, transform .2s var(--ease)}
+  .box svg{opacity:0;transform:scale(.5);transition:opacity .2s, transform .25s var(--ease)}
+  .check input:checked + .box{background:var(--em-600);box-shadow:inset 0 0 0 1.5px var(--em-600), 0 3px 8px -2px rgba(14,138,90,.5)}
+  .check input:checked + .box svg{opacity:1;transform:none}
+  .check input:focus-visible + .box{outline:2px solid var(--em-500);outline-offset:2px}
+  .check:active .box{transform:scale(.9)}
+  .check span.t{font:550 13px/1.45 var(--ui);color:var(--ink)}
+
+  /* Sticky CTA */
+  .cta-bar{position:sticky;bottom:0;z-index:20;padding:30px 20px 30px;
+    background:linear-gradient(180deg, rgba(242,245,243,0) 0px, var(--bg) 26px, var(--bg) 100%)}
+  .hint{text-align:center;margin-bottom:10px;font:550 12px/1.2 var(--ui);color:var(--ink-3);transition:opacity .2s}
+  .hint.is-hidden{opacity:0}
+  .cta{width:100%;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;
+    font:650 16px/1 var(--ui);letter-spacing:-.01em;color:#fff;
+    background:linear-gradient(180deg,#11905E 0%,#0A6A45 100%);
+    box-shadow:0 10px 24px -8px rgba(10,106,69,.55), 0 2px 4px rgba(10,106,69,.2), inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15);
+    transition:transform .2s var(--ease), box-shadow .25s var(--ease), filter .2s, background .25s, color .25s}
+  .cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-110%);transition:transform .8s var(--ease)}
+  .cta:not(:disabled):hover::after{transform:translateX(110%)}
+  .cta:not(:disabled):hover{filter:brightness(1.05)}
+  .cta:not(:disabled):active{transform:scale(.98)}
+  .cta:disabled{cursor:not-allowed;color:#8FA39A;background:#DFE7E3;box-shadow:inset 0 0 0 1px rgba(10,31,23,.05)}
+  .home{width:134px;height:5px;border-radius:99px;background:#0A1F17;margin:14px auto 0;opacity:.9}
+
+  /* Bottom sheet */
+  .overlay{position:absolute;inset:0;z-index:50;touch-action:none;background:rgba(2,26,18,.42);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s var(--ease)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:60;max-height:calc(100% - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:10px 20px 30px;border-radius:30px 30px 0 0;background:var(--bg);
+    box-shadow:0 -20px 50px -10px rgba(2,26,18,.35), inset 0 1px 0 rgba(255,255,255,.9);transform:translateY(105%);visibility:hidden;transition:transform .5s cubic-bezier(.2,.9,.2,1), visibility 0s linear .5s}
+  .overlay{pointer-events:none!important}
+  .is-open .overlay{opacity:1;pointer-events:auto!important}
+  .sheet::-webkit-scrollbar{display:none}
+  .toast{pointer-events:none!important}
+  .grab{width:40px;height:5px;border-radius:99px;background:#C9D3CE;margin:0 auto 16px}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between}
+  .sheet h3{font:800 21px/1.1 var(--display);letter-spacing:-.03em}
+  .x{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#E6ECE9;color:var(--ink-2);transition:transform .2s var(--ease)}
+  .x:active{transform:scale(.9)}
+  .sum-hero{margin-top:16px;position:relative;overflow:hidden;border-radius:22px;padding:18px;color:#fff;
+    background:radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.5), transparent 55%), linear-gradient(160deg, #0B6A47 0%, #054A31 45%, #022418 100%);
+    box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.2)}
+  .sum-hero::before{content:"";position:absolute;inset:0;background:var(--noise);opacity:.08;mix-blend-mode:overlay}
+  .sum-hero .k{font:600 10px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:rgba(232,255,244,.65)}
+  .sum-hero .v{margin-top:10px;font-size:34px;font-weight:750;letter-spacing:-.04em;line-height:1}
+  .sum-hero .s{margin-top:8px;font:500 12px/1.3 var(--ui);color:rgba(232,255,244,.65)}
+  .rows{margin-top:14px;background:var(--surface);border-radius:20px;padding:4px 16px;box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .rows div{display:flex;justify-content:space-between;align-items:center;padding:13px 0;font:500 13.5px/1.2 var(--ui);color:var(--ink-2)}
+  .rows div + div{border-top:1px solid #EEF2F0}
+  .rows b{font-weight:650;color:var(--ink)}
+  .sheet .note{margin:12px 2px 16px;font:500 11.5px/1.45 var(--ui);color:var(--ink-3)}
+  .sheet-actions{position:sticky;bottom:-30px;margin:0 -20px -30px;padding:0 20px 30px;display:grid;grid-template-columns:1fr 2fr;gap:10px;background:var(--bg)}
+  .btn-ghost{height:56px;border-radius:18px;font:650 15px/1 var(--ui);background:#fff;box-shadow:inset 0 0 0 1px var(--line), var(--shadow-sm);transition:transform .2s var(--ease)}
+  .btn-ghost:active{transform:scale(.97)}
+  .toast{position:absolute;left:50%;top:110px;z-index:70;transform:translate(-50%,-20px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:16px;white-space:nowrap;
+    font:600 13px/1 var(--ui);color:#fff;background:rgba(10,31,23,.92);box-shadow:var(--shadow-lg);transition:opacity .3s, transform .4s var(--ease)}
+  .toast.is-on{opacity:1;transform:translate(-50%,0)}
+  .toast svg{color:var(--mint)}
+
+  /* ---------- Sheet stack (review → payment → reserved) ---------- */
+  .sheet.is-active{transform:none;visibility:visible;transition:transform .5s cubic-bezier(.2,.9,.2,1), visibility 0s, filter .4s}
+  .sheet.is-behind{transform:translateY(-14px) scale(.95);transform-origin:50% 0;visibility:visible;filter:brightness(.93);
+    transition:transform .5s cubic-bezier(.2,.9,.2,1), visibility 0s, filter .4s}
+  .sheet--pay{z-index:61}
+  .sheet--done{z-index:62}
+  .pay-sub{margin-top:4px;font:500 13px/1.4 var(--ui);color:var(--ink-2)}
+  .pay-sub b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* Payment options (real radios, styled rows) */
+  .opts{margin-top:14px;display:grid;gap:8px;border:0}
+  .opt{position:relative;display:flex;align-items:center;gap:11px;padding:12px 13px 12px 12px;border-radius:18px;cursor:pointer;background:#fff;
+    box-shadow:inset 0 0 0 1px var(--line), var(--shadow-sm);transition:transform .15s var(--ease), box-shadow .2s var(--ease), background .2s}
+  .opt:hover{box-shadow:inset 0 0 0 1px #CBD8D1, var(--shadow-md)}
+  .opt:active{transform:scale(.985)}
+  .opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;border-radius:inherit}
+  .opt.is-checked{background:linear-gradient(180deg,#F4FCF8,#EAF8F1);box-shadow:inset 0 0 0 2px var(--em-500), 0 8px 18px -10px rgba(14,138,90,.55)}
+  .opt:has(input:focus-visible){box-shadow:inset 0 0 0 2px var(--em-500), 0 0 0 3px var(--bg), 0 0 0 5px rgba(20,168,109,.55)}
+  .opt.is-disabled{cursor:not-allowed;background:#F5F7F6;box-shadow:inset 0 0 0 1px var(--line)}
+  .opt.is-disabled:active{transform:none}
+  .opt.is-disabled input{cursor:not-allowed}
+  .opt.is-disabled .pico, .opt.is-disabled .otitle{opacity:.55}
+  .pico{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;position:relative;overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 0 0 1px rgba(0,0,0,.06), 0 4px 10px -4px rgba(6,40,28,.3)}
+  .pico::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,255,255,.4), rgba(255,255,255,0) 50%)}
+  .pico--bal{color:#3A2706;background:linear-gradient(140deg,#FCEBB9 0%,#E0B85C 45%,#B98A33 70%,#F1D48A 100%)}
+  .pico--bank{color:#fff;background:linear-gradient(160deg,#14A86D,#065A3A)}
+  .pico--wallet{color:#065A3A;background:linear-gradient(160deg,#D8F7E8,#9FE6C6)}
+  .pico--card{color:#E9EDF1;background:linear-gradient(155deg,#474E57 0%,#1E2227 60%,#2E343B 100%)}
+  .otext{flex:1;min-width:0}
+  .otitle{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font:650 15px/1.2 var(--ui);letter-spacing:-.01em;color:var(--ink)}
+  .odesc, .ometa{display:block}
+  .odesc{margin-top:3px;font:500 12px/1.35 var(--ui);color:var(--ink-2)}
+  .ometa{margin-top:5px;font:600 11.5px/1.2 var(--ui);color:var(--em-600);font-variant-numeric:tabular-nums}
+  .ometa .bad{display:none;color:#B42318}
+  .is-disabled .ometa{color:var(--ink-3)}
+  .is-disabled .ometa .bad{display:inline}
+  .tag{height:20px;display:inline-flex;white-space:nowrap;align-items:center;padding:0 7px;border-radius:99px;font:700 9.5px/1 var(--ui);letter-spacing:.1em;text-transform:uppercase}
+  .tag--free{color:#0B6B45;background:var(--mint-50);box-shadow:inset 0 0 0 1px rgba(14,138,90,.18)}
+  .tag--fee{color:var(--amber-600);background:var(--amber-50);box-shadow:inset 0 0 0 1px rgba(178,107,0,.22)}
+  .wchips{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+  .wchips span{height:20px;display:inline-flex;align-items:center;padding:0 7px;border-radius:6px;font:600 10.5px/1 var(--ui);color:var(--ink-2);background:#F1F5F3;box-shadow:inset 0 0 0 1px var(--line)}
+  .is-checked .wchips span{background:#fff}
+  .ocheck{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 1.5px #C9D3CE;transition:background .2s, box-shadow .2s, transform .25s var(--ease)}
+  .ocheck svg{opacity:0;transform:scale(.4);transition:opacity .2s, transform .3s var(--ease)}
+  .is-checked .ocheck{background:var(--em-600);box-shadow:inset 0 0 0 1.5px var(--em-600), 0 3px 8px -2px rgba(14,138,90,.5);transform:scale(1.04)}
+  .is-checked .ocheck svg{opacity:1;transform:none}
+  .is-disabled .ocheck{background:#EEF2F0}
+  .secure{margin:12px 2px 0;display:flex;align-items:center;gap:7px;font:500 11.5px/1.35 var(--ui);color:var(--ink-3)}
+  .secure svg{flex:none;color:var(--em-600)}
+  .rows .total{padding:14px 0}
+  .rows .total span{color:var(--ink);font-weight:650}
+  .rows .total b{font-size:17px;font-weight:750;letter-spacing:-.02em}
+  .rows .muted{color:var(--ink-3);font-weight:600}
+  .sheet--pay .rows{margin-top:12px}
+  .sheet--pay .rows div{padding:11px 0}
+  .sheet--pay .rows .total{padding:12px 0}
+  .sheet--pay .sheet-actions{margin-top:4px;padding-top:12px}
+  .sheet--pay .sheet-actions::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:18px;pointer-events:none;background:linear-gradient(to top, var(--bg), rgba(242,245,243,0))}
+
+  /* Reserved (success) */
+  .ok-badge{position:relative;width:64px;height:64px;margin:6px auto 14px;border-radius:50%;display:grid;place-items:center;color:#fff;
+    background:radial-gradient(120% 120% at 30% 20%, #1FB97A 0%, #0B7A50 50%, #054A31 100%);
+    box-shadow:0 0 0 8px rgba(20,168,109,.12), 0 12px 26px -6px rgba(14,138,90,.6), inset 0 1px 0 rgba(255,255,255,.35)}
+  .ok-badge path{stroke-dasharray:30;stroke-dashoffset:30}
+  .sheet.is-active .ok-badge path{animation:draw .5s .35s var(--ease) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .done-title{text-align:center}
+  .done-title h3{font:800 22px/1.1 var(--display);letter-spacing:-.03em}
+  .done-title .sub{margin-top:10px;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px;border-radius:99px;
+    font:650 11.5px/1 var(--ui);color:var(--amber-600);background:var(--amber-50);box-shadow:inset 0 0 0 1px rgba(178,107,0,.22)}
+  .ref{margin-top:16px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:18px;background:#fff;
+    box-shadow:inset 0 0 0 1.5px rgba(14,138,90,.25);background-image:repeating-linear-gradient(90deg, rgba(14,138,90,.05) 0 8px, transparent 8px 16px)}
+  .ref .k{font:650 10px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .ref .v{margin-top:6px;font:750 17px/1 var(--ui);letter-spacing:.06em;font-variant-numeric:tabular-nums;color:var(--em-800)}
+  .sheet--done .x{position:absolute;right:16px;top:16px}
+  .sheet--done .sheet-actions{margin-top:16px;grid-template-columns:1fr}
+  @media (prefers-reduced-motion:reduce){.ok-badge path{stroke-dashoffset:0;animation:none!important}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+ <div class="screen" id="screen">
+
+  <header class="chrome" id="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="back" aria-label="Back" onclick="history.length > 1 && history.back()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="brandmark">
+        <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+          <defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1FB97A"/><stop offset="1" stop-color="#054A31"/></linearGradient></defs>
+          <rect width="26" height="26" rx="8" fill="url(#mk)"/>
+          <path d="M7 19.5C7 12 11.5 7 19.5 6.5c0 7.6-4.6 12.6-12.5 13Z" fill="#E8FFF4" opacity=".95"/>
+          <path d="M7.5 19L15 11.5" stroke="#0B6A47" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Mossquill
+      </div>
+      <span class="concept" title="Design concept: fictional brand, not a real offer"><i></i>Concept</span>
+    </nav>
+  </header>
+
+  <main>
+    <div class="eyebrow">Purchase Gold Bond</div>
+    <h1>Gold Fixed-Rate Bond</h1>
+
+    <!-- Mini metallic gold tier card -->
+    <article class="card" data-tilt aria-label="Gold tier: 6.25% per year fixed, 12-month term">
+      <div class="face"></div>
+      <svg class="emblem" viewBox="0 0 170 170" fill="none" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="1.4" opacity=".45"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+        <g stroke="#FFF6D8" stroke-width="1.4" opacity=".7" transform="translate(-1 -1)"><circle cx="85" cy="85" r="80"/><circle cx="85" cy="85" r="60"/><circle cx="85" cy="85" r="40"/></g>
+        <path d="M70 102C70 82 81 70 101 68c0 20-11 33-31 34Z" fill="#FFF6D8" opacity=".35"/>
+        <path d="M71 101l18-18" stroke="#8E6420" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>
+      </svg>
+      <div class="shine"></div><div class="edge"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div>
+            <div class="tier">Gold</div>
+            <div class="kicker">Fixed-rate bond</div>
+          </div>
+          <svg width="38" height="28" viewBox="0 0 40 30" aria-hidden="true">
+            <defs><linearGradient id="chipG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF4CF"/><stop offset=".45" stop-color="#D9AE55"/><stop offset=".7" stop-color="#F5DD98"/><stop offset="1" stop-color="#B98A33"/></linearGradient></defs>
+            <rect x=".5" y=".5" width="39" height="29" rx="6.5" fill="url(#chipG)" stroke="rgba(90,60,10,.4)"/>
+            <path d="M0 10h13M0 20h13M27 10h13M27 20h13M13 0v30M27 0v30M13 15h14" stroke="rgba(90,60,10,.4)" fill="none"/>
+            <rect x="13" y="8" width="14" height="14" rx="3.5" fill="none" stroke="rgba(90,60,10,.4)"/>
+          </svg>
+        </div>
+        <div class="card-bottom">
+          <div class="card-stats">
+            <div><div class="k">Fixed rate</div><div class="v num">6.25%<small>p.a.</small></div></div>
+            <div><div class="k">Term</div><div class="v num">12<small>months</small></div></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <p class="lede">Lock in a fixed <b>6.25% per year</b> for <b>12 months</b>. Invest from <b class="num">₱10,000</b> to <b class="num">₱500,000</b>.</p>
+
+    <!-- Amount -->
+    <section class="panel" id="amountPanel" aria-label="Amount">
+      <div class="panel-head">
+        <span class="label" id="amtLabel">Amount in PHP</span>
+        <div class="seg" id="curSeg" style="--n:2;--i:0" role="group" aria-label="Display currency">
+          <span class="thumb"></span>
+          <button type="button" aria-pressed="true" data-cur="PHP">PHP</button>
+          <button type="button" aria-pressed="false" data-cur="USD">USD</button>
+        </div>
+      </div>
+      <label class="amount-field" id="field">
+        <span class="cur" id="curSym">₱</span>
+        <input id="amt" type="text" inputmode="decimal" autocomplete="off" aria-labelledby="amtLabel" aria-describedby="limits err" value="50,000" />
+        <button type="button" class="clear" id="clear" aria-label="Clear amount">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </label>
+      <div class="limits num" id="limits"><span>Min <b id="minL">₱10,000.00</b></span><span>Max <b id="maxL">₱500,000.00</b></span></div>
+      <div class="err" id="err" role="alert">Enter an amount between ₱10,000 and ₱500,000.</div>
+      <div class="chips" role="group" aria-label="Quick amounts">
+        <button type="button" class="chip num" data-v="10000">₱10k</button>
+        <button type="button" class="chip num" data-v="50000">₱50k</button>
+        <button type="button" class="chip num" data-v="100000">₱100k</button>
+      </div>
+      <input class="range" id="range" type="range" min="10000" max="500000" step="1000" value="50000" aria-label="Amount slider" />
+      <div class="range-scale num"><span>₱10k</span><span>₱250k</span><span>₱500k</span></div>
+      <div class="fx" id="fx" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <span>USD amounts use an <b>example rate of US$1 = ₱58.00</b>, for illustration only (not a live rate). The bond is issued and paid in PHP.</span>
+      </div>
+    </section>
+
+    <!-- Projection -->
+    <div class="sec-head"><h2>Projection</h2><span class="meta">Simple interest · estimates</span></div>
+    <div class="seg seg--wide payout" id="paySeg" style="--n:2;--i:0" role="group" aria-label="Interest payout">
+      <span class="thumb"></span>
+      <button type="button" aria-pressed="true" data-pay="maturity">Paid at maturity</button>
+      <button type="button" aria-pressed="false" data-pay="quarterly">Paid quarterly</button>
+    </div>
+    <div class="proj" id="proj">
+      <div class="tile tile--interest">
+        <div class="k">Est. interest</div>
+        <div class="v num" id="pInterest">₱3,125.00</div>
+        <div class="s" id="pInterestS">Paid at maturity</div>
+      </div>
+      <div class="tile tile--dark">
+        <div class="k">At maturity</div>
+        <div class="v num" id="pMaturity">₱53,125.00</div>
+        <div class="s" id="pMaturityS">Principal + interest</div>
+      </div>
+      <div class="tile tile--wide">
+        <div>
+          <div class="k">Est. maturity date</div>
+          <div class="v num" id="pDate">—</div>
+          <div class="s">12 months after issue</div>
+        </div>
+        <div class="timeline" aria-hidden="true">
+          <div class="tl-track"><div class="tl-dots"><i style="left:0"></i><i class="q" style="left:25%"></i><i class="q" style="left:50%"></i><i class="q" style="left:75%"></i><i style="left:100%"></i></div></div>
+          <div class="tl-labels"><span>Issue</span><span>Maturity</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="formula" id="formula"></p>
+
+    <!-- Risk & disclosure -->
+    <section class="disclose" aria-label="Risks and disclosures">
+      <div class="disclose-head">
+        <span class="warn" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 10v4.5M12 17.5h.01"/></svg>
+        </span>
+        <h3>Risks &amp; disclosures</h3>
+      </div>
+      <p>Returns are not guaranteed until the bond is issued. Early redemption may incur fees. This is a design concept, not a real offer.</p>
+      <div class="docs">
+        <a class="doc" href="#bond-agreement">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+          Bond agreement
+        </a>
+        <a class="doc" href="#key-facts">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          Key facts
+        </a>
+      </div>
+      <label class="check">
+        <input type="checkbox" id="terms" />
+        <span class="box" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+        <span class="t">I've read the Bond agreement and Key facts, and I understand the risks above.</span>
+      </label>
+    </section>
+  </main>
+
+  <div class="cta-bar">
+    <div class="hint" id="hint">Tick the terms above to continue</div>
+    <button class="cta" id="confirm" disabled>
+      Confirm
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="home" aria-hidden="true"></div>
+  </div>
+ </div>
+
+  <!-- Overlay layer (outside the scroll container, pinned to the phone screen) -->
+  <div class="layer" id="layer">
+  <div class="overlay" id="overlay"></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true" inert>
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <h3 id="sheetTitle">Review your bond</h3>
+      <button class="x" id="close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="sum-hero">
+      <div class="k">Est. value at maturity</div>
+      <div class="v num" id="sMaturity">₱53,125.00</div>
+      <div class="s" id="sMaturityS">Principal + interest</div>
+    </div>
+    <div class="rows num">
+      <div><span>Amount</span><b id="sAmount">₱50,000.00</b></div>
+      <div><span>Rate</span><b>6.25% p.a. fixed</b></div>
+      <div><span>Term</span><b>12 months</b></div>
+      <div><span>Interest payout</span><b id="sPayout">At maturity</b></div>
+      <div><span>Est. interest</span><b id="sInterest">₱3,125.00</b></div>
+      <div><span>Est. maturity date</span><b id="sDate">—</b></div>
+    </div>
+    <p class="note">Estimates use simple interest before taxes and fees. Mossquill is a fictional brand. This is a design concept, not a real offer.</p>
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="edit">Edit</button>
+      <button class="cta" id="place">Confirm purchase</button>
+    </div>
+  </section>
+
+  <!-- Payment method sheet -->
+  <section class="sheet sheet--pay" id="paySheet" role="dialog" aria-modal="true" aria-labelledby="payTitle" aria-describedby="paySub" aria-hidden="true" inert>
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <h3 id="payTitle">Choose payment method</h3>
+      <button class="x" id="payClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <p class="pay-sub" id="paySub">Paying <b id="payAmt">₱50,000.00</b> for your Gold Fixed-Rate Bond</p>
+
+    <div class="opts" id="opts" role="radiogroup" aria-labelledby="payTitle">
+      <label class="opt" data-m="balance">
+        <input type="radio" name="method" value="balance" aria-describedby="balMeta" />
+        <span class="pico pico--bal" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4h-12A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/><path d="M3 6.5A2.5 2.5 0 0 0 5.5 9h13A1.5 1.5 0 0 1 20 10.5V15h-4a2 2 0 0 1 0-4h4"/></svg>
+        </span>
+        <span class="otext">
+          <span class="otitle">Account balance</span>
+          <span class="odesc">Use your Mossquill balance</span>
+          <span class="ometa" id="balMeta"><span class="bad">Insufficient balance · </span><span id="balText">₱62,450.00 available</span></span>
+        </span>
+        <span class="ocheck" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      </label>
+
+      <label class="opt" data-m="bank">
+        <input type="radio" name="method" value="bank" />
+        <span class="pico pico--bank" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18M12 3l9 5H3l9-5Z"/></svg>
+        </span>
+        <span class="otext">
+          <span class="otitle">Bank transfer <span class="tag tag--free">Free</span></span>
+          <span class="odesc">InstaPay or PESONet from any PH bank</span>
+        </span>
+        <span class="ocheck" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      </label>
+
+      <label class="opt" data-m="ewallet">
+        <input type="radio" name="method" value="ewallet" />
+        <span class="pico pico--wallet" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/><path d="M9.5 9.5h5M9.5 12.5h3"/></svg>
+        </span>
+        <span class="otext">
+          <span class="otitle">E-wallet</span>
+          <span class="wchips" aria-label="GCash, Maya, GrabPay, ShopeePay"><span>GCash</span><span>Maya</span><span>GrabPay</span><span>ShopeePay</span></span>
+        </span>
+        <span class="ocheck" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      </label>
+
+      <label class="opt" data-m="card">
+        <input type="radio" name="method" value="card" />
+        <span class="pico pico--card" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></svg>
+        </span>
+        <span class="otext">
+          <span class="otitle">Debit or credit card <span class="tag tag--fee">1.5% fee</span></span>
+          <span class="odesc">Visa or Mastercard</span>
+        </span>
+        <span class="ocheck" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      </label>
+    </div>
+
+    <p class="secure">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+      Payments are encrypted. Concept only, no payment is made.
+    </p>
+
+    <div class="rows num" aria-live="polite">
+      <div><span>Amount</span><b id="pAmt">₱50,000.00</b></div>
+      <div><span>Fee</span><b id="pFee" class="muted">Select a method</b></div>
+      <div class="total"><span>Total</span><b id="pTotal">₱50,000.00</b></div>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="payBack" type="button">Back</button>
+      <button class="cta" id="payContinue" type="button" disabled>Continue
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Reserved (success) sheet -->
+  <section class="sheet sheet--done" id="doneSheet" role="dialog" aria-modal="true" aria-labelledby="doneTitle" aria-describedby="doneSub" aria-hidden="true" inert>
+    <div class="grab" aria-hidden="true"></div>
+    <button class="x" id="doneClose" aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="ok-badge" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div class="done-title">
+      <h3 id="doneTitle">Bond reserved</h3>
+      <div class="sub" id="doneSub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Concept only, no payment was made</div>
+    </div>
+    <div class="ref">
+      <div><div class="k">Reference</div><div class="v" id="dRef">MQ-CONCEPT-0001</div></div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E8A5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+    </div>
+    <div class="rows num">
+      <div><span>Bond</span><b>Gold Fixed-Rate · 6.25% p.a.</b></div>
+      <div><span>Amount</span><b id="dAmt">₱50,000.00</b></div>
+      <div><span>Payment method</span><b id="dMethod">—</b></div>
+      <div><span>Fee</span><b id="dFee">₱0.00</b></div>
+      <div class="total"><span>Total</span><b id="dTotal">₱50,000.00</b></div>
+    </div>
+    <p class="note">Nothing was charged or sent. Mossquill is a fictional brand. This is a design concept, not a real offer.</p>
+    <div class="sheet-actions">
+      <button class="cta" id="doneBtn" type="button">Done</button>
+    </div>
+  </section>
+  <div class="toast" id="toast" role="status">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    Concept only: no payment was made
+  </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const RATE = 0.0625, TERM_MONTHS = 12, MIN = 10000, MAX = 500000;
+  const FX = 58.00; // example rate only: US$1 = ₱58.00
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = {
+    PHP: new Intl.NumberFormat('en-PH', {style:'currency', currency:'PHP'}),
+    USD: new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'})
+  };
+  const plain = new Intl.NumberFormat('en-US', {maximumFractionDigits:2});
+  const state = { php: 50000, cur: 'PHP', pay: 'maturity' };
+  const r2 = n => Math.round(n * 100) / 100;
+  const toDisp = php => state.cur === 'PHP' ? php : php / FX;
+  const money = n => fmt[state.cur].format(n);
+
+  // Maturity date: today + 12 months (estimate; actual date set on issue)
+  const mat = new Date(); mat.setMonth(mat.getMonth() + TERM_MONTHS);
+  const matStr = mat.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+
+  // Count-up tween for projection numbers
+  const tweens = new Map();
+  function tween(el, to) {
+    const from = parseFloat(el.dataset.v || to);
+    el.dataset.v = to;
+    if (reduce || from === to) { el.textContent = money(to); return; }
+    cancelAnimationFrame(tweens.get(el));
+    const t0 = performance.now(), d = 320;
+    const step = t => {
+      const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = money(r2(from + (to - from) * e));
+      if (k < 1) tweens.set(el, requestAnimationFrame(step));
+    };
+    tweens.set(el, requestAnimationFrame(step));
+  }
+
+  function valid() { return state.php >= MIN - 0.005 && state.php <= MAX + 0.005; }
+
+  function render(opts = {}) {
+    const principal = r2(toDisp(state.php));
+    const interest = r2(principal * RATE * (TERM_MONTHS / 12));
+    const quarterly = r2(interest / 4);
+    const atMaturity = state.pay === 'maturity' ? r2(principal + interest) : principal;
+    const ok = valid();
+
+    // input + limits
+    if (!opts.typing) $('amt').value = plain.format(principal).replace(/\.(\d)$/, '.$10');
+    $('curSym').textContent = state.cur === 'PHP' ? '₱' : '$';
+    $('amtLabel').textContent = 'Amount in ' + state.cur;
+    $('minL').textContent = state.cur === 'PHP' ? fmt.PHP.format(MIN) : fmt.USD.format(Math.ceil(MIN / FX * 100) / 100);
+    $('maxL').textContent = state.cur === 'PHP' ? fmt.PHP.format(MAX) : fmt.USD.format(Math.floor(MAX / FX * 100) / 100);
+    $('fx').hidden = state.cur !== 'USD';
+    $('field').classList.toggle('is-error', !ok);
+    $('amountPanel').classList.toggle('is-invalid', !ok);
+    const range = $('range');
+    if (!opts.fromRange) range.value = Math.min(MAX, Math.max(MIN, state.php));
+    range.style.setProperty('--p', ((range.value - MIN) / (MAX - MIN) * 100) + '%');
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('is-on', +c.dataset.v === state.php));
+
+    // projection
+    tween($('pInterest'), ok ? interest : 0);
+    tween($('pMaturity'), ok ? atMaturity : 0);
+    $('pInterestS').textContent = state.pay === 'maturity' ? 'Paid at maturity' : money(quarterly) + ' × 4 quarters';
+    $('pMaturityS').textContent = state.pay === 'maturity' ? 'Principal + interest' : 'Principal returned';
+    $('pDate').textContent = 'Est. ' + matStr;
+    $('proj').classList.toggle('is-quarterly', state.pay === 'quarterly');
+    $('formula').innerHTML = ok
+      ? `<code>${money(principal)}</code> × <code>6.25%</code> × <code>1 yr</code> = <code>${money(interest)}</code> estimated interest (simple interest, before taxes and fees)` +
+        (state.pay === 'quarterly' ? `, paid as 4 × <code>${money(quarterly)}</code>.` : '.')
+      : 'Enter an amount within the limits to see your projection.';
+
+    // sheet
+    $('sAmount').textContent = money(principal);
+    $('sInterest').textContent = money(interest);
+    $('sMaturity').textContent = money(atMaturity);
+    $('sMaturityS').textContent = state.pay === 'maturity' ? 'Principal + interest' : 'Principal returned · interest paid quarterly';
+    $('sPayout').textContent = state.pay === 'maturity' ? 'At maturity' : 'Quarterly (4 × ' + money(quarterly) + ')';
+    $('sDate').textContent = matStr;
+
+    // CTA
+    const terms = $('terms').checked;
+    $('confirm').disabled = !(ok && terms);
+    $('hint').textContent = !ok ? 'Enter an amount between ₱10,000 and ₱500,000' : 'Tick the terms above to continue';
+    $('hint').classList.toggle('is-hidden', ok && terms);
+  }
+
+  // amount typing
+  $('amt').addEventListener('input', e => {
+    const raw = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+    const [i, d] = raw.split('.');
+    e.target.value = (i ? (+i).toLocaleString('en-US') : '') + (d !== undefined ? '.' + d.slice(0, 2) : '');
+    const n = parseFloat(raw) || 0;
+    state.php = r2(state.cur === 'PHP' ? n : n * FX);
+    render({typing:true});
+  });
+  $('amt').addEventListener('blur', () => render());
+  $('clear').addEventListener('click', e => { e.preventDefault(); state.php = 0; render(); $('amt').value = ''; $('amt').focus({preventScroll:true}); });
+  $('range').addEventListener('input', e => { state.php = +e.target.value; render({fromRange:true}); });
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { state.php = +c.dataset.v; render(); }));
+
+  // segmented controls
+  function seg(id, key, attr) {
+    const el = $(id), btns = [...el.querySelectorAll('button')];
+    btns.forEach((b, i) => b.addEventListener('click', () => {
+      btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+      el.style.setProperty('--i', i);
+      state[key] = b.dataset[attr];
+      render();
+    }));
+  }
+  seg('curSeg', 'cur', 'cur');
+  seg('paySeg', 'pay', 'pay');
+  $('terms').addEventListener('change', () => render());
+
+  // ---------- sheet stack: review → payment → reserved (one pinned layer, one scroll lock) ----------
+  const phone = $('phone'), screen = $('screen'), root = document.documentElement;
+  const mobile = matchMedia('(max-width:520px)');
+  let lockY = 0, focusTimer;
+  const stack = [];
+  function lock() {
+    phone.classList.add('is-locked');
+    if (mobile.matches) { // iOS-safe page lock: freeze body at the current offset
+      lockY = window.scrollY;
+      Object.assign(document.body.style, {position:'fixed', top: -lockY + 'px', left:'0', right:'0'});
+    }
+    root.classList.add('scroll-locked');
+    screen.inert = true;
+  }
+  function unlock() {
+    phone.classList.remove('is-locked');
+    root.classList.remove('scroll-locked');
+    screen.inert = false;
+    if (document.body.style.position === 'fixed') {
+      Object.assign(document.body.style, {position:'', top:'', left:'', right:''});
+      window.scrollTo(0, lockY);
+    }
+  }
+  function setLayer(el, mode) { // mode: 'active' | 'behind' | 'off'
+    el.classList.toggle('is-active', mode === 'active');
+    el.classList.toggle('is-behind', mode === 'behind');
+    el.inert = mode !== 'active';
+    el.setAttribute('aria-hidden', mode === 'active' ? 'false' : 'true');
+  }
+  const focusTargets = {
+    sheet: () => $('place'),
+    paySheet: () => $('opts').querySelector('input:checked') || $('opts').querySelector('input:not(:disabled)'),
+    doneSheet: () => $('doneBtn'),
+  };
+  function focusSoon(el) {
+    clearTimeout(focusTimer);
+    focusTimer = setTimeout(() => { const t = focusTargets[el.id](); t && t.focus({preventScroll:true}); }, 380);
+  }
+  function push(id) {
+    const el = $(id);
+    if (!stack.length) { lock(); phone.classList.add('is-open'); }
+    const prev = stack[stack.length - 1];
+    if (prev) setLayer(prev, 'behind');
+    stack.push(el); setLayer(el, 'active'); el.scrollTop = 0;
+    focusSoon(el);
+  }
+  function closeAll() {
+    if (!stack.length) return;
+    clearTimeout(focusTimer);
+    while (stack.length) setLayer(stack.pop(), 'off');
+    phone.classList.remove('is-open');
+    unlock();
+    $('confirm').focus({preventScroll:true});
+  }
+  function pop() {
+    if (stack.length <= 1) return closeAll();
+    setLayer(stack.pop(), 'off');
+    const prev = stack[stack.length - 1];
+    setLayer(prev, 'active');
+    focusSoon(prev);
+  }
+  // keep Tab focus inside the active sheet
+  $('layer').addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || !stack.length) return;
+    const s = stack[stack.length - 1];
+    const f = [...s.querySelectorAll('button, input')].filter(x => !x.disabled && (x.type !== 'radio' || x.checked || !s.querySelector(`input[name="${x.name}"]:checked`)));
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus({preventScroll:true}); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus({preventScroll:true}); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && stack.length) { e.preventDefault(); stack[stack.length - 1].id === 'doneSheet' ? finish() : pop(); } });
+  $('overlay').addEventListener('click', () => stack[stack.length - 1].id === 'doneSheet' ? finish() : closeAll());
+
+  // review sheet
+  $('confirm').addEventListener('click', () => push('sheet'));
+  $('close').addEventListener('click', closeAll);
+  $('edit').addEventListener('click', closeAll);
+  $('place').addEventListener('click', () => { preparePayment(); push('paySheet'); });
+
+  // payment sheet
+  const BALANCE = 62450.00; // EXAMPLE DATA: fictional account balance for the concept, not a real account
+  const METHODS = {
+    balance: {label: 'Account balance', fee: 0},
+    bank:    {label: 'Bank transfer',   fee: 0},
+    ewallet: {label: 'E-wallet',        fee: 0},
+    card:    {label: 'Debit or credit card', fee: 0.015},
+  };
+  const php = n => fmt.PHP.format(n);
+  const radios = [...$('opts').querySelectorAll('input')];
+  const selected = () => (radios.find(r => r.checked) || {}).value;
+  function feeFor(m) { return m ? r2(state.php * METHODS[m].fee) : 0; }
+  function syncPayment() {
+    const m = selected(), fee = feeFor(m);
+    radios.forEach(r => r.closest('.opt').classList.toggle('is-checked', r.checked));
+    $('pAmt').textContent = php(state.php);
+    $('pFee').textContent = m ? (fee ? php(fee) + ' (1.5%)' : php(0)) : 'Select a method';
+    $('pFee').classList.toggle('muted', !m);
+    $('pTotal').textContent = php(r2(state.php + fee));
+    $('payContinue').disabled = !m;
+  }
+  function preparePayment() {
+    $('payAmt').textContent = php(state.php);
+    const short = state.php > BALANCE;
+    $('balText').textContent = php(BALANCE) + (short ? '' : ' available');
+    const bal = radios.find(r => r.value === 'balance');
+    bal.disabled = short;
+    bal.closest('.opt').classList.toggle('is-disabled', short);
+    bal.closest('.opt').setAttribute('aria-disabled', short);
+    if (short && bal.checked) bal.checked = false;
+    syncPayment();
+  }
+  radios.forEach(r => r.addEventListener('change', syncPayment));
+  $('payBack').addEventListener('click', pop);
+  $('payClose').addEventListener('click', closeAll);
+
+  // reserved (success)
+  let refNo = 0; // in-memory only, nothing is stored
+  $('payContinue').addEventListener('click', () => {
+    const m = selected(); if (!m) return;
+    const fee = feeFor(m);
+    refNo += 1;
+    $('dRef').textContent = 'MQ-CONCEPT-' + String(refNo).padStart(4, '0');
+    $('dAmt').textContent = php(state.php);
+    $('dMethod').textContent = METHODS[m].label;
+    $('dFee').textContent = php(fee);
+    $('dTotal').textContent = php(r2(state.php + fee));
+    push('doneSheet');
+  });
+  function finish() {
+    closeAll();
+    const t = $('toast'); t.classList.add('is-on'); setTimeout(() => t.classList.remove('is-on'), 2400);
+  }
+  $('doneBtn').addEventListener('click', finish);
+  $('doneClose').addEventListener('click', finish);
+
+  // header hairline on scroll
+  const sc = $('screen');
+  const onScroll = () => $('chrome').classList.toggle('is-scrolled', (sc.scrollTop || window.scrollY) > 4);
+  sc.addEventListener('scroll', onScroll); window.addEventListener('scroll', onScroll);
+
+  // tilt + glare on the gold card
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    if (reduce) return;
+    card.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.classList.add('is-tilting');
+      card.style.setProperty('--ry', ((x - .5) * 10).toFixed(2) + 'deg');
+      card.style.setProperty('--rx', ((.5 - y) * 8).toFixed(2) + 'deg');
+      card.style.setProperty('--mx', (x * 100) + '%');
+      card.style.setProperty('--my', (y * 100) + '%');
+    });
+    card.addEventListener('pointerleave', () => {
+      card.classList.remove('is-tilting');
+      card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg');
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

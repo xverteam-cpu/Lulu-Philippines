@@ -269,10 +269,12 @@
   .franchise-required { color: #8a9892; font: 550 11.5px/1 Inter, sans-serif; }
   .franchise-required b { color: #c2410c; }
   .franchise-group-label { display: block; margin: 22px 2px 10px; }
-  .franchise-field { position: relative; margin-top: 12px; }
+  .franchise-field { position: relative; min-width: 0; margin-top: 12px; }
   .franchise-control {
     display: block;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     min-height: 58px;
     padding: 24px 16px 8px;
     border: 0;
@@ -363,6 +365,13 @@
     .container { width: 100%; }
     .franchise-phone { min-height: 100vh; overflow: visible; border-radius: 0; box-shadow: none; }
     .franchise-screen { max-height: none; overflow: visible; }
+    .franchise-submit-wrap {
+      position: static;
+      margin: 18px 0 0;
+      padding: 0;
+      background: none;
+    }
+    .franchise-footer-space { height: 24px; }
   }
 
   @media (prefers-reduced-motion: reduce) {

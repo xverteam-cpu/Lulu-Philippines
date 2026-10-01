@@ -35,7 +35,34 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('reviewMaturityDate', false)
             ->assertSee('invest/agreement/sign')
             ->assertDontSee('id="purchaseSignaturePad"')
-            ->assertSee('Continue to payment');
+            ->assertSee('Continue to payment')
+            ->assertSee('Choose payment method')
+            ->assertSee('id="paymentModalAmount"', false)
+            ->assertSee('data-payment="bank_transfer"', false)
+            ->assertSee('data-payment="e_wallet"', false)
+            ->assertSee('data-payment="account_balance"', false)
+            ->assertSee('data-payment="crypto"', false)
+            ->assertDontSee('1.5% fee');
+
+        Cache::forget('usd_to_php_rate_meta_v2');
+    }
+
+    public function test_crunch_purchase_payment_sheet_continues_to_existing_payment_choices(): void
+    {
+        $this->fakeUsdToPhpRate();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/invest/purchase/crunch')
+            ->assertOk()
+            ->assertSee('Purchase Silver Bond')
+            ->assertSee('Choose payment method')
+            ->assertSee('paymentModalAmount', false)
+            ->assertSee('data-payment="bank_transfer"', false)
+            ->assertSee('data-payment="e_wallet"', false)
+            ->assertSee('paymentInput.value === \'bank_transfer\'', false)
+            ->assertSee('paymentInput.value === \'e_wallet\'', false)
+            ->assertSee('continueToAgreement();', false);
 
         Cache::forget('usd_to_php_rate_meta_v2');
     }

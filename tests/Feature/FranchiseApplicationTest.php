@@ -22,6 +22,8 @@ class FranchiseApplicationTest extends TestCase
             ->assertSee('Open a store in your community')
             ->assertSee('name="_token"', false)
             ->assertSee('action="'.route('franchise-applications.store').'"', false)
+            ->assertSee('box-sizing: border-box;', false)
+            ->assertSee('position: static;', false)
             ->assertDontSee('Mossquill')
             ->assertDontSee('Nothing was sent')
             ->assertSee('id="franchise-application"', false)

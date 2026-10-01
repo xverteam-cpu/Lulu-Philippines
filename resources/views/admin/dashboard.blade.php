@@ -901,6 +901,14 @@
     }
 
     body.innerHTML = template.innerHTML;
+    var nestedCard = body.querySelector(':scope > .modal-card');
+    if (nestedCard) {
+      while (nestedCard.firstChild) {
+        body.insertBefore(nestedCard.firstChild, nestedCard);
+      }
+      nestedCard.remove();
+    }
+
     modal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   }

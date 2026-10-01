@@ -94,6 +94,8 @@ class AdminLoginTest extends TestCase
         $response->assertSee('setInterval(refreshOnlineStatus, 30000)', false);
         $response->assertSee('id="userDetailsModalBody" class="modal-card"', false);
         $response->assertDontSee('<template id="userModal-'.$user->id.'"><div class="modal-card">', false);
+        $response->assertSee("body.querySelector(':scope > .modal-card')", false);
+        $response->assertSee('#userDetailsModalBody > .modal-card', false);
         $response->assertSee('View details');
         $response->assertSee('Block IP address');
         $response->assertSee('class="users-page"', false);

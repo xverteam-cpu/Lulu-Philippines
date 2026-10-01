@@ -507,6 +507,17 @@
     position: relative;
   }
 
+  #userDetailsModalBody > .modal-card {
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
   .modal-header {
     display: flex;
     justify-content: space-between;

@@ -1422,9 +1422,11 @@
   }
 
   .dashboard-logo {
+    position: relative;
     display: grid;
     width: 46px;
     height: 46px;
+    flex: 0 0 46px;
     place-items: center;
     overflow: hidden;
     border: 1px solid #e3eee4;
@@ -1433,8 +1435,11 @@
   }
 
   .dashboard-logo img {
-    width: 100%;
-    height: 100%;
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 78%;
+    height: 78%;
     object-fit: contain;
   }
 
@@ -1685,7 +1690,7 @@
     }
 
     .dashboard-hero {
-      padding: 21px 19px 17px;
+      padding: 18px 18px 15px;
       border-radius: 25px;
     }
   }
@@ -1759,43 +1764,22 @@
     -webkit-backdrop-filter: saturate(180%) blur(20px);
   }
 
-  .dashboard-statusbar {
-    display: flex;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 30px 0 36px;
-    color: var(--dashboard-ink);
-  }
-
-  .dashboard-statusbar time {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .dashboard-status-icons {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
   .dashboard-dash-nav {
     display: flex;
-    height: 60px;
+    height: 72px;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px 6px;
+    padding: 8px 20px 6px;
   }
 
   .dashboard-logo {
     position: relative;
-    display: block;
-    width: 48px;
-    height: 48px;
-    padding: 2.5px;
-    border: 0;
+    display: grid;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    place-items: center;
+    overflow: hidden;
     border-radius: 50%;
     background: conic-gradient(from 210deg, #3ee0a1, #0e8a5a, #054a31, #c6f36b, #3ee0a1);
     box-shadow: 0 6px 16px -6px rgba(4, 30, 20, .45), 0 1px 2px rgba(4, 30, 20, .12);
@@ -1811,11 +1795,13 @@
 
   .dashboard-logo img {
     position: relative;
+    z-index: 1;
     display: block;
-    width: 100%;
-    height: 100%;
-    padding: 2px;
+    width: 86%;
+    height: 86%;
     border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
   }
 
   .dashboard-profile {
@@ -1839,10 +1825,13 @@
   }
 
   .dashboard-content {
-    padding: 10px 20px 24px;
+    padding: 0 20px 24px;
   }
 
   .dashboard-hero {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: auto;
     padding: 22px 22px 20px;
     border: 0;
     border-radius: 28px;
@@ -1921,9 +1910,9 @@
   .dashboard-balance {
     display: flex;
     align-items: flex-start;
-    margin-top: 16px;
+    margin-top: 11px;
     color: #fff;
-    font-size: 48px;
+    font-size: clamp(34px, 10vw, 42px);
     font-weight: 700;
     letter-spacing: -.04em;
     line-height: 1;
@@ -1966,8 +1955,8 @@
   }
 
   .dashboard-assets {
-    margin-top: 22px;
-    padding: 14px 16px;
+    margin-top: 15px;
+    padding: 10px 13px;
     border: 0;
     border-radius: 18px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .05));
@@ -2126,7 +2115,7 @@
     display: grid;
     width: 100%;
     height: 70px;
-    grid-template-columns: 1fr 1fr 76px 1fr 1fr;
+    grid-template-columns: 1fr 1fr 84px 1fr 1fr;
     align-items: center;
     margin: 0;
     padding: 0;
@@ -2192,35 +2181,42 @@
   }
 
   .bottom-nav .nav-item svg,
-  .bottom-nav .nav-item .nav-scan {
+  .bottom-nav .nav-item:not(.nav-item--scan) .nav-scan {
     z-index: 1;
     width: 22px;
     height: 22px;
   }
 
   .bottom-nav .nav-item--scan {
+    position: relative;
+    z-index: 2;
     display: grid;
+    height: 100%;
     align-items: center;
     justify-items: center;
+    overflow: visible;
+    color: transparent;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .bottom-nav .nav-scan {
+  .bottom-nav .nav-item--scan .nav-scan {
     position: relative;
     top: auto;
     display: grid;
-    width: 62px;
-    height: 62px;
-    margin-top: -34px;
+    width: 60px;
+    height: 60px;
+    margin-top: -26px;
     border: 0;
     border-radius: 50%;
     background: radial-gradient(120% 120% at 30% 20%, #1fb97a, #0b7a50 45%, #054a31);
-    box-shadow: 0 0 0 6px var(--dashboard-bg), 0 0 0 7px rgba(10, 31, 23, .04), 0 12px 26px -6px rgba(14, 138, 90, .65), 0 0 34px rgba(62, 224, 161, .45), inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 -2px 4px rgba(0, 0, 0, .2);
+    box-shadow: 0 0 0 7px rgba(255, 255, 255, .96), 0 0 0 9px rgba(62, 224, 161, .16), 0 12px 26px -6px rgba(14, 138, 90, .55), 0 0 34px rgba(62, 224, 161, .35), inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 -2px 4px rgba(0, 0, 0, .2);
     color: #fff;
-    font-size: 34px;
+    font-size: 30px;
     line-height: 1;
+    pointer-events: none;
   }
 
-  .bottom-nav .nav-scan::after {
+  .bottom-nav .nav-item--scan .nav-scan::after {
     position: absolute;
     inset: 3px 8px auto;
     height: 45%;
@@ -2228,6 +2224,11 @@
     background: linear-gradient(180deg, rgba(255, 255, 255, .35), transparent);
     content: "";
     pointer-events: none;
+  }
+
+  .bottom-nav .nav-item--scan:focus-visible .nav-scan {
+    outline: 3px solid #0e8a5a;
+    outline-offset: 10px;
   }
 
   .dashboard-home-indicator {
@@ -2391,14 +2392,6 @@
 
 <main class="wallet-shell dashboard-shell">
   <header class="dashboard-topbar">
-    <div class="dashboard-statusbar" aria-hidden="true">
-      <time>9:41</time>
-      <div class="dashboard-status-icons">
-        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17" aria-hidden="true"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
-        <svg width="27" height="13" viewBox="0 0 27 13" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
-      </div>
-    </div>
     <nav class="dashboard-dash-nav" aria-label="Dashboard">
       <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
         <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">

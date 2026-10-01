@@ -2,6 +2,7 @@
 
 @section('content')
 <style>
+  html.scroll-locked, html.scroll-locked body { overflow:hidden; overscroll-behavior:none; }
   body { background:#f4f6f9 !important; font-family:Inter, 'Plus Jakarta Sans', system-ui, sans-serif; }
   .container { max-width:none !important; margin:0 !important; padding:0 !important; }
   .purchase-page { min-height:100vh; color:#17202a; }
@@ -145,6 +146,32 @@
   .bp-cta-hint { margin-bottom:8px; color:#78867e; font-size:10px; }
   .purchase-submit { display:flex; align-items:center; justify-content:center; gap:9px; width:100%; min-height:52px; margin:0; border:0; border-radius:15px; background:linear-gradient(135deg,#0e8a5a,#04321f); color:#fff; font-size:14px; font-weight:850; box-shadow:0 7px 18px rgba(7,90,59,.2); }
   .purchase-submit:disabled { opacity:.48; cursor:not-allowed; box-shadow:none; }
+  .bond-review { position:fixed; inset:0; z-index:60; display:flex; align-items:flex-end; justify-content:center; padding:0; background:rgba(2,26,18,.42); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); opacity:0; visibility:hidden; transition:opacity .35s ease,visibility 0s linear .5s; }
+  .bond-review.is-open { opacity:1; visibility:visible; transition:opacity .35s ease,visibility 0s; }
+  .bond-review-sheet { width:min(100%, 520px); max-height:calc(100% - 24px); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:10px 20px max(30px, env(safe-area-inset-bottom)); border-radius:30px 30px 0 0; background:#f2f5f3; box-shadow:0 -20px 50px -10px rgba(2,26,18,.35),inset 0 1px 0 rgba(255,255,255,.9); transform:translateY(105%); visibility:hidden; transition:transform .5s cubic-bezier(.2,.9,.2,1),visibility 0s linear .5s; }
+  .bond-review-sheet::-webkit-scrollbar { display:none; }
+  .bond-review.is-open .bond-review-sheet { transform:none; visibility:visible; transition:transform .5s cubic-bezier(.2,.9,.2,1),visibility 0s; }
+  .bond-review-handle { width:40px; height:5px; margin:0 auto 16px; border-radius:99px; background:#c9d3ce; }
+  .bond-review-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .bond-review-heading h2 { margin:0; color:#0a1f17; font-size:21px; font-weight:800; line-height:1.1; letter-spacing:-.03em; }
+  .bond-review-close { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; border-radius:50%; background:#e6ece9; color:#4b5b54; font-size:20px; transition:transform .2s ease; }
+  .bond-review-close:active { transform:scale(.9); }
+  .bond-review-hero { position:relative; overflow:hidden; margin-top:16px; padding:18px; border-radius:22px; color:#fff; background:radial-gradient(120% 90% at 105% -10%,rgba(62,224,161,.5),transparent 55%),linear-gradient(160deg,#0b6a47 0%,#054a31 45%,#022418 100%); box-shadow:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38),inset 0 1px 0 rgba(255,255,255,.2); }
+  .bond-review-hero::before { position:absolute; inset:0; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); opacity:.08; mix-blend-mode:overlay; content:""; pointer-events:none; }
+  .bond-review-hero-label { color:rgba(232,255,244,.65); font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
+  .bond-review-hero-value { margin-top:10px; color:#fff; font-size:clamp(30px,8.7vw,36px); font-weight:750; letter-spacing:-.04em; line-height:1; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+  .bond-review-hero-sub { margin-top:8px; color:rgba(232,255,244,.65); font-size:12px; line-height:1.3; }
+  .bond-review-rows { margin-top:14px; padding:4px 16px; border-radius:20px; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06),inset 0 0 0 1px rgba(10,31,23,.04); }
+  .bond-review-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; color:#4b5b54; font-size:13.5px; line-height:1.2; }
+  .bond-review-row + .bond-review-row { border-top:1px solid #eef2f0; }
+  .bond-review-row strong { color:#0a1f17; text-align:right; font-weight:650; font-variant-numeric:tabular-nums; }
+  .bond-review-note { margin:12px 2px 16px; color:#8a9892; font-size:11.5px; line-height:1.45; }
+  .bond-review-actions { position:sticky; bottom:-30px; display:grid; grid-template-columns:1fr 2fr; gap:10px; margin:0 -20px -30px; padding:0 20px max(30px, env(safe-area-inset-bottom)); background:#f2f5f3; }
+  .bond-review-actions button { height:56px; border-radius:18px; font-size:15px; font-weight:650; }
+  .bond-review-edit { background:#fff; color:#0a1f17; box-shadow:inset 0 0 0 1px #e2e9e5,0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06); transition:transform .2s ease; }
+  .bond-review-edit:active { transform:scale(.97); }
+  .bond-review-confirm { background:linear-gradient(135deg,#1fb97a,#054a31); color:#fff; box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); }
+  @media (min-width:600px) { .bond-review { align-items:center; padding:24px; } .bond-review-sheet { max-height:min(88vh,820px); border-radius:30px; } .bond-review-actions { bottom:-30px; } }
   @media (max-width:380px) { .bp-content { padding-right:15px; padding-left:15px; } .bp-topbar { padding-right:14px; padding-left:14px; } .bp-cta-wrap { margin-right:-15px; margin-left:-15px; padding-right:15px; padding-left:15px; } .bp-amount { font-size:24px; } }
 </style>
 
@@ -287,9 +314,37 @@
   </div>
 </main>
 
+<div class="bond-review" id="bondReview" aria-hidden="true">
+  <section class="bond-review-sheet" role="dialog" aria-modal="true" aria-labelledby="bondReviewTitle">
+    <div class="bond-review-handle" aria-hidden="true"></div>
+    <div class="bond-review-heading">
+      <h2 id="bondReviewTitle" tabindex="-1">Review your bond</h2>
+      <button class="bond-review-close" type="button" id="bondReviewClose" aria-label="Close review">&times;</button>
+    </div>
+    <div class="bond-review-hero">
+      <div class="bond-review-hero-label">Estimated value at maturity</div>
+      <div class="bond-review-hero-value" id="reviewMaturityValue">$0.00</div>
+      <div class="bond-review-hero-sub">Principal + estimated interest</div>
+    </div>
+    <div class="bond-review-rows">
+      <div class="bond-review-row"><span>Amount</span><strong id="reviewAmount">$0.00</strong></div>
+      <div class="bond-review-row"><span>Rate</span><strong>{{ number_format($package['daily_interest_rate'], 2) }}% daily</strong></div>
+      <div class="bond-review-row"><span>Term</span><strong>{{ $package['duration_days'] }} days</strong></div>
+      <div class="bond-review-row"><span>Interest payout</span><strong>Daily accrual</strong></div>
+      <div class="bond-review-row"><span>Estimated interest</span><strong id="reviewInterest">$0.00</strong></div>
+      <div class="bond-review-row"><span>Estimated maturity date</span><strong id="reviewMaturityDate">—</strong></div>
+    </div>
+    <p class="bond-review-note">Estimates use simple interest before taxes and fees. Actual terms and maturity date are governed by your signed agreement.</p>
+    <div class="bond-review-actions">
+      <button class="bond-review-edit" type="button" id="bondReviewEdit">Edit</button>
+      <button class="bond-review-confirm" type="button" id="bondReviewConfirm">Confirm purchase</button>
+    </div>
+  </section>
+</div>
+
 <div class="payment-modal" id="paymentModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
-    <h2 class="payment-modal-title" id="paymentModalTitle">Mode of payment</h2>
+    <h2 class="payment-modal-title" id="paymentModalTitle" tabindex="-1">Mode of payment</h2>
     <p class="payment-modal-copy">Choose how you want to pay for this investment.</p>
     <div class="payment-options">
       <button class="payment-choice" type="button" data-payment="bank_transfer">Bank transfer<span>Pay through bank deposit</span></button>
@@ -381,6 +436,11 @@
     var maturityDate = document.getElementById('purchaseMaturityDate');
     var confirmButton = document.getElementById('showPayment');
     var purchaseHint = document.getElementById('purchaseHint');
+    var bondReview = document.getElementById('bondReview');
+    var reviewAmount = document.getElementById('reviewAmount');
+    var reviewInterest = document.getElementById('reviewInterest');
+    var reviewMaturityValue = document.getElementById('reviewMaturityValue');
+    var reviewMaturityDate = document.getElementById('reviewMaturityDate');
     var paymentModal = document.getElementById('paymentModal');
     var paymentModalCancel = document.getElementById('paymentModalCancel');
     var submitPurchase = document.getElementById('submitPurchase');
@@ -460,6 +520,28 @@
       agreementUrl.searchParams.set('payment_method', paymentInput.value);
       window.location.href = agreementUrl.toString();
     }
+    function openBondReview() {
+      if (!amountIsValid() || !hasValidSignature() || (agreementCheckbox && !agreementCheckbox.checked)) {
+        updateConfirmation();
+        return;
+      }
+      bondReview.classList.add('is-open');
+      bondReview.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('scroll-locked');
+      document.getElementById('bondReviewConfirm').focus();
+    }
+    function closeBondReview() {
+      bondReview.classList.remove('is-open');
+      bondReview.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('scroll-locked');
+      confirmButton.focus();
+    }
+    function openPaymentMethods() {
+      closeBondReview();
+      paymentModal.classList.add('is-open');
+      paymentModal.setAttribute('aria-hidden', 'false');
+      document.getElementById('paymentModalTitle').focus();
+    }
 
     function signaturePoint(event) {
       var rect = signaturePad.getBoundingClientRect();
@@ -486,9 +568,13 @@
       var base = Number.isFinite(entered) ? asUsd(entered) : 0;
       var dailyValue = Math.round(base * rate + Number.EPSILON) / 100;
       var interestValue = dailyValue * days;
+      var maturityValue = base + interestValue;
       daily.textContent = formatMoney(fromUsd(dailyValue));
       document.getElementById('purchaseInterest').textContent = formatMoney(fromUsd(interestValue));
-      total.textContent = formatMoney(fromUsd(base + interestValue));
+      total.textContent = formatMoney(fromUsd(maturityValue));
+      reviewAmount.textContent = formatMoney(entered || 0);
+      reviewInterest.textContent = formatMoney(fromUsd(interestValue));
+      reviewMaturityValue.textContent = formatMoney(fromUsd(maturityValue));
       note.textContent = formatMoney(entered || 0) + ' x ' + rate.toFixed(2) + '% daily for ' + days + ' days. Estimated simple interest: ' + formatMoney(fromUsd(interestValue)) + '. Estimates are not guaranteed returns.';
       currencyInput.value = currency;
       currencySymbol.textContent = currency === 'PHP' ? '₱' : '$';
@@ -509,7 +595,9 @@
       if (maturityDate) {
         var maturity = new Date();
         maturity.setDate(maturity.getDate() + days);
-        maturityDate.textContent = maturity.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+        var formattedMaturityDate = maturity.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+        maturityDate.textContent = formattedMaturityDate;
+        reviewMaturityDate.textContent = formattedMaturityDate;
       }
       if (agreementPreviewLink) {
         var previewUrl = new URL(agreementPreviewLink.href, window.location.origin);
@@ -549,13 +637,11 @@
       update();
     });
     document.getElementById('showPayment').addEventListener('click', function () {
-      if (!amountIsValid() || !hasValidSignature() || (agreementCheckbox && !agreementCheckbox.checked)) {
-        updateConfirmation();
-        return;
-      }
-      paymentModal.classList.add('is-open');
-      paymentModal.setAttribute('aria-hidden', 'false');
+      openBondReview();
     });
+    document.getElementById('bondReviewClose').addEventListener('click', closeBondReview);
+    document.getElementById('bondReviewEdit').addEventListener('click', closeBondReview);
+    document.getElementById('bondReviewConfirm').addEventListener('click', openPaymentMethods);
     document.querySelectorAll('#paymentModal [data-payment]').forEach(function (button) {
       button.addEventListener('click', function () {
         paymentInput.value = button.dataset.payment;

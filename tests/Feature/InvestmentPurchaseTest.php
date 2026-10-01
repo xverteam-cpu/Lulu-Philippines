@@ -29,6 +29,10 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('$799.00')
             ->assertSee('$7,998.99')
             ->assertSee('Estimated at maturity')
+            ->assertSee('Review your bond')
+            ->assertSee('Estimated value at maturity')
+            ->assertSee('reviewMaturityValue', false)
+            ->assertSee('reviewMaturityDate', false)
             ->assertSee('invest/agreement/sign')
             ->assertDontSee('id="purchaseSignaturePad"')
             ->assertSee('Continue to payment');

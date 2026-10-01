@@ -18,14 +18,16 @@ class FranchiseApplicationTest extends TestCase
         $this->get(route('franchising'))
             ->assertOk()
             ->assertSee('public-protection.js')
-            ->assertSee('src="https://www.canva.com/design/DAHWplRk3gs/uzYiq8rFZP0ax_GEVfbMiA/view?embed"', false)
-            ->assertSee('franchiseHeader.classList.add(\'is-raised\')', false)
-            ->assertSee('franchise-header-embed.is-raised .franchise-header-mask', false)
-            ->assertDontSee('by X Twitter')
+            ->assertSee('class="franchise-phone"', false)
+            ->assertSee('Open a store in your community')
+            ->assertSee('name="_token"', false)
+            ->assertSee('action="'.route('franchise-applications.store').'"', false)
+            ->assertDontSee('Mossquill')
+            ->assertDontSee('Nothing was sent')
             ->assertSee('id="franchise-application"', false)
             ->assertSee('name="full_name"', false)
             ->assertDontSee('name="preferred_package"', false)
-            ->assertSee('Submit Application');
+            ->assertSee('Submit application');
     }
 
     public function test_guest_can_submit_an_application_and_admin_can_review_it(): void

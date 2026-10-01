@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Apply for a franchise · Mossquill (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F2F5F3; --surface:#FFFFFF;
+    --ink:#0A1F17; --ink-2:#4B5B54; --ink-3:#8A9892; --line:#E2E9E5;
+    --em-950:#021A12; --em-900:#04321F; --em-800:#075A3B; --em-600:#0E8A5A; --em-500:#14A86D;
+    --mint:#3EE0A1; --mint-50:#E6F7EF; --lime:#C6F36B;
+    --gold-ink:#3A2706; --amber-50:#FFF7E6; --amber-600:#B26B00;
+    --display:"Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+    --ui:"Inter", system-ui, -apple-system, sans-serif;
+    --shadow-sm:0 1px 2px rgba(6,40,28,.06), 0 2px 6px -2px rgba(6,40,28,.06);
+    --shadow-md:0 1px 2px rgba(6,40,28,.05), 0 6px 16px -6px rgba(6,40,28,.12), 0 18px 36px -18px rgba(6,40,28,.18);
+    --shadow-lg:0 2px 4px rgba(4,30,20,.08), 0 12px 24px -8px rgba(4,30,20,.22), 0 32px 56px -24px rgba(4,30,20,.38);
+    --ease:cubic-bezier(.2,.8,.2,1);
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --brushed:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.003 .9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 .55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  html.scroll-locked, html.scroll-locked body{overflow:hidden;overscroll-behavior:none}
+  body{
+    font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;justify-content:center;align-items:center;padding:40px 0;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+      #E7ECE9;
+  }
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  a{color:inherit}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"cv11" 1,"ss01" 1}
+
+  /* ---------- Phone frame (device clips, screen scrolls) ---------- */
+  .phone{
+    position:relative;width:390px;height:844px;background:var(--bg);border-radius:54px;
+    overflow:hidden;overflow:clip; /* clip = never programmatically scrollable */
+    box-shadow:0 0 0 10px #0D1411, 0 0 0 11px #2A332F, 0 30px 60px -20px rgba(2,26,18,.40), 0 60px 100px -50px rgba(2,26,18,.30);
+  }
+  .screen{height:100%;overflow-y:auto;scrollbar-width:none;overscroll-behavior:contain}
+  .screen::-webkit-scrollbar{display:none}
+  /* Overlay layer: pinned to the visible phone screen, outside the scroll container */
+  .layer{position:absolute;inset:0;z-index:50;pointer-events:none;overflow:hidden;overflow:clip;border-radius:inherit}
+  .layer > *{pointer-events:auto}
+  .is-locked .screen{overflow:hidden}
+  @media (min-width:521px) and (max-height:940px){
+    body{padding:16px 0}
+    .phone{height:calc(100vh - 32px);min-height:600px}
+  }
+  @media (max-width:520px){
+    body{background:var(--bg);padding:0;display:block}
+    .phone{width:100%;height:auto;min-height:100vh;border-radius:0;box-shadow:none;overflow:visible}
+    .screen{height:auto;overflow:visible}
+    .layer{position:fixed;inset:0;border-radius:0}
+    .is-locked .screen{overflow:visible}
+  }
+
+  /* ---------- Top chrome ---------- */
+  .chrome{position:sticky;top:0;z-index:30;background:rgba(242,245,243,.8);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+  .chrome.is-scrolled{box-shadow:0 1px 0 rgba(10,31,23,.06)}
+  .statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}
+  .statusbar time{font:600 16px/1 var(--ui);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .statusbar .sys{display:flex;gap:6px;align-items:center}
+  .nav{height:52px;display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:12px;padding:0 16px 4px}
+  .back{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);
+    box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(10,31,23,.05);transition:transform .2s var(--ease), box-shadow .2s var(--ease)}
+  .back:hover{box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.06)}
+  .back:active{transform:scale(.92)}
+  .brandmark{display:flex;align-items:center;gap:8px;justify-self:center;font:750 16px/1 var(--display);letter-spacing:-.02em}
+  .brandmark svg{filter:drop-shadow(0 3px 6px rgba(14,138,90,.35))}
+  .concept{height:26px;display:inline-flex;align-items:center;gap:5px;padding:0 10px;border-radius:99px;
+    font:700 9.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--amber-600);
+    background:var(--amber-50);box-shadow:inset 0 0 0 1px rgba(178,107,0,.22)}
+  .concept i{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+  main{padding:6px 20px 8px}
+  .eyebrow{font:600 10.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  h1{margin-top:8px;font:800 28px/1.08 var(--display);letter-spacing:-.035em}
+
+  /* ---------- Panels ---------- */
+  .panel{margin-top:18px;background:var(--surface);border-radius:24px;padding:18px;box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .panel-head{display:flex;justify-content:space-between;align-items:center}
+  .label{font:650 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+
+  /* Segmented control */
+  .seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;border-radius:12px;background:#EAF0ED;box-shadow:inset 0 1px 2px rgba(6,40,28,.06)}
+  .seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/var(--n,2));border-radius:9px;background:#fff;
+    box-shadow:0 1px 2px rgba(6,40,28,.1), 0 3px 8px -2px rgba(6,40,28,.12);transform:translateX(calc(100% * var(--i,0)));transition:transform .35s var(--ease)}
+  .seg button{position:relative;z-index:1;height:30px;padding:0 14px;font:650 12.5px/1 var(--ui);color:var(--ink-3);transition:color .2s}
+  .seg button[aria-pressed="true"]{color:var(--ink)}
+  .check{position:relative;margin-top:14px;display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;cursor:pointer;background:rgba(255,255,255,.7);
+    box-shadow:inset 0 0 0 1px rgba(178,107,0,.14);transition:background .2s, box-shadow .2s}
+  .check:hover{background:#fff}
+  .check input{position:absolute;left:12px;top:12px;width:22px;height:22px;margin:0;opacity:0;pointer-events:none}
+  .box{flex:none;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:#fff;box-shadow:inset 0 0 0 1.5px #C9D3CE;transition:background .2s, box-shadow .2s, transform .2s var(--ease)}
+  .box svg{opacity:0;transform:scale(.5);transition:opacity .2s, transform .25s var(--ease)}
+  .check input:checked + .box{background:var(--em-600);box-shadow:inset 0 0 0 1.5px var(--em-600), 0 3px 8px -2px rgba(14,138,90,.5)}
+  .check input:checked + .box svg{opacity:1;transform:none}
+  .check input:focus-visible + .box{outline:2px solid var(--em-500);outline-offset:2px}
+  .check:active .box{transform:scale(.9)}
+  .check span.t{font:550 13px/1.45 var(--ui);color:var(--ink)}
+
+  /* Sticky CTA */
+  .cta-bar{position:sticky;bottom:0;z-index:20;padding:30px 20px 30px;
+    background:linear-gradient(180deg, rgba(242,245,243,0) 0px, var(--bg) 26px, var(--bg) 100%)}
+  .hint{text-align:center;margin-bottom:10px;font:550 12px/1.2 var(--ui);color:var(--ink-3);transition:opacity .2s}
+  .hint.is-hidden{opacity:0}
+  .cta{width:100%;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;
+    font:650 16px/1 var(--ui);letter-spacing:-.01em;color:#fff;
+    background:linear-gradient(180deg,#11905E 0%,#0A6A45 100%);
+    box-shadow:0 10px 24px -8px rgba(10,106,69,.55), 0 2px 4px rgba(10,106,69,.2), inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15);
+    transition:transform .2s var(--ease), box-shadow .25s var(--ease), filter .2s, background .25s, color .25s}
+  .cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-110%);transition:transform .8s var(--ease)}
+  .cta:not(:disabled):hover::after{transform:translateX(110%)}
+  .cta:not(:disabled):hover{filter:brightness(1.05)}
+  .cta:not(:disabled):active{transform:scale(.98)}
+  .cta:disabled{cursor:not-allowed;color:#8FA39A;background:#DFE7E3;box-shadow:inset 0 0 0 1px rgba(10,31,23,.05)}
+  .home{width:134px;height:5px;border-radius:99px;background:#0A1F17;margin:14px auto 0;opacity:.9}
+
+  /* Bottom sheet */
+  .overlay{position:absolute;inset:0;z-index:50;touch-action:none;background:rgba(2,26,18,.42);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s var(--ease)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:60;max-height:calc(100% - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:10px 20px 30px;border-radius:30px 30px 0 0;background:var(--bg);
+    box-shadow:0 -20px 50px -10px rgba(2,26,18,.35), inset 0 1px 0 rgba(255,255,255,.9);transform:translateY(105%);visibility:hidden;transition:transform .5s cubic-bezier(.2,.9,.2,1), visibility 0s linear .5s}
+  .overlay{pointer-events:none!important}
+  .is-open .overlay{opacity:1;pointer-events:auto!important}
+  .sheet::-webkit-scrollbar{display:none}
+  .toast{pointer-events:none!important}
+  .is-open .sheet{transform:none;visibility:visible;transition:transform .5s cubic-bezier(.2,.9,.2,1), visibility 0s}
+  .grab{width:40px;height:5px;border-radius:99px;background:#C9D3CE;margin:0 auto 16px}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between}
+  .sheet h3{font:800 21px/1.1 var(--display);letter-spacing:-.03em}
+  .x{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#E6ECE9;color:var(--ink-2);transition:transform .2s var(--ease)}
+  .x:active{transform:scale(.9)}
+  .sum-hero{margin-top:16px;position:relative;overflow:hidden;border-radius:22px;padding:18px;color:#fff;
+    background:radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.5), transparent 55%), linear-gradient(160deg, #0B6A47 0%, #054A31 45%, #022418 100%);
+    box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.2)}
+  .sum-hero::before{content:"";position:absolute;inset:0;background:var(--noise);opacity:.08;mix-blend-mode:overlay}
+  .sum-hero .k{font:600 10px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:rgba(232,255,244,.65)}
+  .sum-hero .v{margin-top:10px;font-size:34px;font-weight:750;letter-spacing:-.04em;line-height:1}
+  .sum-hero .s{margin-top:8px;font:500 12px/1.3 var(--ui);color:rgba(232,255,244,.65)}
+  .rows{margin-top:14px;background:var(--surface);border-radius:20px;padding:4px 16px;box-shadow:var(--shadow-sm), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .rows div{display:flex;justify-content:space-between;align-items:center;padding:13px 0;font:500 13.5px/1.2 var(--ui);color:var(--ink-2)}
+  .rows div + div{border-top:1px solid #EEF2F0}
+  .rows b{font-weight:650;color:var(--ink)}
+  .sheet .note{margin:12px 2px 16px;font:500 11.5px/1.45 var(--ui);color:var(--ink-3)}
+  .sheet-actions{position:sticky;bottom:-30px;margin:0 -20px -30px;padding:0 20px 30px;display:grid;grid-template-columns:1fr 2fr;gap:10px;background:var(--bg)}
+  .btn-ghost{height:56px;border-radius:18px;font:650 15px/1 var(--ui);background:#fff;box-shadow:inset 0 0 0 1px var(--line), var(--shadow-sm);transition:transform .2s var(--ease)}
+  .btn-ghost:active{transform:scale(.97)}
+  .toast{position:absolute;left:50%;top:110px;z-index:70;transform:translate(-50%,-20px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:16px;white-space:nowrap;
+    font:600 13px/1 var(--ui);color:#fff;background:rgba(10,31,23,.92);box-shadow:var(--shadow-lg);transition:opacity .3s, transform .4s var(--ease)}
+  .toast.is-on{opacity:1;transform:translate(-50%,0)}
+  .toast svg{color:var(--mint)}
+
+
+  /* ================= Franchise ================= */
+  .lede{margin-top:10px;font:450 14px/1.5 var(--ui);color:var(--ink-2)}
+
+  /* Hero */
+  .hero{position:relative;isolation:isolate;overflow:hidden;margin-top:18px;border-radius:28px;color:#fff;
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(62,224,161,.5), transparent 55%),
+      radial-gradient(80% 60% at 0% 100%, rgba(198,243,107,.22), transparent 60%),
+      linear-gradient(160deg, #0B6A47 0%, #054A31 45%, #022418 100%);
+    box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.07)}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--noise);opacity:.09;mix-blend-mode:overlay}
+  .hero::after{content:"";position:absolute;inset:0 0 60% 0;z-index:-1;background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0))}
+  .hero-art{display:block;width:100%;height:auto;margin-top:6px}
+  .hero-body{padding:4px 20px 20px}
+  .hero h2{font:800 24px/1.1 var(--display);letter-spacing:-.03em}
+  .hero p{margin-top:8px;font:450 13.5px/1.5 var(--ui);color:rgba(232,255,244,.75)}
+  .hl{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .hl span{display:flex;flex-direction:column;align-items:flex-start;gap:9px;padding:11px 10px 12px;border-radius:16px;font:600 11.5px/1.25 var(--ui);color:#F0FFF8;
+    background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 0 0 1px rgba(255,255,255,.1);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .2s var(--ease), background .2s}
+  .hl span:hover{transform:translateY(-1px);background:linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.1))}
+  .hl svg{color:#7BF2C2;flex:none;box-sizing:content-box;padding:6px;border-radius:9px;background:rgba(62,224,161,.16);box-shadow:inset 0 0 0 1px rgba(62,224,161,.25)}
+
+  /* Section heads */
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin:30px 2px 12px}
+  .sec-head h2{font:750 19px/1.1 var(--display);letter-spacing:-.025em}
+  .sec-head .meta{font:600 11.5px/1 var(--ui);color:var(--ink-3)}
+
+  /* Stepper */
+  .steps{list-style:none;background:var(--surface);border-radius:24px;padding:8px 18px;box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .steps li{position:relative;display:flex;gap:14px;padding:12px 0}
+  .steps li:not(:last-child)::after{content:"";position:absolute;left:15px;top:46px;bottom:-10px;width:2px;border-radius:2px;background:repeating-linear-gradient(180deg,#D5E0DA 0 4px,transparent 4px 8px)}
+  .steps li.is-current:not(:last-child)::after{background:linear-gradient(180deg,var(--em-500),#D5E0DA)}
+  .dot{position:relative;z-index:1;flex:none;width:32px;height:32px;border-radius:11px;display:grid;place-items:center;font:700 13px/1 var(--ui);
+    color:var(--ink-3);background:#F1F5F3;box-shadow:inset 0 0 0 1px #DCE5E0}
+  .is-current .dot{color:#fff;background:linear-gradient(180deg,#14A86D,#0A6A45);box-shadow:0 6px 14px -4px rgba(14,138,90,.55), inset 0 1px 0 rgba(255,255,255,.3)}
+  .steps h4{display:flex;align-items:center;gap:8px;font:650 15px/1.25 var(--ui);letter-spacing:-.01em;padding-top:1px}
+  .steps p{margin-top:3px;font:450 12.5px/1.45 var(--ui);color:var(--ink-2)}
+  .now{height:20px;display:inline-flex;align-items:center;padding:0 8px;border-radius:99px;font:700 9px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:#0B6B45;background:var(--mint-50);box-shadow:inset 0 0 0 1px rgba(14,138,90,.16)}
+
+  /* Form */
+  .form{background:var(--surface);border-radius:24px;padding:18px;box-shadow:var(--shadow-md), inset 0 0 0 1px rgba(10,31,23,.04)}
+  .form-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .form-head .req{font:550 11.5px/1 var(--ui);color:var(--ink-3)}
+  .form-head .req i{font-style:normal;color:#C2410C}
+  .grp-label{display:block;margin:6px 2px 10px;font:650 10.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .grp-label:not(:first-child){margin-top:22px}
+  .field{position:relative;margin-top:12px}
+  .grp-label + .field{margin-top:0}
+  .control{display:block;width:100%;height:58px;border:0;outline:0;border-radius:16px;padding:24px 44px 8px 16px;
+    font:500 15.5px/1.2 var(--ui);color:var(--ink);background:#F6F9F7;box-shadow:inset 0 0 0 1.5px var(--line);
+    -webkit-appearance:none;appearance:none;transition:box-shadow .2s var(--ease), background .2s}
+  .control:hover{box-shadow:inset 0 0 0 1.5px #CFDAD4}
+  .control::placeholder{color:transparent}
+  .control:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--em-500), 0 0 0 4px rgba(20,168,109,.14)}
+  .field label.fl{position:absolute;left:16px;top:20px;font:500 15px/1 var(--ui);color:var(--ink-3);pointer-events:none;transform-origin:left top;
+    transition:transform .22s var(--ease), color .2s, font-weight .2s;white-space:nowrap}
+  .field label.fl i{font-style:normal;color:#C2410C;margin-left:2px}
+  .control:focus ~ label.fl, input.control:not(:placeholder-shown) ~ label.fl, textarea.control:not(:placeholder-shown) ~ label.fl, .field.has-value label.fl{transform:translateY(-11px) scale(.76);color:var(--ink-2);font-weight:600}
+  .control:focus ~ label.fl{color:var(--em-600)}
+  .field.is-valid .control:not(:focus){box-shadow:inset 0 0 0 1.5px rgba(14,138,90,.42)}
+  .field.is-error .control{background:#FFF8F7;box-shadow:inset 0 0 0 2px #D14343}
+  .field.is-error .control:focus{box-shadow:inset 0 0 0 2px #D14343, 0 0 0 4px rgba(209,67,67,.14)}
+  .field.is-error label.fl{color:#B42318}
+  .status{position:absolute;right:14px;top:19px;width:20px;height:20px;pointer-events:none}
+  .status svg{position:absolute;inset:0;opacity:0;transform:scale(.6);transition:opacity .2s, transform .25s var(--ease)}
+  .is-valid .status .ok, .is-error .status .bad{opacity:1;transform:none}
+  .field--select .status{right:40px}
+  .chev{position:absolute;right:14px;top:20px;color:var(--ink-3);pointer-events:none;transition:transform .2s var(--ease)}
+  .field--select .control{padding-right:64px;cursor:pointer}
+  .field--select .control:focus ~ .chev{transform:rotate(180deg);color:var(--em-600)}
+  .field--tel .control{padding-left:84px}
+  .field--tel label.fl{left:84px}
+  .prefix{position:absolute;left:8px;top:8px;height:42px;display:flex;align-items:center;gap:6px;padding:0 10px 0 8px;border-radius:11px;
+    font:650 14px/1 var(--ui);color:var(--ink);background:#fff;box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(6,40,28,.06);pointer-events:none;font-variant-numeric:tabular-nums}
+  .prefix svg{border-radius:3px;box-shadow:0 0 0 .5px rgba(0,0,0,.15)}
+  .msg{display:flex;gap:6px;align-items:flex-start;margin:7px 4px 0;font:550 12px/1.35 var(--ui);color:var(--ink-3)}
+  .msg svg{flex:none;margin-top:1px}
+  .msg .e{display:none}
+  .is-error .msg{color:#B42318}
+  .is-error .msg .h{display:none}
+  .is-error .msg .e{display:inline}
+  textarea.control{height:118px;resize:none;padding-top:28px;line-height:1.45;scrollbar-width:thin}
+  .counter{margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .counter.is-near{color:var(--amber-600)}
+  .counter.is-max{color:#B42318}
+
+  .seg--radio{display:grid;width:100%;--n:3}
+  .seg--radio label{position:relative;z-index:1;height:40px;display:grid;place-items:center;cursor:pointer;font:650 13px/1 var(--ui);color:var(--ink-3);transition:color .2s}
+  .seg--radio input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+  .seg--radio input:checked + span{color:var(--ink)}
+  .seg--radio input:focus-visible + span{outline:2px solid var(--em-500);outline-offset:4px;border-radius:6px}
+  .seg--radio span{display:flex;align-items:center;gap:6px}
+  .seg--radio span svg{opacity:.8}
+
+  .consent{margin-top:18px;background:#F6F9F7;box-shadow:inset 0 0 0 1px var(--line)}
+  .consent:hover{background:#fff}
+  .consent.is-error{box-shadow:inset 0 0 0 1.5px #D14343;background:#FFF8F7}
+
+  .fine{margin-top:16px;display:flex;gap:10px;align-items:flex-start;padding:14px 16px;border-radius:18px;
+    background:linear-gradient(180deg,#FFFDF7,#FFF9EC);box-shadow:inset 0 0 0 1px rgba(178,107,0,.16);font:500 12.5px/1.45 var(--ui);color:#5A4A2E}
+  .fine svg{flex:none;margin-top:1px;color:var(--amber-600)}
+
+  /* Success sheet */
+  .ok-badge{position:relative;width:64px;height:64px;margin:4px auto 14px;border-radius:50%;display:grid;place-items:center;color:#fff;
+    background:radial-gradient(120% 120% at 30% 20%, #1FB97A 0%, #0B7A50 50%, #054A31 100%);
+    box-shadow:0 0 0 8px rgba(20,168,109,.12), 0 12px 26px -6px rgba(14,138,90,.6), inset 0 1px 0 rgba(255,255,255,.35)}
+  .ok-badge path{stroke-dasharray:30;stroke-dashoffset:30}
+  .is-open .ok-badge path{animation:draw .5s .35s var(--ease) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .sheet-title{text-align:center}
+  .sheet-title h3{font:800 22px/1.1 var(--display);letter-spacing:-.03em}
+  .sheet-title .sub{margin-top:10px;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px;border-radius:99px;
+    font:650 11.5px/1 var(--ui);color:var(--amber-600);background:var(--amber-50);box-shadow:inset 0 0 0 1px rgba(178,107,0,.22)}
+  .sheet .x{position:absolute;right:16px;top:16px}
+  .rows div{gap:16px}
+  .rows div span{flex:none}
+  .rows b{text-align:right;min-width:0;overflow-wrap:anywhere}
+  .rows .msgrow{align-items:flex-start}
+  .rows .msgrow b{font-weight:500;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .sheet-actions{grid-template-columns:1fr 1.6fr}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.ok-badge path{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+ <div class="screen" id="screen">
+  <header class="chrome" id="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="back" aria-label="Back" onclick="history.length > 1 && history.back()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="brandmark">
+        <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+          <defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1FB97A"/><stop offset="1" stop-color="#054A31"/></linearGradient></defs>
+          <rect width="26" height="26" rx="8" fill="url(#mk)"/>
+          <path d="M7 19.5C7 12 11.5 7 19.5 6.5c0 7.6-4.6 12.6-12.5 13Z" fill="#E8FFF4" opacity=".95"/>
+          <path d="M7.5 19L15 11.5" stroke="#0B6A47" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Mossquill
+      </div>
+      <span class="concept" title="Design concept: fictional brand, not a real offer"><i></i>Concept</span>
+    </nav>
+  </header>
+  <main>
+    <div class="eyebrow">Franchise</div>
+    <h1>Apply for a franchise</h1>
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="heroTitle">
+      <svg class="hero-art" viewBox="0 0 350 170" fill="none" aria-hidden="true">
+        <defs>
+          <radialGradient id="glow" cx="50%" cy="60%" r="55%"><stop offset="0" stop-color="#3EE0A1" stop-opacity=".45"/><stop offset="1" stop-color="#3EE0A1" stop-opacity="0"/></radialGradient>
+          <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7FBF9"/><stop offset="1" stop-color="#D9E6E0"/></linearGradient>
+          <linearGradient id="sign" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B5D3F"/><stop offset="1" stop-color="#03251A"/></linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BFF5DD"/><stop offset=".55" stop-color="#7FD9B3"/><stop offset="1" stop-color="#3FAE84"/></linearGradient>
+          <linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9BE5C4"/><stop offset="1" stop-color="#3D9F79"/></linearGradient>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FCEBB9"/><stop offset=".5" stop-color="#D4A64A"/><stop offset="1" stop-color="#F3D58A"/></linearGradient>
+          <clipPath id="awn"><rect x="78" y="70" width="194" height="20"/></clipPath>
+        </defs>
+        <ellipse cx="175" cy="105" rx="170" ry="80" fill="url(#glow)"/>
+        <!-- distant skyline -->
+        <g fill="#E8FFF4" opacity=".08"><rect x="18" y="62" width="30" height="96" rx="3"/><rect x="52" y="44" width="22" height="114" rx="3"/><rect x="284" y="50" width="26" height="108" rx="3"/><rect x="314" y="70" width="22" height="88" rx="3"/></g>
+        <!-- ground -->
+        <ellipse cx="175" cy="160" rx="140" ry="8" fill="#000" opacity=".22"/>
+        <rect x="40" y="156" width="270" height="3" rx="1.5" fill="#E8FFF4" opacity=".18"/>
+        <!-- building -->
+        <rect x="70" y="38" width="210" height="120" rx="10" fill="url(#wall)"/>
+        <rect x="70" y="38" width="210" height="120" rx="10" stroke="#fff" stroke-opacity=".7"/>
+        <!-- sign band -->
+        <rect x="80" y="46" width="190" height="26" rx="7" fill="url(#sign)"/>
+        <rect x="80.5" y="46.5" width="189" height="25" rx="6.5" stroke="#3EE0A1" stroke-opacity=".35"/>
+        <rect x="118" y="51" width="16" height="16" rx="5" fill="#14A86D"/>
+        <path d="M121.5 64C121.5 58.5 124.8 55 130.5 54.6c0 5.6-3.4 9.1-9 9.4Z" fill="#E8FFF4"/>
+        <text x="140" y="63.5" fill="#F0FFF8" font-family="Plus Jakarta Sans, Inter, sans-serif" font-weight="800" font-size="12.5" letter-spacing="-.2">Mossquill</text>
+        <circle cx="258" cy="59" r="3" fill="url(#gold)"/>
+        <!-- awning -->
+        <g clip-path="url(#awn)">
+          <rect x="78" y="70" width="194" height="20" fill="#E8FFF4"/>
+          <g fill="#14A86D"><rect x="78" y="70" width="16" height="20"/><rect x="110" y="70" width="16" height="20"/><rect x="142" y="70" width="16" height="20"/><rect x="174" y="70" width="16" height="20"/><rect x="206" y="70" width="16" height="20"/><rect x="238" y="70" width="16" height="20"/></g>
+        </g>
+        <path d="M78 90c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8c0 4.4 3.6 8 8 8s8-3.6 8-8" fill="#0E8A5A"/>
+        <path d="M78 90h194" stroke="#065A3A" stroke-opacity=".35"/>
+        <!-- windows -->
+        <g>
+          <rect x="88" y="104" width="62" height="44" rx="5" fill="url(#glass)"/>
+          <rect x="200" y="104" width="62" height="44" rx="5" fill="url(#glass)"/>
+          <g stroke="#2E8A66" stroke-opacity=".5" stroke-width="1.4"><path d="M92 118h54M92 132h54M204 118h54M204 132h54"/></g>
+          <g fill="#FFFFFF" opacity=".85"><rect x="96" y="110" width="8" height="7" rx="1.5"/><rect x="108" y="111" width="6" height="6" rx="1.5"/><rect x="124" y="109" width="10" height="8" rx="1.5"/><rect x="98" y="124" width="10" height="7" rx="1.5"/><rect x="116" y="125" width="7" height="6" rx="1.5"/><rect x="210" y="110" width="9" height="7" rx="1.5"/><rect x="226" y="111" width="7" height="6" rx="1.5"/><rect x="240" y="109" width="10" height="8" rx="1.5"/><rect x="214" y="124" width="7" height="7" rx="1.5"/><rect x="230" y="125" width="11" height="6" rx="1.5"/></g>
+          <g fill="#F3D58A" opacity=".9"><rect x="130" y="124" width="8" height="7" rx="1.5"/><rect x="246" y="124" width="7" height="7" rx="1.5"/><rect x="134" y="138" width="9" height="7" rx="1.5"/><rect x="208" y="138" width="9" height="7" rx="1.5"/></g>
+          <path d="M92 108l20 0-14 36h-6z" fill="#fff" opacity=".22"/><path d="M204 108l20 0-14 36h-6z" fill="#fff" opacity=".22"/>
+        </g>
+        <!-- door -->
+        <rect x="158" y="100" width="34" height="58" rx="5" fill="url(#door)"/>
+        <rect x="158.5" y="100.5" width="33" height="57" rx="4.5" stroke="#fff" stroke-opacity=".6"/>
+        <path d="M175 100v58" stroke="#2E8A66" stroke-opacity=".55"/>
+        <circle cx="171" cy="130" r="1.6" fill="url(#gold)"/><circle cx="179" cy="130" r="1.6" fill="url(#gold)"/>
+        <rect x="164" y="108" width="22" height="9" rx="2" fill="#fff" opacity=".9"/>
+        <text x="175" y="114.6" text-anchor="middle" fill="#0B6A47" font-family="Inter, sans-serif" font-weight="700" font-size="5.6" letter-spacing=".4">OPEN</text>
+        <!-- lamps -->
+        <g><circle cx="98" cy="96" r="2.4" fill="#FFF3C4"/><circle cx="98" cy="96" r="7" fill="#FFF3C4" opacity=".18"/><circle cx="252" cy="96" r="2.4" fill="#FFF3C4"/><circle cx="252" cy="96" r="7" fill="#FFF3C4" opacity=".18"/></g>
+        <!-- plants -->
+        <g>
+          <rect x="52" y="140" width="18" height="18" rx="4" fill="url(#gold)"/>
+          <circle cx="56" cy="134" r="8" fill="#14A86D"/><circle cx="66" cy="131" r="9" fill="#0E8A5A"/><circle cx="61" cy="124" r="7" fill="#3EE0A1"/>
+          <rect x="280" y="140" width="18" height="18" rx="4" fill="url(#gold)"/>
+          <circle cx="284" cy="131" r="9" fill="#0E8A5A"/><circle cx="294" cy="134" r="8" fill="#14A86D"/><circle cx="289" cy="124" r="7" fill="#3EE0A1"/>
+        </g>
+        <!-- sparkles -->
+        <g fill="#C6F36B"><path d="M300 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" opacity=".8"/><path d="M44 36l1.4 3.4 3.4 1.4-3.4 1.4L44 45.6l-1.4-3.4-3.4-1.4 3.4-1.4z" opacity=".6"/></g>
+      </svg>
+      <div class="hero-body">
+        <h2 id="heroTitle">Own a Mossquill store</h2>
+        <p>Bring a neighbourhood store to your community, with guidance from our team at every step.</p>
+        <div class="hl">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>Training &amp;<br>onboarding</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 5 4h14l2 5.5"/><path d="M3 9.5h18v1a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0v-1Z"/><path d="M5 13v7h14v-7"/></svg>Store design<br>support</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>Marketing<br>toolkit</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <div class="sec-head"><h2>How it works</h2><span class="meta">4 steps</span></div>
+    <ol class="steps">
+      <li class="is-current"><span class="dot num">1</span><div><h4>Apply <span class="now">You're here</span></h4><p>Tell us about yourself and where you'd like a store.</p></div></li>
+      <li><span class="dot num">2</span><div><h4>Review call</h4><p>A short call with our franchise team to talk it through.</p></div></li>
+      <li><span class="dot num">3</span><div><h4>Site visit</h4><p>We look at your proposed location together.</p></div></li>
+      <li><span class="dot num">4</span><div><h4>Agreement</h4><p>Review the franchise agreement before deciding.</p></div></li>
+    </ol>
+
+    <!-- Application form -->
+    <div class="sec-head"><h2>Your application</h2></div>
+    <form class="form" id="form" novalidate autocomplete="on">
+      <div class="form-head"><span class="grp-label" style="margin:0">Contact details</span><span class="req"><i>*</i> Required</span></div>
+
+      <div class="field" data-field="name">
+        <input class="control" id="name" name="name" type="text" autocomplete="name" autocapitalize="words" spellcheck="false" placeholder="Full name" required maxlength="80" aria-describedby="name-msg" />
+        <label class="fl" for="name">Full name<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <div class="msg" id="name-msg"><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Enter your full name.</span></div>
+      </div>
+
+      <div class="field" data-field="email">
+        <input class="control" id="email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="Email" required maxlength="120" aria-describedby="email-msg" />
+        <label class="fl" for="email">Email<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <div class="msg" id="email-msg"><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Enter a valid email, like name@example.com.</span></div>
+      </div>
+
+      <div class="field field--tel" data-field="mobile">
+        <span class="prefix" aria-hidden="true">
+          <svg width="18" height="12" viewBox="0 0 18 12"><rect width="18" height="6" fill="#0038A8"/><rect y="6" width="18" height="6" fill="#CE1126"/><path d="M0 0l9 6-9 6z" fill="#fff"/><circle cx="3" cy="6" r="1.3" fill="#FCD116"/></svg>+63
+        </span>
+        <input class="control num" id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="Mobile number" required maxlength="14" aria-describedby="mobile-msg" />
+        <label class="fl" for="mobile">Mobile number<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <div class="msg" id="mobile-msg"><span class="h">10 digits starting with 9, e.g. 917 000 0000</span><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Enter 10 digits starting with 9.</span></div>
+      </div>
+
+      <span class="grp-label">Store details</span>
+      <div class="field field--select" data-field="city">
+        <select class="control" id="city" name="city" autocomplete="address-level1" required aria-describedby="city-msg">
+          <option value="" hidden></option>
+          <option>Metro Manila</option><option>Cavite</option><option>Laguna</option><option>Batangas</option><option>Rizal</option>
+          <option>Bulacan</option><option>Pampanga</option><option>Pangasinan</option><option>Cebu</option><option>Iloilo</option>
+          <option>Negros Occidental</option><option>Davao del Sur</option><option>Misamis Oriental</option><option>Other</option>
+        </select>
+        <label class="fl" for="city">City / province<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        <div class="msg" id="city-msg"><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Choose a city or province.</span></div>
+      </div>
+
+      <div class="field" data-field="location">
+        <input class="control" id="location" name="location" type="text" autocomplete="off" placeholder="Preferred store location" required maxlength="120" aria-describedby="location-msg" />
+        <label class="fl" for="location">Preferred store location<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <div class="msg" id="location-msg"><span class="h">Street, barangay or a nearby landmark</span><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Tell us where you'd like the store.</span></div>
+      </div>
+
+      <div class="field field--select" data-field="experience">
+        <select class="control" id="experience" name="experience" autocomplete="off" required aria-describedby="experience-msg">
+          <option value="" hidden></option>
+          <option>First business</option><option>Less than 2 years</option><option>2–5 years</option><option>More than 5 years</option><option>I already run a franchise</option>
+        </select>
+        <label class="fl" for="experience">Business experience<i aria-hidden="true">*</i></label>
+        <span class="status" aria-hidden="true"><svg class="ok" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0E8A5A"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> <svg class="bad" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#D14343"/><path d="M12 7v6M12 16.5h.01" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        <div class="msg" id="experience-msg"><span class="e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Choose your business experience.</span></div>
+      </div>
+
+      <span class="grp-label" id="timeLabel">Preferred contact time</span>
+      <div class="seg seg--radio" id="timeSeg" role="radiogroup" aria-labelledby="timeLabel" style="--i:0">
+        <span class="thumb"></span>
+        <label><input type="radio" name="time" value="Morning" checked /><span>Morning</span></label>
+        <label><input type="radio" name="time" value="Afternoon" /><span>Afternoon</span></label>
+        <label><input type="radio" name="time" value="Evening" /><span>Evening</span></label>
+      </div>
+
+      <div class="field" data-field="message" style="margin-top:16px">
+        <textarea class="control" id="message" name="message" autocomplete="off" placeholder="Message" maxlength="500" aria-describedby="message-msg"></textarea>
+        <label class="fl" for="message">Message (optional)</label>
+        <div class="msg" id="message-msg"><span class="h">Anything you'd like our team to know</span><span class="counter" id="counter" aria-live="polite">0 / 500</span></div>
+      </div>
+
+      <label class="check consent" id="consentBox">
+        <input type="checkbox" id="consent" name="consent" required />
+        <span class="box" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+        <span class="t">I agree to be contacted by Mossquill about this application.<i style="font-style:normal;color:#C2410C"> *</i></span>
+      </label>
+    </form>
+
+    <div class="fine" role="note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <span>Mossquill is a fictional brand. This is a design concept, not a real franchise offer.</span>
+    </div>
+  </main>
+
+  <div class="cta-bar">
+    <div class="hint" id="hint" aria-live="polite">Complete the required fields</div>
+    <button class="cta" id="submit" type="submit" form="form" disabled>
+      Submit application
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="home" aria-hidden="true"></div>
+  </div>
+ </div>
+
+  <!-- Overlay layer (outside the scroll container, pinned to the phone screen) -->
+  <div class="layer" id="layer">
+    <div class="overlay" id="overlay"></div>
+    <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-describedby="sheetSub" aria-hidden="true">
+      <div class="grab" aria-hidden="true"></div>
+      <button class="x" id="close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="ok-badge" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <div class="sheet-title">
+        <h3 id="sheetTitle">Application received</h3>
+        <div class="sub" id="sheetSub"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Concept only, nothing was sent</div>
+      </div>
+      <div class="rows" id="summary"></div>
+      <p class="note">Your details stayed on this page. Nothing was saved or sent. Mossquill is a fictional brand. This is a design concept, not a real franchise offer.</p>
+      <div class="sheet-actions">
+        <button class="btn-ghost" id="edit" type="button">Edit</button>
+        <button class="cta" id="done" type="button">Done</button>
+      </div>
+    </section>
+    <div class="toast" id="toast" role="status">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      Form cleared. Nothing was sent
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Concept only: this script never sends or stores data (no fetch/XHR/beacon, no storage, no cookies).
+  const $ = id => document.getElementById(id);
+  const form = $('form');
+  const rules = {
+    name:       v => v.trim().length >= 2 && /^[\p{L}][\p{L} .'\-]*$/u.test(v.trim()),
+    email:      v => /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[A-Za-z]{2,}$/.test(v.trim()),
+    mobile:     v => /^9\d{9}$/.test(v.replace(/\D/g, '')),
+    city:       v => v !== '',
+    location:   v => v.trim().length >= 3,
+    experience: v => v !== '',
+  };
+  const touched = new Set();
+
+  function fieldEl(id) { return form.querySelector(`[data-field="${id}"]`); }
+  function check(id, {show = touched.has(id)} = {}) {
+    const input = $(id), ok = rules[id](input.value), f = fieldEl(id);
+    const filled = input.value.trim() !== '';
+    f.classList.toggle('has-value', filled);
+    f.classList.toggle('is-valid', ok);
+    const err = !ok && show;
+    f.classList.toggle('is-error', err);
+    input.setAttribute('aria-invalid', err ? 'true' : 'false');
+    return ok;
+  }
+
+  // Mobile: digits only, drop a leading 0 or 63 country code, format as 9XX XXX XXXX
+  function formatMobile(el) {
+    let d = el.value.replace(/\D/g, '');
+    if (d.length > 10 && d.startsWith('63')) d = d.slice(2);
+    if (d.startsWith('0')) d = d.slice(1);
+    d = d.slice(0, 10);
+    el.value = [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ');
+  }
+
+  Object.keys(rules).forEach(id => {
+    const el = $(id);
+    el.addEventListener('input', () => { if (id === 'mobile') formatMobile(el); check(id); update(); });
+    el.addEventListener('change', () => { touched.add(id); check(id); update(); });
+    el.addEventListener('blur', () => { touched.add(id); check(id); update(); }); // errors appear after leaving a field
+  });
+
+  // message counter
+  const msg = $('message'), counter = $('counter');
+  msg.addEventListener('input', () => {
+    const n = msg.value.length;
+    counter.textContent = `${n} / 500`;
+    counter.classList.toggle('is-near', n >= 450 && n < 500);
+    counter.classList.toggle('is-max', n >= 500);
+    fieldEl('message').classList.toggle('has-value', n > 0);
+  });
+
+  // contact time segmented radios
+  const seg = $('timeSeg');
+  seg.querySelectorAll('input').forEach((r, i) => r.addEventListener('change', () => seg.style.setProperty('--i', i)));
+
+  // consent
+  const consent = $('consent');
+  consent.addEventListener('change', () => { $('consentBox').classList.remove('is-error'); update(); });
+
+  function update() {
+    const bad = Object.keys(rules).filter(id => !rules[id]($(id).value));
+    const ready = bad.length === 0 && consent.checked;
+    $('submit').disabled = !ready;
+    const hint = $('hint');
+    hint.classList.toggle('is-hidden', ready);
+    if (bad.length) hint.textContent = `${bad.length} required field${bad.length > 1 ? 's' : ''} left`;
+    else if (!consent.checked) hint.textContent = 'Tick the consent box to continue';
+  }
+
+  // ---------- sheet (same pinned-layer + scroll-lock pattern as bond-purchase.html) ----------
+  const phone = $('phone'), sheet = $('sheet'), screen = $('screen'), root = document.documentElement;
+  const mobileMQ = matchMedia('(max-width:520px)');
+  let lockY = 0, focusTimer;
+  function lock() {
+    phone.classList.add('is-locked');
+    if (mobileMQ.matches) {
+      lockY = window.scrollY;
+      Object.assign(document.body.style, {position:'fixed', top: -lockY + 'px', left:'0', right:'0'});
+    }
+    root.classList.add('scroll-locked');
+    screen.inert = true;
+  }
+  function unlock() {
+    phone.classList.remove('is-locked');
+    root.classList.remove('scroll-locked');
+    screen.inert = false;
+    if (document.body.style.position === 'fixed') {
+      Object.assign(document.body.style, {position:'', top:'', left:'', right:''});
+      window.scrollTo(0, lockY);
+    }
+  }
+  const open = () => {
+    if (phone.classList.contains('is-open')) return;
+    lock();
+    phone.classList.add('is-open'); sheet.setAttribute('aria-hidden', 'false');
+    sheet.scrollTop = 0;
+    clearTimeout(focusTimer);
+    focusTimer = setTimeout(() => $('done').focus({preventScroll:true}), 350);
+  };
+  const close = (focusBack = true) => {
+    if (!phone.classList.contains('is-open')) return;
+    clearTimeout(focusTimer);
+    phone.classList.remove('is-open'); sheet.setAttribute('aria-hidden', 'true');
+    unlock();
+    if (focusBack) $('submit').focus({preventScroll:true});
+  };
+  sheet.addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const f = [...sheet.querySelectorAll('button')], first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus({preventScroll:true}); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus({preventScroll:true}); }
+  });
+
+  function buildSummary() {
+    const fd = new FormData(form);
+    const rows = [
+      ['Name', fd.get('name').trim()],
+      ['Email', fd.get('email').trim()],
+      ['Mobile', '+63 ' + $('mobile').value],
+      ['City / province', fd.get('city')],
+      ['Preferred location', fd.get('location').trim()],
+      ['Experience', fd.get('experience')],
+      ['Contact time', fd.get('time')],
+    ];
+    const m = (fd.get('message') || '').trim();
+    if (m) rows.push(['Message', m]);
+    const box = $('summary'); box.replaceChildren();
+    rows.forEach(([k, v]) => {
+      const row = document.createElement('div'), a = document.createElement('span'), b = document.createElement('b');
+      a.textContent = k; b.textContent = v; // textContent: no HTML injection
+      if (k === 'Message') row.className = 'msgrow';
+      row.append(a, b); box.append(row);
+    });
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault(); // never submitted anywhere
+    Object.keys(rules).forEach(id => { touched.add(id); check(id, {show:true}); });
+    if (!consent.checked) $('consentBox').classList.add('is-error');
+    update();
+    if ($('submit').disabled) return;
+    buildSummary();
+    open();
+  });
+
+  $('close').addEventListener('click', () => close());
+  $('edit').addEventListener('click', () => close());
+  $('overlay').addEventListener('click', () => close());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && phone.classList.contains('is-open')) close(); });
+  $('done').addEventListener('click', () => {
+    close(false);
+    form.reset(); touched.clear();
+    seg.style.setProperty('--i', 0);
+    Object.keys(rules).forEach(id => { const f = fieldEl(id); f.classList.remove('is-valid', 'is-error', 'has-value'); $(id).setAttribute('aria-invalid', 'false'); });
+    fieldEl('message').classList.remove('has-value'); counter.textContent = '0 / 500'; counter.className = 'counter';
+    update();
+    const t = $('toast'); t.classList.add('is-on'); setTimeout(() => t.classList.remove('is-on'), 2400);
+  });
+
+  // header hairline on scroll
+  const onScroll = () => $('chrome').classList.toggle('is-scrolled', (screen.scrollTop || window.scrollY) > 4);
+  screen.addEventListener('scroll', onScroll); window.addEventListener('scroll', onScroll);
+
+  update();
+})();
+</script>
+</body>
+</html>

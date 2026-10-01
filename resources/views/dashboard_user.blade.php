@@ -1829,10 +1829,12 @@
   }
 
   .dashboard-hero {
+    display: flex;
+    flex-direction: column;
     height: auto;
     min-height: 0;
     aspect-ratio: auto;
-    padding: 22px 22px 20px;
+    padding: 18px 18px 15px;
     border: 0;
     border-radius: 28px;
     background:
@@ -1841,6 +1843,21 @@
       radial-gradient(60% 50% at 40% 40%, rgba(20, 168, 109, .35), transparent 70%),
       linear-gradient(160deg, #0b6a47 0%, #054a31 42%, #022418 100%);
     box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22), 0 32px 56px -24px rgba(4, 30, 20, .38), inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(255, 255, 255, .07);
+  }
+
+  .dashboard-hero .hero__waves {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .dashboard-hero > *:not(.hero__waves) {
+    position: relative;
+    z-index: 1;
   }
 
   .dashboard-hero::before {
@@ -1910,7 +1927,7 @@
   .dashboard-balance {
     display: flex;
     align-items: flex-start;
-    margin-top: 11px;
+    margin-top: 8px;
     color: #fff;
     font-size: clamp(34px, 10vw, 42px);
     font-weight: 700;
@@ -1955,8 +1972,8 @@
   }
 
   .dashboard-assets {
-    margin-top: 15px;
-    padding: 10px 13px;
+    margin-top: 12px;
+    padding: 8px 11px;
     border: 0;
     border-radius: 18px;
     background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .05));

@@ -66,16 +66,24 @@ class DashboardBondEarningsTest extends TestCase
             'balance' => 82.5,
         ]);
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('class="wallet-shell dashboard-shell"', false)
             ->assertSee('id="dashboardBalanceToggle"', false)
-            ->assertSee('$82.50')
-            ->assertSee('$0.00')
+            ->assertSee('9:41')
+            ->assertSee('Purchase Bonds')
+            ->assertSee('Apply for Franchise')
+            ->assertSee(asset('logo.png'), false)
+            ->assertSee(asset('banner-bonds.jpg'), false)
+            ->assertSee(asset('banner-franchise.jpg'), false)
             ->assertSee(route('invest.advertisement'), false)
-            ->assertSee(route('franchising'), false)
-            ->assertDontSee('$906.31');
+            ->assertSee(route('franchising'), false);
+
+        $plainText = html_entity_decode(strip_tags($response->getContent()));
+        $this->assertStringContainsString('$82.50', $plainText);
+        $this->assertStringContainsString('$0.00', $plainText);
+        $this->assertStringNotContainsString('$906.31', $plainText);
     }
 
     public function test_invest_page_shows_account_package_cards_under_total_investment(): void

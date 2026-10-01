@@ -2,6 +2,8 @@
 
 @section('content')
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
   :root {
     --color-primary: #166534;
     --color-primary-soft: #70f556;
@@ -1694,6 +1696,589 @@
     }
   }
 
+  :root {
+    --dashboard-bg: #f2f5f3;
+    --dashboard-ink: #0a1f17;
+    --dashboard-muted: #8a9892;
+    --dashboard-green: #0e8a5a;
+    --dashboard-mint: #3ee0a1;
+    --dashboard-lime: #c6f36b;
+  }
+
+  body {
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+    justify-content: center;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20, 168, 109, .18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198, 243, 107, .14), transparent 60%),
+      #e7ece9 !important;
+    color: var(--dashboard-ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dashboard-shell {
+    position: relative;
+    width: 390px;
+    max-width: 100%;
+    height: 844px;
+    min-height: 844px;
+    margin: 40px auto;
+    padding: 0 0 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 54px;
+    background: var(--dashboard-bg);
+    box-shadow: 0 0 0 10px #0d1411, 0 0 0 11px #2a332f, 0 30px 60px -20px rgba(2, 26, 18, .4), 0 60px 100px -50px rgba(2, 26, 18, .3);
+    scrollbar-width: none;
+  }
+
+  .dashboard-shell::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dashboard-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(242, 245, 243, .78);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .dashboard-statusbar {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 30px 0 36px;
+    color: var(--dashboard-ink);
+  }
+
+  .dashboard-statusbar time {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dashboard-status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dashboard-dash-nav {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 6px;
+  }
+
+  .dashboard-logo {
+    position: relative;
+    display: block;
+    width: 48px;
+    height: 48px;
+    padding: 2.5px;
+    border: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #3ee0a1, #0e8a5a, #054a31, #c6f36b, #3ee0a1);
+    box-shadow: 0 6px 16px -6px rgba(4, 30, 20, .45), 0 1px 2px rgba(4, 30, 20, .12);
+  }
+
+  .dashboard-logo::before {
+    position: absolute;
+    inset: 2.5px;
+    border-radius: 50%;
+    background: #fff;
+    content: "";
+  }
+
+  .dashboard-logo img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+    border-radius: 50%;
+  }
+
+  .dashboard-profile {
+    height: 42px;
+    gap: 9px;
+    padding: 0 15px 0 5px;
+    color: var(--dashboard-ink);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    background: rgba(255, 255, 255, .9);
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), 0 2px 6px -2px rgba(6, 40, 28, .06), inset 0 0 0 1px rgba(10, 31, 23, .06);
+  }
+
+  .dashboard-profile-icon {
+    width: 32px;
+    height: 32px;
+    color: #075a3b;
+    background: linear-gradient(180deg, #edfaf3, #d7f1e4);
+    box-shadow: inset 0 0 0 1px rgba(14, 138, 90, .16);
+  }
+
+  .dashboard-content {
+    padding: 10px 20px 24px;
+  }
+
+  .dashboard-hero {
+    padding: 22px 22px 20px;
+    border: 0;
+    border-radius: 28px;
+    background:
+      radial-gradient(120% 90% at 105% -10%, rgba(62, 224, 161, .55), transparent 55%),
+      radial-gradient(70% 70% at -10% 110%, rgba(198, 243, 107, .28), transparent 60%),
+      radial-gradient(60% 50% at 40% 40%, rgba(20, 168, 109, .35), transparent 70%),
+      linear-gradient(160deg, #0b6a47 0%, #054a31 42%, #022418 100%);
+    box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22), 0 32px 56px -24px rgba(4, 30, 20, .38), inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(255, 255, 255, .07);
+  }
+
+  .dashboard-hero::before {
+    inset: 0;
+    z-index: -1;
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: .09;
+    mix-blend-mode: overlay;
+  }
+
+  .dashboard-hero::after {
+    inset: 0 0 55%;
+    z-index: -1;
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 28px 28px 0 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, 0));
+  }
+
+  .dashboard-hero-top {
+    justify-content: space-between;
+  }
+
+  .dashboard-hero-label {
+    color: rgba(232, 255, 244, .72);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .dashboard-hero-label::before {
+    width: 6px;
+    height: 6px;
+    background: var(--dashboard-mint);
+    box-shadow: 0 0 0 3px rgba(62, 224, 161, .22), 0 0 10px var(--dashboard-mint);
+  }
+
+  .dashboard-balance-toggle {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .06));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 1px rgba(255, 255, 255, .1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .dashboard-balance-toggle .off {
+    display: none;
+  }
+
+  .dashboard-hero.is-hidden .dashboard-balance-toggle .on {
+    display: none;
+  }
+
+  .dashboard-hero.is-hidden .dashboard-balance-toggle .off {
+    display: block;
+  }
+
+  .dashboard-balance {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 16px;
+    color: #fff;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -.04em;
+    line-height: 1;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .18);
+  }
+
+  .dashboard-balance .currency {
+    margin: 5px 3px 0 0;
+    color: rgba(255, 255, 255, .8);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .dashboard-balance .decimal {
+    color: rgba(255, 255, 255, .55);
+  }
+
+  .dashboard-balance .balance-mask,
+  .dashboard-assets-value .balance-mask {
+    display: none;
+    letter-spacing: .04em;
+  }
+
+  .dashboard-hero.is-hidden .balance-readable,
+  .dashboard-hero.is-hidden .asset-readable {
+    display: none;
+  }
+
+  .dashboard-hero.is-hidden .balance-mask,
+  .dashboard-hero.is-hidden .asset-mask {
+    display: inline;
+  }
+
+  .dashboard-hero.is-hidden .balance-mask {
+    position: relative;
+    top: -6px;
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .dashboard-assets {
+    margin-top: 22px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .05));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), inset 0 0 0 1px rgba(255, 255, 255, .08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .dashboard-assets-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(62, 224, 161, .16);
+    box-shadow: inset 0 0 0 1px rgba(62, 224, 161, .28);
+    color: #7bf2c2;
+  }
+
+  .dashboard-assets-label {
+    color: rgba(232, 255, 244, .62);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .dashboard-assets-value {
+    margin-top: 7px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -.025em;
+    line-height: 1;
+  }
+
+  .dashboard-assets-value .decimal {
+    color: rgba(255, 255, 255, .6);
+    font-size: 15px;
+  }
+
+  .dashboard-promos {
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .dashboard-promo {
+    isolation: isolate;
+    height: 212px;
+    aspect-ratio: auto;
+    border-radius: 26px;
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .05), 0 6px 16px -6px rgba(6, 40, 28, .12), 0 18px 36px -18px rgba(6, 40, 28, .18);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+    transition: transform .5s cubic-bezier(.2, .8, .2, 1), box-shadow .4s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .dashboard-promo img {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    object-fit: cover;
+    transition: transform 1.2s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .dashboard-promo:first-child img {
+    object-position: 30% 50%;
+  }
+
+  .dashboard-promo:last-child img {
+    object-position: 42% 50%;
+  }
+
+  .dashboard-promo:focus-visible {
+    box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22), 0 32px 56px -24px rgba(4, 30, 20, .38), 0 0 0 3px var(--dashboard-bg), 0 0 0 5px var(--dashboard-green);
+    outline: none;
+  }
+
+  .dashboard-promo:hover {
+    --lift: -3px;
+    box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22), 0 32px 56px -24px rgba(4, 30, 20, .38);
+  }
+
+  .dashboard-promo:hover img {
+    transform: scale(1.05);
+  }
+
+  .dashboard-promo:active {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(.985);
+  }
+
+  .dashboard-promo-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(180deg, rgba(2, 26, 18, 0) 28%, rgba(2, 26, 18, .42) 58%, rgba(2, 26, 18, .9) 100%), linear-gradient(90deg, rgba(4, 50, 31, .55), transparent 62%);
+    pointer-events: none;
+  }
+
+  .dashboard-promo-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px 18px 16px 20px;
+    pointer-events: none;
+  }
+
+  .dashboard-promo h2 {
+    color: #fff;
+    font-family: "Plus Jakarta Sans", Inter, sans-serif;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, .35);
+  }
+
+  .dashboard-promo-cta {
+    display: inline-flex;
+    height: 34px;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 0 13px 0 14px;
+    border-radius: 99px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .24), rgba(255, 255, 255, .1));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .18), 0 6px 16px -6px rgba(0, 0, 0, .4);
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  .dashboard-promo-edge {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 1px rgba(255, 255, 255, .1);
+    pointer-events: none;
+  }
+
+  .dashboard-tabbar-wrap {
+    position: sticky;
+    bottom: 0;
+    z-index: 35;
+    padding: 26px 16px 10px;
+    background: linear-gradient(180deg, rgba(242, 245, 243, 0), rgba(242, 245, 243, .85) 45%, var(--dashboard-bg));
+  }
+
+  .bottom-nav {
+    position: relative !important;
+    inset: auto !important;
+    display: grid;
+    width: 100%;
+    height: 70px;
+    grid-template-columns: 1fr 1fr 76px 1fr 1fr;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    border: 0;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), 0 12px 32px -10px rgba(6, 40, 28, .25), inset 0 0 0 1px rgba(255, 255, 255, .7), inset 0 0 0 .5px rgba(10, 31, 23, .08);
+    backdrop-filter: saturate(180%) blur(22px);
+    -webkit-backdrop-filter: saturate(180%) blur(22px);
+  }
+
+  .bottom-nav .nav-item {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    width: auto;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: #8a9892;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    text-decoration: none;
+  }
+
+  .bottom-nav .nav-item::before {
+    top: 8px;
+    left: 50%;
+    width: 46px;
+    height: 30px;
+    aspect-ratio: auto;
+    border-radius: 12px;
+    background: #e6f7ef;
+    box-shadow: none;
+    transform: translateX(-50%);
+  }
+
+  .bottom-nav .nav-item.active {
+    color: #0e8a5a;
+  }
+
+  .bottom-nav .nav-item.active::before {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+
+  .bottom-nav .nav-item.active::after {
+    position: absolute;
+    bottom: 7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #0e8a5a;
+    content: "";
+  }
+
+  .bottom-nav .nav-item.active div {
+    font-weight: 700;
+  }
+
+  .bottom-nav .nav-item svg,
+  .bottom-nav .nav-item .nav-scan {
+    z-index: 1;
+    width: 22px;
+    height: 22px;
+  }
+
+  .bottom-nav .nav-item--scan {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .bottom-nav .nav-scan {
+    position: relative;
+    top: auto;
+    display: grid;
+    width: 62px;
+    height: 62px;
+    margin-top: -34px;
+    border: 0;
+    border-radius: 50%;
+    background: radial-gradient(120% 120% at 30% 20%, #1fb97a, #0b7a50 45%, #054a31);
+    box-shadow: 0 0 0 6px var(--dashboard-bg), 0 0 0 7px rgba(10, 31, 23, .04), 0 12px 26px -6px rgba(14, 138, 90, .65), 0 0 34px rgba(62, 224, 161, .45), inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 -2px 4px rgba(0, 0, 0, .2);
+    color: #fff;
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .bottom-nav .nav-scan::after {
+    position: absolute;
+    inset: 3px 8px auto;
+    height: 45%;
+    border-radius: 50% 50% 40% 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .35), transparent);
+    content: "";
+    pointer-events: none;
+  }
+
+  .dashboard-home-indicator {
+    width: 134px;
+    height: 5px;
+    margin: 12px auto 0;
+    border-radius: 99px;
+    background: #0a1f17;
+    opacity: .9;
+  }
+
+  .dashboard-tabbar-wrap .nav-item--scan::before,
+  .dashboard-tabbar-wrap .nav-item--scan::after,
+  .dashboard-tabbar-wrap .nav-item:not(.active)::before {
+    display: none;
+  }
+
+  @media (min-width: 521px) {
+    body {
+      align-items: center;
+      padding: 40px 0;
+    }
+
+    .dashboard-shell {
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 520px) {
+    body {
+      background: var(--dashboard-bg) !important;
+    }
+
+    .dashboard-shell {
+      width: 100%;
+      height: auto;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-promo,
+    .dashboard-promo img {
+      transition: none;
+    }
+  }
+
   @media (max-width: 480px) {
     .wallet-shell {
       padding: 0 10px;
@@ -1806,59 +2391,99 @@
 
 <main class="wallet-shell dashboard-shell">
   <header class="dashboard-topbar">
-    <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
-      <img src="{{ asset('icons/lulu-192.png') }}" alt="LuLu Philippines">
-    </a>
-    <a class="dashboard-profile" href="{{ route('profile') }}">
-      <span class="dashboard-profile-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="8" r="3.5"/>
-          <path d="M5 20c.7-3.5 3-5.5 7-5.5s6.3 2 7 5.5"/>
-        </svg>
-      </span>
-      <span>Profile</span>
-    </a>
-  </header>
-
-  <section class="dashboard-hero" id="dashboardBalance" aria-label="Account balance">
-    <div class="dashboard-hero-top">
-      <div class="dashboard-hero-label">Available balance</div>
-      <button class="dashboard-balance-toggle" id="dashboardBalanceToggle" type="button" aria-label="Hide balance" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
-    </div>
-    <div class="dashboard-balance" aria-live="polite">
-      <span class="balance-readable">${{ number_format($availableBalance, 2) }}</span>
-      <span class="balance-masked" aria-hidden="true">••••••</span>
-    </div>
-    <div class="dashboard-assets">
-      <span class="dashboard-assets-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/>
-          <path d="m3 12 9 4.5 9-4.5M3 16.5 12 21l9-4.5"/>
-        </svg>
-      </span>
-      <div>
-        <div class="dashboard-assets-label">Assets</div>
-        <div class="dashboard-assets-value">
-          <span class="asset-readable">${{ number_format($totalInvestment, 2) }}</span>
-          <span class="balance-masked asset-masked" aria-hidden="true">••••</span>
-        </div>
+    <div class="dashboard-statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="dashboard-status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17" aria-hidden="true"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
       </div>
     </div>
-  </section>
+    <nav class="dashboard-dash-nav" aria-label="Dashboard">
+      <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
+        <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">
+      </a>
+      <a class="dashboard-profile" href="{{ route('profile') }}">
+        <span class="dashboard-profile-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>
+          </svg>
+        </span>
+        <span>Profile</span>
+      </a>
+    </nav>
+  </header>
 
-  <section class="dashboard-promos" aria-label="Explore LuLu opportunities">
-    <a class="dashboard-promo" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
-      <img src="{{ asset('images/dashboard-bond-card.svg') }}" alt="Lulu Purchase Bonds. Grow your future with secure and reliable investment opportunities.">
-    </a>
-    <a class="dashboard-promo" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
-      <img src="{{ asset('images/dashboard-franchise-card.svg') }}" alt="Franchise opportunities">
-    </a>
-  </section>
+  <div class="dashboard-content">
+    <section class="dashboard-hero hero--balance" id="dashboardBalance" aria-label="Account balance">
+      <svg class="hero__waves" viewBox="0 0 300 200" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="dashboardWaveGold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C6F36B" stop-opacity="0"/><stop offset=".6" stop-color="#C6F36B" stop-opacity=".65"/><stop offset="1" stop-color="#F3E27A" stop-opacity=".9"/></linearGradient>
+          <linearGradient id="dashboardWaveMint" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3EE0A1" stop-opacity="0"/><stop offset="1" stop-color="#3EE0A1" stop-opacity=".45"/></linearGradient>
+        </defs>
+        <path d="M0 150C70 148 120 120 170 88S260 30 310 22" stroke="url(#dashboardWaveGold)" stroke-width="1.6"/>
+        <path d="M10 176C90 170 140 142 190 108S270 60 310 54" stroke="url(#dashboardWaveMint)" stroke-width="1.2"/>
+        <path d="M40 200C110 196 160 172 210 140S280 98 310 94" stroke="url(#dashboardWaveMint)" stroke-width=".9" opacity=".7"/>
+      </svg>
+      <div class="dashboard-hero-top">
+        <span class="dashboard-hero-label">Available balance</span>
+        <button class="dashboard-balance-toggle eye" id="dashboardBalanceToggle" type="button" aria-label="Hide balance" aria-pressed="false">
+          <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.5M6.5 6.6C3.8 8.3 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>
+        </button>
+      </div>
+      @php
+        $balanceParts = explode('.', number_format($availableBalance, 2));
+        $assetParts = explode('.', number_format($totalInvestment, 2));
+      @endphp
+      <div class="dashboard-balance num" aria-live="polite">
+        <span class="balance-readable"><span class="currency">$</span>{{ $balanceParts[0] }}<span class="decimal">.{{ $balanceParts[1] }}</span></span>
+        <span class="balance-mask" aria-hidden="true">••••••</span>
+      </div>
+      <div class="dashboard-assets sub">
+        <span class="dashboard-assets-icon sub-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 7.5l9 4.5 9-4.5L12 3Z"/><path d="m3 12 9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg>
+        </span>
+        <div>
+          <div class="dashboard-assets-label">Assets</div>
+          <div class="dashboard-assets-value sub-val num">
+            <span class="asset-readable">${{ $assetParts[0] }}<span class="decimal">.{{ $assetParts[1] }}</span></span>
+            <span class="balance-mask asset-mask" aria-hidden="true">$••••</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-promos promos" aria-label="Explore LuLu opportunities">
+      <a class="dashboard-promo dashboard-card-link" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
+        <img src="{{ asset('banner-bonds.jpg') }}" alt="Woman using her phone outside a LuLu Retail store">
+        <span class="dashboard-promo-scrim"></span>
+        <span class="dashboard-promo-edge"></span>
+        <div class="dashboard-promo-content">
+          <div>
+            <h2>Purchase Bonds</h2>
+            <span class="dashboard-promo-cta">View Bond Details
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </div>
+      </a>
+      <a class="dashboard-promo dashboard-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
+        <img src="{{ asset('banner-franchise.jpg') }}" alt="LuLu Daily storefront">
+        <span class="dashboard-promo-scrim"></span>
+        <span class="dashboard-promo-edge"></span>
+        <div class="dashboard-promo-content">
+          <div>
+            <h2>Apply for Franchise</h2>
+            <span class="dashboard-promo-cta">View Franchise Details
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </div>
+      </a>
+    </section>
+  </div>
 
   <section class="package-section" aria-label="Account packages">
     <div id="Cards101" hidden>
@@ -1897,6 +2522,31 @@
       </div>
     </div>
   </section>
+
+  <div class="dashboard-tabbar-wrap">
+    <nav class="bottom-nav" aria-label="Account navigation">
+      <a class="nav-item active" href="{{ route('dashboard') }}" aria-label="Home" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.6 3.5a2.2 2.2 0 0 1 2.8 0l6.8 5.6c.5.4.8 1 .8 1.7v8.4A2.3 2.3 0 0 1 18.7 21H15a1 1 0 0 1-1-1v-4.2a2 2 0 0 0-4 0V20a1 1 0 0 1-1 1H5.3A2.3 2.3 0 0 1 3 19.2v-8.4c0-.7.3-1.3.8-1.7l6.8-5.6Z"/></svg>
+        <span>Home</span>
+      </a>
+      <a class="nav-item" href="{{ route('history') }}" aria-label="Transactions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="3.5"/><path d="M7 9.5h10M7 13h6M7 16.5h4"/></svg>
+        <span>Transactions</span>
+      </a>
+      <button class="nav-item nav-item--scan" type="button" id="fabToggle" aria-label="Open wallet actions" aria-expanded="false">
+        <span class="nav-scan" aria-hidden="true">+</span>
+      </button>
+      <a class="nav-item" href="{{ route('referrals') }}" aria-label="Referral and affiliates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.7a3.5 3.5 0 0 1 0 6.6M18.5 14.2A6.5 6.5 0 0 1 21.5 20"/></svg>
+        <span>Referral</span>
+      </a>
+      <button class="nav-item" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="3.5"/></svg>
+        <span>More</span>
+      </button>
+    </nav>
+    <div class="dashboard-home-indicator" aria-hidden="true"></div>
+  </div>
 
 </main>
 
@@ -1972,28 +2622,6 @@
     <button class="payment-modal-continue" type="button" id="continueAddFunds">Continue</button>
   </div>
 </div>
-
-<nav class="bottom-nav" aria-label="Account navigation">
-  <a class="nav-item active" href="{{ route('dashboard') }}" aria-label="Home" aria-current="page">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 11 9-7 9 7v9H3v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-    <div>Home</div>
-  </a>
-  <a class="nav-item" href="{{ route('history') }}" aria-label="Transactions">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <div>Transactions</div>
-  </a>
-  <button class="nav-item nav-item--scan" type="button" id="fabToggle" aria-label="Open wallet actions" aria-expanded="false">
-    <span class="nav-scan" aria-hidden="true">+</span>
-  </button>
-  <a class="nav-item" href="{{ route('referrals') }}" aria-label="Referral and affiliates">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 20c.5-3.3 2.3-5 5.5-5 2.4 0 4 .9 4.9 2.8M16 8a3 3 0 1 1 0 6m1.2 1c2.1.6 3.2 2.2 3.6 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <div>Referral</div>
-  </a>
-  <button class="nav-item" type="button" id="moreToggle" aria-label="Open quick actions" aria-expanded="false">
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18l-3 12H2L3 6Z"/></svg>
-    <div>More</div>
-  </button>
-</nav>
 
 <script>
   (function () {

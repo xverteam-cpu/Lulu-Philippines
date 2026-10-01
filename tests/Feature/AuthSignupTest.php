@@ -53,6 +53,12 @@ class AuthSignupTest extends TestCase
             ->assertSee('class="investors-dashboard-continue" href="'.route('admin.dashboard').'"', false);
     }
 
+    public function test_user_session_expires_after_thirty_minutes_of_inactivity(): void
+    {
+        $this->assertSame(30, config('session.lifetime'));
+        $this->assertFalse((bool) config('session.expire_on_close'));
+    }
+
     public function test_signup_form_can_create_a_user_with_the_simplified_fields(): void
     {
         $response = $this->post('/register-partner', [

@@ -2400,6 +2400,140 @@
   body.dashboard-page {
     touch-action: pan-y;
   }
+
+  @media (max-width: 760px) {
+    html.dashboard-page,
+    body.dashboard-page {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html.dashboard-page::-webkit-scrollbar,
+    body.dashboard-page::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+
+  .support-chat-launcher {
+    position: fixed;
+    right: max(16px, calc((100vw - 430px) / 2 + 16px));
+    bottom: 28px;
+    z-index: 90;
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    gap: 9px;
+    padding: 0 17px;
+    border: 0;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(145deg, #14a86d, #075a3b);
+    box-shadow: 0 10px 26px rgba(4, 74, 49, .3);
+    cursor: pointer;
+    font: 700 13px/1 Inter, system-ui, sans-serif;
+  }
+
+  .support-chat-launcher svg { width: 20px; height: 20px; }
+
+  .support-chat-panel {
+    position: fixed;
+    right: max(12px, calc((100vw - 430px) / 2 + 12px));
+    bottom: 90px;
+    z-index: 91;
+    display: flex;
+    width: min(360px, calc(100vw - 24px));
+    max-height: min(560px, calc(100dvh - 130px));
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(10, 31, 23, .08);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 22px 60px rgba(2, 26, 18, .24);
+  }
+
+  .support-chat-panel[hidden] { display: none; }
+
+  .support-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 16px;
+    color: #fff;
+    background: linear-gradient(145deg, #0e8a5a, #04321f);
+  }
+
+  .support-chat-title { margin: 0; font: 750 15px/1.2 "Plus Jakarta Sans", Inter, sans-serif; }
+  .support-chat-caption { margin: 4px 0 0; color: rgba(255,255,255,.78); font: 500 11px/1.3 Inter, system-ui, sans-serif; }
+  .support-chat-close { display: grid; width: 34px; height: 34px; flex: none; place-items: center; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; }
+
+  .support-chat-messages {
+    display: flex;
+    min-height: 120px;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding: 14px;
+    overscroll-behavior: contain;
+  }
+
+  .support-chat-message {
+    max-width: 90%;
+    padding: 10px 12px;
+    border-radius: 14px 14px 14px 4px;
+    color: #263c32;
+    background: #f1f6f3;
+    font: 450 12.5px/1.5 Inter, system-ui, sans-serif;
+    overflow-wrap: anywhere;
+  }
+
+  .support-chat-message.is-user {
+    align-self: flex-end;
+    border-radius: 14px 14px 4px 14px;
+    color: #fff;
+    background: #0e8a5a;
+  }
+
+  .support-chat-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: -4px 0 0 2px;
+    color: #08764c;
+    text-decoration: none;
+    font: 700 12px/1.35 Inter, system-ui, sans-serif;
+  }
+
+  .support-chat-suggestions {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding: 0 12px 11px;
+    scrollbar-width: none;
+  }
+
+  .support-chat-suggestions::-webkit-scrollbar { display: none; }
+  .support-chat-suggestions button { flex: none; padding: 7px 10px; border: 1px solid #dce8e1; border-radius: 999px; color: #075a3b; background: #fff; cursor: pointer; font: 600 10.5px/1.2 Inter, system-ui, sans-serif; }
+
+  .support-chat-form {
+    display: flex;
+    gap: 8px;
+    padding: 11px 12px calc(11px + env(safe-area-inset-bottom));
+    border-top: 1px solid #e8efeb;
+    background: #fff;
+  }
+
+  .support-chat-input { width: 100%; min-width: 0; min-height: 42px; padding: 0 12px; border: 1px solid #dce8e1; border-radius: 12px; color: #0a1f17; background: #f9fbfa; font: 500 12px/1.3 Inter, system-ui, sans-serif; }
+  .support-chat-input:focus { outline: 2px solid rgba(14, 138, 90, .25); border-color: #0e8a5a; }
+  .support-chat-send { display: grid; width: 42px; height: 42px; flex: none; place-items: center; border: 0; border-radius: 12px; color: #fff; background: #0e8a5a; cursor: pointer; }
+
+  @media (max-width: 760px) {
+    .support-chat-launcher { right: 14px; bottom: calc(98px + env(safe-area-inset-bottom)); }
+    .support-chat-panel { right: 12px; bottom: calc(158px + env(safe-area-inset-bottom)); max-height: min(560px, calc(100dvh - 190px)); }
+  }
 </style>
 
 @php
@@ -2571,6 +2705,37 @@
   </div>
 
 </main>
+
+<button class="support-chat-launcher" id="supportChatLauncher" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="supportChatPanel">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-6.5A7.5 7.5 0 0 1 10.5 7h2A7.5 7.5 0 0 1 20 14.5z"/><path d="M8 12h8M8 15h5"/></svg>
+  <span>Help</span>
+</button>
+<section class="support-chat-panel" id="supportChatPanel" role="dialog" aria-modal="false" aria-labelledby="supportChatTitle" hidden>
+  <header class="support-chat-header">
+    <div>
+      <h2 class="support-chat-title" id="supportChatTitle">LuLu Help</h2>
+      <p class="support-chat-caption">App guidance and quick links</p>
+    </div>
+    <button class="support-chat-close" id="supportChatClose" type="button" aria-label="Close help chat">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+  </header>
+  <div class="support-chat-messages" id="supportChatMessages" aria-live="polite" aria-relevant="additions text">
+    <div class="support-chat-message">Hi! I can help you find app pages and explain common steps. What would you like to do?</div>
+  </div>
+  <div class="support-chat-suggestions" aria-label="Suggested questions">
+    <button type="button" data-support-question="How do I buy a bond?">Buy a bond</button>
+    <button type="button" data-support-question="Where are my transactions?">Transactions</button>
+    <button type="button" data-support-question="How do I update my profile?">My profile</button>
+  </div>
+  <form class="support-chat-form" id="supportChatForm">
+    <label for="supportChatInput" class="sr-only">Ask LuLu Help</label>
+    <input class="support-chat-input" id="supportChatInput" name="question" type="text" maxlength="240" placeholder="Ask a question..." autocomplete="off" required>
+    <button class="support-chat-send" type="submit" aria-label="Send question">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+    </button>
+  </form>
+</section>
 
 <div class="fab-scrim" id="fabScrim" aria-hidden="true"></div>
 <div class="fab-panel" id="fabPanel" aria-hidden="true">
@@ -2941,5 +3106,131 @@
     });
   })();
 
+</script>
+<script>
+  (function () {
+    var launcher = document.getElementById('supportChatLauncher');
+    var panel = document.getElementById('supportChatPanel');
+    var closeButton = document.getElementById('supportChatClose');
+    var form = document.getElementById('supportChatForm');
+    var input = document.getElementById('supportChatInput');
+    var messages = document.getElementById('supportChatMessages');
+    if (!launcher || !panel || !closeButton || !form || !input || !messages) return;
+
+    var topics = [
+      {
+        terms: ['buy a bond', 'purchase bond', 'buy bond', 'invest', 'bond', 'payment', 'pay', 'qr code', 'bank', 'wallet'],
+        answer: 'To purchase a bond, open the bond packages, choose a package, review the details, then select your payment method and follow the signing steps.',
+        linkText: 'Browse bond packages',
+        url: @json(route('invest.purchase', ['package' => 'crunch']))
+      },
+      {
+        terms: ['transaction', 'transactions', 'history', 'receipt', 'payment history'],
+        answer: 'Your transaction page shows your account activity and available transaction details.',
+        linkText: 'Open transactions',
+        url: @json(route('history'))
+      },
+      {
+        terms: ['profile', 'account', 'password', 'personal details', 'my details'],
+        answer: 'You can review your account information and account settings from your profile page.',
+        linkText: 'Open my profile',
+        url: @json(route('profile'))
+      },
+      {
+        terms: ['referral', 'refer', 'invite', 'affiliate', 'partner'],
+        answer: 'Your referral page has your invite link and referral activity.',
+        linkText: 'Open referrals',
+        url: @json(route('referrals'))
+      },
+      {
+        terms: ['withdraw', 'withdrawal', 'cash out'],
+        answer: 'Start a withdrawal from the withdrawal page and follow the form instructions. Check the details before submitting.',
+        linkText: 'Open withdrawals',
+        url: @json(route('withdraw'))
+      },
+      {
+        terms: ['franchise', 'store', 'franchising'],
+        answer: 'You can read about the franchise opportunity and find the application form on the franchise page.',
+        linkText: 'Open franchise information',
+        url: @json(route('franchising'))
+      },
+      {
+        terms: ['balance', 'available balance', 'earnings', 'interest'],
+        answer: 'Your dashboard shows your available balance and investment earnings. For a transaction-by-transaction view, open Transactions.',
+        linkText: 'View transactions',
+        url: @json(route('history'))
+      }
+    ];
+
+    function setChatOpen(isOpen) {
+      panel.hidden = !isOpen;
+      launcher.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (isOpen) input.focus();
+      else launcher.focus();
+    }
+
+    function addMessage(text, isUser) {
+      var bubble = document.createElement('div');
+      bubble.className = 'support-chat-message' + (isUser ? ' is-user' : '');
+      bubble.textContent = text;
+      messages.appendChild(bubble);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addGuideLink(label, url) {
+      var link = document.createElement('a');
+      link.className = 'support-chat-link';
+      link.href = url;
+      link.textContent = label + ' →';
+      messages.appendChild(link);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function answerQuestion(rawQuestion) {
+      var question = rawQuestion.trim().toLowerCase();
+      if (!question) return;
+      addMessage(rawQuestion.trim(), true);
+
+      var bestTopic = null;
+      var bestScore = 0;
+      topics.forEach(function (topic) {
+        var score = topic.terms.reduce(function (total, term) {
+          return total + (question.indexOf(term) !== -1 ? term.split(' ').length : 0);
+        }, 0);
+        if (score > bestScore) {
+          bestTopic = topic;
+          bestScore = score;
+        }
+      });
+
+      if (bestTopic) {
+        addMessage(bestTopic.answer, false);
+        addGuideLink(bestTopic.linkText, bestTopic.url);
+      } else {
+        addMessage('I do not have a verified answer for that yet. Try asking about bonds, payments, transactions, your profile, referrals, withdrawals, or franchise information.', false);
+      }
+    }
+
+    launcher.addEventListener('click', function () {
+      setChatOpen(panel.hidden);
+    });
+    closeButton.addEventListener('click', function () {
+      setChatOpen(false);
+    });
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      answerQuestion(input.value);
+      input.value = '';
+      input.focus();
+    });
+    document.querySelectorAll('[data-support-question]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        answerQuestion(button.dataset.supportQuestion || '');
+      });
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !panel.hidden) setChatOpen(false);
+    });
+  })();
 </script>
 @endsection

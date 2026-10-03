@@ -111,7 +111,12 @@
       var loader = document.querySelector('.page-loader');
       if (!loader) return;
 
+      window.addEventListener('pageshow', function () {
+        loader.classList.remove('is-active');
+      });
+
       document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) return;
         var link = event.target.closest('a[href]');
         if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         if (link.target && link.target !== '_self') return;

@@ -88,6 +88,26 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertStringNotContainsString('$906.31', $plainText);
     }
 
+    public function test_invest_page_sample_agreement_uses_the_preserved_six_page_contract_viewer(): void
+    {
+        $user = User::factory()->create();
+        $viewerPath = public_path('lulu-bond-contract-preserved-pages.html');
+
+        $this->actingAs($user)
+            ->get(route('invest'))
+            ->assertOk()
+            ->assertSee('See sample bond agreement')
+            ->assertSee('src="'.asset('lulu-bond-contract-preserved-pages.html').'"', false)
+            ->assertDontSee('src="'.route('invest.agreement.sample').'"', false);
+
+        $this->assertFileExists($viewerPath);
+        $viewer = file_get_contents($viewerPath);
+        $this->assertIsString($viewer);
+        $this->assertStringContainsString('Agreement + Certificate · 6 preserved pages', $viewer);
+        $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);
+        $this->assertStringContainsString('Bond Certificate, page 6', $viewer);
+    }
+
     public function test_invest_page_shows_account_package_cards_under_total_investment(): void
     {
         Carbon::setTestNow('2026-10-01 15:00:00');

@@ -70,6 +70,70 @@ class InvestmentPurchaseTest extends TestCase
         Cache::forget('usd_to_php_rate_meta_v2');
     }
 
+    public function test_qr_payment_page_lists_banks_and_wallets_while_preserving_purchase_details(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/invest/payment/landbank?package=crunch&amount=129&currency=USD')
+            ->assertOk()
+            ->assertSee('Choose a payment method')
+            ->assertSee('Banks')
+            ->assertSee('E-wallets')
+            ->assertSee('BPI')
+            ->assertSee('BDO')
+            ->assertSee('UnionBank')
+            ->assertSee('GCash')
+            ->assertSee('Maya')
+            ->assertSee('GrabPay')
+            ->assertSee('ShopeePay')
+            ->assertSee('Landbank')
+            ->assertSee('Scan to pay')
+            ->assertSee('class="method-button is-active"', false)
+            ->assertSee('$129.00')
+            ->assertDontSee('class="statusbar"', false)
+            ->assertSee(route('invest.payment', [
+                'provider' => 'gcash',
+                'package' => 'crunch',
+                'amount' => 129,
+                'currency' => 'USD',
+            ]))
+            ->assertSee(route('invest.agreement.sign', [
+                'package' => 'crunch',
+                'amount' => 129,
+                'currency' => 'USD',
+                'payment_method' => 'bank_transfer',
+            ]));
+
+        $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')
+            ->assertOk()
+            ->assertSee('GCash')
+            ->assertSee(route('invest.agreement.sign', [
+                'package' => 'crunch',
+                'amount' => 129,
+                'currency' => 'USD',
+                'payment_method' => 'e_wallet',
+            ]));
+
+        $providerThemes = [
+            'landbank' => ['#006b3f', '#f5c542'],
+            'bpi' => ['#005baa', '#d71920'],
+            'bdo' => ['#003b70', '#f58220'],
+            'unionbank' => ['#f36f21', '#ffb81c'],
+            'gcash' => ['#007cff', '#00a9e8'],
+            'maya' => ['#00a86b', '#7bdcb5'],
+            'grabpay' => ['#00b14f', '#b9f227'],
+            'shopeepay' => ['#ee4d2d', '#ffb300'],
+        ];
+
+        foreach ($providerThemes as $provider => [$color, $accent]) {
+            $this->get("/invest/payment/{$provider}?package=crunch&amount=129&currency=USD")
+                ->assertOk()
+                ->assertSee("--provider-color: {$color}", false)
+                ->assertSee("--provider-accent: {$accent}", false);
+        }
+    }
+
     public function test_direct_payment_methods_continue_to_the_existing_agreement_signing_page(): void
     {
         $user = User::factory()->create();

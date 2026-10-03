@@ -477,6 +477,10 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
     return view('invest-payment', [
         'providerKey' => $provider,
         'provider' => $providers[$provider],
+        'paymentProviders' => [
+            'banks' => array_intersect_key($providers, array_flip(['landbank', 'bpi', 'bdo', 'unionbank'])),
+            'wallets' => array_intersect_key($providers, array_flip(['gcash', 'maya', 'grabpay', 'shopeepay'])),
+        ],
         'packageKey' => $packageKey,
         'package' => $package,
         'amount' => $amount,

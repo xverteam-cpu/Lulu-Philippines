@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Account History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F2F5F3;--surface:#fff;--ink:#0A1F17;--ink-2:#4B5B54;--ink-3:#8A9892;--line:#E2E9E5;
+  --em-950:#021A12;--em-900:#04321F;--em-800:#075A3B;--em-600:#0E8A5A;--em-500:#14A86D;
+  --mint:#3EE0A1;--mint-50:#E6F7EF;--lime:#C6F36B;--amber:#B26B00;--amber-50:#FFF7E6;
+  --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;
+  --ui:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --shadow-sm:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06);
+  --shadow-md:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18);
+  --shadow-lg:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.35);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  min-height:100vh;display:flex;justify-content:center;align-items:center;padding:40px 0;font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(900px 600px at 15% 10%,rgba(20,168,109,.18),transparent 60%),radial-gradient(700px 500px at 90% 90%,rgba(198,243,107,.14),transparent 60%),#E7ECE9;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.phone{position:relative;width:390px;height:844px;background:var(--bg);border-radius:54px;overflow:hidden;box-shadow:0 0 0 10px #0D1411,0 0 0 11px #2A332F,0 30px 60px -20px rgba(2,26,18,.40),0 60px 100px -50px rgba(2,26,18,.30)}
+.screen{height:100%;overflow-y:auto;scrollbar-width:none;overscroll-behavior:contain}.screen::-webkit-scrollbar{display:none}
+.chrome{position:sticky;top:0;z-index:20;background:rgba(242,245,243,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.chrome.is-scrolled{box-shadow:0 1px 0 rgba(10,31,23,.06)}
+.statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}.statusbar time{font:600 16px/1 var(--ui)}.statusbar .sys{display:flex;gap:6px;align-items:center}
+.nav{height:52px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:12px;padding:0 16px 4px}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(10,31,23,.05);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.icon-btn:active{transform:scale(.92)}
+.brandmark{display:flex;align-items:center;gap:8px;justify-self:center;font:750 16px/1 var(--display);letter-spacing:-.02em}.brandmark .mark{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#E8FFF4;background:linear-gradient(145deg,#1FB97A,#054A31);box-shadow:0 5px 12px -6px rgba(14,138,90,.7)}
+main{padding:8px 20px 38px}.hero{padding:8px 2px 4px}.eyebrow{font:650 10.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{margin-top:8px;font:800 30px/1.06 var(--display);letter-spacing:-.045em}.hero p{margin-top:8px;max-width:320px;font:450 14px/1.5 var(--ui);color:var(--ink-2)}
+.overview{margin-top:18px;padding:18px;border-radius:24px;color:#fff;position:relative;overflow:hidden;background:radial-gradient(120% 100% at 105% -10%,rgba(62,224,161,.5),transparent 55%),radial-gradient(70% 70% at -10% 110%,rgba(198,243,107,.18),transparent 60%),linear-gradient(160deg,#0B6A47 0%,#054A31 48%,#022418 100%);box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.2)}
+.overview:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent,rgba(255,255,255,.06),transparent);pointer-events:none}.overview .k{font:650 10px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:rgba(232,255,244,.65)}.overview .v{margin-top:8px;font:760 34px/1 var(--ui);letter-spacing:-.04em}.overview .s{margin-top:7px;font:500 11.5px/1.4 var(--ui);color:rgba(232,255,244,.66)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.stat{padding:15px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow-md),inset 0 0 0 1px rgba(10,31,23,.04)}.stat .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:var(--em-800);background:var(--mint-50);margin-bottom:12px}.stat .k{font:650 9.5px/1.25 var(--ui);letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}.stat .v{margin-top:8px;font:760 24px/1 var(--ui);letter-spacing:-.035em}.stat .s{margin-top:7px;font:500 11.5px/1.35 var(--ui);color:var(--ink-2)}
+.toolbar{margin:22px 2px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}.toolbar h2{font:760 18px/1.1 var(--display);letter-spacing:-.025em}.filter{height:34px;padding:0 11px;border-radius:11px;display:flex;align-items:center;gap:7px;background:#fff;box-shadow:inset 0 0 0 1px var(--line),var(--shadow-sm);font:650 11.5px/1 var(--ui);color:var(--ink-2)}
+.history-list{display:grid;gap:10px}.history-card{border-radius:20px;background:#fff;box-shadow:var(--shadow-md),inset 0 0 0 1px rgba(10,31,23,.04);overflow:hidden;transition:box-shadow .2s var(--ease),transform .2s var(--ease)}.history-card:hover{box-shadow:var(--shadow-lg)}
+.history-head{width:100%;min-height:76px;padding:15px 15px 15px 16px;display:grid;grid-template-columns:42px 1fr 34px;align-items:center;gap:12px;text-align:left}.history-ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:var(--em-800);background:var(--mint-50);box-shadow:inset 0 0 0 1px rgba(14,138,90,.1)}.history-copy b{display:block;font:700 15px/1.2 var(--display);letter-spacing:-.02em}.history-copy span{display:block;margin-top:4px;font:500 11.5px/1.35 var(--ui);color:var(--ink-3)}
+.plus{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);background:#F0F4F2;transition:transform .3s var(--ease),background .2s}.history-card.open .plus{transform:rotate(45deg);background:var(--mint-50);color:var(--em-800)}
+.history-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .36s var(--ease)}.history-card.open .history-body{grid-template-rows:1fr}.history-inner{overflow:hidden}.entries{padding:0 16px 14px}.entry{display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 0;border-top:1px solid #EEF2F0}.entry .name{font:650 12.5px/1.25 var(--ui)}.entry .date{margin-top:4px;font:500 10.5px/1.2 var(--ui);color:var(--ink-3)}.entry .amt{text-align:right;font:700 12.5px/1.2 var(--ui)}.entry .tag{margin-top:5px;display:inline-flex;height:21px;align-items:center;padding:0 7px;border-radius:999px;font:700 8.5px/1 var(--ui);letter-spacing:.08em;text-transform:uppercase}.tag.ok{color:var(--em-800);background:var(--mint-50)}.tag.pending{color:var(--amber);background:var(--amber-50)}
+.empty{padding:12px 0 4px;text-align:center;font:500 11.5px/1.4 var(--ui);color:var(--ink-3)}
+.footer-note{margin-top:18px;text-align:center;font:500 11px/1.45 var(--ui);color:var(--ink-3)}.home{width:134px;height:5px;border-radius:99px;background:#0A1F17;margin:14px auto 8px;opacity:.9}
+@media (min-width:521px) and (max-height:940px){body{padding:16px 0}.phone{height:calc(100vh - 32px);min-height:600px}}
+@media (max-width:520px){body{display:block;padding:0;background:var(--bg)}.phone{width:100%;height:auto;min-height:100vh;border-radius:0;box-shadow:none;overflow:visible}.screen{height:auto;overflow:visible}.statusbar{display:none}.chrome{padding-top:max(8px,env(safe-area-inset-top))}.nav{height:56px}main{padding-bottom:calc(28px + env(safe-area-inset-bottom))}.home{display:none}}
+@media (max-width:350px){main{padding-left:16px;padding-right:16px}.stats{grid-template-columns:1fr}.history-head{grid-template-columns:40px 1fr 32px}h1{font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="screen" id="screen">
+    <header class="chrome" id="chrome">
+      <div class="statusbar" aria-hidden="true">
+        <time id="clock">9:41</time>
+        <div class="sys">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+          <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="icon-btn" aria-label="Back" onclick="history.length>1?history.back():void 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="brandmark"><span class="mark">L</span><span>History</span></div>
+        <button class="icon-btn" aria-label="Filter"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Account activity</div>
+        <h1>Account History</h1>
+        <p>Review investments, withdrawals, daily interest, and rewards in one organized view.</p>
+      </section>
+
+      <section class="overview" aria-label="Interest earned to date">
+        <div class="k">Interest earned to date</div>
+        <div class="v">$20.90</div>
+        <div class="s">Total interest credited from approved investments.</div>
+      </section>
+
+      <section class="stats" aria-label="Activity summary">
+        <article class="stat">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="k">Investments</div><div class="v">5</div><div class="s">Approved investment records</div>
+        </article>
+        <article class="stat">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></div>
+          <div class="k">Withdrawals</div><div class="v">5</div><div class="s">Withdrawal requests submitted</div>
+        </article>
+      </section>
+
+      <div class="toolbar"><h2>History details</h2><button class="filter"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>All activity</button></div>
+
+      <section class="history-list">
+        <article class="history-card open">
+          <button class="history-head" aria-expanded="true">
+            <span class="history-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+            <span class="history-copy"><b>Investment History</b><span>Amounts, dates, and approval status.</span></span><span class="plus">+</span>
+          </button>
+          <div class="history-body"><div class="history-inner"><div class="entries">
+            <div class="entry"><div><div class="name">Gold Fixed-Rate Bond</div><div class="date">September 28, 2026</div></div><div><div class="amt">$500.00</div><span class="tag ok">Approved</span></div></div>
+            <div class="entry"><div><div class="name">Gold Fixed-Rate Bond</div><div class="date">September 12, 2026</div></div><div><div class="amt">$250.00</div><span class="tag ok">Approved</span></div></div>
+          </div></div></div>
+        </article>
+
+        <article class="history-card">
+          <button class="history-head" aria-expanded="false">
+            <span class="history-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span>
+            <span class="history-copy"><b>Withdrawal History</b><span>A record of withdrawal activity.</span></span><span class="plus">+</span>
+          </button>
+          <div class="history-body"><div class="history-inner"><div class="entries">
+            <div class="entry"><div><div class="name">Bank withdrawal</div><div class="date">October 1, 2026</div></div><div><div class="amt">$120.00</div><span class="tag pending">Processing</span></div></div>
+            <div class="entry"><div><div class="name">E-wallet withdrawal</div><div class="date">September 20, 2026</div></div><div><div class="amt">$80.00</div><span class="tag ok">Completed</span></div></div>
+          </div></div></div>
+        </article>
+
+        <article class="history-card">
+          <button class="history-head" aria-expanded="false">
+            <span class="history-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></span>
+            <span class="history-copy"><b>Daily Interest History</b><span>Daily credits from approved investments.</span></span><span class="plus">+</span>
+          </button>
+          <div class="history-body"><div class="history-inner"><div class="entries">
+            <div class="entry"><div><div class="name">Daily interest credit</div><div class="date">October 3, 2026</div></div><div><div class="amt">+$2.10</div><span class="tag ok">Credited</span></div></div>
+            <div class="entry"><div><div class="name">Daily interest credit</div><div class="date">October 2, 2026</div></div><div><div class="amt">+$2.10</div><span class="tag ok">Credited</span></div></div>
+          </div></div></div>
+        </article>
+
+        <article class="history-card">
+          <button class="history-head" aria-expanded="false">
+            <span class="history-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 7v13M12 7H7.5A2.5 2.5 0 1 1 10 4.5C10 7 12 7 12 7Zm0 0h4.5A2.5 2.5 0 1 0 14 4.5C14 7 12 7 12 7Z"/></svg></span>
+            <span class="history-copy"><b>Rewards History</b><span>Signup bonuses and other rewards.</span></span><span class="plus">+</span>
+          </button>
+          <div class="history-body"><div class="history-inner"><div class="entries"><div class="empty">No additional reward activity to show.</div></div></div></div>
+        </article>
+      </section>
+
+      <p class="footer-note">History shown here is a front-end concept. Connect these sections to your account API or database to display live records.</p>
+    </main>
+    <div class="home" aria-hidden="true"></div>
+  </div>
+</div>
+<script>
+const screen=document.getElementById('screen'),chrome=document.getElementById('chrome');
+screen.addEventListener('scroll',()=>chrome.classList.toggle('is-scrolled',screen.scrollTop>4),{passive:true});
+function updateClock(){const now=new Date();document.getElementById('clock').textContent=now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}updateClock();setInterval(updateClock,30000);
+document.querySelectorAll('.history-head').forEach(btn=>btn.addEventListener('click',()=>{const card=btn.closest('.history-card'),open=card.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));}));
+</script>
+</body>
+</html>

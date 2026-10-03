@@ -1,8 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" @class(['dashboard-page' => request()->routeIs('dashboard')])>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  @if (request()->routeIs('dashboard'))
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  @else
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  @endif
   <meta name="theme-color" content="#166534">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">

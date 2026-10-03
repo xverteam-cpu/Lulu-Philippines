@@ -2388,6 +2388,18 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
+
+  html.dashboard-page,
+  body.dashboard-page,
+  body.dashboard-page .container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  body.dashboard-page {
+    touch-action: pan-y;
+  }
 </style>
 
 @php

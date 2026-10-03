@@ -113,12 +113,15 @@ class DashboardBondEarningsTest extends TestCase
             ->assertOk()
             ->assertSee('See sample bond agreement')
             ->assertSee('src="'.asset('lulu-bond-contract-preserved-pages.html').'"', false)
+            ->assertSee("window.matchMedia('(max-width: 640px)').matches", false)
+            ->assertSee('window.location.assign(sampleFrame.src)', false)
             ->assertDontSee('src="'.route('invest.agreement.sample').'"', false);
 
         $this->assertFileExists($viewerPath);
         $viewer = file_get_contents($viewerPath);
         $this->assertIsString($viewer);
         $this->assertStringContainsString('Agreement + Certificate · 6 preserved pages', $viewer);
+        $this->assertStringContainsString('aria-label="Back to bonds"', $viewer);
         $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);
         $this->assertStringContainsString('Bond Certificate, page 6', $viewer);
     }

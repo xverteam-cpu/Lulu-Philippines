@@ -1523,7 +1523,8 @@
     var modal = document.getElementById('agreementSampleModal');
     var openButton = document.getElementById('openAgreementSample');
     var closeButton = document.getElementById('closeAgreementSample');
-    if (!modal || !openButton || !closeButton) return;
+    var sampleFrame = document.getElementById('agreementSampleFrame');
+    if (!modal || !openButton || !closeButton || !sampleFrame) return;
 
     var previousFocus = null;
     function closeSample() {
@@ -1534,6 +1535,11 @@
     }
 
     openButton.addEventListener('click', function () {
+      if (window.matchMedia('(max-width: 640px)').matches) {
+        window.location.assign(sampleFrame.src);
+        return;
+      }
+
       previousFocus = document.activeElement;
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');

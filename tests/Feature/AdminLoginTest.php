@@ -99,6 +99,10 @@ class AdminLoginTest extends TestCase
         $response->assertSee('View details');
         $response->assertSee('Block IP address');
         $response->assertSee('class="users-page"', false);
+        $response->assertSee('class="users-page-header"', false);
+        $response->assertSee('class="users-page-heading"', false);
+        $response->assertSee('class="user-details-btn"', false);
+        $response->assertSee('matching accounts');
         $response->assertDontSee('Admin Dashboard');
         $response->assertDontSee('class="summary-grid"', false);
         $response->assertDontSee('class="users-panel"', false);

@@ -490,7 +490,16 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
 
 // User actions (authenticated)
 Route::get('/send', function () {
-    return view('send');
+    $user = Auth::user();
+    DailyInterestAccrualService::accrueDueInterestForUser($user);
+    $user->refresh();
+
+    $investments = $user->investments()->latest()->get();
+    $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
+
+    return view('send', [
+        'availableBalance' => $availableBalance,
+    ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('send');
 
 Route::get('/withdraw', function () {
@@ -759,8 +768,33 @@ Route::get('/profile/password', function () {
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.password');
 
 Route::get('/profile/notifications', function () {
-    return view('notification-settings');
+    $preferences = array_merge([
+        'email_notifications' => true,
+        'account_alerts' => true,
+        'marketing_updates' => false,
+    ], Auth::user()->notification_preferences ?? []);
+
+    return view('notification-settings', [
+        'notificationPreferences' => $preferences,
+    ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.notifications');
+
+Route::post('/profile/notifications', function (Request $request) {
+    $validated = $request->validate([
+        'preferences' => ['required', 'array'],
+        'preferences.email_notifications' => ['required', 'boolean'],
+        'preferences.account_alerts' => ['required', 'boolean'],
+        'preferences.marketing_updates' => ['required', 'boolean'],
+    ]);
+
+    $user = $request->user();
+    $user->notification_preferences = collect($validated['preferences'])
+        ->map(fn ($enabled) => (bool) $enabled)
+        ->all();
+    $user->save();
+
+    return redirect()->route('profile.notifications')->with('status', 'Notification preferences saved.');
+})->middleware(['auth', RestrictUserAccess::class])->name('profile.notifications.update');
 
 Route::post('/investments', [InvestmentController::class, 'store'])
     ->middleware(['auth', RestrictUserAccess::class])

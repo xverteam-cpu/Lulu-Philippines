@@ -33,16 +33,18 @@ class WelcomeEmailTest extends TestCase
             $html = $mail->render();
 
             $this->assertTrue($mail->hasTo($user->email));
-            $this->assertStringContainsString('Welcome to Lulu, <strong>Jane Doe</strong>', $html);
-            $this->assertStringContainsString('Your Lulu Account', $html);
-            $this->assertStringContainsString('SILVER PLAN', $html);
-            $this->assertStringContainsString('GOLD PLAN', $html);
-            $this->assertStringContainsString('PLATINUM PLAN', $html);
-            $this->assertStringContainsString('luluphilippines@gmail.com', $html);
+            $this->assertStringContainsString('Welcome to Lulu, <strong>Jane Doe</strong>.', $html);
+            $this->assertStringContainsString('successfully registered', $html);
+            $this->assertStringContainsString('What’s Next?', $html);
+            $this->assertStringContainsString('Silver Package', $html);
+            $this->assertStringContainsString('Gold Package', $html);
+            $this->assertStringContainsString('Platinum Package', $html);
+            $this->assertStringContainsString('href="'.route('invest').'"', $html);
             $this->assertStringNotContainsString('Lulu Holdings Corp.', $html);
             $this->assertStringNotContainsString('Suite 123, 123 Anywhere St.', $html);
-            $this->assertStringNotContainsString('Welcome to Lulu, {{ $user_name }}', $html);
-            $this->assertSame(5, preg_match_all('/data:image\\/(?:jpeg|png);base64,/', $html));
+            $this->assertStringNotContainsString('Hi Pete', $html);
+            $this->assertStringNotContainsString('journalism worth reading', $html);
+            $this->assertSame(4, preg_match_all('/src="data:image\\/jpeg;base64,/', $html));
 
             return true;
         });

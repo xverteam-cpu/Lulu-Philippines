@@ -77,58 +77,362 @@
     .withdrawal-modal-card { width:min(100%, 92vw); border-radius:18px; padding:16px; }
   }
 
+  :root {
+    --withdraw-bg: #f2f5f3;
+    --withdraw-ink: #0a1f17;
+    --withdraw-muted: #4b5b54;
+    --withdraw-soft-muted: #8a9892;
+    --withdraw-line: #e2e9e5;
+    --withdraw-green: #0e8a5a;
+    --withdraw-green-dark: #075a3b;
+    --withdraw-mint: #e6f7ef;
+  }
+
+  html { background: #e7ece9; }
+  body {
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-x: hidden;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+      #e7ece9;
+    color: var(--withdraw-ink);
+    font-family: Inter, "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    min-height: 844px;
+    margin: 40px auto;
+    padding: 0 20px 28px;
+    overflow: clip;
+    border-radius: 54px;
+    background: var(--withdraw-bg);
+    box-shadow: 0 0 0 10px #0d1411, 0 0 0 11px #2a332f, 0 30px 60px -20px rgba(2,26,18,.4), 0 60px 100px -50px rgba(2,26,18,.3);
+  }
+
+  .withdraw-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    width: auto;
+    min-height: 102px;
+    margin: 0 -20px 10px;
+    padding: 0 16px 4px;
+    background: rgba(242,245,243,.88);
+    color: var(--withdraw-ink);
+    border-bottom: 1px solid rgba(10,31,23,.06);
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+  }
+
+  .back-btn {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--withdraw-ink);
+    box-shadow: 0 1px 2px rgba(6,40,28,.06), inset 0 0 0 1px rgba(10,31,23,.05);
+    font-size: 0;
+  }
+
+  .back-btn::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .page-title { min-width: 0; text-align: center; }
+  .page-title h2 {
+    color: var(--withdraw-ink);
+    font: 700 17px/1.2 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -.015em;
+  }
+  .page-title p { display: none; }
+
+  .balance-card {
+    display: flex;
+    min-height: 118px;
+    aspect-ratio: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    isolation: isolate;
+    margin: 10px 0 18px;
+    padding: 20px 22px;
+    border-radius: 24px;
+    background:
+      radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.55), transparent 55%),
+      radial-gradient(70% 70% at -10% 110%, rgba(198,243,107,.28), transparent 60%),
+      linear-gradient(160deg, #0b6a47 0%, #075c3d 50%, #0e8a5a 100%);
+    box-shadow: 0 2px 4px rgba(4,30,20,.08), 0 12px 24px -8px rgba(4,30,20,.22), 0 32px 56px -24px rgba(4,30,20,.38), inset 0 1px 0 rgba(255,255,255,.22);
+    text-align: center;
+  }
+
+  .balance-card::after {
+    position: absolute;
+    z-index: -1;
+    right: -20%;
+    bottom: -58px;
+    left: -20%;
+    height: 115px;
+    background: linear-gradient(16deg, transparent 22%, rgba(198,243,107,.95) 23% 25%, rgba(62,224,161,.38) 26% 48%, transparent 49%);
+    content: "";
+    transform: rotate(-3deg);
+  }
+
+  .balance-card-art { display: none; }
+  .balance-label,
+  .balance-amount {
+    position: relative;
+    inset: auto;
+    z-index: 1;
+    color: #fff;
+  }
+  .balance-label {
+    font-size: 11px;
+    letter-spacing: .14em;
+    opacity: .88;
+  }
+  .balance-amount {
+    font: 800 34px/1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -.04em;
+    text-shadow: 0 2px 18px rgba(0,0,0,.14);
+  }
+
+  .form-card { padding: 0; }
+  .form-card form > div[style*="margin-bottom"] {
+    border-radius: 14px !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .label {
+    margin: 0 1px 9px;
+    color: var(--withdraw-ink);
+    font: 750 14px/1.2 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -.015em;
+  }
+  .input-row { min-width: 0; }
+  .input-box {
+    width: 100%;
+    min-height: 54px;
+    margin-bottom: 0;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 16px;
+    outline: 0;
+    background: rgba(255,255,255,.76);
+    color: var(--withdraw-ink);
+    box-shadow: inset 0 0 0 1px rgba(10,31,23,.05), 0 1px 2px rgba(6,40,28,.06);
+    font: 650 15px/1.3 Inter, system-ui, sans-serif;
+  }
+  .input-box:focus { box-shadow: inset 0 0 0 1.5px var(--withdraw-green), 0 0 0 4px rgba(20,168,109,.12); }
+  .currency { top: 17px; color: #08734b; }
+  .amount-input {
+    height: 60px;
+    padding-left: 46px;
+    font: 750 25px/1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -.03em;
+  }
+  .quick-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 12px 0 0;
+    padding: 0 0 18px;
+    border-bottom: 1px solid var(--withdraw-line);
+  }
+  .quick-row button {
+    min-width: 0;
+    min-height: 40px;
+    padding: 0 4px;
+    border-radius: 14px;
+    background: #f7fffa;
+    color: #075a3b;
+    box-shadow: inset 0 0 0 1px rgba(14,138,90,.04), 0 1px 2px rgba(6,40,28,.06);
+    font: 750 13px/1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  }
+  .quick-row button:active { background: var(--withdraw-mint); }
+  .error { min-height: 16px; margin-top: 7px; color: #d94b4b; }
+
+  .form-card form > .label,
+  .form-card form > .saved-account-button,
+  .form-card form > .add-account-button,
+  .form-card form > .account-setup,
+  .form-card form > .note { margin-top: 18px; }
+
+  .saved-account-button {
+    width: 100%;
+    margin-bottom: 0;
+    padding: 16px;
+    border: 0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #19723b, #0e6a35);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(6,40,28,.05), 0 6px 16px -6px rgba(6,40,28,.12), inset 0 1px 0 rgba(255,255,255,.13);
+    text-align: left;
+    font: 750 14px/1.3 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  }
+  .add-account-button {
+    min-height: 48px;
+    margin-bottom: 0;
+    border: 1.5px solid var(--withdraw-green);
+    border-radius: 16px;
+    background: #effaf4;
+    color: #075a3b;
+    font: 750 13.5px/1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  }
+  .account-options { gap: 10px; }
+  .account-option {
+    border-color: var(--withdraw-line);
+    border-radius: 14px;
+    color: var(--withdraw-ink);
+    font-size: 13px;
+  }
+  .account-option.is-selected {
+    border-color: var(--withdraw-green);
+    background: var(--withdraw-mint);
+    color: var(--withdraw-green-dark);
+  }
+  .account-setup .input-box { margin-bottom: 14px; }
+  .save-account-button {
+    min-height: 48px;
+    margin-bottom: 0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #168449, #0e6d3a);
+    font-size: 14px;
+  }
+  .note {
+    margin-bottom: 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.72);
+    color: #697973;
+    box-shadow: inset 0 0 0 1px rgba(10,31,23,.035);
+    font-size: 12.5px;
+  }
+  .send-btn {
+    min-height: 56px;
+    padding: 0 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #168449, #0e6d3a);
+    box-shadow: 0 15px 28px -12px rgba(14,109,58,.52), 0 2px 4px rgba(10,106,69,.16), inset 0 1px 0 rgba(255,255,255,.22);
+    font: 750 16px/1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  }
+  .send-btn:active { transform: scale(.985); }
+
+  .recent {
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid var(--withdraw-line);
+  }
+  .section-head { margin-bottom: 10px; }
+  .section-head h3 {
+    color: var(--withdraw-ink);
+    font: 750 18px/1.1 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    letter-spacing: -.025em;
+  }
+  .section-head a { color: #075a3b; font-size: 12.5px; }
+  .history-list { gap: 9px; }
+  .history-item {
+    min-width: 0;
+    gap: 12px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(6,40,28,.06), inset 0 0 0 1px rgba(10,31,23,.04);
+  }
+  .history-left {
+    min-width: 0;
+    color: var(--withdraw-ink);
+    font: 750 14px/1.25 "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  }
+  .history-right {
+    flex: 0 0 auto;
+    padding: 7px 9px;
+    border-radius: 999px;
+    background: var(--withdraw-mint);
+    color: #0c6d45;
+    font: 700 11px/1 Inter, system-ui, sans-serif;
+  }
+  .history-right.pending { background: #fff6d8; color: #8a6412; }
+  .history-right.rejected { background: #fdecec; color: #a83a3a; }
+  .home {
+    width: 134px;
+    height: 5px;
+    margin: 22px auto 0;
+    border-radius: 99px;
+    background: #0a1f17;
+    opacity: .9;
+  }
+  .withdrawal-modal-card {
+    max-height: min(92vh, 760px);
+    border: 1px solid var(--withdraw-line);
+    border-radius: 24px;
+    box-shadow: 0 18px 44px -24px rgba(2,26,18,.28), 0 2px 8px rgba(6,40,28,.06);
+  }
+  #withdrawalReceiptReference { color: var(--withdraw-ink) !important; }
+  #withdrawalReceiptBadge { background: var(--withdraw-green) !important; }
+  #withdrawalReceiptAmount { color: var(--withdraw-green-dark) !important; }
+  #withdrawalReceiptBank,
+  #withdrawalReceiptAccount,
+  #withdrawalReceiptHolder,
+  #withdrawalReceiptSubmitted { color: var(--withdraw-ink) !important; }
+  .withdrawal-modal-card > div[style*="linear-gradient"] {
+    border-color: var(--withdraw-line) !important;
+    background: #f7faf8 !important;
+    box-shadow: none !important;
+  }
+  .withdrawal-modal-card > div[style*="border-bottom"] {
+    border-bottom-color: var(--withdraw-line) !important;
+  }
+
+  @media (min-width: 521px) {
+    body { align-items: center; padding: 40px 0; }
+    .phone { height: min(844px, calc(100dvh - 80px)); margin: 0 auto; overflow-y: auto; scrollbar-width: none; }
+    .phone::-webkit-scrollbar { display: none; }
+  }
+  @media (max-width: 520px) {
+    body { display: block; min-height: 100dvh; background: var(--withdraw-bg); }
+    .phone { width: 100%; min-height: 100vh; min-height: 100dvh; margin: 0; border-radius: 0; box-shadow: none; }
+    .withdraw-header { padding-top: max(8px, env(safe-area-inset-top)); }
+    .withdrawal-modal { padding: 12px; }
+    .withdrawal-modal-card { width: 100%; max-height: calc(100dvh - 24px); border-radius: 22px; padding: 18px; }
+  }
+  @media (max-width: 360px) {
+    .phone { padding-right: 16px; padding-left: 16px; }
+    .withdraw-header { margin-right: -16px; margin-left: -16px; padding-right: 12px; padding-left: 12px; }
+    .quick-row { gap: 7px; }
+    .quick-row button { font-size: 12px; }
+  }
+
 </style>
 
 <main class="phone">
 
   <header class="withdraw-header">
-    <a href="{{ route('dashboard') }}" class="back-btn">‹</a>
+    <a href="{{ route('dashboard') }}" class="back-btn" aria-label="Back to dashboard">‹</a>
     <div class="page-title">
-      <h2>Withdraw Money</h2>
+      <h2>Withdraw Funds</h2>
       <p>Request funds to your bank or linked card</p>
     </div>
+    <span aria-hidden="true"></span>
   </header>
 
   <section class="balance-card">
-    <svg class="balance-card-art" viewBox="0 0 1200 300" role="img"
-         aria-label="Lulu Retail green card background" preserveAspectRatio="none"
-         xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="withdrawHeroBase" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#006f51"/>
-          <stop offset=".48" stop-color="#008f65"/>
-          <stop offset="1" stop-color="#006c50"/>
-        </linearGradient>
-        <linearGradient id="withdrawHeroLime" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stop-color="#67c936" stop-opacity=".10"/>
-          <stop offset=".55" stop-color="#79d83e" stop-opacity=".72"/>
-          <stop offset="1" stop-color="#25ae5e" stop-opacity=".30"/>
-        </linearGradient>
-        <linearGradient id="withdrawHeroGlow" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#f9dd3c" stop-opacity="0"/>
-          <stop offset=".55" stop-color="#ffe45c" stop-opacity=".95"/>
-          <stop offset="1" stop-color="#fff29a" stop-opacity=".76"/>
-        </linearGradient>
-        <radialGradient id="withdrawHeroCornerGlow" cx="0" cy="0" r="1">
-          <stop offset="0" stop-color="#9de052" stop-opacity=".72"/>
-          <stop offset="1" stop-color="#9de052" stop-opacity="0"/>
-        </radialGradient>
-        <clipPath id="withdrawHeroCardClip">
-          <rect width="1200" height="300" rx="32"/>
-        </clipPath>
-      </defs>
-      <g clip-path="url(#withdrawHeroCardClip)">
-        <rect width="1200" height="300" fill="url(#withdrawHeroBase)"/>
-        <ellipse cx="195" cy="-35" rx="300" ry="185" fill="url(#withdrawHeroCornerGlow)"/>
-        <path d="M-40 264 C170 72 285 30 470 -16 L250 -25 C133 48 52 111 -40 206Z" fill="#1fac67" opacity=".22"/>
-        <path d="M580 330 C785 300 886 150 1240 58 L1240 330Z" fill="#1bb966" opacity=".42"/>
-        <path d="M705 330 C884 286 1003 193 1240 132 L1240 330Z" fill="url(#withdrawHeroLime)"/>
-        <path d="M760 330 C922 274 1058 207 1240 169" fill="none" stroke="url(#withdrawHeroGlow)" stroke-width="9" stroke-linecap="round"/>
-        <path d="M-55 110 C70 92 132 35 190 -18" fill="none" stroke="#f6d63b" stroke-width="3" opacity=".9"/>
-        <path d="M845 330 C1000 270 1118 248 1240 278 L1240 330Z" fill="#70cf3a" opacity=".28"/>
-        <rect width="1200" height="300" rx="32" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
-      </g>
-    </svg>
     <div class="balance-label">Available balance</div>
     <div class="balance-amount">${{ number_format($availableBalance ?? 0, 2) }}</div>
   </section>
@@ -151,17 +455,20 @@
     <form method="POST" action="{{ route('withdrawals.store') }}">
       @csrf
 
-      <label class="label">Amount to Withdraw</label>
+      <label class="label" for="withdrawalAmount">Amount to Withdraw</label>
       <div class="input-row">
         <span class="currency">$</span>
-        <input class="input-box amount-input" type="number" name="amount" min="20" max="500" step="0.01" placeholder="0.00" required />
+        <input class="input-box amount-input" id="withdrawalAmount" type="number" name="amount" min="20" max="500" step="0.01" value="{{ old('amount') }}" inputmode="decimal" placeholder="0.00" aria-describedby="withdrawalAmountError" required />
       </div>
 
       <div class="quick-row">
-        <button type="button" onclick="document.querySelector('input[name=amount]').value='10'">$10</button>
-        <button type="button" onclick="document.querySelector('input[name=amount]').value='25'">$25</button>
-        <button type="button" onclick="document.querySelector('input[name=amount]').value='50'">$50</button>
-        <button type="button" onclick="document.querySelector('input[name=amount]').value='100'">$100</button>
+        <button type="button" data-withdrawal-amount="20">$20</button>
+        <button type="button" data-withdrawal-amount="50">$50</button>
+        <button type="button" data-withdrawal-amount="100">$100</button>
+        <button type="button" data-withdrawal-amount="200">$200</button>
+      </div>
+      <div class="error" id="withdrawalAmountError" aria-live="polite">
+        @error('amount'){{ $message }}@enderror
       </div>
 
       @php
@@ -173,7 +480,7 @@
       @if ($savedAccount)
         <button type="button" class="saved-account-button" aria-label="Use saved withdrawal account">
           <span style="display:block; font-size:12px; opacity:.78;">Saved {{ $selectedType === 'e_wallet' ? 'e-wallet' : 'bank account' }}</span>
-          <span style="display:block; margin-top:4px;">{{ auth()->user()->bank_name }} · {{ auth()->user()->bank_account_number }}</span>
+          <span style="display:block; margin-top:4px;">{{ auth()->user()->bank_name }} · ••••{{ substr(auth()->user()->bank_account_number, -4) }}</span>
         </button>
         <button type="button" class="add-account-button" id="addAccountButton">+ Add another account</button>
         <input type="hidden" name="account_type" id="savedAccountType" value="{{ $selectedType }}" @if ($accountSetupOpen) disabled @endif>
@@ -218,16 +525,17 @@
   <section class="recent">
     <div class="section-head">
       <h3>Recent Withdrawals</h3>
-      <a href="#">See All →</a>
+      <a href="{{ route('history') }}">See All →</a>
     </div>
 
     <div class="history-list">
       @forelse ($recentWithdrawals as $withdrawal)
         <div class="history-item">
           <div class="history-left">
-            ${{ number_format($withdrawal->amount, 2) }} • {{ ucfirst(str_replace('_', ' ', $withdrawal->payment_method)) }}
+            <div>${{ number_format($withdrawal->amount, 2) }} · {{ $withdrawal->bank_name ?: ucfirst(str_replace('_', ' ', $withdrawal->payment_method)) }}</div>
+            <small style="display:block; margin-top:4px; color:#8a9892; font:500 11px/1.2 Inter,system-ui,sans-serif;">{{ $withdrawal->created_at?->format('M d, Y') ?: '—' }} · {{ $withdrawal->account_number ? '••••'.substr($withdrawal->account_number, -4) : 'Withdrawal request' }}</small>
           </div>
-          <div class="history-right">{{ ucfirst($withdrawal->status) }}</div>
+          <div class="history-right {{ strtolower($withdrawal->status) }}">{{ ucfirst($withdrawal->status) }}</div>
         </div>
       @empty
         <div class="history-item">
@@ -239,6 +547,26 @@
   </section>
 
 </main>
+
+<script>
+  (function () {
+    var amountInput = document.querySelector('input[name="amount"]');
+    var amountError = document.getElementById('withdrawalAmountError');
+    var quickAmounts = document.querySelectorAll('[data-withdrawal-amount]');
+
+    quickAmounts.forEach(function (button) {
+      button.addEventListener('click', function () {
+        amountInput.value = button.getAttribute('data-withdrawal-amount');
+        amountError.textContent = '';
+        amountInput.focus();
+      });
+    });
+
+    amountInput.addEventListener('input', function () {
+      amountError.textContent = '';
+    });
+  }());
+</script>
 
 <script>
   (function () {

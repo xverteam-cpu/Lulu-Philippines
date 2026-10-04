@@ -57,7 +57,20 @@ class ProfileEditTest extends TestCase
         $this->actingAs($user)
             ->get(route('profile.edit'))
             ->assertOk()
-            ->assertSee(route('profile.update'), false);
+            ->assertSee('<html lang="en" class="profile-edit-page">', false)
+            ->assertSee('name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"', false)
+            ->assertSee('Edit Profile | Lulu')
+            ->assertSee('Profile information')
+            ->assertSee('Old Name')
+            ->assertSee('old@example.com')
+            ->assertSee('Old Region')
+            ->assertSee('name="name"', false)
+            ->assertSee('name="email"', false)
+            ->assertSee('name="region"', false)
+            ->assertSee(route('profile.password'), false)
+            ->assertSee(route('profile.update'), false)
+            ->assertDontSee('James Kang Kong')
+            ->assertDontSee('Verified and active');
 
         $this->actingAs($user)
             ->post(route('profile.update'), [

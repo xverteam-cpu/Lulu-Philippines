@@ -2276,15 +2276,23 @@
 
   @media (max-width: 520px) {
     body {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      padding: 0;
       background: var(--dashboard-bg) !important;
     }
 
     .dashboard-shell {
+      box-sizing: border-box;
       width: 100%;
+      max-width: 100%;
       height: auto;
       min-height: 100vh;
       min-height: 100dvh;
       margin: 0;
+      padding-right: 14px;
+      padding-left: 14px;
       border-radius: 0;
       box-shadow: none;
     }
@@ -2394,11 +2402,24 @@
   body.dashboard-page .container {
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     overflow-x: clip;
+  }
+
+  html.dashboard-page {
+    background-color: var(--dashboard-bg);
+    touch-action: pan-y;
+    overscroll-behavior-x: none;
   }
 
   body.dashboard-page {
     touch-action: pan-y;
+    overscroll-behavior-x: none;
+  }
+
+  body.dashboard-page .dashboard-shell {
+    touch-action: pan-y;
+    overscroll-behavior-x: none;
   }
 
   @media (max-width: 760px) {
@@ -3231,6 +3252,19 @@
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && !panel.hidden) setChatOpen(false);
     });
+  })();
+</script>
+<script>
+  (function () {
+    if (!document.documentElement.classList.contains('dashboard-page')) return;
+
+    document.addEventListener('gesturestart', function (event) {
+      event.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function (event) {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive: false });
   })();
 </script>
 @endsection

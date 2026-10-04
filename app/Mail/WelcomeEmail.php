@@ -28,6 +28,7 @@ class WelcomeEmail extends Mailable
                 'login_link' => url('/login'),
                 'dashboard_link' => url('/dashboard'),
                 'investors_link' => route('investors'),
+                'invest_link' => route('invest'),
                 'notification_settings_link' => url('/profile/notifications'),
             ]);
     }

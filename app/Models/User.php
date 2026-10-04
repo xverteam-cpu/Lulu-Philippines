@@ -70,6 +70,7 @@ class User extends Authenticatable
             'is_restricted' => 'boolean',
             'last_seen_at' => 'datetime',
             'notifications_read' => 'array',
+            'notification_preferences' => 'array',
         ];
     }
 

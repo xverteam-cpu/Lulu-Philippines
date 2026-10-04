@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Edit Profile</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --bg:#F2F5F3;
+  --surface:#FFFFFF;
+  --ink:#0A1F17;
+  --ink-2:#4B5B54;
+  --ink-3:#8A9892;
+  --line:#E2E9E5;
+
+  --em-950:#021A12;
+  --em-900:#04321F;
+  --em-800:#075A3B;
+  --em-600:#0E8A5A;
+  --em-500:#14A86D;
+
+  --mint:#3EE0A1;
+  --mint-50:#E6F7EF;
+  --lime:#C6F36B;
+
+  --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;
+  --ui:"Inter",system-ui,-apple-system,sans-serif;
+
+  --shadow-sm:
+    0 1px 2px rgba(6,40,28,.06),
+    0 2px 6px -2px rgba(6,40,28,.06);
+
+  --shadow-md:
+    0 1px 2px rgba(6,40,28,.05),
+    0 6px 16px -6px rgba(6,40,28,.12),
+    0 18px 36px -18px rgba(6,40,28,.18);
+
+  --shadow-lg:
+    0 2px 4px rgba(4,30,20,.08),
+    0 12px 24px -8px rgba(4,30,20,.22),
+    0 32px 56px -24px rgba(4,30,20,.38);
+
+  --ease:cubic-bezier(.2,.8,.2,1);
+
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  font-family:var(--ui);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+
+  background:
+    radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+    radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+    #E7ECE9;
+}
+
+button,input,select{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.num{font-variant-numeric:tabular-nums}
+
+/* Phone frame */
+.phone{
+  position:relative;
+  width:390px;
+  min-height:844px;
+  margin:40px 0;
+  background:var(--bg);
+  border-radius:54px;
+  overflow:clip;
+  box-shadow:
+    0 0 0 10px #0D1411,
+    0 0 0 11px #2A332F,
+    0 30px 60px -20px rgba(2,26,18,.40),
+    0 60px 100px -50px rgba(2,26,18,.30);
+}
+
+@media (min-width:521px){
+  body{align-items:center;padding:40px 0}
+  .phone{height:844px;margin:0;overflow-y:auto;scrollbar-width:none}
+  .phone::-webkit-scrollbar{display:none}
+}
+
+@media (max-width:520px){
+  body{background:var(--bg)}
+  .phone{width:100%;margin:0;border-radius:0;box-shadow:none}
+}
+
+/* Header */
+.chrome{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:rgba(242,245,243,.78);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);
+}
+
+.statusbar{
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:4px 30px 0 36px;
+}
+
+.statusbar time{
+  font:600 16px/1 var(--ui);
+  letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
+
+.statusbar .sys{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+
+.nav{
+  min-height:58px;
+  display:grid;
+  grid-template-columns:40px 1fr 40px;
+  align-items:center;
+  padding:0 16px 8px;
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:var(--surface);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 0 0 1px rgba(10,31,23,.05);
+  transition:.2s var(--ease);
+}
+
+.back:hover{
+  box-shadow:
+    var(--shadow-md),
+    inset 0 0 0 1px rgba(10,31,23,.06);
+}
+
+.back:active{transform:scale(.92)}
+
+.nav-title{text-align:center}
+
+.nav-title h1{
+  font:750 18px/1.05 var(--display);
+  letter-spacing:-.02em;
+}
+
+.nav-title p{
+  margin-top:5px;
+  font:500 11px/1.2 var(--ui);
+  color:var(--ink-3);
+}
+
+main{
+  padding:10px 20px 120px;
+}
+
+/* Profile hero */
+.profile-hero{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  border-radius:28px;
+  padding:22px;
+  color:#fff;
+
+  background:
+    radial-gradient(120% 90% at 105% -10%, rgba(62,224,161,.52), transparent 55%),
+    radial-gradient(70% 70% at -10% 110%, rgba(198,243,107,.28), transparent 60%),
+    radial-gradient(60% 50% at 40% 40%, rgba(20,168,109,.35), transparent 70%),
+    linear-gradient(160deg,#0B6A47 0%,#054A31 42%,#022418 100%);
+
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 0 0 1px rgba(255,255,255,.07);
+}
+
+.profile-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:var(--noise);
+  opacity:.09;
+  mix-blend-mode:overlay;
+}
+
+.profile-hero::after{
+  content:"";
+  position:absolute;
+  inset:0 0 55% 0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));
+}
+
+.hero-wave{
+  position:absolute;
+  right:-48px;
+  bottom:-28px;
+  width:260px;
+  z-index:-1;
+  opacity:.9;
+}
+
+.profile-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.avatar-wrap{
+  position:relative;
+  width:70px;
+  height:70px;
+  flex:none;
+}
+
+.avatar{
+  width:70px;
+  height:70px;
+  border-radius:22px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.08));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    inset 0 0 0 1px rgba(255,255,255,.12);
+  display:grid;
+  place-items:center;
+  font:800 25px/1 var(--display);
+  color:#fff;
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+
+.edit-avatar{
+  position:absolute;
+  right:-5px;
+  bottom:-5px;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#fff;
+  color:var(--em-800);
+  box-shadow:var(--shadow-md);
+}
+
+.profile-copy{
+  min-width:0;
+  flex:1;
+}
+
+.profile-copy .eyebrow{
+  font:700 10px/1 var(--ui);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:rgba(232,255,244,.65);
+}
+
+.profile-copy h2{
+  margin-top:7px;
+  font:800 21px/1.15 var(--display);
+  letter-spacing:-.03em;
+}
+
+.profile-copy p{
+  margin-top:5px;
+  font:500 12px/1.35 var(--ui);
+  color:rgba(232,255,244,.66);
+}
+
+.verified{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:9px;
+  height:26px;
+  padding:0 9px;
+  border-radius:999px;
+  font:700 9.5px/1 var(--ui);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#DAFFE9;
+  background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+}
+
+.verified i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--mint);
+  box-shadow:0 0 0 3px rgba(62,224,161,.18);
+}
+
+/* Form panel */
+.panel{
+  margin-top:18px;
+  background:var(--surface);
+  border-radius:24px;
+  padding:20px;
+  box-shadow:
+    var(--shadow-md),
+    inset 0 0 0 1px rgba(10,31,23,.04);
+}
+
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.panel-head h3{
+  font:750 19px/1.15 var(--display);
+  letter-spacing:-.025em;
+}
+
+.panel-head p{
+  margin-top:5px;
+  font:450 13px/1.45 var(--ui);
+  color:var(--ink-2);
+}
+
+.tag{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  height:26px;
+  padding:0 10px;
+  border-radius:99px;
+  background:var(--mint-50);
+  color:var(--em-600);
+  font:700 9.5px/1 var(--ui);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  box-shadow:inset 0 0 0 1px rgba(14,138,90,.14);
+}
+
+.field + .field{margin-top:16px}
+
+.field label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:0 2px 8px;
+  font:700 11px/1 var(--ui);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--ink-2);
+}
+
+.optional{
+  font:600 10px/1 var(--ui);
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--ink-3);
+}
+
+.control{
+  min-height:56px;
+  border-radius:16px;
+  background:#F8FAF9;
+  box-shadow:inset 0 0 0 1px var(--line);
+  display:flex;
+  align-items:center;
+  transition:.2s var(--ease);
+}
+
+.control:focus-within{
+  background:#fff;
+  box-shadow:
+    inset 0 0 0 1.5px var(--em-500),
+    0 0 0 4px rgba(20,168,109,.10);
+}
+
+.control input,
+.control select{
+  width:100%;
+  height:56px;
+  border:0;
+  outline:0;
+  background:transparent;
+  padding:0 16px;
+  font:600 15px/1 var(--ui);
+  letter-spacing:-.01em;
+}
+
+.control select{
+  appearance:none;
+  -webkit-appearance:none;
+  cursor:pointer;
+  padding-right:42px;
+}
+
+.select-wrap{
+  position:relative;
+}
+
+.select-wrap svg{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:var(--ink-3);
+}
+
+.field-hint{
+  margin:7px 2px 0;
+  font:450 11.5px/1.4 var(--ui);
+  color:var(--ink-3);
+}
+
+/* Account details card */
+.info-card{
+  margin-top:18px;
+  padding:14px;
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,#F8FBF9,#F3F8F5);
+  box-shadow:inset 0 0 0 1px rgba(10,31,23,.035);
+}
+
+.info-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.info-row + .info-row{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #EAF0ED;
+}
+
+.info-icon{
+  width:38px;
+  height:38px;
+  flex:none;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--mint-50);
+  color:var(--em-600);
+}
+
+.info-copy{
+  min-width:0;
+  flex:1;
+}
+
+.info-copy span{
+  display:block;
+  font:600 10px/1 var(--ui);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  color:var(--ink-3);
+}
+
+.info-copy strong{
+  display:block;
+  margin-top:5px;
+  font:650 13px/1.2 var(--ui);
+  color:var(--ink);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Security panel */
+.security{
+  margin-top:18px;
+  border-radius:20px;
+  padding:16px;
+  background:#fff;
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 0 0 1px var(--line);
+}
+
+.security-head{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.security-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:var(--mint-50);
+  color:var(--em-600);
+  flex:none;
+}
+
+.security h4{
+  font:700 14px/1.2 var(--ui);
+}
+
+.security p{
+  margin-top:4px;
+  font:450 12px/1.4 var(--ui);
+  color:var(--ink-2);
+}
+
+.security-link{
+  margin-top:13px;
+  width:100%;
+  height:42px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  background:#F7FAF8;
+  color:var(--em-800);
+  font:700 12.5px/1 var(--ui);
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+
+/* CTA */
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1.45fr;
+  gap:10px;
+  margin-top:18px;
+}
+
+.btn-secondary{
+  height:56px;
+  border-radius:17px;
+  background:#fff;
+  color:var(--ink-2);
+  font:650 14px/1 var(--ui);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 0 0 1px var(--line);
+}
+
+.cta{
+  height:56px;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  color:#fff;
+  font:650 15px/1 var(--ui);
+  position:relative;
+  overflow:hidden;
+
+  background:
+    linear-gradient(180deg,#11905E 0%,#0A6A45 100%);
+
+  box-shadow:
+    0 10px 24px -8px rgba(10,106,69,.55),
+    0 2px 4px rgba(10,106,69,.2),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.15);
+
+  transition:.2s var(--ease);
+}
+
+.cta::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);
+  transform:translateX(-110%);
+  transition:transform .8s var(--ease);
+}
+
+.cta:hover::after{transform:translateX(110%)}
+.cta:hover{filter:brightness(1.05)}
+.cta:active,.btn-secondary:active{transform:scale(.98)}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:34px;
+  transform:translate(-50%,18px);
+  z-index:100;
+  opacity:0;
+  pointer-events:none;
+  background:var(--em-950);
+  color:#fff;
+  padding:11px 15px;
+  border-radius:99px;
+  font:650 12.5px/1 var(--ui);
+  box-shadow:var(--shadow-lg);
+  transition:.25s var(--ease);
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+@media(max-width:380px){
+  main{padding-left:16px;padding-right:16px}
+  .actions{grid-template-columns:1fr}
+  .btn-secondary{order:2}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+  <header class="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17">
+          <rect x="0" y="8" width="3" height="4" rx="1"/>
+          <rect x="5" y="5.5" width="3" height="6.5" rx="1"/>
+          <rect x="10" y="3" width="3" height="9" rx="1"/>
+          <rect x="15" y="0" width="3" height="12" rx="1"/>
+        </svg>
+
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17">
+          <path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/>
+          <path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/>
+          <path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/>
+        </svg>
+
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none">
+          <rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/>
+          <rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/>
+          <path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/>
+        </svg>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="back" type="button" aria-label="Back" onclick="history.back()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 5l-7 7 7 7"/>
+        </svg>
+      </button>
+
+      <div class="nav-title">
+        <h1>Edit Profile</h1>
+        <p>Manage your personal details</p>
+      </div>
+
+      <span></span>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Profile hero -->
+    <section class="profile-hero">
+      <svg class="hero-wave" viewBox="0 0 300 200" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wv1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#C6F36B" stop-opacity="0"/>
+            <stop offset=".6" stop-color="#C6F36B" stop-opacity=".65"/>
+            <stop offset="1" stop-color="#F3E27A" stop-opacity=".9"/>
+          </linearGradient>
+
+          <linearGradient id="wv2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#3EE0A1" stop-opacity="0"/>
+            <stop offset="1" stop-color="#3EE0A1" stop-opacity=".45"/>
+          </linearGradient>
+        </defs>
+
+        <path d="M0 170C70 168 120 140 170 108S260 50 310 42" stroke="url(#wv1)" stroke-width="1.6"/>
+        <path d="M10 196C90 190 140 162 190 128S270 80 310 74" stroke="url(#wv2)" stroke-width="1.2"/>
+      </svg>
+
+      <div class="profile-top">
+
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatarText">JK</div>
+
+          <button class="edit-avatar" type="button" aria-label="Change profile picture">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="profile-copy">
+          <div class="eyebrow">Public profile</div>
+          <h2 id="heroName">James Kang Kong</h2>
+          <p>Member account • NCR</p>
+
+          <span class="verified">
+            <i></i>
+            Verified account
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Main form -->
+    <section class="panel">
+
+      <div class="panel-head">
+        <div>
+          <h3>Profile information</h3>
+          <p>Update the information shown on your account.</p>
+        </div>
+
+        <span class="tag">Editable</span>
+      </div>
+
+      <form id="profileForm">
+
+        <div class="field">
+          <label for="name">Full name</label>
+
+          <div class="control">
+            <input
+              id="name"
+              type="text"
+              value="james kang kong"
+              autocomplete="name"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+
+          <div class="control">
+            <input
+              id="email"
+              type="email"
+              value="dycinne@gmail.com"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="field-hint">
+            Account alerts and important notices will be sent here.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mobile">
+            Mobile number
+            <span class="optional">Optional</span>
+          </label>
+
+          <div class="control">
+            <input
+              id="mobile"
+              type="tel"
+              value="+63 917 123 4567"
+              autocomplete="tel"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="region">Region</label>
+
+          <div class="control select-wrap">
+            <select id="region">
+              <option selected>NCR</option>
+              <option>CAR</option>
+              <option>Region I</option>
+              <option>Region II</option>
+              <option>Region III</option>
+              <option>Region IV-A</option>
+              <option>Region IV-B</option>
+              <option>Region V</option>
+              <option>Region VI</option>
+              <option>Region VII</option>
+              <option>Region VIII</option>
+              <option>Region IX</option>
+              <option>Region X</option>
+              <option>Region XI</option>
+              <option>Region XII</option>
+              <option>Region XIII</option>
+              <option>BARMM</option>
+            </select>
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="address">
+            City / Municipality
+            <span class="optional">Optional</span>
+          </label>
+
+          <div class="control">
+            <input
+              id="address"
+              type="text"
+              placeholder="Enter city or municipality"
+              autocomplete="address-level2"
+            />
+          </div>
+        </div>
+
+        <!-- Account details -->
+        <div class="info-card">
+
+          <div class="info-row">
+            <div class="info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16v16H4z"/>
+                <path d="M8 8h8M8 12h6"/>
+              </svg>
+            </div>
+
+            <div class="info-copy">
+              <span>Account ID</span>
+              <strong>LW-2026-84392017</strong>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3 4 7v5c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-4Z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+
+            <div class="info-copy">
+              <span>Account status</span>
+              <strong>Verified and active</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="security">
+
+          <div class="security-head">
+
+            <div class="security-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10" width="16" height="10" rx="2"/>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              </svg>
+            </div>
+
+            <div>
+              <h4>Security settings</h4>
+              <p>Manage your password and account protection separately.</p>
+            </div>
+
+          </div>
+
+          <button type="button" class="security-link">
+            Open security settings
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </button>
+
+        </div>
+
+        <div class="actions">
+          <button class="btn-secondary" type="button" onclick="history.back()">
+            Cancel
+          </button>
+
+          <button class="cta" type="submit">
+            Save changes
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6 9 17l-5-5"/>
+            </svg>
+          </button>
+        </div>
+
+      </form>
+
+    </section>
+
+  </main>
+
+</div>
+
+<div class="toast" id="toast">
+  Profile changes saved
+</div>
+
+<script>
+const form = document.getElementById('profileForm');
+const nameInput = document.getElementById('name');
+const regionInput = document.getElementById('region');
+const heroName = document.getElementById('heroName');
+const avatarText = document.getElementById('avatarText');
+const toast = document.getElementById('toast');
+
+function getInitials(name){
+  const parts = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if(!parts.length) return "U";
+
+  const first = parts[0][0] || "";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+
+  return (first + last).toUpperCase();
+}
+
+nameInput.addEventListener('input', () => {
+  const name = nameInput.value.trim() || "Your Name";
+  heroName.textContent = name.replace(/\b\w/g, char => char.toUpperCase());
+  avatarText.textContent = getInitials(name);
+});
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1800);
+
+  // Connect your backend/API here.
+  // Example:
+  // fetch('/api/profile', { method:'POST', body:new FormData(form) })
+});
+</script>
+
+</body>
+</html>

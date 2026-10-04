@@ -130,6 +130,8 @@ class AuthController extends Controller
                 'is_admin' => false,
                 'referred_by' => $referrerId,
             ]);
+
+            Mail::to($user->email)->send(new WelcomeEmail($user));
         }
 
         Auth::login($user, true);

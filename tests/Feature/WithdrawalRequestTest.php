@@ -14,6 +14,45 @@ class WithdrawalRequestTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_withdraw_page_uses_reference_layout_and_live_withdrawal_data(): void
+    {
+        $user = User::factory()->create([
+            'balance' => 284.77,
+            'bank_name' => 'BPI',
+            'bank_account_number' => '1234567890',
+            'bank_account_holder' => 'Withdrawal Client',
+            'withdrawal_account_type' => 'bank',
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        Withdrawal::create([
+            'user_id' => $user->id,
+            'amount' => 25,
+            'payment_method' => 'bank_transfer',
+            'bank_name' => 'BPI',
+            'account_number' => '1234567890',
+            'account_holder' => 'Withdrawal Client',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['pin_verified' => true])
+            ->get(route('withdraw'))
+            ->assertOk()
+            ->assertSee('Withdraw Funds')
+            ->assertSee('$284.77')
+            ->assertSee('data-withdrawal-amount="20"', false)
+            ->assertSee('Saved bank account')
+            ->assertSee('BPI · ••••7890')
+            ->assertSee('$25.00 · BPI')
+            ->assertSee('Pending')
+            ->assertSee(route('withdrawals.store'), false)
+            ->assertSee(route('history'), false)
+            ->assertSee('safe-area-inset-top', false)
+            ->assertSee('name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"', false)
+            ->assertDontSee('1234567890</span>');
+    }
+
     public function test_admin_withdrawal_details_does_not_render_detached_css_as_page_text(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);

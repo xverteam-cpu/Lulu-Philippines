@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Send Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F2F5F3;
+  --surface:#FFFFFF;
+  --ink:#0A1F17;
+  --ink-2:#4B5B54;
+  --ink-3:#8A9892;
+  --line:#E2E9E5;
+  --em-950:#021A12;
+  --em-900:#04321F;
+  --em-800:#075A3B;
+  --em-600:#0E8A5A;
+  --em-500:#14A86D;
+  --mint:#3EE0A1;
+  --mint-50:#E6F7EF;
+  --lime:#C6F36B;
+  --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;
+  --ui:"Inter",system-ui,-apple-system,sans-serif;
+  --shadow-sm:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06);
+  --shadow-md:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18);
+  --shadow-lg:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased;
+  min-height:100vh;background-attachment:fixed;display:flex;justify-content:center;align-items:flex-start;
+  background:
+    radial-gradient(900px 600px at 15% 10%, rgba(20,168,109,.18), transparent 60%),
+    radial-gradient(700px 500px at 90% 90%, rgba(198,243,107,.14), transparent 60%),
+    #E7ECE9;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input{font:inherit;color:inherit}
+.num{font-family:var(--ui);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"cv11" 1,"ss01" 1}
+
+/* Phone frame copied from source theme */
+.phone{
+  position:relative;width:390px;min-height:844px;margin:40px 0;
+  background:var(--bg);border-radius:54px;overflow:clip;
+  box-shadow:0 0 0 10px #0D1411,0 0 0 11px #2A332F,0 30px 60px -20px rgba(2,26,18,.40),0 60px 100px -50px rgba(2,26,18,.30);
+}
+@media (min-width:521px){
+  body{align-items:center;padding:40px 0}
+  .phone{height:844px;margin:0;overflow-y:auto;scrollbar-width:none}
+  .phone::-webkit-scrollbar{display:none}
+}
+@media (max-width:520px){
+  body{background:var(--bg)}
+  .phone{width:100%;margin:0;border-radius:0;box-shadow:none}
+}
+
+/* Top chrome */
+.chrome{
+  position:sticky;top:0;z-index:30;
+  background:rgba(242,245,243,.78);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+}
+.statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}
+.statusbar time{font:600 16px/1 var(--ui);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.statusbar .sys{display:flex;gap:6px;align-items:center}
+.nav{height:58px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 16px 6px}
+.back{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface);box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(10,31,23,.05);
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+.back:hover{box-shadow:var(--shadow-md),inset 0 0 0 1px rgba(10,31,23,.06)}
+.back:active{transform:scale(.92)}
+.nav-title{text-align:center}
+.nav-title h1{font:750 18px/1.05 var(--display);letter-spacing:-.02em}
+.nav-title p{margin-top:5px;font:500 11px/1.2 var(--ui);color:var(--ink-3)}
+
+main{padding:10px 20px 120px}
+
+/* Hero */
+.hero{
+  position:relative;isolation:isolate;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#fff;
+  background:
+    radial-gradient(120% 90% at 105% -10%,rgba(62,224,161,.55),transparent 55%),
+    radial-gradient(70% 70% at -10% 110%,rgba(198,243,107,.28),transparent 60%),
+    radial-gradient(60% 50% at 40% 40%,rgba(20,168,109,.35),transparent 70%),
+    linear-gradient(160deg,#0B6A47 0%,#054A31 42%,#022418 100%);
+  box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.07);
+}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--noise);opacity:.09;mix-blend-mode:overlay}
+.hero::after{content:"";position:absolute;inset:0 0 55% 0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));border-radius:28px 28px 0 0}
+.hero__waves{position:absolute;right:-30px;bottom:-12px;width:300px;z-index:-1;opacity:.9}
+.hero__top{display:flex;justify-content:space-between;align-items:center}
+.eyebrow{font:600 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase}
+.hero .eyebrow{color:rgba(232,255,244,.72);display:flex;align-items:center;gap:8px}
+.hero .eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px rgba(62,224,161,.22),0 0 10px var(--mint)}
+.glass-ico{
+  width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.1);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.balance{margin-top:16px;font-weight:700;font-size:48px;line-height:1;letter-spacing:-.04em;display:flex;align-items:flex-start;text-shadow:0 2px 18px rgba(0,0,0,.18)}
+.balance .cur{font-size:26px;margin:5px 3px 0 0;letter-spacing:0;color:rgba(255,255,255,.8);font-weight:600}
+.balance .dec{color:rgba(255,255,255,.55)}
+.hero__sub{margin-top:8px;font:500 13px/1.35 var(--ui);color:rgba(232,255,244,.62)}
+
+/* Main form card */
+.panel{
+  margin-top:18px;background:var(--surface);border-radius:24px;padding:20px;
+  box-shadow:var(--shadow-md),inset 0 0 0 1px rgba(10,31,23,.04);
+}
+.panel h2{font:750 19px/1.15 var(--display);letter-spacing:-.025em}
+.panel .desc{margin-top:5px;font:450 13px/1.45 var(--ui);color:var(--ink-2)}
+
+.field{margin-top:18px}
+.field label{display:block;margin:0 2px 9px;font:700 12px/1 var(--ui);letter-spacing:.01em}
+.control{
+  min-height:56px;border-radius:16px;background:#F8FAF9;
+  box-shadow:inset 0 0 0 1px var(--line);
+  display:flex;align-items:center;transition:.2s var(--ease);
+}
+.control:focus-within{background:#fff;box-shadow:inset 0 0 0 1.5px var(--em-500),0 0 0 4px rgba(20,168,109,.10)}
+.control input{
+  width:100%;height:56px;padding:0 16px;border:0;outline:0;background:transparent;
+  font:600 15px/1 var(--ui);letter-spacing:-.01em;
+}
+.control input::placeholder{color:var(--ink-3);font-weight:500}
+.amount-control{padding:0 16px;gap:10px}
+.amount-control .currency{font:800 18px/1 var(--display);color:var(--em-600)}
+.amount-control input{padding:0;font-size:25px;font-weight:700;color:var(--ink)}
+
+.quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.quick{
+  height:40px;border-radius:13px;background:linear-gradient(180deg,#EDFAF3,#E4F5EC);
+  color:var(--em-800);font:700 12px/1 var(--ui);
+  box-shadow:inset 0 0 0 1px rgba(14,138,90,.08);
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),background .2s var(--ease);
+}
+.quick:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(14,138,90,.14)}
+.quick:active{transform:scale(.96)}
+.quick.active{background:linear-gradient(180deg,#D7F6E7,#C7EFD9);box-shadow:inset 0 0 0 1px rgba(14,138,90,.2)}
+
+.info{
+  margin-top:18px;padding:14px 14px;border-radius:16px;
+  background:linear-gradient(180deg,#F7FAF8,#F2F7F4);
+  box-shadow:inset 0 0 0 1px rgba(10,31,23,.03);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.info .ico{
+  width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:var(--mint-50);color:var(--em-600);
+}
+.info p{font:450 12.5px/1.5 var(--ui);color:var(--ink-2)}
+
+.error{display:none;margin:8px 2px 0;font:600 11.5px/1.35 var(--ui);color:#B42318}
+.error.show{display:block}
+
+/* CTA consistent with source */
+.cta{
+  width:100%;height:58px;margin-top:18px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;
+  font:650 16px/1 var(--ui);letter-spacing:-.01em;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#11905E 0%,#0A6A45 100%);
+  box-shadow:0 10px 24px -8px rgba(10,106,69,.55),0 2px 4px rgba(10,106,69,.2),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(0,0,0,.15);
+  transition:transform .2s var(--ease),box-shadow .2s var(--ease),filter .2s;
+}
+.cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-110%);transition:transform .8s var(--ease)}
+.cta:hover::after{transform:translateX(110%)}
+.cta:hover{filter:brightness(1.05);box-shadow:0 14px 30px -8px rgba(10,106,69,.6),0 2px 4px rgba(10,106,69,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.cta:active{transform:scale(.98)}
+
+/* Recent recipients */
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;margin:28px 2px 12px}
+.sec-head h3{font:750 18px/1.1 var(--display);letter-spacing:-.025em}
+.sec-head button{font:700 12px/1 var(--ui);color:var(--em-600)}
+.recipient{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:#fff;
+  box-shadow:var(--shadow-sm),inset 0 0 0 1px var(--line);
+}
+.recipient + .recipient{margin-top:10px}
+.avatar{
+  width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#EDFAF3,#DDF3E8);color:var(--em-800);font:800 14px/1 var(--display);
+}
+.recipient .meta{min-width:0;flex:1}
+.recipient .name{font:700 14px/1.2 var(--ui)}
+.recipient .id{margin-top:4px;font:500 11.5px/1.2 var(--ui);color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{color:var(--ink-3)}
+
+.toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,18px);z-index:100;
+  opacity:0;pointer-events:none;background:var(--em-950);color:#fff;padding:11px 15px;border-radius:99px;
+  font:650 12.5px/1 var(--ui);box-shadow:var(--shadow-lg);transition:.25s var(--ease);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="back" type="button" aria-label="Back" onclick="history.back()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="nav-title">
+        <h1>Send Money</h1>
+        <p>Transfer funds securely</p>
+      </div>
+      <span></span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Available balance">
+      <svg class="hero__waves" viewBox="0 0 300 200" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="wv1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C6F36B" stop-opacity="0"/><stop offset=".6" stop-color="#C6F36B" stop-opacity=".65"/><stop offset="1" stop-color="#F3E27A" stop-opacity=".9"/></linearGradient>
+          <linearGradient id="wv2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3EE0A1" stop-opacity="0"/><stop offset="1" stop-color="#3EE0A1" stop-opacity=".45"/></linearGradient>
+        </defs>
+        <path d="M0 170C70 168 120 140 170 108S260 50 310 42" stroke="url(#wv1)" stroke-width="1.6"/>
+        <path d="M10 196C90 190 140 162 190 128S270 80 310 74" stroke="url(#wv2)" stroke-width="1.2"/>
+        <path d="M40 210C110 206 160 182 210 150S280 108 310 104" stroke="url(#wv2)" stroke-width=".9" opacity=".7"/>
+      </svg>
+      <div class="hero__top">
+        <span class="eyebrow"><i></i>Available balance</span>
+        <span class="glass-ico" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8FFF4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 9.5 14.5"/><path d="M21 3 14 21l-4.5-6.5L3 10z"/></svg>
+        </span>
+      </div>
+      <div class="balance num"><span class="cur">$</span>284<span class="dec">.77</span></div>
+      <div class="hero__sub">Funds available for wallet-to-wallet transfers.</div>
+    </section>
+
+    <section class="panel" aria-label="Send money form">
+      <h2>Transfer details</h2>
+      <p class="desc">Enter the recipient and the amount you want to send.</p>
+
+      <form id="sendForm" novalidate>
+        <div class="field">
+          <label for="recipient">Recipient Wallet ID</label>
+          <div class="control">
+            <input id="recipient" type="text" autocomplete="off" placeholder="Enter wallet ID or mobile number" />
+          </div>
+          <div class="error" id="recipientError">Enter a recipient wallet ID or mobile number.</div>
+        </div>
+
+        <div class="field">
+          <label for="amount">Amount to Send</label>
+          <div class="control amount-control">
+            <span class="currency">$</span>
+            <input id="amount" class="num" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="quick-row">
+            <button type="button" class="quick" data-amount="10">$10</button>
+            <button type="button" class="quick" data-amount="25">$25</button>
+            <button type="button" class="quick" data-amount="50">$50</button>
+            <button type="button" class="quick" data-amount="100">$100</button>
+          </div>
+          <div class="error" id="amountError">Enter a valid amount.</div>
+        </div>
+
+        <div class="field">
+          <label for="message">Message <span style="font-weight:500;color:var(--ink-3)">(optional)</span></label>
+          <div class="control">
+            <input id="message" type="text" maxlength="120" placeholder="Add a short note" />
+          </div>
+        </div>
+
+        <div class="info">
+          <span class="ico" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+          </span>
+          <p>Transfers are processed through the Lulu Wallet system. Review the recipient details carefully before continuing.</p>
+        </div>
+
+        <button class="cta" type="submit">
+          Continue to Send
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+    </section>
+
+    <div class="sec-head">
+      <h3>Recent recipients</h3>
+      <button type="button">See all</button>
+    </div>
+
+    <button class="recipient" type="button" data-recipient="LW-84392017">
+      <span class="avatar">JM</span>
+      <span class="meta">
+        <span class="name">John M.</span>
+        <span class="id">LW-84392017</span>
+      </span>
+      <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+
+    <button class="recipient" type="button" data-recipient="+639171234567">
+      <span class="avatar">AC</span>
+      <span class="meta">
+        <span class="name">Anna C.</span>
+        <span class="id">+63 917 123 4567</span>
+      </span>
+      <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </main>
+</div>
+
+<div class="toast" id="toast">Transfer details ready for review</div>
+
+<script>
+const availableBalance = 284.77;
+const form = document.getElementById('sendForm');
+const recipient = document.getElementById('recipient');
+const amount = document.getElementById('amount');
+const recipientError = document.getElementById('recipientError');
+const amountError = document.getElementById('amountError');
+const toast = document.getElementById('toast');
+const quickButtons = [...document.querySelectorAll('.quick')];
+
+function setQuick(value){
+  amount.value = Number(value).toFixed(2);
+  amountError.classList.remove('show');
+  quickButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.amount === String(value)));
+}
+
+quickButtons.forEach(btn => {
+  btn.addEventListener('click', () => setQuick(btn.dataset.amount));
+});
+
+document.querySelectorAll('.recipient').forEach(btn => {
+  btn.addEventListener('click', () => {
+    recipient.value = btn.dataset.recipient;
+    recipientError.classList.remove('show');
+    recipient.focus();
+  });
+});
+
+amount.addEventListener('input', () => {
+  quickButtons.forEach(btn => btn.classList.remove('active'));
+  if(Number(amount.value) > 0) amountError.classList.remove('show');
+});
+
+recipient.addEventListener('input', () => {
+  if(recipient.value.trim()) recipientError.classList.remove('show');
+});
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const recipientValue = recipient.value.trim();
+  const amountValue = Number(amount.value);
+  let valid = true;
+
+  if(!recipientValue){
+    recipientError.classList.add('show');
+    valid = false;
+  } else {
+    recipientError.classList.remove('show');
+  }
+
+  if(!amountValue || amountValue <= 0){
+    amountError.textContent = 'Enter a valid amount.';
+    amountError.classList.add('show');
+    valid = false;
+  } else if(amountValue > availableBalance){
+    amountError.textContent = 'Amount exceeds your available balance.';
+    amountError.classList.add('show');
+    valid = false;
+  } else {
+    amountError.classList.remove('show');
+  }
+
+  if(!valid) return;
+
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+
+  // Connect your confirmation page here:
+  // window.location.href = 'send-confirmation.html';
+});
+</script>
+</body>
+</html>

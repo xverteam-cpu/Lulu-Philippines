@@ -1,249 +1,526 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet">
 <style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Inter, Arial, Helvetica, sans-serif;
+  :root {
+    --send-bg: #f2f5f3;
+    --send-surface: #fff;
+    --send-ink: #0a1f17;
+    --send-muted: #4b5b54;
+    --send-subtle: #8a9892;
+    --send-line: #e2e9e5;
+    --send-green: #0e8a5a;
+    --send-green-dark: #075a3b;
+    --send-mint: #3ee0a1;
+    --send-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    --send-ui: Inter, system-ui, -apple-system, sans-serif;
   }
 
-  body {
-    background: #f3f5f8;
-    color: #071a44;
+  html.send-page,
+  html.send-page body {
+    min-height: 100%;
+    background: #e7ece9;
   }
 
-  .phone {
-    max-width: 430px;
-    min-height: 100vh;
-    margin: 0 auto;
-    background: #f3f5f8;
-    padding: 24px 16px 110px;
-    position: relative;
-  }
-
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-  }
-
-  .brand { display:flex; align-items:center; gap:12px; }
-
-  .logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: #166534;
-    color: #fff;
-    font-weight: 900;
+  html.send-page body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(20, 168, 109, .18), transparent 60%),
+      radial-gradient(700px 500px at 90% 90%, rgba(198, 243, 107, .14), transparent 60%),
+      #e7ece9;
+    color: var(--send-ink);
+    font-family: var(--send-ui);
   }
 
-  .brand h1 { font-size: 19px; font-weight: 900; line-height: 1; }
-  .brand p { font-size: 12px; color: #8b96a8; font-weight: 700; margin-top:4px; }
+  html.send-page body .container.send-page-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
 
-  .icons { display:flex; align-items:center; gap:16px; font-size:18px; }
+  .send-shell,
+  .send-shell * {
+    box-sizing: border-box;
+  }
 
-  .profile {
+  .send-shell {
+    position: relative;
+    width: 390px;
+    height: 844px;
+    margin: 40px 0;
+    overflow-x: clip;
+    overflow-y: auto;
+    border-radius: 42px;
+    background: var(--send-bg);
+    box-shadow: 0 0 0 9px #0d1411, 0 0 0 10px #2a332f, 0 30px 60px -20px rgba(2, 26, 18, .4);
+    scrollbar-width: none;
+  }
+
+  .send-shell::-webkit-scrollbar {
+    display: none;
+  }
+
+  .send-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(242, 245, 243, .88);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .send-statusbar {
+    height: calc(38px + env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(4px + env(safe-area-inset-top)) 25px 0 28px;
+  }
+
+  .send-statusbar time {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .send-status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .send-nav {
+    height: 62px;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    padding: 0 16px 6px;
+  }
+
+  .send-back {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--send-surface);
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), 0 2px 6px -2px rgba(6, 40, 28, .06);
+    color: var(--send-ink);
+    text-decoration: none;
+    transition: transform .2s ease;
+  }
+
+  .send-back:active {
+    transform: scale(.92);
+  }
+
+  .send-title {
+    text-align: center;
+  }
+
+  .send-title h1 {
+    font: 750 18px/1.05 var(--send-display);
+    letter-spacing: -.02em;
+  }
+
+  .send-title p {
+    margin-top: 5px;
+    color: var(--send-subtle);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .send-main {
+    padding: 10px 20px 138px;
+  }
+
+  .send-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 22px;
+    border-radius: 28px;
+    background:
+      radial-gradient(120% 90% at 105% -10%, rgba(62, 224, 161, .55), transparent 55%),
+      radial-gradient(70% 70% at -10% 110%, rgba(198, 243, 107, .28), transparent 60%),
+      linear-gradient(160deg, #0b6a47 0%, #054a31 42%, #022418 100%);
+    box-shadow: 0 12px 24px -8px rgba(4, 30, 20, .22), 0 32px 56px -24px rgba(2, 26, 18, .38), inset 0 1px 0 rgba(255, 255, 255, .22);
+    color: #fff;
+  }
+
+  .send-hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .send-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(232, 255, 244, .78);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .send-eyebrow::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--send-mint);
+    box-shadow: 0 0 0 3px rgba(62, 224, 161, .22);
+    content: "";
+  }
+
+  .send-hero-icon {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
-    background: #fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color: #3f247a;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .12);
+    color: #e8fff4;
   }
 
-  .back-row { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .send-balance {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 16px;
+    font-size: 42px;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -.045em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
 
-  .back-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
-    background: #fff;
-    border: none;
-    color: #166534;
+  .send-balance-currency {
+    margin: 5px 4px 0 0;
+    color: rgba(255, 255, 255, .8);
     font-size: 24px;
-    font-weight: 800;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
-  .page-title h2 { font-size:25px; font-weight:900; }
-  .page-title p { color:#71809a; font-size:13px; font-weight:600; margin-top:4px; }
+  .send-balance-decimal {
+    color: rgba(255, 255, 255, .62);
+  }
 
-  .balance-card {
-    background: #166534;
-    border-radius: 22px;
-    padding: 22px;
+  .send-hero-sub {
+    margin-top: 8px;
+    color: rgba(232, 255, 244, .68);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .send-panel {
+    margin-top: 18px;
+    padding: 20px;
+    border-radius: 24px;
+    background: var(--send-surface);
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .05), 0 6px 16px -6px rgba(6, 40, 28, .12), inset 0 0 0 1px rgba(10, 31, 23, .04);
+  }
+
+  .send-panel h2 {
+    font: 750 19px/1.15 var(--send-display);
+    letter-spacing: -.025em;
+  }
+
+  .send-panel-description {
+    margin-top: 5px;
+    color: var(--send-muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .send-field {
+    margin-top: 18px;
+  }
+
+  .send-field label {
+    display: block;
+    margin: 0 2px 9px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .send-control {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    background: #f8faf9;
+    box-shadow: inset 0 0 0 1px var(--send-line);
+    transition: box-shadow .2s ease, background .2s ease;
+  }
+
+  .send-control:focus-within {
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px #14a86d, 0 0 0 4px rgba(20, 168, 109, .1);
+  }
+
+  .send-control input {
+    width: 100%;
+    height: 56px;
+    padding: 0 16px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--send-ink);
+    font: 600 15px/1 var(--send-ui);
+  }
+
+  .send-control input::placeholder {
+    color: var(--send-subtle);
+    font-weight: 500;
+  }
+
+  .send-amount-control {
+    gap: 10px;
+    padding: 0 16px;
+  }
+
+  .send-amount-control .send-currency {
+    color: var(--send-green);
+    font: 800 18px/1 var(--send-display);
+  }
+
+  .send-amount-control input {
+    padding: 0;
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .send-quick-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 12px;
+  }
+
+  .send-quick {
+    height: 40px;
+    border-radius: 13px;
+    background: linear-gradient(180deg, #edfaf3, #e4f5ec);
+    color: var(--send-green-dark);
+    font-size: 12px;
+    font-weight: 700;
+    transition: transform .2s ease, background .2s ease;
+  }
+
+  .send-quick:hover {
+    transform: translateY(-1px);
+  }
+
+  .send-quick.is-active {
+    background: linear-gradient(180deg, #d7f6e7, #c7efd9);
+    box-shadow: inset 0 0 0 1px rgba(14, 138, 90, .2);
+  }
+
+  .send-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #f7faf8, #f2f7f4);
+    color: var(--send-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .send-info-icon {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 10px;
+    background: #e6f7ef;
+    color: var(--send-green);
+  }
+
+  .send-cta {
+    width: 100%;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #11905e 0%, #0a6a45 100%);
+    box-shadow: 0 10px 24px -8px rgba(10, 106, 69, .45), inset 0 1px 0 rgba(255, 255, 255, .25);
     color: #fff;
-    margin-bottom: 16px;
-    box-shadow: 0 18px 35px rgba(237,28,36,0.22);
+    font-size: 15px;
+    font-weight: 700;
+    transition: transform .2s ease, filter .2s ease;
   }
 
-  .balance-card span { font-size:12px; font-weight:900; letter-spacing:.5px; opacity:.9; }
-  .balance-card h3 { font-size:34px; margin-top:12px; font-weight:900; }
-
-  .form-card { background:#fff; border-radius:22px; padding:18px; box-shadow:0 12px 32px rgba(0,0,0,0.06); }
-
-  .label { display:block; font-size:13px; font-weight:900; margin-bottom:8px; color:#071a44; }
-
-  .input-box {
-    width:100%;
-    border:1px solid #edf0f4;
-    background:#f8fafc;
-    border-radius:16px;
-    padding:15px 16px;
-    font-size:15px;
-    font-weight:700;
-    color:#071a44;
-    margin-bottom:16px;
-    outline:none;
+  .send-cta:hover {
+    filter: brightness(1.05);
   }
 
-  .input-row { position:relative; }
-  .currency { position:absolute; top:15px; left:16px; font-size:16px; font-weight:900; color:#166534; }
-  .amount-input { padding-left:42px; font-size:22px; font-weight:900; }
+  .send-cta:active {
+    transform: scale(.98);
+  }
 
-  .quick-row { display:flex; gap:10px; margin-bottom:18px; }
-  .quick-row button { flex:1; border:none; border-radius:14px; padding:12px 0; background:#f4fbf7; color:#166534; font-weight:900; font-size:13px; }
+  .send-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 28px 2px 12px;
+  }
 
-  .note { background:#f8fafc; border-radius:16px; padding:14px; font-size:12px; line-height:1.5; color:#6b7890; margin-bottom:18px; }
+  .send-section-head h2 {
+    font: 750 18px/1.1 var(--send-display);
+    letter-spacing: -.025em;
+  }
 
-  .send-btn { width:100%; border:none; border-radius:18px; background:#166534; color:#fff; font-size:17px; font-weight:900; padding:17px; box-shadow:0 16px 28px rgba(237,28,36,0.28); }
+  .send-recipient-empty {
+    padding: 17px 16px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), inset 0 0 0 1px var(--send-line);
+    color: var(--send-muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
 
-  .recent { margin-top:20px; }
-  .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-  .section-head h3 { font-size:16px; font-weight:900; }
-  .section-head a { font-size:14px; color:#166534; text-decoration:none; font-weight:900; }
-
-  .recipient-list { display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; }
-  .recipient { min-width:76px; background:#fff; border-radius:18px; padding:12px 8px; text-align:center; box-shadow:0 8px 22px rgba(0,0,0,0.05); }
-  .avatar { width:42px; height:42px; border-radius:50%; background:#fff0f1; color:#166534; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:900; }
-  .recipient p { font-size:12px; font-weight:800; }
-
-  .bottom-nav {
+  .send-toast {
     position: fixed;
-    left: 12px;
+    z-index: 200;
+    right: 20px;
+    bottom: 112px;
+    left: 20px;
+    max-width: 350px;
+    margin: auto;
+    padding: 12px 16px;
+    transform: translateY(12px);
+    border-radius: 16px;
+    background: #021a12;
+    box-shadow: 0 12px 24px rgba(2, 26, 18, .2);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    text-align: center;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+
+  .send-toast.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .send-page .bottom-nav {
+    position: fixed;
     right: 12px;
     bottom: 12px;
+    z-index: 150;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    gap: 18px;
+    gap: 12px;
     max-width: 640px;
     margin: 0 auto;
-    padding: 0 22px;
-    height: 86px;
-    background: rgba(255,255,255,.95);
+    border: 1px solid rgba(239, 239, 247, .9);
     border-radius: 30px;
-    border: 1px solid rgba(239,239,247,.90);
+    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
-    box-shadow: 0 8px 24px rgba(15,23,42,.06);
-    z-index: 150;
   }
 
-  .nav-item {
+  .send-page .bottom-nav a {
+    text-decoration: none;
+  }
+
+  .send-page .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    color: #64748b;
     font-weight: 600;
-    font-size: 13px;
     text-decoration: none;
     transition: transform .2s ease, color .2s ease;
   }
 
-  .nav-item:hover {
+  .send-page .nav-item:hover {
     transform: translateY(-2px);
-    color: #071a44;
   }
 
-  .nav-item img {
+  .send-page .nav-item img {
     width: 22px;
     height: 22px;
+    object-fit: contain;
   }
 
-  .bottom-nav a {
-    text-decoration: none;
-  }
-
-  .nav-scan {
+  .send-page .nav-scan {
     position: relative;
-    top: -24px;
-    width: 74px;
-    height: 74px;
+    top: -21px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
-    box-shadow: none;
     transition: transform .18s ease;
   }
 
-  .nav-scan:hover {
-    transform: translateY(-6px);
+  .send-page .nav-scan:hover {
+    transform: translateY(-5px);
   }
 
-  .nav-scan img {
-    width: 74px;
-    height: 74px;
-    object-fit: contain;
+  .send-page .nav-scan img {
     display: block;
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
+    object-fit: contain;
   }
 
-  .fab-scrim {
+  .send-page .fab-scrim {
     position: fixed;
-    inset: 0;
     z-index: 120;
-    background: rgba(0,0,0,.52);
+    inset: 0;
+    background: rgba(0, 0, 0, .52);
     opacity: 0;
     visibility: hidden;
     transition: opacity .28s ease;
   }
 
-  .fab-scrim.is-open {
+  .send-page .fab-scrim.is-open {
     opacity: 1;
     visibility: visible;
   }
 
-  .fab-panel {
+  .send-page .fab-panel {
     position: fixed;
-    left: 0;
+    z-index: 130;
     right: 0;
     bottom: 0;
-    z-index: 130;
+    left: 0;
     transform: translateY(110%);
-    transition: transform .34s cubic-bezier(.22,1,.36,1);
+    transition: transform .34s cubic-bezier(.22, 1, .36, 1);
   }
 
-  .fab-panel.is-open {
+  .send-page .fab-panel.is-open {
     transform: translateY(0);
   }
 
-  .fab-sheet {
-    border-radius: 28px 28px 0 0;
+  .send-page .fab-sheet {
     padding: 18px 18px 28px;
+    border-radius: 28px 28px 0 0;
     background: #fff;
-    box-shadow: 0 -18px 60px rgba(3,7,18,.14);
+    box-shadow: 0 -18px 60px rgba(3, 7, 18, .14);
   }
 
-  .fab-sheet-handle {
+  .send-page .fab-sheet-handle {
     width: 68px;
     height: 6px;
     margin: 0 auto 14px;
@@ -251,125 +528,257 @@
     background: #e9e9e9;
   }
 
-  .fab-sheet-title {
+  .send-page .fab-sheet-title {
+    margin-bottom: 18px;
+    color: #121212;
     font-size: 16px;
     font-weight: 900;
-    color: #121212;
     text-align: center;
-    margin-bottom: 18px;
   }
 
-  .fab-actions {
+  .send-page .fab-actions {
     display: grid;
     gap: 12px;
   }
 
-  .fab-action {
+  .send-page .fab-action {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 8px 6px;
     border-radius: 0;
     background: transparent;
-    color: #121212;
-    text-decoration: none;
     font-weight: 800;
-    transition: transform .2s ease, background .2s ease;
-    transform: translateY(24px);
-    opacity: 0;
+    text-decoration: none;
   }
 
-  .fab-panel.is-open .fab-action {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .fab-action:hover {
-    background: transparent;
-    transform: translateY(-2px);
-  }
-
-  .fab-action-icon {
-    width: 72px;
-    height: 72px;
-    border-radius: 0;
+  .send-page .fab-action-icon {
+    width: 56px;
+    height: 56px;
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    box-shadow: none;
     overflow: hidden;
-    flex-shrink: 0;
-    padding: 0;
   }
 
-  .fab-action-icon img {
+  .send-page .fab-action-icon img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
-    padding: 0;
-    border-radius: 0;
   }
 
-  .fab-action:nth-child(1) { transition-delay:.05s; }
-  .fab-action:nth-child(2) { transition-delay:.10s; }
-  .fab-action:nth-child(3) { transition-delay:.15s; }
-  .fab-action:nth-child(4) { transition-delay:.20s; }
-  .fab-action:nth-child(5) { transition-delay:.25s; }
-  .fab-action:nth-child(6) { transition-delay:.30s; }
-  .fab-action:nth-child(7) { transition-delay:.35s; }
+  .send-page .bottom-nav {
+    left: 50%;
+    width: min(calc(100% - 24px), 390px);
+    height: 76px;
+    padding: 0 18px;
+    transform: translateX(-50%);
+    border-color: rgba(226, 233, 229, .9);
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+  }
 
-  @media (max-width: 380px) {
-    .brand h1 { font-size:17px; }
-    .balance-card h3 { font-size:30px; }
-    .quick-row { flex-wrap:wrap; }
-    .quick-row button { min-width: calc(50% - 5px); }
+  .send-page .nav-item {
+    color: #64746c;
+    font-size: 11px;
+  }
+
+  .send-page .nav-item:hover {
+    color: var(--send-green-dark);
+  }
+
+  .send-page .nav-scan {
+    width: 66px;
+    height: 66px;
+  }
+
+  .send-page .nav-scan img {
+    width: 66px;
+    height: 66px;
+  }
+
+  .send-page .fab-scrim {
+    background: rgba(2, 26, 18, .45);
+  }
+
+  .send-page .fab-sheet {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .send-page .fab-action {
+    color: var(--send-ink);
+  }
+
+  .send-page .fab-close {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f2f5f3;
+    color: var(--send-green-dark);
+    font-weight: 700;
+  }
+
+  @media (max-width: 520px) {
+    html.send-page,
+    html.send-page body {
+      background: var(--send-bg);
+    }
+
+    html.send-page body {
+      display: block;
+    }
+
+    html.send-page body .container.send-page-container {
+      display: block;
+    }
+
+    .send-shell {
+      width: 100%;
+      height: auto;
+      min-height: 100dvh;
+      margin: 0;
+      overflow: visible;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .send-main {
+      padding-bottom: calc(126px + env(safe-area-inset-bottom));
+    }
+
+    .send-page .bottom-nav {
+      bottom: max(10px, env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (max-width: 360px) {
+    .send-main {
+      padding-right: 14px;
+      padding-left: 14px;
+    }
+
+    .send-panel {
+      padding: 17px;
+    }
+
+    .send-balance {
+      font-size: 36px;
+    }
+
+    .send-quick-row {
+      gap: 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .send-shell *,
+    .send-page .bottom-nav * {
+      transition: none !important;
+    }
   }
 </style>
 
-<main class="phone">
-
-  <div class="back-row">
-    <a href="{{ route('dashboard') }}" class="back-btn">‹</a>
-    <div class="page-title">
-      <h2>Send Money</h2>
-      <p>Transfer funds securely to another wallet</p>
+<div class="send-shell">
+  <header class="send-chrome">
+    <div class="send-statusbar" aria-hidden="true">
+      <time id="sendLocalTime"></time>
+      <div class="send-status-icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17" aria-hidden="true">
+          <rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/>
+        </svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17" aria-hidden="true">
+          <path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/>
+        </svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none" aria-hidden="true">
+          <rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/>
+        </svg>
+      </div>
     </div>
-  </div>
+    <nav class="send-nav" aria-label="Send money navigation">
+      <a href="{{ route('dashboard') }}" class="send-back" aria-label="Back to dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <div class="send-title">
+        <h1>Send Money</h1>
+        <p>Transfer funds securely</p>
+      </div>
+      <span aria-hidden="true"></span>
+    </nav>
+  </header>
 
-  <section class="balance-card">
-    <span>AVAILABLE BALANCE</span>
-    <h3>$0.00</h3>
-  </section>
+  <main class="send-main">
+    <section class="send-hero" aria-label="Available balance">
+      <div class="send-hero-top">
+        <span class="send-eyebrow">Available balance</span>
+        <span class="send-hero-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 9.5 14.5"/><path d="M21 3 14 21l-4.5-6.5L3 10z"/></svg>
+        </span>
+      </div>
+      <div class="send-balance">
+        <span class="send-balance-currency">$</span>{{ number_format((float) $availableBalance, 2, '.', '') }}
+      </div>
+      <p class="send-hero-sub">Your available Lulu balance.</p>
+    </section>
 
-  <section class="form-card">
-    <label class="label">Recipient Wallet ID</label>
-    <input class="input-box" type="text" placeholder="Enter wallet ID or mobile number" />
+    <section class="send-panel" aria-labelledby="sendTransferTitle">
+      <h2 id="sendTransferTitle">Transfer details</h2>
+      <p class="send-panel-description">Enter a recipient and amount to prepare a transfer.</p>
 
-    <label class="label">Amount to Send</label>
-    <div class="input-row">
-      <span class="currency">$</span>
-      <input class="input-box amount-input" type="number" placeholder="0.00" />
-    </div>
+      <form id="sendMoneyForm">
+        <div class="send-field">
+          <label for="sendRecipient">Recipient Wallet ID</label>
+          <div class="send-control">
+            <input id="sendRecipient" type="text" autocomplete="off" placeholder="Enter wallet ID or mobile number">
+          </div>
+        </div>
 
-    <div class="quick-row">
-      <button>$10</button>
-      <button>$25</button>
-      <button>$50</button>
-      <button>$100</button>
-    </div>
+        <div class="send-field">
+          <label for="sendAmount">Amount to Send</label>
+          <div class="send-control send-amount-control">
+            <span class="send-currency" aria-hidden="true">$</span>
+            <input id="sendAmount" class="send-number" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00">
+          </div>
+          <div class="send-quick-row" aria-label="Quick amount">
+            <button type="button" class="send-quick" data-amount="10">$10</button>
+            <button type="button" class="send-quick" data-amount="25">$25</button>
+            <button type="button" class="send-quick" data-amount="50">$50</button>
+            <button type="button" class="send-quick" data-amount="100">$100</button>
+          </div>
+        </div>
 
-    <label class="label">Message</label>
-    <input class="input-box" type="text" placeholder="Add a short note optional" />
+        <div class="send-field">
+          <label for="sendMessage">Message <span style="color:var(--send-subtle);font-weight:500">(optional)</span></label>
+          <div class="send-control">
+            <input id="sendMessage" type="text" maxlength="120" placeholder="Add a short note">
+          </div>
+        </div>
 
-    <div class="note">
-      Transfers are processed through the Lulu Wallet system. Please review recipient details before confirming your transaction.
-    </div>
+        <div class="send-info" role="note">
+          <span class="send-info-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+          </span>
+          <p>Wallet transfers are not available yet. This form is a preview and will not move funds.</p>
+        </div>
 
-    <button class="send-btn">Continue to Send</button>
-  </section>
-</main>
+        <button class="send-cta" type="submit">
+          Continue to Send
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+    </section>
+
+    <section aria-labelledby="recentRecipientsTitle">
+      <div class="send-section-head">
+        <h2 id="recentRecipientsTitle">Recent recipients</h2>
+      </div>
+      <p class="send-recipient-empty">No recent recipients yet.</p>
+    </section>
+  </main>
+</div>
+
+<div class="send-toast" id="sendPreviewNotice" role="status" aria-live="polite">Wallet transfers are not available yet.</div>
 
 <div class="fab-scrim" id="fabScrim" aria-hidden="true"></div>
 <div class="fab-panel" id="fabPanel" aria-hidden="true">
@@ -410,45 +819,76 @@
   </div>
 </div>
 
-<nav class="bottom-nav" aria-hidden="false">
+<nav class="bottom-nav" aria-label="Main navigation">
   <a class="nav-item" href="{{ route('dashboard') }}">
-    <img src="{{ asset('home.png') }}" alt="Home" loading="eager" decoding="async">
+    <img src="{{ asset('home.png') }}" alt="" loading="eager" decoding="async">
     <div>Home</div>
   </a>
   <a class="nav-item" href="{{ route('history') }}">
-    <img src="{{ asset('history.png') }}" alt="History" loading="eager" decoding="async">
+    <img src="{{ asset('history.png') }}" alt="" loading="eager" decoding="async">
     <div>History</div>
   </a>
-  <a class="nav-item" href="#" id="fabToggle">
-    <div class="nav-scan">
-      <img src="{{ asset('menu.png') }}" alt="Menu" loading="eager" decoding="async">
-    </div>
+  <a class="nav-item" href="#" id="fabToggle" aria-label="Open quick actions">
+    <div class="nav-scan"><img src="{{ asset('menu.png') }}" alt="" loading="eager" decoding="async"></div>
   </a>
   <a class="nav-item" href="{{ route('rewards') }}">
-    <img src="{{ asset('reward.png') }}" alt="Rewards" loading="eager" decoding="async">
+    <img src="{{ asset('reward.png') }}" alt="" loading="eager" decoding="async">
     <div>Rewards</div>
   </a>
   <a class="nav-item" href="{{ route('profile') }}">
-    <img src="{{ asset('profile.png') }}" alt="Profile" loading="eager" decoding="async">
+    <img src="{{ asset('profile.png') }}" alt="" loading="eager" decoding="async">
     <div>Profile</div>
   </a>
 </nav>
 
 <script>
   (function () {
+    var time = document.getElementById('sendLocalTime');
+    if (time) {
+      time.textContent = new Intl.DateTimeFormat(undefined, {
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(new Date());
+    }
+
+    var form = document.getElementById('sendMoneyForm');
+    var amount = document.getElementById('sendAmount');
+    var notice = document.getElementById('sendPreviewNotice');
+    var quickButtons = document.querySelectorAll('.send-quick');
+    var noticeTimer;
+
+    quickButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        amount.value = Number(button.dataset.amount).toFixed(2);
+        quickButtons.forEach(function (quickButton) {
+          quickButton.classList.toggle('is-active', quickButton === button);
+        });
+      });
+    });
+
+    if (amount) {
+      amount.addEventListener('input', function () {
+        quickButtons.forEach(function (button) {
+          button.classList.toggle('is-active', button.dataset.amount === amount.value);
+        });
+      });
+    }
+
+    if (form && notice) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        notice.classList.add('is-visible');
+        window.clearTimeout(noticeTimer);
+        noticeTimer = window.setTimeout(function () {
+          notice.classList.remove('is-visible');
+        }, 2800);
+      });
+    }
+
     var fabToggle = document.getElementById('fabToggle');
     var fabScrim = document.getElementById('fabScrim');
     var fabPanel = document.getElementById('fabPanel');
     var fabClose = document.getElementById('fabClose');
-
-    function openFabMenu(event) {
-      if (event) event.preventDefault();
-      if (!fabScrim || !fabPanel) return;
-      fabScrim.classList.add('is-open');
-      fabPanel.classList.add('is-open');
-      fabScrim.setAttribute('aria-hidden', 'false');
-      fabPanel.setAttribute('aria-hidden', 'false');
-    }
 
     function closeFabMenu() {
       if (!fabScrim || !fabPanel) return;
@@ -458,18 +898,18 @@
       fabPanel.setAttribute('aria-hidden', 'true');
     }
 
-    if (fabToggle) {
-      fabToggle.addEventListener('click', openFabMenu);
+    if (fabToggle && fabScrim && fabPanel) {
+      fabToggle.addEventListener('click', function (event) {
+        event.preventDefault();
+        fabScrim.classList.add('is-open');
+        fabPanel.classList.add('is-open');
+        fabScrim.setAttribute('aria-hidden', 'false');
+        fabPanel.setAttribute('aria-hidden', 'false');
+      });
     }
 
-    if (fabScrim) {
-      fabScrim.addEventListener('click', closeFabMenu);
-    }
-
-    if (fabClose) {
-      fabClose.addEventListener('click', closeFabMenu);
-    }
+    if (fabScrim) fabScrim.addEventListener('click', closeFabMenu);
+    if (fabClose) fabClose.addEventListener('click', closeFabMenu);
   })();
 </script>
-
 @endsection

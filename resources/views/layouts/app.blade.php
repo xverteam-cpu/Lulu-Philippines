@@ -1,13 +1,20 @@
 <!doctype html>
-<html lang="en" @class(['dashboard-page' => request()->routeIs('dashboard')])>
+<html lang="en" @class([
+  'dashboard-page' => request()->routeIs('dashboard'),
+  'send-page' => request()->routeIs('send'),
+  'profile-edit-page' => request()->routeIs('profile.edit'),
+  'profile-notifications-page' => request()->routeIs('profile.notifications'),
+])>
 <head>
   <meta charset="utf-8">
   @if (request()->routeIs('dashboard'))
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  @elseif (request()->routeIs('withdraw', 'send', 'profile.edit', 'profile.notifications'))
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   @else
     <meta name="viewport" content="width=device-width, initial-scale=1">
   @endif
-  <meta name="theme-color" content="#166534">
+  <meta name="theme-color" content="{{ request()->routeIs('send', 'profile.edit', 'profile.notifications') ? '#F2F5F3' : '#166534' }}">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -20,7 +27,7 @@
   <link rel="shortcut icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
   <link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}">
   <link rel="manifest" href="{{ asset('manifest.json') }}">
-  <title>Lulu</title>
+  <title>{{ request()->routeIs('profile.edit') ? 'Edit Profile | Lulu' : (request()->routeIs('profile.notifications') ? 'Notification Settings | Lulu' : (request()->routeIs('send') ? 'Send Money | Lulu' : 'Lulu')) }}</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Open Graph Meta Tags for Social Sharing -->
@@ -70,7 +77,7 @@
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader-circle"></div>
   </div>
-  <div class="container{{ request()->routeIs('admin.dashboard') ? ' admin-page-container' : '' }}">
+  <div class="container{{ request()->routeIs('admin.dashboard') ? ' admin-page-container' : '' }}{{ request()->routeIs('send') ? ' send-page-container' : '' }}{{ request()->routeIs('profile.edit') ? ' profile-edit-container' : '' }}{{ request()->routeIs('profile.notifications') ? ' profile-notifications-container' : '' }}">
     @yield('content')
   </div>
   @auth

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#F2F5F3" />
+<title>Withdraw Funds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Plus+Jakarta+Sans:wght@500..800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F2F5F3;--surface:#FFFFFF;--ink:#0A1F17;--ink-2:#4B5B54;--ink-3:#8A9892;--line:#E2E9E5;
+  --em-950:#021A12;--em-900:#04321F;--em-800:#075A3B;--em-700:#08734B;--em-600:#0E8A5A;--em-500:#14A86D;
+  --mint:#3EE0A1;--mint-50:#E6F7EF;--lime:#C6F36B;--danger:#D94B4B;--warn:#B7791F;
+  --display:"Plus Jakarta Sans","Inter",system-ui,sans-serif;--ui:"Inter",system-ui,-apple-system,sans-serif;
+  --shadow-sm:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.06);
+  --shadow-md:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18);
+  --shadow-lg:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--ui);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;background:radial-gradient(900px 600px at 15% 10%,rgba(20,168,109,.18),transparent 60%),radial-gradient(700px 500px at 90% 90%,rgba(198,243,107,.14),transparent 60%),#E7ECE9}
+button,input{font:inherit;color:inherit}button{border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.phone{position:relative;width:390px;min-height:844px;margin:40px 0;background:var(--bg);border-radius:54px;overflow:clip;box-shadow:0 0 0 10px #0D1411,0 0 0 11px #2A332F,0 30px 60px -20px rgba(2,26,18,.40),0 60px 100px -50px rgba(2,26,18,.30)}
+@media(min-width:521px){body{align-items:center;padding:40px 0}.phone{height:844px;margin:0;overflow-y:auto;scrollbar-width:none}.phone::-webkit-scrollbar{display:none}}
+@media(max-width:520px){body{background:var(--bg)}.phone{width:100%;margin:0;border-radius:0;box-shadow:none}}
+.chrome{position:sticky;top:0;z-index:30;background:rgba(242,245,243,.82);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+.statusbar{height:50px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px}.statusbar time{font:600 16px/1 var(--ui)}.statusbar .sys{display:flex;gap:6px;align-items:center}
+.nav{height:52px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;padding:0 16px 4px}.nav h1{font:700 17px/1 var(--display);letter-spacing:-.015em;text-align:center}.back{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(10,31,23,.05);transition:.2s var(--ease)}.back:active{transform:scale(.92)}
+main{padding:10px 20px 28px}
+.balance-card{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:20px 22px;color:#fff;text-align:center;background:radial-gradient(120% 90% at 105% -10%,rgba(62,224,161,.55),transparent 55%),radial-gradient(70% 70% at -10% 110%,rgba(198,243,107,.28),transparent 60%),linear-gradient(160deg,#0B6A47 0%,#075C3D 50%,#0E8A5A 100%);box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.07)}
+.balance-card::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--noise);opacity:.08;mix-blend-mode:overlay}.balance-card::after{content:"";position:absolute;inset:auto -20% -58px -20%;height:115px;z-index:-1;background:linear-gradient(16deg,transparent 22%,rgba(198,243,107,.95) 23% 25%,rgba(62,224,161,.38) 26% 48%,transparent 49%);transform:rotate(-3deg)}
+.balance-card .wave{position:absolute;inset:auto -45px -30px auto;width:360px;height:140px;opacity:.55;z-index:-1}.eyebrow{font:800 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:rgba(239,255,247,.88)}.balance{margin-top:6px;font:800 34px/1 var(--display);letter-spacing:-.04em;text-shadow:0 2px 18px rgba(0,0,0,.14)}
+.section{margin-top:18px}.label{display:block;margin:0 1px 9px;font:750 14px/1.2 var(--display);letter-spacing:-.015em}.amount-input{position:relative;height:60px;border-radius:18px;background:rgba(255,255,255,.76);box-shadow:inset 0 0 0 1px rgba(10,31,23,.05),var(--shadow-sm);display:flex;align-items:center;padding:0 16px}.amount-input .currency{font-weight:800;font-size:18px;color:var(--em-700);margin-right:10px}.amount-input input{width:100%;border:0;outline:0;background:transparent;font:750 25px/1 var(--display);letter-spacing:-.03em;color:var(--ink)}.amount-input input::placeholder{color:#7A8782}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.quick button{height:40px;border-radius:14px;background:#F7FFFA;color:var(--em-800);font:750 13px/1 var(--display);box-shadow:inset 0 0 0 1px rgba(14,138,90,.04),var(--shadow-sm);transition:.2s var(--ease)}.quick button:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}.quick button.active{background:var(--mint-50);box-shadow:inset 0 0 0 1.5px var(--em-600)}
+.divider{height:1px;background:var(--line);margin:20px 0 18px}.account-card{width:100%;border-radius:18px;padding:16px 16px;text-align:left;background:linear-gradient(180deg,#19723B,#0E6A35);color:#fff;box-shadow:var(--shadow-md),inset 0 1px 0 rgba(255,255,255,.13);position:relative}.account-card .small{font:600 11.5px/1.2 var(--ui);color:rgba(255,255,255,.72)}.account-card .name{margin-top:4px;font:750 14px/1.2 var(--display)}.account-card .check{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.add-account{margin-top:10px;width:100%;height:48px;border-radius:16px;border:1.5px solid var(--em-600);background:#EFFAF4;color:var(--em-800);font:750 13.5px/1 var(--display);transition:.2s var(--ease)}.add-account:active{transform:scale(.985)}
+.info{margin-top:14px;padding:14px 14px;border-radius:16px;background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px rgba(10,31,23,.035);font:450 12.5px/1.55 var(--ui);color:#697973}
+.error{margin-top:8px;min-height:16px;font:600 11.5px/1.3 var(--ui);color:var(--danger)}
+.cta-wrap{margin-top:14px}.cta{width:100%;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:750 16px/1 var(--display);color:#fff;background:linear-gradient(180deg,#168449,#0E6D3A);box-shadow:0 15px 28px -12px rgba(14,109,58,.52),0 2px 4px rgba(10,106,69,.16),inset 0 1px 0 rgba(255,255,255,.22);transition:.2s var(--ease)}.cta:hover{filter:brightness(1.03);transform:translateY(-1px)}.cta:active{transform:scale(.985)}.cta:disabled{cursor:not-allowed;opacity:.55;filter:grayscale(.15);box-shadow:none}
+.recent-head{display:flex;align-items:center;justify-content:space-between;margin-top:26px;margin-bottom:10px}.recent-head h2{font:750 18px/1.1 var(--display);letter-spacing:-.025em}.see-all{font:750 12.5px/1 var(--ui);color:var(--em-800)}
+.tx-list{display:grid;gap:9px}.tx{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow-sm),inset 0 0 0 1px rgba(10,31,23,.04)}.tx .left{min-width:0}.tx .amt{font:750 14px/1.1 var(--display)}.tx .meta{margin-top:4px;font:500 11px/1.2 var(--ui);color:var(--ink-3)}.badge{font:700 12px/1 var(--ui);padding:7px 9px;border-radius:999px}.badge.pending{color:#8A6412;background:#FFF6D8}.badge.approved{color:#0C6D45;background:#E9F8F1}.badge.rejected{color:#A83A3A;background:#FDECEC}
+.sheet{position:fixed;inset:0;z-index:80;background:rgba(2,26,18,.28);display:none;align-items:flex-end;justify-content:center;padding:16px}.sheet.open{display:flex}.sheet-card{width:min(390px,100%);background:var(--surface);border-radius:26px;padding:20px;box-shadow:0 28px 70px rgba(2,26,18,.28);animation:up .24s var(--ease)}@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}.sheet h3{font:750 19px/1.2 var(--display)}.sheet p{margin-top:6px;font:450 13px/1.45 var(--ui);color:var(--ink-2)}.field{margin-top:14px}.field label{display:block;margin-bottom:6px;font:650 12px/1 var(--ui);color:var(--ink-2)}.field input{width:100%;height:48px;border:1px solid var(--line);border-radius:14px;padding:0 13px;outline:0;background:#FBFDFC}.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.btn-ghost,.btn-save{height:46px;border-radius:14px;font:700 13px/1 var(--display)}.btn-ghost{background:#F3F6F4}.btn-save{background:var(--em-700);color:#fff}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:100;max-width:calc(100vw - 32px);padding:12px 14px;border-radius:13px;background:#082E20;color:#fff;font:600 12.5px/1.3 var(--ui);box-shadow:0 12px 28px rgba(2,26,18,.28);opacity:0;pointer-events:none;transition:.25s var(--ease)}.toast.show{opacity:1;transform:translate(-50%,0)}
+.home{width:134px;height:5px;border-radius:99px;background:#0A1F17;margin:16px auto 14px;opacity:.9}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <header class="chrome">
+    <div class="statusbar" aria-hidden="true">
+      <time>9:41</time>
+      <div class="sys">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="#0A1F17"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="#0A1F17"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.1 10.1 0 0 0 8 .6C5.2.6 2.7 1.7.8 3.5L2 4.7a8.5 8.5 0 0 1 6-2.4Z"/><path d="M8 5.6c1.4 0 2.6.5 3.6 1.4l1.2-1.2A6.8 6.8 0 0 0 8 3.9 6.8 6.8 0 0 0 3.2 5.8L4.4 7c1-.9 2.2-1.4 3.6-1.4Z"/><path d="M8 8.9c.5 0 1 .2 1.3.5L8 11.4 6.7 9.4c.3-.3.8-.5 1.3-.5Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="#0A1F17" opacity=".4"/><rect x="2" y="2" width="17" height="9" rx="2.4" fill="#0A1F17"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2Z" fill="#0A1F17" opacity=".45"/></svg>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="back" href="dashboard.html" aria-label="Back to dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1>Withdraw Funds</h1><span></span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="balance-card" aria-label="Available balance">
+      <svg class="wave" viewBox="0 0 360 140" fill="none" aria-hidden="true"><path d="M0 120C70 110 122 82 190 62s117-24 188-55" stroke="#C6F36B" stroke-width="2" opacity=".9"/><path d="M0 132C72 122 128 96 195 78s118-23 180-48" stroke="#3EE0A1" stroke-width="18" opacity=".22"/></svg>
+      <div class="eyebrow">Available balance</div>
+      <div class="balance num">$284.77</div>
+    </section>
+
+    <section class="section" aria-labelledby="amount-label">
+      <label class="label" id="amount-label" for="amount">Amount to Withdraw</label>
+      <div class="amount-input"><span class="currency">$</span><input id="amount" class="num" type="number" min="20" max="284.77" step="0.01" inputmode="decimal" placeholder="0.00" aria-describedby="amount-error" /></div>
+      <div class="quick" aria-label="Quick withdrawal amounts">
+        <button type="button" data-amount="10">$10</button><button type="button" data-amount="25">$25</button><button type="button" data-amount="50">$50</button><button type="button" data-amount="100">$100</button>
+      </div>
+      <div class="error" id="amount-error" aria-live="polite"></div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section aria-labelledby="account-title">
+      <h2 class="label" id="account-title">Withdrawal Account</h2>
+      <button class="account-card" type="button" aria-label="Selected withdrawal account, BPI ending 4365">
+        <span class="small">Saved bank account</span><div class="name">BPI · 3546854365</div>
+        <span class="check"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg></span>
+      </button>
+      <button class="add-account" id="addAccount" type="button">+ Add another account</button>
+      <div class="info">Minimum withdrawal is $20 and maximum withdrawal is $500. Your available balance will be reduced immediately after the request is submitted.</div>
+    </section>
+
+    <div class="cta-wrap"><button class="cta" id="withdrawBtn" type="button">Request Withdrawal</button></div>
+    <div class="divider" style="margin-top:26px"></div>
+
+    <div class="recent-head"><h2>Recent Withdrawals</h2><button class="see-all" type="button">See All →</button></div>
+    <div class="tx-list" id="txList">
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Oct 4, 2026 · BPI ••••4365</div></div><span class="badge pending">Pending</span></div>
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 28, 2026 · BPI ••••4365</div></div><span class="badge approved">Approved</span></div>
+      <div class="tx"><div class="left"><div class="amt num">$25.00 · Bank transfer</div><div class="meta">Sep 17, 2026 · BPI ••••4365</div></div><span class="badge approved">Approved</span></div>
+    </div>
+  </main>
+  <div class="home" aria-hidden="true"></div>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-card">
+    <h3 id="sheetTitle">Add withdrawal account</h3><p>Enter the bank account you want to use for future withdrawals.</p>
+    <div class="field"><label for="bank">Bank name</label><input id="bank" placeholder="e.g. BPI" /></div>
+    <div class="field"><label for="acct">Account number</label><input id="acct" inputmode="numeric" placeholder="Enter account number" /></div>
+    <div class="sheet-actions"><button class="btn-ghost" id="cancelSheet" type="button">Cancel</button><button class="btn-save" id="saveAccount" type="button">Save account</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const BALANCE=284.77, MIN=20, MAX=500;
+const amount=document.getElementById('amount'), error=document.getElementById('amount-error'), btn=document.getElementById('withdrawBtn');
+const quick=[...document.querySelectorAll('[data-amount]')];
+function validate(){
+  const v=parseFloat(amount.value); quick.forEach(b=>b.classList.toggle('active',parseFloat(b.dataset.amount)===v));
+  if(!amount.value){error.textContent='';btn.disabled=false;return false}
+  if(Number.isNaN(v)||v<=0){error.textContent='Enter a valid withdrawal amount.';btn.disabled=true;return false}
+  if(v<MIN){error.textContent=`Minimum withdrawal is $${MIN.toFixed(2)}.`;btn.disabled=true;return false}
+  if(v>MAX){error.textContent=`Maximum withdrawal is $${MAX.toFixed(2)}.`;btn.disabled=true;return false}
+  if(v>BALANCE){error.textContent='Amount exceeds your available balance.';btn.disabled=true;return false}
+  error.textContent='';btn.disabled=false;return true;
+}
+quick.forEach(b=>b.addEventListener('click',()=>{amount.value=Number(b.dataset.amount).toFixed(2);validate();amount.focus()}));
+amount.addEventListener('input',validate); amount.addEventListener('blur',()=>{if(amount.value && !Number.isNaN(parseFloat(amount.value))) amount.value=parseFloat(amount.value).toFixed(2);validate()});
+const toast=document.getElementById('toast');function showToast(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),2600)}
+btn.addEventListener('click',()=>{if(!validate()){if(!amount.value){error.textContent='Enter an amount to withdraw.';amount.focus()}return}const v=parseFloat(amount.value);const row=document.createElement('div');row.className='tx';row.innerHTML=`<div class="left"><div class="amt num">$${v.toFixed(2)} · Bank transfer</div><div class="meta">Just now · BPI ••••4365</div></div><span class="badge pending">Pending</span>`;document.getElementById('txList').prepend(row);showToast('Withdrawal request submitted.');amount.value='';validate()});
+const sheet=document.getElementById('sheet');document.getElementById('addAccount').addEventListener('click',()=>sheet.classList.add('open'));document.getElementById('cancelSheet').addEventListener('click',()=>sheet.classList.remove('open'));sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.classList.remove('open')});document.getElementById('saveAccount').addEventListener('click',()=>{const bank=document.getElementById('bank').value.trim(),acct=document.getElementById('acct').value.trim();if(!bank||acct.length<4){showToast('Enter a valid bank name and account number.');return}sheet.classList.remove('open');showToast('Account saved for this demo.')});
+</script>
+</body>
+</html>

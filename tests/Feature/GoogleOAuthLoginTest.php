@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Http\Middleware\BlockBlockedIp;
+use App\Mail\WelcomeEmail;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class GoogleOAuthLoginTest extends TestCase
@@ -33,6 +35,7 @@ class GoogleOAuthLoginTest extends TestCase
     public function test_google_callback_creates_and_authenticates_verified_user(): void
     {
         $this->withoutMiddleware(BlockBlockedIp::class);
+        Mail::fake();
 
         $googleUser = SocialiteUser::fake([
             'id' => 'google-user-123',
@@ -53,6 +56,7 @@ class GoogleOAuthLoginTest extends TestCase
         $this->assertFalse($user->is_admin);
         $this->assertNotEmpty($user->remember_token);
         $response->assertRedirect(route('dashboard'));
+        Mail::assertSent(WelcomeEmail::class, fn (WelcomeEmail $mail): bool => $mail->hasTo($user->email));
     }
 
     public function test_google_signup_preserves_referral_attribution_for_the_new_account(): void

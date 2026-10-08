@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\BlockBlockedIp;
+use App\Http\Middleware\PreventAuthenticatedPageCaching;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Http\Middleware\TrackUserActivity;
 use Illuminate\Console\Scheduling\Schedule;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             BlockBlockedIp::class,
             TrackUserActivity::class,
             RestrictUserAccess::class,
+            PreventAuthenticatedPageCaching::class,
         ]);
 
     })

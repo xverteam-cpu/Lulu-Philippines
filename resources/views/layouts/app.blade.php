@@ -108,6 +108,13 @@
         });
       }
 
+      window.addEventListener('pageshow', function (event) {
+        if (!event.persisted) return;
+
+        document.documentElement.style.visibility = 'hidden';
+        window.location.reload();
+      });
+
       window.setInterval(sendHeartbeat, 60000);
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') sendHeartbeat();

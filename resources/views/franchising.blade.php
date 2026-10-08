@@ -387,7 +387,7 @@
   <div class="franchise-screen" id="franchise-screen">
     <header class="franchise-chrome">
       <nav class="franchise-nav" aria-label="Main navigation">
-        <a class="franchise-back" href="{{ url('/') }}" aria-label="Back to LuLu">
+        <a class="franchise-back" href="{{ auth()->check() ? route('dashboard') : url('/') }}" aria-label="{{ auth()->check() ? 'Back to dashboard' : 'Back to LuLu' }}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M9 12h11"/></svg>
         </a>
         <a class="franchise-brand" href="{{ url('/') }}" aria-label="LuLu home">

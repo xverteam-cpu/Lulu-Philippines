@@ -19,6 +19,7 @@ class FranchiseApplicationTest extends TestCase
             ->assertOk()
             ->assertSee('public-protection.js')
             ->assertSee('class="franchise-phone"', false)
+            ->assertSee('class="franchise-back" href="'.url('/').'" aria-label="Back to LuLu"', false)
             ->assertSee('src="'.asset('logo.png').'"', false)
             ->assertSee('LuLu Philippines')
             ->assertSee('class="franchise-page-label">Franchise</span>', false)
@@ -33,6 +34,14 @@ class FranchiseApplicationTest extends TestCase
             ->assertSee('name="full_name"', false)
             ->assertDontSee('name="preferred_package"', false)
             ->assertSee('Submit application');
+    }
+
+    public function test_authenticated_franchise_page_back_button_returns_to_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('franchising'))
+            ->assertOk()
+            ->assertSee('class="franchise-back" href="'.route('dashboard').'" aria-label="Back to dashboard"', false);
     }
 
     public function test_guest_can_submit_an_application_and_admin_can_review_it(): void

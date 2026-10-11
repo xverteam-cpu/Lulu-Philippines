@@ -22,6 +22,10 @@ class InvestorPinTest extends TestCase
         $response->assertOk()
             ->assertSee('Investor Relations')
             ->assertSee('Enter your 4–6 digit PIN to continue.')
+            ->assertSee('Secure investor access')
+            ->assertSee('grid-template-columns: repeat(3, minmax(0, 1fr));', false)
+            ->assertSee('min-width: 0;', false)
+            ->assertSee('background: #fff;', false)
             ->assertSee('icons/lulu-512.png')
             ->assertDontSee('investors-dashboard-continue');
     }

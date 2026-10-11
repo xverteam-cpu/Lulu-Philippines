@@ -106,6 +106,8 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('display: none;', false)
             ->assertSee('id="supportChatLauncher"', false)
             ->assertSee('id="supportChatPanel"', false)
+            ->assertSee('class="dashboard-profile"', false)
+            ->assertSee('class="dashboard-logo"', false)
             ->assertSee('LuLu Help')
             ->assertSee('Browse bond packages')
             ->assertSee('Open transactions')
@@ -122,6 +124,13 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee(asset('banner-franchise.jpg'), false)
             ->assertSee(route('invest'), false)
             ->assertSee(route('franchising'), false);
+
+        $html = $response->getContent();
+        $profilePosition = strpos($html, 'class="dashboard-profile"');
+        $logoPosition = strpos($html, 'class="dashboard-logo"');
+        $this->assertNotFalse($profilePosition);
+        $this->assertNotFalse($logoPosition);
+        $this->assertLessThan($logoPosition, $profilePosition);
 
         $plainText = html_entity_decode(strip_tags($response->getContent()));
         $this->assertStringContainsString('$82.50', $plainText);

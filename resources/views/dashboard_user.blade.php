@@ -2615,9 +2615,6 @@
 <main class="wallet-shell dashboard-shell">
   <header class="dashboard-topbar">
     <nav class="dashboard-dash-nav" aria-label="Dashboard">
-      <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
-        <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">
-      </a>
       <a class="dashboard-profile" href="{{ route('profile') }}">
         <span class="dashboard-profile-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -2626,6 +2623,9 @@
           </svg>
         </span>
         <span>Profile</span>
+      </a>
+      <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
+        <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">
       </a>
     </nav>
   </header>

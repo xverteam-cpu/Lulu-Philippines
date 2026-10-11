@@ -13,7 +13,7 @@ class DashboardBondEarningsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_mobile_dashboard_navigation_is_centered_in_a_full_width_safe_area_dock(): void
+    public function test_mobile_dashboard_navigation_is_a_centered_floating_bottom_dock(): void
     {
         $user = User::factory()->create();
 
@@ -23,10 +23,12 @@ class DashboardBondEarningsTest extends TestCase
             ->assertOk()
             ->assertSee('@media (max-width: 520px)', false)
             ->assertSee('position: fixed;', false)
-            ->assertSee('right: 0;', false)
-            ->assertSee('left: 0;', false)
-            ->assertSee('padding: 8px 14px calc(8px + env(safe-area-inset-bottom));', false)
-            ->assertSee('width: min(430px, 100%);', false)
+            ->assertSee('left: 50%;', false)
+            ->assertSee('width: min(430px, calc(100vw - 28px));', false)
+            ->assertSee('transform: translateX(-50%);', false)
+            ->assertSee('border-radius: 23px;', false)
+            ->assertSee('background: rgba(255, 255, 255, .96);', false)
+            ->assertSee('padding: 0 0 calc(10px + env(safe-area-inset-bottom));', false)
             ->assertSee('padding-bottom: calc(100px + env(safe-area-inset-bottom));', false);
     }
 

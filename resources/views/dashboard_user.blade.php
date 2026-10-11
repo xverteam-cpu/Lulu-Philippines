@@ -2564,29 +2564,32 @@
 
     .dashboard-tabbar-wrap {
       position: fixed;
-      right: 0;
+      right: auto;
       bottom: 0;
-      left: 0;
+      left: 50%;
       z-index: 140;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+      width: min(430px, calc(100vw - 28px));
+      padding: 0 0 calc(10px + env(safe-area-inset-bottom));
       box-sizing: border-box;
-      border-top: 1px solid rgba(10, 31, 23, .08);
-      background: #fff;
-      box-shadow: 0 -8px 24px rgba(10, 31, 23, .08);
+      background: transparent;
+      transform: translateX(-50%);
     }
 
     .bottom-nav {
-      width: min(430px, 100%);
-      max-width: 430px;
+      position: relative !important;
+      inset: auto !important;
+      width: 100%;
+      max-width: none;
       height: 66px;
       box-sizing: border-box;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
+      padding: 0 12px;
+      border: 1px solid rgba(227, 235, 227, .95);
+      border-radius: 23px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 12px 32px rgba(14, 45, 29, .16);
     }
 
     .dashboard-home-indicator {

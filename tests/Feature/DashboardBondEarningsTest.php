@@ -261,6 +261,11 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertNotFalse($deckEnd);
         $deck = substr($html, $deckStart, $deckEnd - $deckStart);
         $this->assertSame(2, substr_count($deck, 'data-active-package-card'));
+        $this->assertStringContainsString('aspect-ratio:1.62/1;', $html);
+        $this->assertStringContainsString('margin:14px 0 20px;', $html);
+        $this->assertStringContainsString('var limit = 56;', $html);
+        $this->assertStringContainsString('(activeCurrent + step + activeCards.length) % activeCards.length', $html);
+        $this->assertStringNotContainsString('outgoing.offsetHeight + 55', $html);
         $this->assertSame(1, substr_count($html, 'class="account-package-card account-package-card--empty'));
     }
 

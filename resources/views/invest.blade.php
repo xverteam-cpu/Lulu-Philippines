@@ -389,8 +389,8 @@
   .invest-layout-redesign .active-package-deck {
     position:relative;
     width:100%;
-    height:0;
-    padding-bottom:calc(100% / 1.62 + 52px);
+    aspect-ratio:1.62/1;
+    margin-top:18px;
     touch-action:pan-x;
     user-select:none;
     -webkit-user-select:none;
@@ -398,18 +398,18 @@
   .invest-layout-redesign .active-package-deck:focus-visible { outline:3px solid #16875d; outline-offset:5px; }
   .invest-layout-redesign .active-package-card {
     position:absolute;
-    top:24px;
+    top:0;
     left:0;
     width:100%;
     aspect-ratio:1.62/1;
     cursor:grab;
-    transform-origin:50% 60%;
+    transform-origin:50% 50%;
     will-change:transform;
     touch-action:pan-x;
   }
   .invest-layout-redesign .active-package-card.is-dragging { cursor:grabbing; }
   .invest-layout-redesign .active-package-card.is-stack-hidden { pointer-events:none; }
-  .invest-layout-redesign .active-package-controls { display:flex; align-items:center; justify-content:center; gap:18px; margin:-22px 0 20px; }
+  .invest-layout-redesign .active-package-controls { display:flex; align-items:center; justify-content:center; gap:18px; margin:14px 0 20px; }
   .invest-layout-redesign .active-package-nav {
     display:grid;
     width:38px;
@@ -1047,9 +1047,9 @@
       activeCards.forEach(function (card, index) {
         var rank = activeOrder.indexOf(index);
         card.style.transition = animate && !activeReducedMotion
-          ? 'transform 480ms cubic-bezier(.22,1,.36,1), opacity 220ms ease'
+          ? 'transform 420ms cubic-bezier(.22,1,.36,1)'
           : 'none';
-        card.style.transform = 'translateY(' + (-rank * 20) + 'px) scale(' + (1 - rank * .055) + ')';
+        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .035) + ')';
         card.style.zIndex = String(activeCards.length - rank);
         card.style.opacity = '1';
         card.style.pointerEvents = rank === 0 ? 'auto' : 'none';
@@ -1066,13 +1066,14 @@
     }
 
     function previewActiveDeck(nextIndex, progress) {
+      var targetRank = activeOrder.indexOf(nextIndex);
       activeCards.forEach(function (card, index) {
         if (index === activeCurrent) return;
         var oldRank = activeOrder.indexOf(index);
-        var newRank = index === nextIndex ? 0 : oldRank - (oldRank > activeOrder.indexOf(nextIndex) ? 1 : 0);
+        var newRank = index === nextIndex ? 0 : oldRank - (oldRank > targetRank ? 1 : 0);
         var rank = oldRank + (newRank - oldRank) * progress;
-        card.style.zIndex = String(index === nextIndex ? activeCards.length - 1 : activeCards.length - oldRank);
-        card.style.transform = 'translateY(' + (-rank * 20) + 'px) scale(' + (1 - rank * .055) + ')';
+        card.style.zIndex = String(activeCards.length - rank);
+        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .035) + ')';
       });
     }
 
@@ -1086,49 +1087,19 @@
       if (targetIndex === activeCurrent) return;
 
       activeChanging = true;
-      var outgoingIndex = activeCurrent;
-      var outgoing = activeCards[outgoingIndex];
-      var direction = step ? Math.sign(step) : (activeOrder.indexOf(targetIndex) < activeOrder.indexOf(outgoingIndex) ? 1 : -1);
-      var departure = 'translateY(' + (direction * (outgoing.offsetHeight + 55)) + 'px) translateX(12px) rotate(' + (direction * 5) + 'deg) scale(.94)';
-
+      activeOrder = [targetIndex].concat(activeOrder.filter(function (index) { return index !== targetIndex; }));
+      activeCurrent = targetIndex;
       if (activeReducedMotion) {
-        activeOrder = [targetIndex].concat(activeOrder.filter(function (index) { return index !== targetIndex; }));
-        activeCurrent = targetIndex;
         layoutActiveCards(false);
         activeChanging = false;
         return;
       }
 
-      outgoing.style.transition = 'none';
-      var lift = outgoing.animate([
-        { transform: outgoing.style.transform },
-        { transform: departure }
-      ], { duration:260, easing:'cubic-bezier(.25,.7,.3,1)', fill:'forwards' });
-
-      activeOrder.forEach(function (index) {
-        if (index !== outgoingIndex) {
-          activeCards[index].style.transition = 'transform 260ms cubic-bezier(.22,1,.36,1)';
-        }
-      });
-      var otherOrder = activeOrder.filter(function (index) { return index !== outgoingIndex; });
-      otherOrder.forEach(function (index, rank) {
-        var card = activeCards[index];
-        var depth = index === targetIndex ? 0 : rank;
-        card.style.zIndex = String(count - depth);
-        card.style.transform = 'translateY(' + (-depth * 20) + 'px) scale(' + (1 - depth * .055) + ')';
-      });
-
-      lift.onfinish = function () {
-        outgoing.style.transform = departure;
-        lift.cancel();
-        activeOrder = [targetIndex].concat(activeOrder.filter(function (index) { return index !== targetIndex; }));
-        activeCurrent = targetIndex;
-        layoutActiveCards(true);
-        window.setTimeout(function () {
-          layoutActiveCards(false);
-          activeChanging = false;
-        }, 500);
-      };
+      layoutActiveCards(true);
+      window.setTimeout(function () {
+        layoutActiveCards(false);
+        activeChanging = false;
+      }, 450);
     }
 
     if (activeDeck && activeCards.length) {
@@ -1147,10 +1118,12 @@
         if (!activeDragging || activeDragging.id !== event.pointerId) return;
         var dy = event.clientY - activeDragging.y;
         activeDragging.dy = dy;
-        var limit = activeCards[activeCurrent].offsetHeight + 70;
+        var limit = 56;
         var offset = Math.sign(dy) * Math.min(Math.abs(dy), limit);
-        activeCards[activeCurrent].style.transform = 'translateY(' + offset + 'px) rotate(' + Math.max(-4, Math.min(4, dy / 85)) + 'deg)';
-        previewActiveDeck(dy < 0 ? activeOrder[1] : activeOrder[activeOrder.length - 1], Math.min(Math.abs(dy) / 180, 1));
+        var step = dy < 0 ? 1 : -1;
+        var nextIndex = (activeCurrent + step + activeCards.length) % activeCards.length;
+        activeCards[activeCurrent].style.transform = 'translateY(' + offset + 'px) rotate(' + Math.max(-1.5, Math.min(1.5, dy / 140)) + 'deg)';
+        previewActiveDeck(nextIndex, Math.min(Math.abs(dy) / 90, 1));
       });
 
       function finishActiveDrag(event, cancelled) {
@@ -1159,7 +1132,7 @@
         activeDragging = null;
         activeCards[activeCurrent].classList.remove('is-dragging');
         if (activeDeck.hasPointerCapture(event.pointerId)) activeDeck.releasePointerCapture(event.pointerId);
-        var threshold = Math.min(75, activeCards[activeCurrent].offsetHeight * .28);
+        var threshold = 35;
         if (!cancelled && Math.abs(dy) > threshold) {
           changeActiveCard(dy < 0 ? 1 : -1);
         } else {

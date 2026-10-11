@@ -564,6 +564,7 @@
         <div
           class="active-package-deck"
           id="activePackageDeck"
+          style="display:block!important;position:relative!important;isolation:isolate;width:100%;height:auto!important;aspect-ratio:1.62/1;"
           tabindex="0"
           role="region"
           aria-label="Activated package cards. Swipe up or down, or use arrow keys."
@@ -576,7 +577,7 @@
               data-active-package-card
               data-package-name="{{ $package['name'] }}"
               aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}"
-              style="transform:translateY(-{{ $loop->index * 16 }}px) scale({{ 1 - $loop->index * 0.025 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
+              style="position:absolute!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;width:100%!important;transform:translateY(-{{ $loop->index * 12 }}px) scale({{ 1 - $loop->index * 0.02 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
               @if ($loop->index > 0) aria-hidden="true" inert @endif
             >
               <div class="account-package-active-row">
@@ -1049,7 +1050,7 @@
         card.style.transition = animate && !activeReducedMotion
           ? 'transform 420ms cubic-bezier(.22,1,.36,1)'
           : 'none';
-        card.style.transform = 'translateY(' + (-rank * 16) + 'px) scale(' + (1 - rank * .025) + ')';
+        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .02) + ')';
         card.style.zIndex = String(activeCards.length - rank);
         card.style.opacity = '1';
         card.style.pointerEvents = rank === 0 ? 'auto' : 'none';
@@ -1073,7 +1074,7 @@
         var newRank = index === nextIndex ? 0 : oldRank - (oldRank > targetRank ? 1 : 0);
         var rank = oldRank + (newRank - oldRank) * progress;
         card.style.zIndex = String(activeCards.length - rank);
-        card.style.transform = 'translateY(' + (-rank * 16) + 'px) scale(' + (1 - rank * .025) + ')';
+        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .02) + ')';
       });
     }
 

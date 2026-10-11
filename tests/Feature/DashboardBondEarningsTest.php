@@ -263,11 +263,14 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertNotFalse($deckEnd);
         $deck = substr($html, $deckStart, $deckEnd - $deckStart);
         $this->assertSame(2, substr_count($deck, 'data-active-package-card'));
+        $this->assertStringContainsString('style="display:block!important;position:relative!important;isolation:isolate;width:100%;height:auto!important;aspect-ratio:1.62/1;"', $deck);
+        $this->assertStringContainsString('style="position:absolute!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;width:100%!important;transform:translateY(-0px) scale(1);z-index:2;"', $deck);
+        $this->assertStringContainsString('style="position:absolute!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;width:100%!important;transform:translateY(-12px) scale(0.98);z-index:1;"', $deck);
         $this->assertStringContainsString('aspect-ratio:1.62/1;', $html);
         $this->assertStringContainsString('isolation:isolate;', $html);
         $this->assertStringContainsString('inset:0 auto auto 0;', $html);
-        $this->assertStringContainsString('transform:translateY(-16px) scale(0.975)', $deck);
-        $this->assertStringContainsString('(-rank * 16)', $html);
+        $this->assertStringContainsString('transform:translateY(-12px) scale(0.98)', $deck);
+        $this->assertStringContainsString('(-rank * 12)', $html);
         $this->assertStringContainsString('margin:14px 0 20px;', $html);
         $this->assertStringContainsString('var limit = 56;', $html);
         $this->assertStringContainsString('(activeCurrent + step + activeCards.length) % activeCards.length', $html);

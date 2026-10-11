@@ -14,6 +14,30 @@ class NotificationCenterTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_dashboard_header_links_to_notifications_and_shows_an_unread_badge(): void
+    {
+        $user = User::factory()->create();
+        Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 100,
+            'amount' => 100,
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'payment_method' => 'bank_transfer',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('href="'.route('notifications.index').'"', false)
+            ->assertSee('aria-label="Notifications, 1 unread"', false)
+            ->assertSee('<span class="dashboard-notification-badge" aria-hidden="true">1</span>', false);
+    }
+
     public function test_notification_center_shows_account_transactions_interest_and_verification_updates(): void
     {
         $user = User::factory()->create();

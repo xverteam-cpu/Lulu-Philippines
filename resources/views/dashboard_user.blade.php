@@ -1421,7 +1421,7 @@
     border-bottom: 1px solid #e9eee8;
   }
 
-  .dashboard-logo {
+  .dashboard-notification-link {
     position: relative;
     display: grid;
     width: 46px;
@@ -1432,15 +1432,15 @@
     border: 1px solid #e3eee4;
     border-radius: 50%;
     background: #fff;
+    color: #0e8a5a;
+    text-decoration: none;
   }
 
-  .dashboard-logo img {
+  .dashboard-notification-link svg {
     position: relative;
     z-index: 1;
-    display: block;
-    width: 78%;
-    height: 78%;
-    object-fit: contain;
+    width: 23px;
+    height: 23px;
   }
 
   .dashboard-profile {
@@ -1791,7 +1791,7 @@
     padding: 8px 20px 6px;
   }
 
-  .dashboard-logo {
+  .dashboard-notification-link {
     position: relative;
     display: grid;
     width: 50px;
@@ -1804,7 +1804,7 @@
     box-shadow: 0 6px 16px -6px rgba(4, 30, 20, .45), 0 1px 2px rgba(4, 30, 20, .12);
   }
 
-  .dashboard-logo::before {
+  .dashboard-notification-link::before {
     position: absolute;
     inset: 2.5px;
     border-radius: 50%;
@@ -1812,15 +1812,33 @@
     content: "";
   }
 
-  .dashboard-logo img {
+  .dashboard-notification-link svg {
     position: relative;
     z-index: 1;
     display: block;
-    width: 86%;
-    height: 86%;
-    border-radius: 50%;
-    background: #fff;
-    object-fit: contain;
+    width: 23px;
+    height: 23px;
+    color: #0e8a5a;
+  }
+
+  .dashboard-notification-badge {
+    position: absolute;
+    z-index: 2;
+    top: -3px;
+    right: -3px;
+    display: grid;
+    min-width: 19px;
+    height: 19px;
+    place-items: center;
+    padding: 0 4px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #c94335;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(80, 24, 18, .24);
   }
 
   .dashboard-profile {
@@ -2651,8 +2669,15 @@
           <span class="dashboard-profile-alert" aria-hidden="true">1</span>
         @endif
       </a>
-      <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
-        <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">
+      <a class="dashboard-notification-link" href="{{ route('notifications.index') }}"
+         aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+          <path d="M10 21h4"/>
+        </svg>
+        @if ($unreadCount > 0)
+          <span class="dashboard-notification-badge" aria-hidden="true">{{ min($unreadCount, 99) }}</span>
+        @endif
       </a>
     </nav>
   </header>

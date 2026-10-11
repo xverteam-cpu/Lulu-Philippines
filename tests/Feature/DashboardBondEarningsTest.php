@@ -110,7 +110,10 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('id="supportChatLauncher"', false)
             ->assertSee('id="supportChatPanel"', false)
             ->assertSee('class="dashboard-profile"', false)
-            ->assertSee('class="dashboard-logo"', false)
+            ->assertSee('class="dashboard-notification-link"', false)
+            ->assertSee('href="'.route('notifications.index').'"', false)
+            ->assertSee('aria-label="Notifications"', false)
+            ->assertSee('M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9', false)
             ->assertSee('LuLu Help')
             ->assertSee('Browse bond packages')
             ->assertSee('Open transactions')
@@ -122,7 +125,6 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('dashboard-status-icons')
             ->assertSee('Purchase Bonds')
             ->assertSee('Apply for Franchise')
-            ->assertSee(asset('logo.png'), false)
             ->assertSee(asset('banner-bonds.jpg'), false)
             ->assertSee(asset('banner-franchise.jpg'), false)
             ->assertSee(route('invest'), false)
@@ -130,10 +132,10 @@ class DashboardBondEarningsTest extends TestCase
 
         $html = $response->getContent();
         $profilePosition = strpos($html, 'class="dashboard-profile"');
-        $logoPosition = strpos($html, 'class="dashboard-logo"');
+        $notificationsPosition = strpos($html, 'class="dashboard-notification-link"');
         $this->assertNotFalse($profilePosition);
-        $this->assertNotFalse($logoPosition);
-        $this->assertLessThan($logoPosition, $profilePosition);
+        $this->assertNotFalse($notificationsPosition);
+        $this->assertLessThan($notificationsPosition, $profilePosition);
 
         $plainText = html_entity_decode(strip_tags($response->getContent()));
         $this->assertStringContainsString('$82.50', $plainText);

@@ -254,6 +254,7 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('Inactive')
             ->assertSee('Total earnings')
             ->assertSee('$1.80')
+            ->assertSee('<div class="account-package-value">$1.80</div>', false)
             ->assertSee('aria-label="Add to Silver package"', false)
             ->assertSee('aria-label="Activate Gold package"', false);
 

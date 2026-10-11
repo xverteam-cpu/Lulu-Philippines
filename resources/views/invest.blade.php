@@ -461,6 +461,12 @@
   .invest-layout-redesign .account-package-earnings { z-index:1; right:16px; bottom:16px; left:16px; }
   .invest-layout-redesign .account-package-label { color:inherit; font-size:9px; letter-spacing:.16em; text-transform:uppercase; }
   .invest-layout-redesign .account-package-value { color:inherit; font-size:28px; font-weight:700; }
+  .invest-layout-redesign .account-package-card--active.crunch .account-package-label,
+  .invest-layout-redesign .account-package-card--active.crunch .account-package-value { color:#253342; opacity:1; }
+  .invest-layout-redesign .account-package-card--active.loaded .account-package-label,
+  .invest-layout-redesign .account-package-card--active.loaded .account-package-value { color:#382507; opacity:1; }
+  .invest-layout-redesign .account-package-card--active.supreme .account-package-label,
+  .invest-layout-redesign .account-package-card--active.supreme .account-package-value { color:#f4f7fb; opacity:1; }
   .invest-layout-redesign .account-package-locked-header { display:flex; justify-content:space-between; align-items:flex-start; }
   .invest-layout-redesign .account-package-lock { display:grid; width:30px; height:30px; place-items:center; border-radius:50%; background:rgba(255,255,255,.42); box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 2px 6px rgba(0,0,0,.08); }
   .invest-layout-redesign .supreme .account-package-lock { background:rgba(255,255,255,.08); box-shadow:inset 0 0 0 1px rgba(255,255,255,.16); }

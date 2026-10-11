@@ -61,9 +61,10 @@
   .account-email { overflow: hidden; margin-top: 3px; color: var(--account-subtle); text-overflow: ellipsis; white-space: nowrap; font: 520 13px/1.3 var(--account-ui); }
   .account-status { display: inline-flex; height: 28px; align-items: center; gap: 7px; margin-top: 10px; padding: 0 11px; border-radius: 999px; color: var(--account-green-dark); background: var(--account-mint); box-shadow: inset 0 0 0 1px rgba(14, 138, 90, .13); font: 650 11.5px/1 var(--account-ui); }
   .account-status i { width: 8px; height: 8px; border-radius: 50%; background: #16a76a; box-shadow: 0 0 0 4px rgba(22, 167, 106, .12); }
-  .account-status-link { text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
+  .account-status-link { position: relative; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
   .account-status-link:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(14, 138, 90, .16), inset 0 0 0 1px rgba(14, 138, 90, .13); }
   .account-status-link:focus-visible { outline: 3px solid #16875d; outline-offset: 3px; }
+  .account-status-alert { position: absolute; top: -7px; right: -7px; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid #fff; border-radius: 50%; color: #fff; background: #c94335; box-shadow: 0 1px 4px rgba(80, 24, 18, .24); font: 800 10px/1 var(--account-ui); }
   .account-status-pending { color: #7b4d08; background: #fff5d6; box-shadow: inset 0 0 0 1px rgba(184, 130, 24, .2); }
   .account-status-pending i { background: #d99a20; box-shadow: 0 0 0 4px rgba(217, 154, 32, .14); }
   .account-profile-actions { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
@@ -167,6 +168,9 @@
                href="{{ route('profile.verification') }}"
                aria-label="{{ $identityVerification?->status === 'verified' ? 'Identity verified. View verification status' : ($identityVerification?->status === 'pending' ? 'Identity verification under review. View status' : 'Get verified by submitting a valid identity document') }}">
               <i aria-hidden="true"></i>{{ $identityVerification?->status === 'verified' ? 'Verified' : ($identityVerification?->status === 'pending' ? 'Under review' : 'Get verified') }}
+              @if ($identityVerification?->status !== 'verified')
+                <span class="account-status-alert" aria-hidden="true">1</span>
+              @endif
             </a>
           </div>
         </div>

@@ -8,11 +8,13 @@
   .verification-page button { cursor:pointer; }
   .verification-page button:disabled { cursor:not-allowed; opacity:.55; }
   .verification-page button:focus-visible, .verification-page input:focus-visible, .verification-page select:focus-visible { outline:3px solid #a4dec1; outline-offset:2px; }
-  .verification-top { display:flex; justify-content:space-between; align-items:center; padding:12px 0 42px; }
-  .verification-brand { color:var(--verification-green); font-size:26px; font-weight:900; letter-spacing:-1.2px; line-height:1.1; }
-  .verification-brand small { display:block; color:#6a8276; font-size:9px; letter-spacing:2.1px; }
-  .verification-secure { display:flex; align-items:center; gap:8px; color:#547267; font-size:12px; font-weight:700; }
-  .verification-secure svg { width:16px; height:16px; }
+  .verification-top { position:sticky; top:0; z-index:5; margin:-28px -28px 30px; background:rgba(242,245,243,.92); backdrop-filter:saturate(180%) blur(18px); -webkit-backdrop-filter:saturate(180%) blur(18px); }
+  .verification-top.is-scrolled { box-shadow:0 1px 0 rgba(10,31,23,.06); }
+  .verification-nav { display:grid; min-height:60px; grid-template-columns:40px minmax(0,1fr) 40px; align-items:center; gap:12px; padding:0 16px; }
+  .verification-nav-button { display:grid; width:40px; height:40px; place-items:center; border:0; border-radius:50%; color:var(--verification-ink); background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.06),0 2px 6px -2px rgba(6,40,28,.12); text-decoration:none; transition:transform .2s ease; }
+  .verification-nav-button:active { transform:scale(.92); }
+  .verification-account-brand { display:flex; align-items:center; justify-self:center; gap:8px; color:var(--verification-ink); text-decoration:none; white-space:nowrap; font:800 15px/1 "Plus Jakarta Sans",Inter,system-ui,sans-serif; }
+  .verification-account-brand img { width:26px; height:26px; border-radius:8px; object-fit:contain; }
   .verification-grid { display:grid; grid-template-columns:300px minmax(0,1fr); align-items:start; gap:30px; }
   .verification-aside { padding:25px 10px; }
   .verification-eyebrow { color:var(--verification-green); font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
@@ -73,7 +75,7 @@
   .verification-privacy { margin:0; padding:0 35px 25px; color:var(--verification-muted); font-size:12px; line-height:1.6; }
   @media (max-width:820px) {
     .verification-page { padding:12px 14px 48px; }
-    .verification-top { padding:6px 6px 24px; }
+    .verification-top { margin:-12px -14px 24px; }
     .verification-grid { display:block; }
     .verification-aside { padding:0 7px 20px; }
     .verification-title { margin:8px 0; font-size:31px; }
@@ -103,9 +105,19 @@
 </style>
 
 <main class="verification-page">
-  <header class="verification-top">
-    <div class="verification-brand">LuLu<small>IDENTITY VERIFICATION</small></div>
-    <div class="verification-secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Secure verification</div>
+  <header class="verification-top" id="verificationTop">
+    <nav class="verification-nav" aria-label="Account navigation">
+      <a class="verification-nav-button" href="{{ route('dashboard') }}" aria-label="Back to dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+      </a>
+      <a class="verification-account-brand" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
+        <img src="{{ asset('logo.png') }}" alt="">
+        <span>Account</span>
+      </a>
+      <a class="verification-nav-button" href="{{ route('profile.notifications') }}" aria-label="Notification settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+      </a>
+    </nav>
   </header>
   <div class="verification-grid">
     <aside class="verification-aside">

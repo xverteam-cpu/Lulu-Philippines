@@ -2638,8 +2638,8 @@
   <header class="dashboard-topbar">
     <nav class="dashboard-dash-nav" aria-label="Dashboard">
       <a class="dashboard-profile" href="{{ route('profile') }}"
-         aria-label="{{ $identityVerification ? 'Profile' : 'Profile. Identity verification not submitted' }}"
-         @if (! $identityVerification) title="Submit identity verification" @endif>
+         aria-label="{{ $identityVerification?->status === 'verified' ? 'Profile' : 'Profile. Identity verification not complete' }}"
+         @if ($identityVerification?->status !== 'verified') title="Complete identity verification" @endif>
         <span class="dashboard-profile-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="8" r="4"/>
@@ -2647,7 +2647,7 @@
           </svg>
         </span>
         <span>Profile</span>
-        @if (! $identityVerification)
+        @if ($identityVerification?->status !== 'verified')
           <span class="dashboard-profile-alert" aria-hidden="true">1</span>
         @endif
       </a>

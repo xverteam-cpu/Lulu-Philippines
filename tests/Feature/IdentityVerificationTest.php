@@ -22,9 +22,43 @@ class IdentityVerificationTest extends TestCase
             ->get(route('profile'))
             ->assertOk()
             ->assertSee('Get verified')
+            ->assertSee('class="account-status-alert" aria-hidden="true">1</span>', false)
             ->assertSee('href="'.route('profile.verification').'"', false)
             ->assertDontSee('>Online</span>', false)
             ->assertDontSee('>Offline</span>', false);
+    }
+
+    public function test_profile_verification_reminder_stays_until_verification_is_complete(): void
+    {
+        foreach (['pending', 'rejected'] as $status) {
+            $user = User::factory()->create();
+            IdentityVerification::create([
+                'user_id' => $user->id,
+                'id_type' => 'national_id',
+                'status' => $status,
+                'submitted_at' => now(),
+            ]);
+
+            $this->actingAs($user)
+                ->get(route('profile'))
+                ->assertOk()
+                ->assertSee('class="account-status-alert" aria-hidden="true">1</span>', false)
+                ->assertSee('href="'.route('profile.verification').'"', false);
+        }
+
+        $verifiedUser = User::factory()->create();
+        IdentityVerification::create([
+            'user_id' => $verifiedUser->id,
+            'id_type' => 'national_id',
+            'status' => 'verified',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($verifiedUser)
+            ->get(route('profile'))
+            ->assertOk()
+            ->assertSee('>Verified', false)
+            ->assertDontSee('class="account-status-alert"', false);
     }
 
     public function test_user_can_submit_a_supported_id_privately_for_review(): void
@@ -35,6 +69,9 @@ class IdentityVerificationTest extends TestCase
         $this->actingAs($user)
             ->get(route('profile.verification'))
             ->assertOk()
+            ->assertSee('class="verification-account-brand"', false)
+            ->assertSee('<span>Account</span>', false)
+            ->assertSee('aria-label="Back to dashboard"', false)
             ->assertSee('Step 01 of 03')
             ->assertSee('Identity document')
             ->assertSee('Selfie check')

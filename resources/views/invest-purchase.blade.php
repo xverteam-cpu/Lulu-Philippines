@@ -57,6 +57,7 @@
   .wallet-text-logo-maya { background:#00a86b; }
   .wallet-text-logo-grabpay { background:#00b14f; }
   .wallet-text-logo-shopeepay { background:#ee4d2d; }
+  .wallet-text-logo-palawanpay { background:#078b4f; font-size:15px; letter-spacing:0; }
   .qr-image { display:block; width:min(100%, 280px); max-height:52vh; margin:18px auto; object-fit:contain; border-radius:10px; }
   @media (min-width:760px) { .purchase-shell { margin-top:36px; } }
 </style>
@@ -202,6 +203,7 @@
   .payment-modal-actions .payment-modal-submit { color:#fff; background:linear-gradient(135deg,#1fb97a,#054a31); box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); }
   .payment-modal-actions .payment-modal-submit:disabled { color:#8fa39a; background:#dfe7e3; box-shadow:inset 0 0 0 1px rgba(10,31,23,.05); cursor:not-allowed; }
   .bank-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .provider-group-title { margin:16px 0 9px; color:#617169; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
   .bank-option { min-height:112px; border:0; border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1px #e2e9e5,0 1px 2px rgba(6,40,28,.06); }
   .payment-modal-actions button:focus-visible,.payment-choice:focus-visible,.bank-option:focus-visible { outline:3px solid rgba(20,168,109,.38); outline-offset:2px; }
   @media (min-width:600px) {
@@ -390,14 +392,9 @@
         <span class="payment-choice-copy"><span class="payment-choice-title">Account balance</span><span class="payment-choice-description">Use your available LuLu account funds</span></span>
         <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
       </button>
-      <button class="payment-choice" type="button" data-payment="bank_transfer" aria-pressed="false">
-        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18M12 3l9 5H3l9-5Z"/></svg></span>
-        <span class="payment-choice-copy"><span class="payment-choice-title">Bank transfer</span><span class="payment-choice-description">Choose Landbank, BPI, BDO, or UnionBank</span></span>
-        <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
-      </button>
-      <button class="payment-choice" type="button" data-payment="e_wallet" aria-pressed="false">
-        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3M9.5 9.5h5"/></svg></span>
-        <span class="payment-choice-copy"><span class="payment-choice-title">E-wallet</span><span class="payment-choice-description">Choose GCash, Maya, GrabPay, or ShopeePay</span></span>
+      <button class="payment-choice" type="button" data-payment="bank_or_wallet" aria-pressed="false">
+        <span class="payment-choice-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h10M4 10v7m3-7v7m3-7v7M2 20h10M7 3l5 4H2l5-4Z"/><rect x="15" y="3" width="7" height="18" rx="2"/><path d="M17 17h3"/></svg></span>
+        <span class="payment-choice-copy"><span class="payment-choice-title">Bank transfer / E-wallet</span><span class="payment-choice-description">Choose BPI, LandBank, or Palawan Pay</span></span>
         <span class="payment-choice-check" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></span>
       </button>
       <button class="payment-choice" type="button" data-payment="crypto" aria-pressed="false">
@@ -418,41 +415,23 @@
   </div>
 </div>
 
-<div class="payment-modal" id="walletModal" aria-hidden="true">
-  <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="walletModalTitle">
-    <div class="payment-modal-handle" aria-hidden="true"></div>
-    <h2 class="payment-modal-title" id="walletModalTitle">Choose your e-wallet</h2>
-    <p class="payment-modal-copy">Select the wallet you will use for your payment.</p>
-    <div class="bank-list">
-      <button class="bank-option" type="button" data-wallet-name="GCash"><strong class="bank-text-logo wallet-text-logo-gcash">GCash</strong><span>GCash</span></button>
-      <button class="bank-option" type="button" data-wallet-name="Maya"><strong class="bank-text-logo wallet-text-logo-maya">Maya</strong><span>Maya</span></button>
-      <button class="bank-option" type="button" data-wallet-name="GrabPay"><strong class="bank-text-logo wallet-text-logo-grabpay">GrabPay</strong><span>GrabPay</span></button>
-      <button class="bank-option" type="button" data-wallet-name="ShopeePay"><strong class="bank-text-logo wallet-text-logo-shopeepay">ShopeePay</strong><span>ShopeePay</span></button>
-    </div>
-    <div class="payment-modal-actions">
-      <button type="button" id="walletModalBack">Back</button>
-    </div>
-  </div>
-</div>
-
 <div class="payment-modal" id="bankModal" aria-hidden="true">
   <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="bankModalTitle">
     <div class="payment-modal-handle" aria-hidden="true"></div>
-    <h2 class="payment-modal-title" id="bankModalTitle">Choose your bank</h2>
-    <p class="payment-modal-copy">Select the bank you will use for your transfer.</p>
-    <div class="bank-list">
-      <button class="bank-option" type="button" aria-label="Landbank" data-bank-name="Landbank" data-bank-qr="{{ asset('LandbankQR.png') }}">
-        <img src="{{ asset('Landbank.svg') }}" alt="Landbank logo">
-      </button>
-      <button class="bank-option" type="button" aria-label="BPI" data-bank-name="BPI" data-bank-qr="{{ asset('BPIQR.png') }}">
+    <h2 class="payment-modal-title" id="bankModalTitle">Choose bank transfer or e-wallet</h2>
+    <p class="payment-modal-copy">Select how you want to make your payment.</p>
+    <h3 class="provider-group-title">Bank transfer</h3>
+    <div class="bank-list" aria-label="Bank transfer providers">
+      <button class="bank-option" type="button" aria-label="BPI" data-payment-provider data-payment-method="bank_transfer" data-provider-name="BPI" data-bank-qr="{{ asset('bpi.png') }}">
         <img src="{{ asset('Bpi.svg') }}" alt="BPI logo">
       </button>
-      <button class="bank-option" type="button" aria-label="BDO" data-bank-name="BDO" data-bank-qr="{{ asset('BPIQR.png') }}">
-        <img src="{{ asset('BDO.svg') }}" alt="BDO logo">
+      <button class="bank-option" type="button" aria-label="LandBank" data-payment-provider data-payment-method="bank_transfer" data-provider-name="LandBank" data-bank-qr="{{ asset('LandBank.png') }}">
+        <img src="{{ asset('Landbank.svg') }}" alt="LandBank logo">
       </button>
-      <button class="bank-option" type="button" aria-label="UnionBank" data-bank-name="UnionBank" data-bank-qr="{{ asset('BPIQR.png') }}">
-        <img src="{{ asset('UnionBank.svg') }}" alt="UnionBank logo">
-      </button>
+    </div>
+    <h3 class="provider-group-title">E-wallet</h3>
+    <div class="bank-list" aria-label="E-wallet providers">
+      <button class="bank-option" type="button" data-payment-provider data-payment-method="e_wallet" data-provider-name="PalawanPay" data-bank-qr="{{ asset('PalawanPay.png') }}"><strong class="bank-text-logo wallet-text-logo-palawanpay">PALAWAN</strong><span>Palawan Pay</span></button>
     </div>
     <div class="payment-modal-actions">
       <button type="button" id="bankModalBack">Back</button>
@@ -506,9 +485,7 @@
     var paymentModalCancel = document.getElementById('paymentModalCancel');
     var submitPurchase = document.getElementById('submitPurchase');
     var bankModal = document.getElementById('bankModal');
-    var walletModal = document.getElementById('walletModal');
     var qrModal = document.getElementById('qrModal');
-    var selectedBank = null;
     var agreementPreviewLink = document.getElementById('agreementPreviewLink');
     var signaturePad = document.getElementById('purchaseSignaturePad');
     var signatureData = document.getElementById('purchaseSignatureData');
@@ -729,27 +706,10 @@
       paymentModal.setAttribute('aria-hidden', 'false');
       document.getElementById('paymentModalTitle').focus();
     });
-    document.getElementById('walletModalBack').addEventListener('click', function () {
-      walletModal.classList.remove('is-open');
-      walletModal.setAttribute('aria-hidden', 'true');
-      paymentModal.classList.add('is-open');
-      paymentModal.setAttribute('aria-hidden', 'false');
-      document.getElementById('paymentModalTitle').focus();
-    });
-    document.querySelectorAll('[data-bank-name]').forEach(function (button) {
+    document.querySelectorAll('[data-payment-provider]').forEach(function (button) {
       button.addEventListener('click', function () {
-        selectedBank = button.dataset.bankName;
-        var providerKey = selectedBank.toLowerCase().replace(/\s+/g, '');
-        var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
-        paymentUrl.searchParams.set('package', '{{ $packageKey }}');
-        paymentUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');
-        paymentUrl.searchParams.set('currency', currency);
-        window.location.href = paymentUrl.toString();
-      });
-    });
-    document.querySelectorAll('[data-wallet-name]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        var providerKey = button.dataset.walletName.toLowerCase().replace(/\s+/g, '');
+        paymentInput.value = button.dataset.paymentMethod;
+        var providerKey = button.dataset.providerName.toLowerCase().replace(/\s+/g, '');
         var paymentUrl = new URL('{{ url('/invest/payment') }}/' + providerKey, window.location.origin);
         paymentUrl.searchParams.set('package', '{{ $packageKey }}');
         paymentUrl.searchParams.set('amount', Number.isFinite(currentAmount()) ? currentAmount().toFixed(2) : '');
@@ -770,20 +730,12 @@
     });
     submitPurchase.addEventListener('click', function () {
       if (!paymentInput.value) return;
-      if (paymentInput.value === 'bank_transfer') {
+      if (paymentInput.value === 'bank_or_wallet') {
         paymentModal.classList.remove('is-open');
         paymentModal.setAttribute('aria-hidden', 'true');
         bankModal.classList.add('is-open');
         bankModal.setAttribute('aria-hidden', 'false');
         document.getElementById('bankModalTitle').focus();
-        return;
-      }
-      if (paymentInput.value === 'e_wallet') {
-        paymentModal.classList.remove('is-open');
-        paymentModal.setAttribute('aria-hidden', 'true');
-        walletModal.classList.add('is-open');
-        walletModal.setAttribute('aria-hidden', 'false');
-        document.getElementById('walletModalTitle').focus();
         return;
       }
       paymentModal.classList.remove('is-open');
@@ -795,8 +747,6 @@
       if (event.key !== 'Escape') return;
       if (bankModal.classList.contains('is-open')) {
         document.getElementById('bankModalBack').click();
-      } else if (walletModal.classList.contains('is-open')) {
-        document.getElementById('walletModalBack').click();
       } else if (paymentModal.classList.contains('is-open')) {
         paymentModalCancel.click();
       }

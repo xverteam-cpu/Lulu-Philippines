@@ -38,8 +38,10 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Continue to payment')
             ->assertSee('Choose payment method')
             ->assertSee('id="paymentModalAmount"', false)
-            ->assertSee('data-payment="bank_transfer"', false)
-            ->assertSee('data-payment="e_wallet"', false)
+            ->assertSee('data-payment="bank_or_wallet"', false)
+            ->assertSee('Bank transfer / E-wallet')
+            ->assertDontSee('data-payment="bank_transfer"', false)
+            ->assertDontSee('data-payment="e_wallet"', false)
             ->assertSee('data-payment="account_balance"', false)
             ->assertSee('data-payment="crypto"', false)
             ->assertSee('.payment-choice-icon svg { display:block; width:22px; height:22px; }', false)
@@ -50,7 +52,7 @@ class InvestmentPurchaseTest extends TestCase
         Cache::forget('usd_to_php_rate_meta_v2');
     }
 
-    public function test_crunch_purchase_payment_sheet_continues_to_existing_payment_choices(): void
+    public function test_crunch_purchase_payment_sheet_combines_bank_and_wallet_choices(): void
     {
         $this->fakeUsdToPhpRate();
         $user = User::factory()->create();
@@ -61,10 +63,21 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Purchase Silver Bond')
             ->assertSee('Choose payment method')
             ->assertSee('paymentModalAmount', false)
-            ->assertSee('data-payment="bank_transfer"', false)
-            ->assertSee('data-payment="e_wallet"', false)
-            ->assertSee('paymentInput.value === \'bank_transfer\'', false)
-            ->assertSee('paymentInput.value === \'e_wallet\'', false)
+            ->assertSee('data-payment="bank_or_wallet"', false)
+            ->assertSee('Choose bank transfer or e-wallet')
+            ->assertSee('Choose BPI, LandBank, or Palawan Pay')
+            ->assertSee('data-provider-name="BPI"', false)
+            ->assertSee('data-bank-qr="'.asset('bpi.png').'"', false)
+            ->assertSee('data-provider-name="LandBank"', false)
+            ->assertSee('data-bank-qr="'.asset('LandBank.png').'"', false)
+            ->assertSee('data-provider-name="PalawanPay"', false)
+            ->assertSee('data-bank-qr="'.asset('PalawanPay.png').'"', false)
+            ->assertDontSee('data-provider-name="BDO"', false)
+            ->assertDontSee('data-provider-name="GCash"', false)
+            ->assertSee('data-payment-method="bank_transfer"', false)
+            ->assertSee('data-payment-method="e_wallet"', false)
+            ->assertSee("paymentInput.value = button.dataset.paymentMethod;", false)
+            ->assertDontSee('id="walletModal"', false)
             ->assertSee('continueToAgreement();', false);
 
         Cache::forget('usd_to_php_rate_meta_v2');
@@ -81,19 +94,20 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Banks')
             ->assertSee('E-wallets')
             ->assertSee('BPI')
-            ->assertSee('BDO')
-            ->assertSee('UnionBank')
-            ->assertSee('GCash')
-            ->assertSee('Maya')
-            ->assertSee('GrabPay')
-            ->assertSee('ShopeePay')
-            ->assertSee('Landbank')
+            ->assertSee('LandBank')
+            ->assertSee('Palawan Pay')
+            ->assertDontSee('BDO')
+            ->assertDontSee('UnionBank')
+            ->assertDontSee('GCash')
+            ->assertDontSee('Maya')
+            ->assertDontSee('GrabPay')
+            ->assertDontSee('ShopeePay')
             ->assertSee('Scan to pay')
             ->assertSee('class="method-button is-active"', false)
             ->assertSee('$129.00')
             ->assertDontSee('class="statusbar"', false)
             ->assertSee(route('invest.payment', [
-                'provider' => 'gcash',
+                'provider' => 'palawanpay',
                 'package' => 'crunch',
                 'amount' => 129,
                 'currency' => 'USD',
@@ -105,9 +119,9 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'bank_transfer',
             ]));
 
-        $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')
+        $this->get('/invest/payment/palawanpay?package=crunch&amount=129&currency=USD')
             ->assertOk()
-            ->assertSee('GCash')
+            ->assertSee('Palawan Pay')
             ->assertSee(route('invest.agreement.sign', [
                 'package' => 'crunch',
                 'amount' => 129,
@@ -118,20 +132,31 @@ class InvestmentPurchaseTest extends TestCase
         $providerThemes = [
             'landbank' => ['#006b3f', '#f5c542'],
             'bpi' => ['#005baa', '#d71920'],
-            'bdo' => ['#003b70', '#f58220'],
-            'unionbank' => ['#f36f21', '#ffb81c'],
-            'gcash' => ['#007cff', '#00a9e8'],
-            'maya' => ['#00a86b', '#7bdcb5'],
-            'grabpay' => ['#00b14f', '#b9f227'],
-            'shopeepay' => ['#ee4d2d', '#ffb300'],
+            'palawanpay' => ['#078b4f', '#f4c542'],
         ];
 
         foreach ($providerThemes as $provider => [$color, $accent]) {
-            $this->get("/invest/payment/{$provider}?package=crunch&amount=129&currency=USD")
+            $response = $this->get("/invest/payment/{$provider}?package=crunch&amount=129&currency=USD");
+
+            $response
                 ->assertOk()
                 ->assertSee("--provider-color: {$color}", false)
                 ->assertSee("--provider-accent: {$accent}", false);
+
+            if ($provider === 'bpi') {
+                $response->assertSee(asset('bpi.png'), false);
+            } elseif ($provider === 'landbank') {
+                $response->assertSee(asset('LandBank.png'), false);
+            } elseif ($provider === 'palawanpay') {
+                $response->assertSee(asset('PalawanPay.png'), false);
+            }
         }
+
+        $this->assertFileExists(public_path('bpi.png'));
+        $this->assertFileExists(public_path('LandBank.png'));
+        $this->assertFileExists(public_path('PalawanPay.png'));
+        $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')
+            ->assertNotFound();
     }
 
     public function test_direct_payment_methods_continue_to_the_existing_agreement_signing_page(): void

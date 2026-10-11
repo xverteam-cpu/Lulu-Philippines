@@ -2555,6 +2555,44 @@
     .support-chat-launcher { right: 14px; bottom: calc(98px + env(safe-area-inset-bottom)); }
     .support-chat-panel { right: 12px; bottom: calc(158px + env(safe-area-inset-bottom)); max-height: min(560px, calc(100dvh - 190px)); }
   }
+
+  @media (max-width: 520px) {
+    .dashboard-shell {
+      overflow: visible;
+      padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    }
+
+    .dashboard-tabbar-wrap {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 140;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+      box-sizing: border-box;
+      border-top: 1px solid rgba(10, 31, 23, .08);
+      background: #fff;
+      box-shadow: 0 -8px 24px rgba(10, 31, 23, .08);
+    }
+
+    .bottom-nav {
+      width: min(430px, 100%);
+      max-width: 430px;
+      height: 66px;
+      box-sizing: border-box;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .dashboard-home-indicator {
+      display: none;
+    }
+  }
 </style>
 
 @php
@@ -2633,14 +2671,14 @@
     </section>
 
     <section class="dashboard-promos promos" aria-label="Explore LuLu opportunities">
-      <a class="dashboard-promo dashboard-card-link" href="{{ route('invest.advertisement') }}" aria-label="View bond investment advertisement">
+      <a class="dashboard-promo dashboard-card-link" href="{{ route('invest') }}" aria-label="View bond investment packages">
         <img src="{{ asset('banner-bonds.jpg') }}" alt="Woman using her phone outside a LuLu Retail store">
         <span class="dashboard-promo-scrim"></span>
         <span class="dashboard-promo-edge"></span>
         <div class="dashboard-promo-content">
           <div>
             <h2>Purchase Bonds</h2>
-            <span class="dashboard-promo-cta">View Bond Details
+            <span class="dashboard-promo-cta">View Bond Packages
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>

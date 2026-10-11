@@ -181,11 +181,11 @@ h1{margin:8px 0 0;font:800 30px/1.08 var(--display);letter-spacing:-.04em}
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 15 6-6 6 6"/></svg>
         <span>Top</span>
       </button>
-      <button class="btn btn-primary" onclick="window.print()" title="Print contract" aria-label="Print contract">
+      <button class="btn btn-primary" id="printContract" title="Print or save contract" aria-label="Print or save contract">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/>
         </svg>
-        <span>Print</span>
+        <span>Print / Save</span>
       </button>
     </div>
   </div>
@@ -203,7 +203,7 @@ h1{margin:8px 0 0;font:800 30px/1.08 var(--display);letter-spacing:-.04em}
 <main class="viewer">
   <div class="notice">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><path d="M12 7h.01"/></svg>
-    <span>Pages 1–5 remain the Bond Purchase Agreement. Page 6 remains the separate Bond Certificate. Printing is configured to keep every page intact on its own 8.5 × 11 inch sheet.</span>
+    <span>Pages 1–5 remain the Bond Purchase Agreement. Page 6 remains the separate Bond Certificate. Printing is configured to keep every page intact on its own 8.5 × 11 inch sheet. On mobile, Print / Save downloads the agreement so you can open it in a document app and print it.</span>
   </div>
 
   <div class="document-stack">
@@ -268,5 +268,18 @@ h1{margin:8px 0 0;font:800 30px/1.08 var(--display);letter-spacing:-.04em}
 <footer class="footer">
   Contract content and original pagination preserved from the supplied Lulu Holding Corp. draft.
 </footer>
+<script>
+  document.getElementById('printContract').addEventListener('click', function () {
+    var isMobile = window.matchMedia('(max-width: 640px), (display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+
+    if (isMobile) {
+      window.location.assign('/invest/agreement/sample/download');
+      return;
+    }
+
+    window.print();
+  });
+</script>
 </body>
 </html>

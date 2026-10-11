@@ -67,6 +67,10 @@
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-4A4.5 4.5 0 0 0 3 18.5V20"/><circle cx="9.5" cy="7" r="4"/><path d="M16 3.3a4 4 0 0 1 0 7.4M21 20v-1.5a4.5 4.5 0 0 0-3.5-4.4"/></svg></span>
       <span>Users</span>
     </a>
+    <a class="admin-nav-btn {{ $activeAdminPage === 'identity-verifications' ? 'active' : '' }}" href="{{ route('admin.identity-verifications') }}">
+      <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 6v5c0 5-3.4 8.3-8 10-4.6-1.7-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
+      <span>Verifications</span>
+    </a>
     <a class="admin-nav-btn {{ $activeAdminPage === 'franchises' ? 'active' : '' }}" href="{{ route('admin.franchises') }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01"/></svg></span>
       <span>Franchise</span>

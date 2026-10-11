@@ -386,6 +386,58 @@
   .invest-layout-redesign .account-package-meta { color:#8a9892; font-size:11px; font-weight:600; white-space:nowrap; }
   .invest-layout-redesign .account-package-meta strong { color:#0e8a5a; }
   .invest-layout-redesign .account-package-grid { grid-template-columns:1fr 1fr; gap:12px; }
+  .invest-layout-redesign .active-package-deck {
+    position:relative;
+    width:100%;
+    height:0;
+    padding-bottom:calc(100% / 1.62 + 52px);
+    touch-action:pan-x;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .invest-layout-redesign .active-package-deck:focus-visible { outline:3px solid #16875d; outline-offset:5px; }
+  .invest-layout-redesign .active-package-card {
+    position:absolute;
+    top:24px;
+    left:0;
+    width:100%;
+    aspect-ratio:1.62/1;
+    cursor:grab;
+    transform-origin:50% 60%;
+    will-change:transform;
+    touch-action:pan-x;
+  }
+  .invest-layout-redesign .active-package-card.is-dragging { cursor:grabbing; }
+  .invest-layout-redesign .active-package-card.is-stack-hidden { pointer-events:none; }
+  .invest-layout-redesign .active-package-controls { display:flex; align-items:center; justify-content:center; gap:18px; margin:-22px 0 20px; }
+  .invest-layout-redesign .active-package-nav {
+    display:grid;
+    width:38px;
+    height:38px;
+    place-items:center;
+    border:1px solid #dbe5dc;
+    border-radius:50%;
+    color:#28563e;
+    background:rgba(255,255,255,.72);
+    font-size:20px;
+    line-height:1;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .invest-layout-redesign .active-package-nav:hover { background:#fff; }
+  .invest-layout-redesign .active-package-dots { display:flex; align-items:center; gap:8px; }
+  .invest-layout-redesign .active-package-dot {
+    width:7px;
+    height:7px;
+    padding:0;
+    border:0;
+    border-radius:99px;
+    background:#c8d6cc;
+    transition:width .25s,background .25s;
+    cursor:pointer;
+  }
+  .invest-layout-redesign .active-package-dot.is-current { width:23px; background:#087849; }
+  .invest-layout-redesign .active-package-grid:empty { display:none; }
   .invest-layout-redesign .account-package-card { position:relative; min-height:0; aspect-ratio:.76/1; padding:16px; border-radius:22px; box-shadow:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18); transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease; }
   .invest-layout-redesign .account-package-card:hover { transform:translateY(-3px); box-shadow:0 2px 4px rgba(4,30,20,.08),0 12px 24px -8px rgba(4,30,20,.22),0 32px 56px -24px rgba(4,30,20,.38); }
   .invest-layout-redesign .account-package-card::after { position:absolute; right:-42px; bottom:-48px; width:170px; height:170px; border:1px solid rgba(255,255,255,.38); border-radius:50%; box-shadow:0 0 0 18px rgba(255,255,255,.05),0 0 0 38px rgba(255,255,255,.04),0 0 0 58px rgba(255,255,255,.03); content:""; pointer-events:none; }
@@ -444,12 +496,18 @@
   .invest-layout-redesign .cta-bar { position:sticky; bottom:0; z-index:20; padding:16px 20px max(24px, env(safe-area-inset-bottom)); background:linear-gradient(180deg,rgba(242,245,243,0),rgba(242,245,243,.92) 32%,#f2f5f3); }
   .invest-layout-redesign .invest-cta { display:flex; width:100%; height:58px; align-items:center; justify-content:center; gap:10px; border-radius:18px; color:#fff; background:linear-gradient(180deg,#11905e,#0a6a45); box-shadow:0 10px 24px -8px rgba(10,106,69,.55),0 2px 4px rgba(10,106,69,.2),inset 0 1px 0 rgba(255,255,255,.25); font-size:15px; font-weight:650; text-decoration:none; }
   .invest-layout-redesign .invest-home-indicator { width:134px; height:5px; margin:14px auto 0; border-radius:99px; background:#0a1f17; opacity:.9; }
-  @media (max-width:520px) { .packages-page.invest-layout-redesign { background:#f2f5f3; } .invest-layout-redesign .packages-shell { width:100%; height:auto; min-height:100vh; margin:0; border-radius:0; box-shadow:none; } .invest-layout-redesign .account-package-card { padding:14px; border-radius:20px; } }
-  @media (prefers-reduced-motion:reduce) { .invest-layout-redesign .account-package-card { transition:none; } }
+  @media (max-width:520px) { .packages-page.invest-layout-redesign { background:#f2f5f3; } .invest-layout-redesign .packages-shell { width:100%; height:auto; min-height:100vh; margin:0; border-radius:0; box-shadow:none; } .invest-layout-redesign .account-package-card { padding:14px; border-radius:20px; } .invest-layout-redesign .active-package-card { padding:14px; border-radius:20px; } }
+  @media (prefers-reduced-motion:reduce) { .invest-layout-redesign .account-package-card,.invest-layout-redesign .active-package-card,.invest-layout-redesign .active-package-dot { transition:none; } }
 </style>
 
 @php
   $accountPackages = \App\Support\InvestmentPackages::all();
+  $activeAccountPackages = collect($accountPackages)->filter(
+      fn ($package, $packageKey) => $approvedInvestments->contains('package_key', $packageKey)
+  );
+  $inactiveAccountPackages = collect($accountPackages)->reject(
+      fn ($package, $packageKey) => $approvedInvestments->contains('package_key', $packageKey)
+  );
   $activePackageCount = $approvedInvestments->pluck('package_key')->unique()->count();
   $totalPackageEarnings = (float) $packageEarnings->sum();
   $totalRemainingSlots = array_sum($packageSlots);
@@ -502,10 +560,25 @@
         <h2 class="account-package-title" id="account-package-title">Your Bonds</h2>
         <span class="account-package-meta"><strong>{{ $activePackageCount }}</strong> active · {{ count($accountPackages) - $activePackageCount }} available</span>
       </div>
-      <div class="account-package-grid">
-        @foreach ($accountPackages as $packageKey => $package)
-          @if ($approvedInvestments->contains('package_key', $packageKey))
-            <article class="account-package-card account-package-card--active {{ $packageKey }}" data-tilt tabindex="0" aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}">
+      @if ($activeAccountPackages->isNotEmpty())
+        <div
+          class="active-package-deck"
+          id="activePackageDeck"
+          tabindex="0"
+          role="region"
+          aria-label="Activated package cards. Swipe up or down, or use arrow keys."
+          aria-describedby="activePackageHint"
+          data-active-package-count="{{ $activeAccountPackages->count() }}"
+        >
+          @foreach ($activeAccountPackages as $packageKey => $package)
+            <article
+              class="account-package-card account-package-card--active active-package-card {{ $packageKey }}"
+              data-active-package-card
+              data-package-name="{{ $package['name'] }}"
+              aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}"
+              style="transform:translateY(-{{ $loop->index * 20 }}px) scale({{ 1 - $loop->index * 0.055 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
+              @if ($loop->index > 0) aria-hidden="true" inert @endif
+            >
               <div class="account-package-active-row">
                 <div class="account-package-name">{{ $package['name'] }}</div>
                 <div class="account-package-actions">
@@ -520,27 +593,49 @@
                 <div class="account-package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
               </div>
             </article>
-          @else
-            <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} account package, inactive" data-tilt>
-              <div class="account-package-locked-header">
-                <div>
-                  <div class="account-package-name">{{ $package['name'] }}</div>
-                  <div class="account-package-caption">ACCOUNT PACKAGE</div>
-                </div>
-                <span class="account-package-lock" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
-                </span>
-              </div>
-              <div class="account-package-chip" aria-hidden="true"></div>
+          @endforeach
+        </div>
+        @if ($activeAccountPackages->count() > 1)
+          <div class="active-package-controls" aria-label="Activated package card controls">
+            <button class="active-package-nav" id="activePackagePrevious" type="button" aria-label="Previous active package">↑</button>
+            <div class="active-package-dots" id="activePackageDots" role="group" aria-label="Choose an active package">
+              @foreach ($activeAccountPackages as $packageKey => $package)
+                <button
+                  class="active-package-dot{{ $loop->first ? ' is-current' : '' }}"
+                  type="button"
+                  data-active-package-dot="{{ $loop->index }}"
+                  aria-label="Show {{ $package['name'] }} package"
+                  aria-pressed="{{ $loop->first ? 'true' : 'false' }}"
+                ></button>
+              @endforeach
+            </div>
+            <button class="active-package-nav" id="activePackageNext" type="button" aria-label="Next active package">↓</button>
+          </div>
+          <p class="sr-only" id="activePackageHint">Swipe up or down to explore your activated packages.</p>
+        @endif
+      @endif
+
+      <div class="account-package-grid active-package-grid" @if ($inactiveAccountPackages->isEmpty()) hidden @endif>
+        @foreach ($inactiveAccountPackages as $packageKey => $package)
+          <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} account package, inactive">
+            <div class="account-package-locked-header">
               <div>
-                <div class="account-package-empty-caption">Inactive</div>
-                <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Activate {{ $package['name'] }} package">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                  Activate
-                </a>
+                <div class="account-package-name">{{ $package['name'] }}</div>
+                <div class="account-package-caption">ACCOUNT PACKAGE</div>
               </div>
-            </article>
-          @endif
+              <span class="account-package-lock" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+              </span>
+            </div>
+            <div class="account-package-chip" aria-hidden="true"></div>
+            <div>
+              <div class="account-package-empty-caption">Inactive</div>
+              <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Activate {{ $package['name'] }} package">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Activate
+              </a>
+            </div>
+          </article>
         @endforeach
       </div>
     </section>
@@ -937,6 +1032,165 @@
     var receiptBadge = document.getElementById('receiptBadge');
     var receiptDone = document.getElementById('receiptDone');
     var receiptClose = document.getElementById('receiptClose');
+    var activeDeck = document.getElementById('activePackageDeck');
+    var activeCards = activeDeck ? Array.prototype.slice.call(activeDeck.querySelectorAll('[data-active-package-card]')) : [];
+    var activeDots = Array.prototype.slice.call(document.querySelectorAll('[data-active-package-dot]'));
+    var activePrevious = document.getElementById('activePackagePrevious');
+    var activeNext = document.getElementById('activePackageNext');
+    var activeOrder = activeCards.map(function (_, index) { return index; });
+    var activeCurrent = 0;
+    var activeDragging = null;
+    var activeChanging = false;
+    var activeReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function layoutActiveCards(animate) {
+      activeCards.forEach(function (card, index) {
+        var rank = activeOrder.indexOf(index);
+        card.style.transition = animate && !activeReducedMotion
+          ? 'transform 480ms cubic-bezier(.22,1,.36,1), opacity 220ms ease'
+          : 'none';
+        card.style.transform = 'translateY(' + (-rank * 20) + 'px) scale(' + (1 - rank * .055) + ')';
+        card.style.zIndex = String(activeCards.length - rank);
+        card.style.opacity = '1';
+        card.style.pointerEvents = rank === 0 ? 'auto' : 'none';
+        card.classList.toggle('is-stack-hidden', rank !== 0);
+        card.setAttribute('aria-hidden', rank === 0 ? 'false' : 'true');
+        card.inert = rank !== 0;
+      });
+
+      activeDots.forEach(function (dot, index) {
+        var selected = index === activeCurrent;
+        dot.classList.toggle('is-current', selected);
+        dot.setAttribute('aria-pressed', String(selected));
+      });
+    }
+
+    function previewActiveDeck(nextIndex, progress) {
+      activeCards.forEach(function (card, index) {
+        if (index === activeCurrent) return;
+        var oldRank = activeOrder.indexOf(index);
+        var newRank = index === nextIndex ? 0 : oldRank - (oldRank > activeOrder.indexOf(nextIndex) ? 1 : 0);
+        var rank = oldRank + (newRank - oldRank) * progress;
+        card.style.zIndex = String(index === nextIndex ? activeCards.length - 1 : activeCards.length - oldRank);
+        card.style.transform = 'translateY(' + (-rank * 20) + 'px) scale(' + (1 - rank * .055) + ')';
+      });
+    }
+
+    function changeActiveCard(step, requestedIndex) {
+      if (activeChanging || activeDragging || activeCards.length < 2) return;
+
+      var count = activeCards.length;
+      var targetIndex = typeof requestedIndex === 'number'
+        ? requestedIndex
+        : (activeCurrent + step + count) % count;
+      if (targetIndex === activeCurrent) return;
+
+      activeChanging = true;
+      var outgoingIndex = activeCurrent;
+      var outgoing = activeCards[outgoingIndex];
+      var direction = step ? Math.sign(step) : (activeOrder.indexOf(targetIndex) < activeOrder.indexOf(outgoingIndex) ? 1 : -1);
+      var departure = 'translateY(' + (direction * (outgoing.offsetHeight + 55)) + 'px) translateX(12px) rotate(' + (direction * 5) + 'deg) scale(.94)';
+
+      if (activeReducedMotion) {
+        activeOrder = [targetIndex].concat(activeOrder.filter(function (index) { return index !== targetIndex; }));
+        activeCurrent = targetIndex;
+        layoutActiveCards(false);
+        activeChanging = false;
+        return;
+      }
+
+      outgoing.style.transition = 'none';
+      var lift = outgoing.animate([
+        { transform: outgoing.style.transform },
+        { transform: departure }
+      ], { duration:260, easing:'cubic-bezier(.25,.7,.3,1)', fill:'forwards' });
+
+      activeOrder.forEach(function (index) {
+        if (index !== outgoingIndex) {
+          activeCards[index].style.transition = 'transform 260ms cubic-bezier(.22,1,.36,1)';
+        }
+      });
+      var otherOrder = activeOrder.filter(function (index) { return index !== outgoingIndex; });
+      otherOrder.forEach(function (index, rank) {
+        var card = activeCards[index];
+        var depth = index === targetIndex ? 0 : rank;
+        card.style.zIndex = String(count - depth);
+        card.style.transform = 'translateY(' + (-depth * 20) + 'px) scale(' + (1 - depth * .055) + ')';
+      });
+
+      lift.onfinish = function () {
+        outgoing.style.transform = departure;
+        lift.cancel();
+        activeOrder = [targetIndex].concat(activeOrder.filter(function (index) { return index !== targetIndex; }));
+        activeCurrent = targetIndex;
+        layoutActiveCards(true);
+        window.setTimeout(function () {
+          layoutActiveCards(false);
+          activeChanging = false;
+        }, 500);
+      };
+    }
+
+    if (activeDeck && activeCards.length) {
+      layoutActiveCards(false);
+      activeDeck.addEventListener('pointerdown', function (event) {
+        if (activeChanging || activeDragging || activeCards.length < 2 ||
+            event.target.closest('a, button') ||
+            (event.pointerType === 'mouse' && event.button !== 0)) return;
+        activeDragging = { id:event.pointerId, y:event.clientY, dy:0 };
+        activeDeck.setPointerCapture(event.pointerId);
+        activeCards[activeCurrent].classList.add('is-dragging');
+        activeCards.forEach(function (card) { card.style.transition = 'none'; });
+      });
+
+      activeDeck.addEventListener('pointermove', function (event) {
+        if (!activeDragging || activeDragging.id !== event.pointerId) return;
+        var dy = event.clientY - activeDragging.y;
+        activeDragging.dy = dy;
+        var limit = activeCards[activeCurrent].offsetHeight + 70;
+        var offset = Math.sign(dy) * Math.min(Math.abs(dy), limit);
+        activeCards[activeCurrent].style.transform = 'translateY(' + offset + 'px) rotate(' + Math.max(-4, Math.min(4, dy / 85)) + 'deg)';
+        previewActiveDeck(dy < 0 ? activeOrder[1] : activeOrder[activeOrder.length - 1], Math.min(Math.abs(dy) / 180, 1));
+      });
+
+      function finishActiveDrag(event, cancelled) {
+        if (!activeDragging || activeDragging.id !== event.pointerId) return;
+        var dy = activeDragging.dy;
+        activeDragging = null;
+        activeCards[activeCurrent].classList.remove('is-dragging');
+        if (activeDeck.hasPointerCapture(event.pointerId)) activeDeck.releasePointerCapture(event.pointerId);
+        var threshold = Math.min(75, activeCards[activeCurrent].offsetHeight * .28);
+        if (!cancelled && Math.abs(dy) > threshold) {
+          changeActiveCard(dy < 0 ? 1 : -1);
+        } else {
+          layoutActiveCards(true);
+        }
+      }
+
+      activeDeck.addEventListener('pointerup', function (event) { finishActiveDrag(event, false); });
+      activeDeck.addEventListener('pointercancel', function (event) { finishActiveDrag(event, true); });
+      activeDeck.addEventListener('lostpointercapture', function (event) {
+        if (activeDragging) finishActiveDrag(event, true);
+      });
+      activeDeck.addEventListener('keydown', function (event) {
+        if (event.target.closest('a, button')) return;
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          changeActiveCard(event.key === 'ArrowUp' ? 1 : -1);
+        }
+      });
+      if (activePrevious) activePrevious.addEventListener('click', function () { changeActiveCard(-1); });
+      if (activeNext) activeNext.addEventListener('click', function () { changeActiveCard(1); });
+      activeDots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+          var targetIndex = Number(dot.dataset.activePackageDot);
+          var difference = (targetIndex - activeCurrent + activeCards.length) % activeCards.length;
+          var step = difference > activeCards.length / 2 ? difference - activeCards.length : difference;
+          changeActiveCard(step, targetIndex);
+        });
+      });
+    }
+
     var bankChoiceButtons = Array.prototype.slice.call(document.querySelectorAll('.bank-logo-item'));
     var selectedBank = null;
     var paymentChoices = Array.prototype.slice.call(document.querySelectorAll('.payment-choice'));

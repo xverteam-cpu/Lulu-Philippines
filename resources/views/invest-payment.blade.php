@@ -93,22 +93,12 @@
   $providerColors = [
       'landbank' => '#006b3f',
       'bpi' => '#005baa',
-      'bdo' => '#003b70',
-      'unionbank' => '#f36f21',
-      'gcash' => '#007cff',
-      'maya' => '#00a86b',
-      'grabpay' => '#00b14f',
-      'shopeepay' => '#ee4d2d',
+      'palawanpay' => '#078b4f',
   ];
   $providerInitials = [
       'landbank' => 'LANDBANK',
       'bpi' => 'BPI',
-      'bdo' => 'BDO',
-      'unionbank' => 'UB',
-      'gcash' => 'G',
-      'maya' => 'M',
-      'grabpay' => 'GRAB',
-      'shopeepay' => 'SHOPEE',
+      'palawanpay' => 'PALAWAN',
   ];
 @endphp
 

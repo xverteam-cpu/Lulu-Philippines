@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\InvestmentApprovalController;
+use App\Http\Controllers\Admin\IdentityVerificationController as AdminIdentityVerificationController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseApplicationController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\WithdrawalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FranchiseApplicationController;
 use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\IdentityVerificationController;
+use App\Http\Controllers\InvestorPinController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Middleware\RequireInvestorPin;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Mail\WithdrawalConfirmation;
 use App\Models\Investment;
@@ -84,6 +88,12 @@ Route::get('/debug/test-email', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/register-partner', [AuthController::class, 'register'])->name('register.partner');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/investor/pin/verify', [InvestorPinController::class, 'verify'])
+    ->middleware(['auth', 'throttle:5,1'])
+    ->name('investor.pin.verify');
+Route::post('/investor/pin/setup', [InvestorPinController::class, 'setup'])
+    ->middleware(['auth', 'throttle:5,1'])
+    ->name('investor.pin.setup');
 Route::post('/activity/heartbeat', function () {
     return response()->noContent();
 })->middleware(['auth', RestrictUserAccess::class])->name('activity.heartbeat');
@@ -187,7 +197,7 @@ Route::get('/dashboard', function () {
         'notificationsRead' => $notificationsRead,
         'unreadCount' => $unreadCount,
     ]);
-})->middleware(['auth', RestrictUserAccess::class])->name('dashboard');
+})->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])->name('dashboard');
 
 Route::post('/notifications/read-all', function (Request $request) {
     $data = $request->validate([
@@ -243,7 +253,7 @@ Route::get('/deposit', function () {
 })->middleware(['auth', RestrictUserAccess::class])->name('deposit');
 
 Route::get('/invest/advertisement', function () {
-    return view('invest-advertisement');
+    return redirect()->route('invest');
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.advertisement');
 
 Route::get('/invest', function () {
@@ -396,9 +406,9 @@ Route::get('/invest/agreement/sign', function (Request $request) {
 Route::get('/invest/payment/{provider}', function (string $provider) {
     $providers = [
         'landbank' => [
-            'name' => 'Landbank',
+            'name' => 'LandBank',
             'logo' => 'Landbank.svg',
-            'qr' => 'LandbankQR.png',
+            'qr' => 'LandBank.png',
             'launch_url' => 'https://www.landbank.com/',
             'background' => '#006b3f',
             'accent' => '#f5c542',
@@ -406,61 +416,18 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
         'bpi' => [
             'name' => 'BPI',
             'logo' => 'Bpi.svg',
-            'qr' => 'BPIQR.png',
+            'qr' => 'bpi.png',
             'launch_url' => 'https://online.bpi.com.ph/',
             'background' => '#005baa',
             'accent' => '#d71920',
         ],
-        'bdo' => [
-            'name' => 'BDO',
-            'logo' => 'BDO.svg',
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://online.bdo.com.ph/',
-            'background' => '#003b70',
-            'accent' => '#f58220',
-        ],
-        'unionbank' => [
-            'name' => 'UnionBank',
-            'logo' => 'UnionBank.svg',
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://online.unionbankph.com/',
-            'background' => '#f36f21',
-            'accent' => '#ffb81c',
-        ],
-        'gcash' => [
-            'name' => 'GCash',
+        'palawanpay' => [
+            'name' => 'Palawan Pay',
             'logo' => null,
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://www.gcash.com/',
-            'background' => '#007cff',
-            'accent' => '#00a9e8',
-            'payment_method' => 'e_wallet',
-        ],
-        'maya' => [
-            'name' => 'Maya',
-            'logo' => null,
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://www.maya.ph/',
-            'background' => '#00a86b',
-            'accent' => '#7bdcb5',
-            'payment_method' => 'e_wallet',
-        ],
-        'grabpay' => [
-            'name' => 'GrabPay',
-            'logo' => null,
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://www.grab.com/ph/pay/',
-            'background' => '#00b14f',
-            'accent' => '#b9f227',
-            'payment_method' => 'e_wallet',
-        ],
-        'shopeepay' => [
-            'name' => 'ShopeePay',
-            'logo' => null,
-            'qr' => 'BPIQR.png',
-            'launch_url' => 'https://shopee.ph/m/shopeepay',
-            'background' => '#ee4d2d',
-            'accent' => '#ffb300',
+            'qr' => 'PalawanPay.png',
+            'launch_url' => 'https://www.palawanpay.com/',
+            'background' => '#078b4f',
+            'accent' => '#f4c542',
             'payment_method' => 'e_wallet',
         ],
     ];
@@ -478,8 +445,8 @@ Route::get('/invest/payment/{provider}', function (string $provider) {
         'providerKey' => $provider,
         'provider' => $providers[$provider],
         'paymentProviders' => [
-            'banks' => array_intersect_key($providers, array_flip(['landbank', 'bpi', 'bdo', 'unionbank'])),
-            'wallets' => array_intersect_key($providers, array_flip(['gcash', 'maya', 'grabpay', 'shopeepay'])),
+            'banks' => array_intersect_key($providers, array_flip(['bpi', 'landbank'])),
+            'wallets' => array_intersect_key($providers, array_flip(['palawanpay'])),
         ],
         'packageKey' => $packageKey,
         'package' => $package,
@@ -746,6 +713,13 @@ Route::get('/profile', function () {
     return view('profile');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile');
 
+Route::get('/profile/verification', [IdentityVerificationController::class, 'show'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('profile.verification');
+Route::post('/profile/verification', [IdentityVerificationController::class, 'submit'])
+    ->middleware(['auth', RestrictUserAccess::class, 'throttle:3,10'])
+    ->name('profile.verification.submit');
+
 Route::get('/profile/edit', function () {
     return view('profile-edit');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.edit');
@@ -804,7 +778,7 @@ Route::get('/admin/dashboard', function () {
     abort_unless(Auth::user()?->is_admin, 403);
 
     return app(UserManagementController::class)->index(request());
-})->middleware(['auth', RestrictUserAccess::class])->name('admin.dashboard');
+})->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])->name('admin.dashboard');
 
 Route::get('/admin/franchises', [AdminFranchiseApplicationController::class, 'index'])
     ->middleware(['auth', RestrictUserAccess::class])
@@ -823,6 +797,19 @@ Route::get('/admin/user-activity', function () {
 Route::get('/admin/user-search-suggestions', [UserManagementController::class, 'searchSuggestions'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.user-search-suggestions');
+
+Route::get('/admin/identity-verifications', [AdminIdentityVerificationController::class, 'index'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.identity-verifications');
+Route::get('/admin/identity-verifications/{verification}/documents/{side}', [AdminIdentityVerificationController::class, 'document'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.identity-verifications.document');
+Route::post('/admin/identity-verifications/{verification}/approve', [AdminIdentityVerificationController::class, 'approve'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.identity-verifications.approve');
+Route::post('/admin/identity-verifications/{verification}/reject', [AdminIdentityVerificationController::class, 'reject'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.identity-verifications.reject');
 
 Route::get('/admin/users/{user}', function (User $user) {
     abort_unless(Auth::user()?->is_admin, 403);

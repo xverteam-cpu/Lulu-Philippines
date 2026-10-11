@@ -13,6 +13,23 @@ class DashboardBondEarningsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_mobile_dashboard_navigation_is_centered_in_a_full_width_safe_area_dock(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('@media (max-width: 520px)', false)
+            ->assertSee('position: fixed;', false)
+            ->assertSee('right: 0;', false)
+            ->assertSee('left: 0;', false)
+            ->assertSee('padding: 8px 14px calc(8px + env(safe-area-inset-bottom));', false)
+            ->assertSee('width: min(430px, 100%);', false)
+            ->assertSee('padding-bottom: calc(100px + env(safe-area-inset-bottom));', false);
+    }
+
     public function test_bond_earnings_are_grouped_by_package_and_reflected_once_in_available_balance(): void
     {
         $user = User::factory()->create([
@@ -47,7 +64,9 @@ class DashboardBondEarningsTest extends TestCase
             'status' => 'approved',
         ]);
 
-        $response = $this->actingAs($user)->get('/dashboard');
+        $response = $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get('/dashboard');
 
         $response->assertOk()
             ->assertSee('Available Bonds')
@@ -67,6 +86,7 @@ class DashboardBondEarningsTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('<html lang="en" class="dashboard-page">', false)
@@ -100,7 +120,7 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee(asset('logo.png'), false)
             ->assertSee(asset('banner-bonds.jpg'), false)
             ->assertSee(asset('banner-franchise.jpg'), false)
-            ->assertSee(route('invest.advertisement'), false)
+            ->assertSee(route('invest'), false)
             ->assertSee(route('franchising'), false);
 
         $plainText = html_entity_decode(strip_tags($response->getContent()));
@@ -130,6 +150,17 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertStringContainsString('aria-label="Back to bonds"', $viewer);
         $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);
         $this->assertStringContainsString('Bond Certificate, page 6', $viewer);
+        $this->assertStringContainsString('id="printContract"', $viewer);
+        $this->assertStringContainsString("window.location.assign('/invest/agreement/sample/download')", $viewer);
+        $this->assertStringContainsString('window.print();', $viewer);
+    }
+
+    public function test_mobile_sample_agreement_print_fallback_downloads_the_document(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('invest.agreement.sample.download'))
+            ->assertOk()
+            ->assertHeader('Content-Disposition', 'attachment; filename=Lulu-Bond-Agreement-and-Certificate-Draft.docx');
     }
 
     public function test_invest_page_shows_account_package_cards_under_total_investment(): void
@@ -178,11 +209,53 @@ class DashboardBondEarningsTest extends TestCase
         );
         $this->assertLessThan(
             strpos($html, 'id="packageTrack"'),
-            strpos($html, 'class="account-package-grid"')
+            strpos($html, 'id="activePackageDeck"')
         );
+        $this->assertStringContainsString('data-active-package-count="1"', $html);
+        $this->assertStringContainsString('class="account-package-grid active-package-grid"', $html);
+        $this->assertStringContainsString('aria-label="Activate Gold package"', $html);
     }
 
-    public function test_dashboard_purchase_bonds_action_shows_advertisement_before_investing(): void
+    public function test_only_approved_package_cards_are_in_the_swipeable_deck(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (['crunch', 'loaded'] as $packageKey) {
+            Investment::create([
+                'user_id' => $user->id,
+                'package_key' => $packageKey,
+                'package_name' => $packageKey === 'crunch' ? 'Silver' : 'Gold',
+                'package_price' => $packageKey === 'crunch' ? 129 : 799,
+                'amount' => $packageKey === 'crunch' ? 129 : 799,
+                'payment_method' => 'account_balance',
+                'daily_interest_rate' => 0.7,
+                'duration_days' => 30,
+                'starts_at' => now()->subDay(),
+                'status' => 'approved',
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get(route('invest'));
+
+        $response->assertOk()
+            ->assertSee('data-active-package-count="2"', false)
+            ->assertSee('aria-label="Silver account package, active', false)
+            ->assertSee('aria-label="Gold account package, active', false)
+            ->assertSee('aria-label="Platinum account package, inactive"', false)
+            ->assertSee('aria-label="Activate Platinum package"', false)
+            ->assertDontSee('aria-label="Gold account package, inactive"', false);
+
+        $html = $response->getContent();
+        $deckStart = strpos($html, 'id="activePackageDeck"');
+        $deckEnd = strpos($html, 'id="activePackagePrevious"', $deckStart);
+        $this->assertNotFalse($deckStart);
+        $this->assertNotFalse($deckEnd);
+        $deck = substr($html, $deckStart, $deckEnd - $deckStart);
+        $this->assertSame(2, substr_count($deck, 'data-active-package-card'));
+        $this->assertSame(1, substr_count($html, 'class="account-package-card account-package-card--empty'));
+    }
+
+    public function test_dashboard_purchase_bonds_action_opens_investment_packages_directly(): void
     {
         $user = User::factory()->create();
 
@@ -190,19 +263,16 @@ class DashboardBondEarningsTest extends TestCase
             ->assertRedirect(route('login'));
 
         $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee(route('invest.advertisement'), false);
-
-        $this->get(route('invest.advertisement'))
-            ->assertOk()
-            ->assertSee(asset('images/lulu-bonds-investment-advertisement.png'), false)
-            ->assertSee('width:min(100vw, calc(100svh - 88px))', false)
-            ->assertSee('padding:0 0 max(12px, env(safe-area-inset-bottom))', false)
             ->assertSee('href="'.route('invest').'"', false)
-            ->assertSee('>Next</a>', false);
+            ->assertSee('View Bond Packages');
 
-        $this->assertFileExists(public_path('images/lulu-bonds-investment-advertisement.png'));
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('invest.advertisement'))
+            ->assertRedirect(route('invest'));
     }
 
     public function test_approved_investments_without_starts_at_use_approved_at_for_accrual(): void

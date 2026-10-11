@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AccountActivity;
 use App\Mail\WithdrawalConfirmation;
 use App\Models\Withdrawal;
 use Illuminate\Http\RedirectResponse;
@@ -113,6 +114,15 @@ class WithdrawalController extends Controller
         if ($withdrawal->user) {
             $withdrawal->user->balance = ($withdrawal->user->balance ?? 0) + (float) $withdrawal->amount;
             $withdrawal->user->save();
+
+            AccountActivity::create([
+                'user_id' => $withdrawal->user_id,
+                'type' => 'funds_received',
+                'title' => 'Withdrawal funds returned',
+                'description' => 'Your rejected withdrawal request was returned to your account.',
+                'amount' => $withdrawal->amount,
+                'occurred_at' => now(),
+            ]);
         }
 
         return redirect()

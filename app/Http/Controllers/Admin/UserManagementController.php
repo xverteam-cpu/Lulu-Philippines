@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\LuluPromotionEmail;
 use App\Mail\PackageGiftedEmail;
 use App\Models\BlockedIp;
+use App\Models\AccountActivity;
 use App\Models\Investment;
 use App\Models\PackageSlot;
 use App\Models\ReferralEarning;
@@ -286,12 +287,23 @@ class UserManagementController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
-        $user = User::findOrFail($request->user_id);
         $amount = (float) $request->amount;
+        $user = DB::transaction(function () use ($request, $amount): User {
+            $user = User::query()->lockForUpdate()->findOrFail($request->user_id);
+            $user->balance += $amount;
+            $user->save();
 
-        // Add funds to user balance
-        $user->balance += $amount;
-        $user->save();
+            AccountActivity::create([
+                'user_id' => $user->id,
+                'type' => 'funds_received',
+                'title' => 'Funds received',
+                'description' => 'Funds were added to your account by the LuLu team.',
+                'amount' => $amount,
+                'occurred_at' => now(),
+            ]);
+
+            return $user;
+        });
 
         return redirect()->route('admin.dashboard')
             ->with('status', "Sent \${$amount} to {$user->name} successfully! New balance: \${$user->balance}");

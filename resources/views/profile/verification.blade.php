@@ -114,7 +114,7 @@
         <img src="{{ asset('logo.png') }}" alt="">
         <span>Account</span>
       </a>
-      <a class="verification-nav-button" href="{{ route('profile.notifications') }}" aria-label="Notification settings">
+      <a class="verification-nav-button" href="{{ route('notifications.index') }}" aria-label="Notifications">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
       </a>
     </nav>

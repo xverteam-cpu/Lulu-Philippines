@@ -15,6 +15,7 @@ use App\Http\Middleware\RequireInvestorPin;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Mail\WithdrawalConfirmation;
 use App\Models\Investment;
+use App\Models\AccountActivity;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\CurrencyRateService;
@@ -207,10 +208,146 @@ Route::post('/notifications/read-all', function (Request $request) {
         'ids.*' => ['string'],
     ]);
 
+    if ($request->expectsJson()) {
+        $request->user()->markNotificationsRead($data['ids']);
+
+        return response()->json(['status' => 'success']);
+    }
+
     $request->user()->markNotificationsRead($data['ids']);
 
-    return response()->json(['status' => 'success']);
+    return redirect()->route('notifications.index')->with('status', 'Notifications marked as read.');
 })->middleware(['auth'])->name('notifications.read_all');
+
+Route::get('/notifications', function (Request $request) {
+    $user = $request->user();
+    $activities = collect();
+
+    foreach (AccountActivity::query()->where('user_id', $user->id)->latest('occurred_at')->limit(50)->get() as $activity) {
+        $activities->push([
+            'id' => 'activity-'.$activity->id,
+            'title' => $activity->title,
+            'description' => $activity->description,
+            'amount' => $activity->amount,
+            'amount_prefix' => '$',
+            'href' => route('history'),
+            'occurred_at' => $activity->occurred_at,
+        ]);
+    }
+
+    foreach ($user->referralEarnings()->latest()->limit(20)->get() as $earning) {
+        $activities->push([
+            'id' => 'referral-'.$earning->id,
+            'title' => 'Referral funds received',
+            'description' => 'Referral commission credited to your account.',
+            'amount' => $earning->amount,
+            'amount_prefix' => '$',
+            'href' => route('referrals'),
+            'occurred_at' => $earning->created_at,
+        ]);
+    }
+
+    $investments = $user->investments()->latest()->limit(50)->get();
+
+    foreach ($investments as $investment) {
+        $isDeposit = $investment->payment_method === 'bank_transfer';
+        $title = match (true) {
+            $investment->payment_method === 'admin_transfer' => 'Package received',
+            $isDeposit && $investment->status === 'approved' => 'Deposit approved',
+            $isDeposit && $investment->status === 'rejected' => 'Deposit declined',
+            $isDeposit => 'Deposit request submitted',
+            $investment->status === 'rejected' => 'Investment declined',
+            default => 'Investment update',
+        };
+        $description = match (true) {
+            $investment->payment_method === 'admin_transfer' => 'The '.$investment->package_name.' package was added to your account.',
+            $isDeposit && $investment->status === 'pending' => 'Your deposit for '.$investment->package_name.' is awaiting review.',
+            $investment->status === 'approved' => $investment->package_name.' package is active on your account.',
+            $investment->status === 'rejected' => $investment->rejection_reason ?: 'Your '.$investment->package_name.' request was not approved.',
+            default => $investment->package_name.' package request status: '.$investment->status.'.',
+        };
+
+        $activities->push([
+            'id' => 'investment-'.$investment->id.'-'.$investment->status,
+            'title' => $title,
+            'description' => $description,
+            'amount' => $isDeposit ? $investment->amount : null,
+            'amount_prefix' => '$',
+            'href' => route('history'),
+            'occurred_at' => $investment->approved_at ?? $investment->updated_at ?? $investment->created_at,
+        ]);
+
+        if ($investment->status === 'approved') {
+            $creditedDays = min((int) $investment->interest_days_credited, (int) $investment->duration_days);
+            $firstInterestDate = $investment->effectiveStartDate()->copy()->startOfDay()->addDay();
+
+            for ($day = max(0, $creditedDays - 50); $day < $creditedDays; $day++) {
+                $interestDate = $firstInterestDate->copy()->addDays($day);
+                $activities->push([
+                    'id' => 'interest-'.$investment->id.'-'.$interestDate->toDateString(),
+                    'title' => 'Daily interest credited',
+                    'description' => 'Interest credited for '.$investment->package_name.'.',
+                    'amount' => $investment->dailyInterestAmount(),
+                    'amount_prefix' => '$',
+                    'href' => route('history'),
+                    'occurred_at' => $interestDate,
+                ]);
+            }
+        }
+    }
+
+    foreach ($user->withdrawals()->latest()->limit(20)->get() as $withdrawal) {
+        $activities->push([
+            'id' => 'withdrawal-'.$withdrawal->id.'-'.$withdrawal->status,
+            'title' => match ($withdrawal->status) {
+                'approved' => 'Withdrawal approved',
+                'rejected' => 'Withdrawal declined',
+                default => 'Withdrawal request submitted',
+            },
+            'description' => $withdrawal->status === 'rejected'
+                ? ($withdrawal->rejection_reason ?: 'Your withdrawal was declined and the funds were returned to your balance.')
+                : 'Withdrawal request status: '.$withdrawal->status.'.',
+            'amount' => $withdrawal->amount,
+            'amount_prefix' => '₱',
+            'href' => route('history'),
+            'occurred_at' => $withdrawal->approved_at ?? $withdrawal->updated_at ?? $withdrawal->created_at,
+        ]);
+    }
+
+    $verification = $user->identityVerification;
+    if ($verification) {
+        $activities->push([
+            'id' => 'verification-'.$verification->id.'-'.$verification->status.'-'.$verification->updated_at?->timestamp,
+            'title' => match ($verification->status) {
+                'verified' => 'Identity verification approved',
+                'rejected' => 'Identity verification needs attention',
+                default => 'Identity verification submitted',
+            },
+            'description' => match ($verification->status) {
+                'verified' => 'Your identity verification was approved.',
+                'rejected' => $verification->review_note ?: 'Please review your submission and try again.',
+                default => 'Your identity documents are under review.',
+            },
+            'amount' => null,
+            'amount_prefix' => null,
+            'href' => route('profile.verification'),
+            'occurred_at' => $verification->reviewed_at ?? $verification->submitted_at,
+        ]);
+    }
+
+    $activities = $activities
+        ->sortByDesc('occurred_at')
+        ->take(50)
+        ->values();
+    $readIds = $user->getNotificationsReadIds();
+    $unreadCount = $activities->reject(fn (array $activity) => in_array($activity['id'], $readIds, true))->count();
+
+    return view('activity-notifications', [
+        'activities' => $activities,
+        'readIds' => $readIds,
+        'unreadCount' => $unreadCount,
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('notifications.index');
 
 Route::get('/rewards', function () {
     $user = Auth::user();

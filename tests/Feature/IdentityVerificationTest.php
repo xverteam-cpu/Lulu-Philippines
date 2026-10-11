@@ -24,6 +24,7 @@ class IdentityVerificationTest extends TestCase
             ->assertSee('Get verified')
             ->assertSee('class="account-status-alert" aria-hidden="true">1</span>', false)
             ->assertSee('href="'.route('profile.verification').'"', false)
+            ->assertSee('href="'.route('notifications.index').'" aria-label="Notifications"', false)
             ->assertDontSee('>Online</span>', false)
             ->assertDontSee('>Offline</span>', false);
     }
@@ -72,6 +73,7 @@ class IdentityVerificationTest extends TestCase
             ->assertSee('class="verification-account-brand"', false)
             ->assertSee('<span>Account</span>', false)
             ->assertSee('aria-label="Back to dashboard"', false)
+            ->assertSee('href="'.route('notifications.index').'" aria-label="Notifications"', false)
             ->assertSee('Step 01 of 03')
             ->assertSee('Identity document')
             ->assertSee('Selfie check')

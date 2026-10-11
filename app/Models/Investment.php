@@ -172,5 +172,6 @@ class Investment extends Model
             'investment_id' => $this->id,
             'amount' => $commission,
         ]);
+
     }
 }

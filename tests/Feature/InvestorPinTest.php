@@ -70,6 +70,33 @@ class InvestorPinTest extends TestCase
         $this->get(route('dashboard'))->assertOk();
     }
 
+    public function test_user_can_sign_in_on_a_fresh_browser_session_then_verify_their_pin(): void
+    {
+        $user = User::factory()->create([
+            'password' => 'Password123',
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        $this->post(route('login.submit'), [
+            'email' => $user->email,
+            'password' => 'Password123',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->get(route('dashboard'))
+            ->assertRedirect(route('investors'));
+
+        $this->get(route('investors'))
+            ->assertOk()
+            ->assertSee('Enter your 4-digit PIN to continue.')
+            ->assertDontSee("step==='identity'");
+
+        $this->post(route('investor.pin.verify'), ['pin' => '1234'])
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('investor_pin_verified', true);
+
+        $this->get(route('dashboard'))->assertOk();
+    }
+
     public function test_incorrect_pin_does_not_unlock_dashboard(): void
     {
         $user = User::factory()->create([

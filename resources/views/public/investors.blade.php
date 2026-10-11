@@ -27,6 +27,7 @@
 <section class="investors-quick-links" id="quick-links"><div class="investors-container"><div class="investors-section-heading"><span>Explore</span><h2>Investor resources</h2></div><div class="investors-link-grid"><a href="#overview"><strong>Investment Highlights</strong><span>↗</span></a><a href="#overview"><strong>Factsheet</strong><span>↗</span></a><a href="#contact-ir"><strong>Announcements</strong><span>↗</span></a></div></div></section>
 <section class="investors-contact" id="contact-ir"><div class="investors-container investors-contact-grid"><div><span>Get in touch</span><h2>Contact IR</h2><p>For enquiries and additional information, please get in touch with our Investor Relations team.</p></div><address><strong>Investor Relations Enquiries</strong><p>Lulu Retail Investor Relations</p><a href="mailto:investor.relations@ae.lulumea.com">investor.relations@ae.lulumea.com</a></address><address><strong>Registered Office</strong><p>Y Tower Building<br>Al Nahyan - E25<br>Abu Dhabi, United Arab Emirates</p></address></div></section></main>
 <footer class="investors-footer" id="footer"><div class="investors-container"><a class="investors-footer-logo" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><p>© {{ date('Y') }} Lulu Retail Holdings PLC</p></div></footer>
+@guest
 <script>
 const card=document.querySelector('.investors-login-card'), form=card?.querySelector('form'), modeButton=document.querySelector('#investor-mode'), nameInput=document.querySelector('#investor-name'), email=document.querySelector('#investor-email'), password=document.querySelector('#investor-password'), continueButton=document.querySelector('.investors-continue-button'), username=document.querySelector('#investor-username'), confirmation=document.querySelector('#investor-password-confirmation'); let mode='login',step='identity';
 function sync(){const passwordStep=step==='password';nameInput.hidden=mode==='login'||!(!passwordStep&&mode==='register');password.hidden=!passwordStep;email.hidden=passwordStep;card.classList.toggle('investors-password-step',passwordStep);card.style.height=passwordStep?'245px':'';card.querySelector('.investor-identity-step').style.display=passwordStep?'none':'';continueButton.textContent='Continue';continueButton.classList.toggle('investors-password-morph',passwordStep);form.action=mode==='login'?form.dataset.loginAction:form.dataset.registerAction;}
@@ -68,4 +69,4 @@ window.addEventListener('pageshow', function () {
     }
   });
 })();
-</script></body></html>
+</script>@endguest</body></html>

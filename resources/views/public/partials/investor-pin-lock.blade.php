@@ -96,11 +96,12 @@
             margin: 2px auto 14px;
         }
         .investors-pin-lock .pin-key {
-            display: grid;
+            display: flex;
             width: 100%;
             min-width: 0;
             min-height: 50px;
-            place-items: center;
+            align-items: center;
+            justify-content: center;
             margin: 0;
             padding: 0;
             border: 1px solid #e6ece7;
@@ -108,6 +109,7 @@
             background: #f6f8f6;
             color: #193b2c;
             font: 600 20px/1 Satoshi, Inter, Arial, sans-serif;
+            text-align: center;
             letter-spacing: 0;
             text-transform: none;
             cursor: pointer;
@@ -203,6 +205,7 @@
     </style>
 
     @php($pinSetupRequired = ! auth()->user()->pin_hash)
+    @php($pinLength = $pinSetupRequired ? 4 : 6)
     <img class="pin-brand" src="{{ asset('icons/lulu-512.png') }}" alt="LuLu Philippines">
     <p class="pin-eyebrow">Secure investor access</p>
     <h2 id="investors-pin-title">{{ $pinSetupRequired ? 'Create your PIN' : 'Welcome back' }}</h2>
@@ -211,7 +214,7 @@
     </p>
 
     <div class="pin-dots" aria-hidden="true">
-        @for ($i = 0; $i < 6; $i++)
+        @for ($i = 0; $i < $pinLength; $i++)
             <span class="pin-dot"></span>
         @endfor
     </div>
@@ -241,6 +244,7 @@
         (() => {
             const form = document.querySelector('.investors-login-form[data-pin-lock="true"]');
             const setup = @json($pinSetupRequired);
+            const pinLength = @json($pinLength);
             const pinInput = document.getElementById('investors-pin-value');
             const confirmationInput = document.getElementById('investors-pin-confirmation');
             const dots = [...document.querySelectorAll('.investors-pin-lock .pin-dot')];
@@ -257,7 +261,7 @@
 
             const render = () => {
                 dots.forEach((dot, index) => dot.classList.toggle('filled', index < entered.length));
-                submit.disabled = submitting || (setup ? entered.length !== 4 : entered.length < 4);
+                submit.disabled = submitting || (setup ? entered.length !== pinLength : entered.length < 4);
             };
             const clear = () => {
                 entered = '';

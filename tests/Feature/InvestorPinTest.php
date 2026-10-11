@@ -24,10 +24,13 @@ class InvestorPinTest extends TestCase
             ->assertSee('Enter your 4–6 digit PIN to continue.')
             ->assertSee('Secure investor access')
             ->assertSee('grid-template-columns: repeat(3, minmax(0, 1fr));', false)
+            ->assertSee('justify-content: center;', false)
             ->assertSee('min-width: 0;', false)
             ->assertSee('background: #fff;', false)
             ->assertSee('icons/lulu-512.png')
             ->assertDontSee('investors-dashboard-continue');
+
+        $this->assertSame(6, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
     }
 
     public function test_guest_keeps_the_existing_login_and_registration_card(): void
@@ -83,10 +86,12 @@ class InvestorPinTest extends TestCase
     {
         $user = User::factory()->create(['pin_hash' => null]);
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->get(route('investors'))
             ->assertOk()
             ->assertSee('Create your PIN');
+
+        $this->assertSame(4, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
 
         $this->actingAs($user)
             ->post(route('investor.pin.setup'), [

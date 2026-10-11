@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\IdentityVerification;
+use App\Models\Investment;
 use App\Models\User;
+use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -107,6 +110,67 @@ class AdminLoginTest extends TestCase
         $response->assertDontSee('class="summary-grid"', false);
         $response->assertDontSee('class="users-panel"', false);
         $response->assertSee('ACTIONS');
+    }
+
+    public function test_admin_navigation_shows_counts_for_pending_verification_withdrawal_and_deposit_requests(): void
+    {
+        $admin = User::factory()->create([
+            'is_admin' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertDontSee('class="request-badge"', false);
+
+        $user = User::factory()->create();
+
+        foreach (range(1, 2) as $index) {
+            IdentityVerification::create([
+                'user_id' => User::factory()->create()->id,
+                'id_type' => 'national_id',
+                'status' => 'pending',
+                'submitted_at' => now(),
+            ]);
+        }
+
+        $user->withdrawals()->create([
+            'amount' => 25,
+            'payment_method' => 'bank_transfer',
+            'bank_name' => 'Test Bank',
+            'account_number' => '123456',
+            'account_holder' => $user->name,
+            'status' => 'pending',
+        ]);
+
+        foreach (range(1, 3) as $index) {
+            $user->investments()->create([
+                'package_key' => 'crunch',
+                'package_name' => 'Crunch',
+                'package_price' => 100,
+                'amount' => 100,
+                'daily_interest_rate' => 2,
+                'duration_days' => 30,
+                'payment_method' => 'bank_transfer',
+                'status' => 'pending',
+            ]);
+        }
+
+        IdentityVerification::create([
+            'user_id' => User::factory()->create()->id,
+            'id_type' => 'national_id',
+            'status' => 'verified',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('<span class="request-badge" aria-hidden="true">2</span>', false)
+            ->assertSee('<span class="request-badge" aria-hidden="true">1</span>', false)
+            ->assertSee('<span class="request-badge" aria-hidden="true">3</span>', false);
     }
 
     public function test_admin_dashboard_user_list_is_ordered_by_newest_accounts_first(): void

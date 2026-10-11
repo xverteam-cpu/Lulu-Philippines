@@ -50,6 +50,25 @@
   }
   .admin-nav .header-btn-secondary { background:#fff; color:#334155; }
   .admin-nav .nav-icon { display:inline-flex; width:16px; height:16px; flex:0 0 16px; color:#166534; }
+  .admin-nav .admin-nav-btn { position:relative; }
+  .admin-nav .request-badge {
+    position:absolute;
+    top:-7px;
+    right:-7px;
+    display:grid;
+    min-width:19px;
+    height:19px;
+    padding:0 4px;
+    place-items:center;
+    border:2px solid #f3f7f4;
+    border-radius:999px;
+    background:#c94335;
+    color:#fff;
+    font-size:10px;
+    font-weight:800;
+    line-height:1;
+    box-shadow:0 1px 4px rgba(80,24,18,.24);
+  }
   .admin-nav .active .nav-icon,
   .admin-nav .header-btn:not(.header-btn-secondary) .nav-icon { color:#d7f0df; }
   .admin-nav .nav-icon svg { display:block; width:16px; height:16px; }
@@ -67,21 +86,33 @@
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-4A4.5 4.5 0 0 0 3 18.5V20"/><circle cx="9.5" cy="7" r="4"/><path d="M16 3.3a4 4 0 0 1 0 7.4M21 20v-1.5a4.5 4.5 0 0 0-3.5-4.4"/></svg></span>
       <span>Users</span>
     </a>
-    <a class="admin-nav-btn {{ $activeAdminPage === 'identity-verifications' ? 'active' : '' }}" href="{{ route('admin.identity-verifications') }}">
+    <a class="admin-nav-btn {{ $activeAdminPage === 'identity-verifications' ? 'active' : '' }}" href="{{ route('admin.identity-verifications') }}"
+       aria-label="{{ ($pendingAdminRequests['verifications'] ?? 0) > 0 ? 'Verifications, '.min($pendingAdminRequests['verifications'], 99).' pending requests' : 'Verifications' }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 6v5c0 5-3.4 8.3-8 10-4.6-1.7-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
       <span>Verifications</span>
+      @if (($pendingAdminRequests['verifications'] ?? 0) > 0)
+        <span class="request-badge" aria-hidden="true">{{ min($pendingAdminRequests['verifications'], 99) }}</span>
+      @endif
     </a>
     <a class="admin-nav-btn {{ $activeAdminPage === 'franchises' ? 'active' : '' }}" href="{{ route('admin.franchises') }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01"/></svg></span>
       <span>Franchise</span>
     </a>
-    <a class="admin-nav-btn {{ $activeAdminPage === 'withdrawals' ? 'active' : '' }}" href="{{ route('admin.withdrawals') }}">
+    <a class="admin-nav-btn {{ $activeAdminPage === 'withdrawals' ? 'active' : '' }}" href="{{ route('admin.withdrawals') }}"
+       aria-label="{{ ($pendingAdminRequests['withdrawals'] ?? 0) > 0 ? 'Withdrawals, '.min($pendingAdminRequests['withdrawals'], 99).' pending requests' : 'Withdrawals' }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v3h16v-3"/></svg></span>
       <span>Withdrawals</span>
+      @if (($pendingAdminRequests['withdrawals'] ?? 0) > 0)
+        <span class="request-badge" aria-hidden="true">{{ min($pendingAdminRequests['withdrawals'], 99) }}</span>
+      @endif
     </a>
-    <a class="admin-nav-btn {{ $activeAdminPage === 'deposits' ? 'active' : '' }}" href="{{ route('admin.investments', ['status' => 'pending']) }}">
+    <a class="admin-nav-btn {{ $activeAdminPage === 'deposits' ? 'active' : '' }}" href="{{ route('admin.investments', ['status' => 'pending']) }}"
+       aria-label="{{ ($pendingAdminRequests['deposits'] ?? 0) > 0 ? 'Deposits, '.min($pendingAdminRequests['deposits'], 99).' pending requests' : 'Deposits' }}">
       <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M7 15h3"/></svg></span>
       <span>Deposits</span>
+      @if (($pendingAdminRequests['deposits'] ?? 0) > 0)
+        <span class="request-badge" aria-hidden="true">{{ min($pendingAdminRequests['deposits'], 99) }}</span>
+      @endif
     </a>
 
     <form method="POST" action="{{ route('admin.backup') }}" style="display:inline-flex;">

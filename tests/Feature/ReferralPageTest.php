@@ -11,6 +11,18 @@ class ReferralPageTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_signup_referral_link_exposes_the_share_preview_image(): void
+    {
+        $this->get(route('signup', ['ref' => 'referral-owner']))
+            ->assertOk()
+            ->assertSee('<meta property="og:image" content="'.asset('Lulus.png').'">', false)
+            ->assertSee('<meta property="og:image:secure_url" content="'.asset('Lulus.png').'">', false)
+            ->assertSee('<meta name="twitter:image" content="'.asset('Lulus.png').'">', false)
+            ->assertSee('<meta property="og:url" content="'.route('signup', ['ref' => 'referral-owner']).'">', false);
+
+        $this->assertFileExists(public_path('Lulus.png'));
+    }
+
     public function test_referral_page_displays_the_users_live_referral_summary_and_partners(): void
     {
         $referrer = User::factory()->create([

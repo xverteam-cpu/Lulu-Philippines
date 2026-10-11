@@ -389,6 +389,7 @@
   .invest-layout-redesign .active-package-deck {
     position:relative;
     width:100%;
+    isolation:isolate;
     aspect-ratio:1.62/1;
     margin-top:18px;
     touch-action:pan-x;
@@ -398,8 +399,7 @@
   .invest-layout-redesign .active-package-deck:focus-visible { outline:3px solid #16875d; outline-offset:5px; }
   .invest-layout-redesign .active-package-card {
     position:absolute;
-    top:0;
-    left:0;
+    inset:0 auto auto 0;
     width:100%;
     aspect-ratio:1.62/1;
     cursor:grab;
@@ -576,7 +576,7 @@
               data-active-package-card
               data-package-name="{{ $package['name'] }}"
               aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}"
-              style="transform:translateY(-{{ $loop->index * 20 }}px) scale({{ 1 - $loop->index * 0.055 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
+              style="transform:translateY(-{{ $loop->index * 16 }}px) scale({{ 1 - $loop->index * 0.025 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
               @if ($loop->index > 0) aria-hidden="true" inert @endif
             >
               <div class="account-package-active-row">
@@ -1049,7 +1049,7 @@
         card.style.transition = animate && !activeReducedMotion
           ? 'transform 420ms cubic-bezier(.22,1,.36,1)'
           : 'none';
-        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .035) + ')';
+        card.style.transform = 'translateY(' + (-rank * 16) + 'px) scale(' + (1 - rank * .025) + ')';
         card.style.zIndex = String(activeCards.length - rank);
         card.style.opacity = '1';
         card.style.pointerEvents = rank === 0 ? 'auto' : 'none';
@@ -1073,7 +1073,7 @@
         var newRank = index === nextIndex ? 0 : oldRank - (oldRank > targetRank ? 1 : 0);
         var rank = oldRank + (newRank - oldRank) * progress;
         card.style.zIndex = String(activeCards.length - rank);
-        card.style.transform = 'translateY(' + (-rank * 12) + 'px) scale(' + (1 - rank * .035) + ')';
+        card.style.transform = 'translateY(' + (-rank * 16) + 'px) scale(' + (1 - rank * .025) + ')';
       });
     }
 

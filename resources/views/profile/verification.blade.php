@@ -2,113 +2,370 @@
 
 @section('content')
 <style>
-  .verification-page { width:min(100% - 32px, 680px); margin:28px auto 48px; color:#0a1f17; }
-  .verification-back { display:inline-flex; align-items:center; gap:8px; margin-bottom:18px; color:#075a3b; font-size:14px; font-weight:650; text-decoration:none; }
-  .verification-card { padding:clamp(20px, 5vw, 32px); border-radius:24px; background:#fff; box-shadow:0 1px 2px rgba(6,40,28,.05),0 6px 16px -6px rgba(6,40,28,.12),0 18px 36px -18px rgba(6,40,28,.18); }
-  .verification-eyebrow { color:#0e8a5a; font-size:11px; font-weight:750; letter-spacing:.14em; text-transform:uppercase; }
-  .verification-title { margin:8px 0; font-size:clamp(24px, 6vw, 32px); line-height:1.1; letter-spacing:-.04em; }
-  .verification-copy { margin:0; color:#52635b; font-size:14px; line-height:1.6; }
-  .verification-status { margin-top:22px; padding:15px 16px; border-radius:14px; color:#075a3b; background:#e6f7ef; font-size:14px; line-height:1.5; }
-  .verification-status.pending { color:#74500b; background:#fff6dc; }
-  .verification-status.rejected { color:#922b22; background:#fff0ee; }
-  .verification-form { display:grid; gap:18px; margin-top:24px; }
-  .verification-label { display:block; margin-bottom:8px; font-size:13px; font-weight:700; }
-  .verification-select { width:100%; min-height:48px; padding:0 13px; border:1px solid #d8e3dc; border-radius:12px; color:#183329; background:#fff; font:inherit; }
+  .verification-page { --verification-green:#08764f; --verification-deep:#064a36; --verification-mint:#e9f6ef; --verification-ink:#132822; --verification-muted:#63736d; --verification-line:#dae6df; max-width:1120px; margin:0 auto; padding:28px 28px 80px; color:var(--verification-ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+  .verification-page *, .verification-page *::before, .verification-page *::after { box-sizing:border-box; }
+  .verification-page button, .verification-page input, .verification-page select { font:inherit; }
+  .verification-page button { cursor:pointer; }
+  .verification-page button:disabled { cursor:not-allowed; opacity:.55; }
+  .verification-page button:focus-visible, .verification-page input:focus-visible, .verification-page select:focus-visible { outline:3px solid #a4dec1; outline-offset:2px; }
+  .verification-top { display:flex; justify-content:space-between; align-items:center; padding:12px 0 42px; }
+  .verification-brand { color:var(--verification-green); font-size:26px; font-weight:900; letter-spacing:-1.2px; line-height:1.1; }
+  .verification-brand small { display:block; color:#6a8276; font-size:9px; letter-spacing:2.1px; }
+  .verification-secure { display:flex; align-items:center; gap:8px; color:#547267; font-size:12px; font-weight:700; }
+  .verification-secure svg { width:16px; height:16px; }
+  .verification-grid { display:grid; grid-template-columns:300px minmax(0,1fr); align-items:start; gap:30px; }
+  .verification-aside { padding:25px 10px; }
+  .verification-eyebrow { color:var(--verification-green); font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+  .verification-title { margin:16px 0; font-size:37px; line-height:1.1; letter-spacing:-1.5px; }
+  .verification-copy { max-width:245px; margin:0; color:var(--verification-muted); font-size:14px; }
+  .verification-step-list { display:grid; gap:20px; margin-top:44px; padding:0; list-style:none; }
+  .verification-step { display:flex; align-items:center; gap:13px; color:#80928a; font-size:13px; font-weight:650; }
+  .verification-step-number { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; border:1px solid #cfded5; border-radius:50%; background:#fff; }
+  .verification-step.current { color:var(--verification-deep); }
+  .verification-step.current .verification-step-number, .verification-step.done .verification-step-number { border-color:var(--verification-green); color:#fff; background:var(--verification-green); }
+  .verification-step.done { color:var(--verification-green); }
+  .verification-panel { overflow:hidden; border:1px solid #e2eae5; border-radius:28px; background:#fff; box-shadow:0 12px 55px #164f3010; }
+  .verification-panel-head { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:30px 35px 22px; border-bottom:1px solid #edf2ee; }
+  .verification-panel-mini { color:var(--verification-green); font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
+  .verification-panel-head h2 { margin:6px 0 0; font-size:25px; line-height:1.2; letter-spacing:-.8px; }
+  .verification-pill { padding:8px 12px; border-radius:50px; color:var(--verification-green); background:var(--verification-mint); font-size:12px; font-weight:750; white-space:nowrap; }
+  .verification-content { padding:30px 35px; }
+  .verification-intro { margin:0 0 25px; color:var(--verification-muted); }
+  .verification-label { display:block; margin:0 0 9px; font-weight:750; }
+  .verification-select-wrap { position:relative; }
+  .verification-select { width:100%; appearance:none; padding:15px 40px 15px 14px; border:1px solid var(--verification-line); border-radius:13px; color:var(--verification-ink); background:#fff; }
+  .verification-select-wrap::after { position:absolute; top:8px; right:16px; color:var(--verification-muted); content:'⌄'; font-size:26px; pointer-events:none; }
+  .verification-upload { margin-top:18px; padding:25px; border:1.5px dashed #a9c6b5; border-radius:19px; background:#fbfdfb; text-align:center; transition:background .2s,border-color .2s; }
+  .verification-upload.drag { border-color:var(--verification-green); background:var(--verification-mint); }
+  .verification-upload-icon { display:grid; width:56px; height:56px; place-items:center; margin:0 auto 13px; border-radius:17px; color:var(--verification-green); background:var(--verification-mint); font-size:28px; }
+  .verification-upload h3 { margin:0 0 6px; font-size:17px; letter-spacing:-.3px; }
+  .verification-upload-copy { margin:0 0 19px; color:var(--verification-muted); font-size:13px; }
+  .verification-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .verification-button { min-height:42px; padding:11px 17px; border:1px solid var(--verification-line); border-radius:12px; color:var(--verification-deep); background:#fff; font-size:13px; font-weight:750; }
+  .verification-button.primary { border-color:var(--verification-green); color:#fff; background:var(--verification-green); }
+  .verification-button:hover:not(:disabled) { filter:brightness(.97); }
   .verification-file-input { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; clip-path:inset(50%); }
-  .verification-file-actions { display:flex; flex-wrap:wrap; gap:8px; }
-  .verification-file-button { display:inline-flex; min-height:42px; align-items:center; justify-content:center; padding:0 14px; border:1px solid #d8e3dc; border-radius:12px; color:#075a3b; background:#fff; font:650 13px/1 Inter,system-ui,sans-serif; cursor:pointer; }
-  .verification-file-button:hover { background:#eff8f3; }
-  .verification-preview { display:none; width:min(100%, 360px); max-height:250px; margin-top:12px; border:1px solid #dfe8e2; border-radius:12px; object-fit:contain; background:#f4f8f5; }
-  .verification-file-status { min-height:18px; margin:8px 0 0; color:#697a71; font-size:12px; line-height:1.5; }
-  .verification-file-status.error { color:#b42318; }
-  .verification-consent { display:flex; align-items:flex-start; gap:10px; color:#52635b; font-size:12px; line-height:1.5; }
-  .verification-consent input { flex:none; margin-top:2px; accent-color:#0e8a5a; }
-  .verification-submit { min-height:48px; border:0; border-radius:14px; color:#fff; background:linear-gradient(180deg,#11905e,#0a6a45); box-shadow:0 8px 18px -10px rgba(10,106,69,.7); font:700 14px/1 Inter,system-ui,sans-serif; cursor:pointer; }
-  .verification-submit:disabled { opacity:.55; cursor:wait; }
-  .verification-error { margin:0; color:#b42318; font-size:13px; }
-  .verification-privacy { margin:20px 0 0; color:#738179; font-size:12px; line-height:1.6; }
-  .verification-details { display:grid; gap:10px; margin-top:18px; color:#52635b; font-size:13px; line-height:1.55; }
-  .verification-details p { margin:0; }
+  .verification-preview { display:none; width:100%; max-height:245px; margin-top:17px; border-radius:12px; background:#edf4ef; object-fit:contain; }
+  .verification-file-status { min-height:18px; margin:10px 0 0; color:var(--verification-muted); font-size:12px; line-height:1.5; }
+  .verification-file-status.error, .verification-error { color:#aa3030; }
+  .verification-hint { display:flex; gap:12px; margin-top:22px; padding:15px; border-radius:14px; color:#446755; background:#f1f8f3; font-size:12px; }
+  .verification-hint strong { color:var(--verification-deep); }
+  .verification-hint-icon { font-size:21px; line-height:1; }
+  .verification-step-page[hidden], .verification-button[hidden] { display:none !important; }
+  .verification-field-error { min-height:18px; margin-top:8px; color:#aa3030; font-size:12px; font-weight:700; }
+  .verification-review { display:grid; gap:10px; }
+  .verification-review-card { display:flex; align-items:center; gap:12px; margin:10px 0; padding:12px; border:1px solid var(--verification-line); border-radius:14px; }
+  .verification-review-card img { width:78px; height:66px; border-radius:9px; background:#edf4ef; object-fit:cover; }
+  .verification-review-card strong { display:block; font-size:13px; }
+  .verification-review-card span { color:var(--verification-muted); font-size:12px; }
+  .verification-consent { display:flex; align-items:flex-start; gap:11px; margin:22px 0; color:#455a51; font-size:13px; }
+  .verification-consent input { width:19px; height:19px; flex:none; margin:2px 0 0; accent-color:var(--verification-green); }
+  .verification-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:21px 35px; border-top:1px solid #edf2ee; }
+  .verification-footnote { color:var(--verification-muted); font-size:12px; }
+  .verification-status { padding:30px 35px; color:#075a3b; background:#fff; text-align:center; }
+  .verification-status.pending { color:#74500b; }
+  .verification-status.rejected { margin:0 35px 22px; padding:15px 16px; border-radius:14px; color:#922b22; background:#fff0ee; font-size:14px; line-height:1.5; text-align:left; }
+  .verification-status-icon { color:var(--verification-green); font-size:52px; line-height:1; }
+  .verification-status.pending .verification-status-icon { color:#c28a18; }
+  .verification-status h2 { margin:12px 0 8px; font-size:26px; letter-spacing:-1px; }
+  .verification-status p { max-width:460px; margin:0 auto 14px; color:var(--verification-muted); }
+  .verification-status-meta { color:var(--verification-muted); font-size:13px; }
+  .verification-privacy { margin:0; padding:0 35px 25px; color:var(--verification-muted); font-size:12px; line-height:1.6; }
+  @media (max-width:820px) {
+    .verification-page { padding:12px 14px 48px; }
+    .verification-top { padding:6px 6px 24px; }
+    .verification-grid { display:block; }
+    .verification-aside { padding:0 7px 20px; }
+    .verification-title { margin:8px 0; font-size:31px; }
+    .verification-copy { max-width:none; }
+    .verification-step-list { display:flex; gap:7px; margin-top:21px; }
+    .verification-step { flex:1; align-items:flex-start; gap:6px; font-size:11px; }
+    .verification-step-number { width:28px; height:28px; flex-basis:28px; }
+    .verification-panel { border-radius:22px; }
+    .verification-panel-head { padding:22px 20px 19px; }
+    .verification-panel-head h2 { font-size:22px; }
+    .verification-content { padding:22px 20px; }
+    .verification-footer { padding:18px 20px; }
+    .verification-status { padding:26px 20px; }
+    .verification-status.rejected { margin:0 20px 20px; }
+    .verification-privacy { padding:0 20px 22px; }
+    .verification-pill { padding:7px 10px; font-size:10px; }
+    .verification-upload { padding:22px 12px; }
+    .verification-secure { font-size:10px; }
+  }
+  @media (max-width:390px) {
+    .verification-step { font-size:10px; }
+    .verification-step-number { display:none; }
+    .verification-button { padding:11px 12px; }
+    .verification-panel-head h2 { font-size:20px; }
+  }
+  @media (prefers-reduced-motion:reduce) { .verification-page *, .verification-page *::before, .verification-page *::after { transition:none !important; } }
 </style>
 
 <main class="verification-page">
-  <a class="verification-back" href="{{ route('profile') }}">← Back to My Account</a>
-  <section class="verification-card" aria-labelledby="verificationTitle">
-    <div class="verification-eyebrow">Identity check</div>
-    <h1 class="verification-title" id="verificationTitle">Get verified</h1>
-    <p class="verification-copy">Submit a clear photo of a valid government ID and a selfie. An administrator will compare your face with the ID photo before your account is marked verified.</p>
+  <header class="verification-top">
+    <div class="verification-brand">LuLu<small>IDENTITY VERIFICATION</small></div>
+    <div class="verification-secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Secure verification</div>
+  </header>
+  <div class="verification-grid">
+    <aside class="verification-aside">
+      <div class="verification-eyebrow">Account security</div>
+      <h1 class="verification-title">Let’s confirm<br>it’s really you.</h1>
+      <p class="verification-copy">A quicker, simpler way to verify your account. Just your ID and a clear selfie.</p>
+      <ol class="verification-step-list" aria-label="Verification progress">
+        <li class="verification-step current" data-verification-nav="1"><span class="verification-step-number">1</span><span>Identity document</span></li>
+        <li class="verification-step" data-verification-nav="2"><span class="verification-step-number">2</span><span>Selfie check</span></li>
+        <li class="verification-step" data-verification-nav="3"><span class="verification-step-number">3</span><span>Review &amp; submit</span></li>
+      </ol>
+    </aside>
 
-    @if (session('status'))
-      <div class="verification-status" role="status">{{ session('status') }}</div>
-    @endif
-
-    @if ($verification?->status === 'verified')
-      <div class="verification-status" role="status">Verified{{ $verification->reviewed_at ? ' on '.$verification->reviewed_at->format('M j, Y') : '' }}. Your ID and selfie photos were deleted after review.</div>
-    @elseif ($verification?->status === 'pending')
-      <div class="verification-status pending" role="status">Your submission is under review. You can return here to check its status.</div>
-      <div class="verification-details">
-        <p><strong>ID type:</strong> {{ $idTypes[$verification->id_type] ?? $verification->id_type }}</p>
-        <p><strong>Submitted:</strong> {{ $verification->submitted_at?->format('M j, Y g:i A') }}</p>
-      </div>
-    @else
-      @if ($verification?->status === 'rejected')
-        <div class="verification-status rejected" role="status">
-          Your previous submission was not approved. Submit a new clear photo to try again.
-          @if ($verification->review_note)
-            <br><strong>Review note:</strong> {{ $verification->review_note }}
-          @endif
-        </div>
+    <section class="verification-panel" aria-label="Identity verification">
+      @if (session('status'))
+        <div class="verification-content"><div class="verification-hint" role="status">{{ session('status') }}</div></div>
       @endif
 
-      <form class="verification-form" id="identityVerificationForm" method="post" action="{{ route('profile.verification.submit') }}" enctype="multipart/form-data">
-        @csrf
-        <div>
-          <label class="verification-label" for="idType">Choose your ID</label>
-          <select class="verification-select" id="idType" name="id_type" required>
-            <option value="">Select a valid ID</option>
-            @foreach ($idTypes as $value => $label)
-              <option value="{{ $value }}" @selected(old('id_type') === $value)>{{ $label }}</option>
-            @endforeach
-          </select>
-          @error('id_type')<p class="verification-error">{{ $message }}</p>@enderror
+      @if ($verification?->status === 'verified')
+        <div class="verification-status" role="status">
+          <div class="verification-status-icon" aria-hidden="true">✓</div>
+          <h2>Identity verified</h2>
+          <p>Your identity has been reviewed and verified{{ $verification->reviewed_at ? ' on '.$verification->reviewed_at->format('M j, Y') : '' }}. Your ID and selfie photos were deleted after review.</p>
+          <div class="verification-status-meta"><strong>ID type:</strong> {{ $idTypes[$verification->id_type] ?? $verification->id_type }}</div>
         </div>
-
-        @foreach (['front' => 'Front of ID', 'back' => 'Back of ID (optional)', 'selfie' => 'Selfie (required)'] as $side => $label)
-          <div class="verification-file-field" data-side="{{ $side }}">
-            <span class="verification-label">{{ $label }}</span>
-            <input class="verification-file-input" type="file" name="{{ $side }}_image" id="{{ $side }}Image" accept="image/jpeg,image/png,image/webp" @if ($side !== 'back') required @endif>
-            <div class="verification-file-actions">
-              <button class="verification-file-button" type="button" data-open-image="{{ $side }}" data-source="upload">Upload from device</button>
-              <button class="verification-file-button" type="button" data-open-image="{{ $side }}" data-source="camera">Take a photo</button>
-            </div>
-            <img class="verification-preview" id="{{ $side }}Preview" alt="{{ $label }} preview">
-            <p class="verification-file-status" id="{{ $side }}ImageStatus" aria-live="polite">
-              @if ($side === 'selfie')
-                JPG, PNG, or WebP; maximum 10 MB. Face the camera in good light, with your full face clearly visible.
-              @elseif ($side === 'back')
-                JPG, PNG, or WebP; maximum 10 MB. Make sure any text on the back is readable.
-              @else
-                JPG, PNG, or WebP; maximum 10 MB. Make sure all text is readable and the ID fills the frame.
-              @endif
-            </p>
-            @error($side.'_image')<p class="verification-error">{{ $message }}</p>@enderror
+      @elseif ($verification?->status === 'pending')
+        <div class="verification-status pending" role="status">
+          <div class="verification-status-icon" aria-hidden="true">◷</div>
+          <h2>Review in progress</h2>
+          <p>Your submission is under review by our team. We’ll update your account after a decision.</p>
+          <div class="verification-status-meta"><strong>ID type:</strong> {{ $idTypes[$verification->id_type] ?? $verification->id_type }}<br><strong>Submitted:</strong> {{ $verification->submitted_at?->format('M j, Y g:i A') }}</div>
+        </div>
+      @else
+        @if ($verification?->status === 'rejected')
+          <div class="verification-status rejected" role="status">
+            Your previous submission was not approved. Submit a new clear photo to try again.
+            @if ($verification->review_note)
+              <br><strong>Review note:</strong> {{ $verification->review_note }}
+            @endif
           </div>
-        @endforeach
+        @endif
 
-        <label class="verification-consent">
-          <input type="checkbox" name="consent" value="1" required>
-          <span>I confirm that this ID belongs to me and consent to an administrator visually comparing my selfie with my ID photo for identity verification. My ID and selfie images are visible only to administrators reviewing this submission and are deleted after the review decision. This site does not create a facial-recognition template or perform automated face matching.</span>
-        </label>
+        <form id="identityVerificationForm" method="post" action="{{ route('profile.verification.submit') }}" enctype="multipart/form-data" data-initial-step="{{ $errors->has('selfie_image') ? 2 : ($errors->has('consent') ? 3 : 1) }}">
+          @csrf
+          <div class="verification-panel-head">
+            <div><div class="verification-panel-mini" id="verificationStepCounter">Step 01 of 03</div><h2 id="verificationStepTitle">Upload your ID</h2></div>
+            <span class="verification-pill">● Protected</span>
+          </div>
+          <div class="verification-content">
+            <section class="verification-step-page" data-verification-page="1">
+              <p class="verification-intro">Choose an accepted government-issued ID and upload a clear photo of its front.</p>
+              <label class="verification-label" for="idType">Document type</label>
+              <div class="verification-select-wrap">
+                <select class="verification-select" id="idType" name="id_type" required>
+                  <option value="">Select an ID type</option>
+                  @foreach ($idTypes as $value => $label)
+                    <option value="{{ $value }}" @selected(old('id_type') === $value)>{{ $label }}</option>
+                  @endforeach
+                </select>
+              </div>
+              @error('id_type')<div class="verification-field-error">{{ $message }}</div>@enderror
 
-        <p class="verification-file-status error" id="verificationQualityError" role="alert" hidden></p>
-        <button class="verification-submit" id="verificationSubmit" type="submit">Submit for review</button>
-      </form>
-      <p class="verification-privacy">For your safety, do not send your ID or selfie by chat or email. Images are stored privately, not in the public website folder, and are deleted once an administrator approves or rejects the submission.</p>
-    @endif
-  </section>
+              @foreach (['front' => ['Front of your ID', 'Make sure the details and photo are clearly visible.', '▤'], 'back' => ['Back of your ID (if applicable)', 'Add the back if your document has important details there.', '▤']] as $side => [$label, $copy, $icon])
+                <div class="verification-upload" data-zone="{{ $side }}">
+                  <div class="verification-upload-icon" aria-hidden="true">{{ $icon }}</div>
+                  <h3>{{ $label }}</h3>
+                  <p class="verification-upload-copy">{{ $copy }}</p>
+                  <input class="verification-file-input" type="file" name="{{ $side }}_image" id="{{ $side }}Image" accept="image/jpeg,image/png,image/webp" @if ($side === 'front') required @endif>
+                  <div class="verification-actions">
+                    <button class="verification-button primary" type="button" data-open-image="{{ $side }}" data-source="upload">Choose file</button>
+                    <button class="verification-button" type="button" data-open-image="{{ $side }}" data-source="camera">Use camera</button>
+                  </div>
+                  <img class="verification-preview" id="{{ $side }}Preview" alt="{{ $label }} preview">
+                  <p class="verification-file-status" id="{{ $side }}ImageStatus" aria-live="polite">
+                    @if ($side === 'back')
+                      JPG, PNG, or WebP; maximum 10 MB. Make sure any text on the back is readable.
+                    @else
+                      JPG, PNG, or WebP; maximum 10 MB. Make sure all text is readable and the ID fills the frame.
+                    @endif
+                  </p>
+                  @error($side.'_image')<div class="verification-field-error">{{ $message }}</div>@enderror
+                </div>
+              @endforeach
+              <div class="verification-hint"><span class="verification-hint-icon" aria-hidden="true">ⓘ</span><span><strong>For best results:</strong> Avoid glare and blur. Use a well-lit area and make sure all ID details are in focus.</span></div>
+            </section>
+
+            <section class="verification-step-page" data-verification-page="2" hidden>
+              <p class="verification-intro">Take a clear selfie in good lighting. An administrator will compare it manually with your ID photo.</p>
+              <div class="verification-upload" data-zone="selfie">
+                <div class="verification-upload-icon" aria-hidden="true">◉</div>
+                <h3>Take or upload your selfie</h3>
+                <p class="verification-upload-copy">Face the camera directly. Keep your whole face visible, without sunglasses or filters.</p>
+                <input class="verification-file-input" type="file" name="selfie_image" id="selfieImage" accept="image/jpeg,image/png,image/webp" required>
+                <div class="verification-actions">
+                  <button class="verification-button primary" type="button" data-open-image="selfie" data-source="camera">Open camera</button>
+                  <button class="verification-button" type="button" data-open-image="selfie" data-source="upload">Upload photo</button>
+                </div>
+                <img class="verification-preview" id="selfiePreview" alt="Selfie preview">
+                <p class="verification-file-status" id="selfieImageStatus" aria-live="polite">JPG, PNG, or WebP; maximum 10 MB. Face the camera in good light, with your full face clearly visible.</p>
+                @error('selfie_image')<div class="verification-field-error">{{ $message }}</div>@enderror
+              </div>
+              <div class="verification-hint"><span class="verification-hint-icon" aria-hidden="true">ⓘ</span><span><strong>Quick tip:</strong> Stand against a plain background and face the light. This is a manual visual review, not automated face recognition.</span></div>
+            </section>
+
+            <section class="verification-step-page" data-verification-page="3" hidden>
+              <p class="verification-intro">Check your photos before sending them for manual review.</p>
+              <div class="verification-review" id="verificationReviewFiles"></div>
+              <label class="verification-consent">
+                <input type="checkbox" name="consent" value="1" required @checked(old('consent'))>
+                <span>I confirm that this ID belongs to me and consent to an administrator visually comparing my selfie with my ID photo for identity verification. My ID and selfie images are visible only to administrators reviewing this submission and are deleted after the review decision. This site does not create a facial-recognition template or perform automated face matching.</span>
+              </label>
+              @error('consent')<div class="verification-field-error">{{ $message }}</div>@enderror
+              <div class="verification-hint"><span class="verification-hint-icon" aria-hidden="true">♧</span><span>Verification is completed by an administrator. Submission does not mean your account is approved yet.</span></div>
+            </section>
+
+            @if ($errors->any())
+              <div class="verification-field-error" role="alert" aria-live="polite">{{ $errors->first() }}</div>
+            @endif
+            <p class="verification-file-status error" id="verificationQualityError" role="alert" hidden></p>
+          </div>
+          <footer class="verification-footer">
+            <button class="verification-button" type="button" id="verificationBack" hidden>← Back</button>
+            <small class="verification-footnote" id="verificationFootnote">Usually takes 2–3 minutes</small>
+            <button class="verification-button primary" type="button" id="verificationNext">Continue →</button>
+            <button class="verification-button primary" id="verificationSubmit" type="submit" hidden>Submit for review →</button>
+          </footer>
+        </form>
+        <p class="verification-privacy">Your ID and selfie are stored privately and visible only to authorized administrators. Images are deleted after the review decision. Do not send your ID or selfie by chat or email.</p>
+      @endif
+    </section>
+  </div>
 </main>
 
 @if (! $verification || $verification->status === 'rejected')
+<script>
+  (() => {
+    const form = document.getElementById('identityVerificationForm');
+    if (!form) return;
+
+    const pages = [...form.querySelectorAll('[data-verification-page]')];
+    const navigation = [...document.querySelectorAll('[data-verification-nav]')];
+    const counter = document.getElementById('verificationStepCounter');
+    const title = document.getElementById('verificationStepTitle');
+    const footnote = document.getElementById('verificationFootnote');
+    const back = document.getElementById('verificationBack');
+    const next = document.getElementById('verificationNext');
+    const submit = document.getElementById('verificationSubmit');
+    const error = document.getElementById('verificationQualityError');
+    const reviewFiles = document.getElementById('verificationReviewFiles');
+    const titles = ['Upload your ID', 'Let’s take a selfie', 'Review your details'];
+    let step = Number(form.dataset.initialStep) || 1;
+
+    function renderReview() {
+      if (!reviewFiles) return;
+      reviewFiles.replaceChildren();
+
+      const idType = document.getElementById('idType');
+      const selectedId = idType?.selectedOptions[0]?.textContent.trim();
+      if (selectedId && idType.value) {
+        const detail = document.createElement('div');
+        detail.className = 'verification-review-card';
+        detail.innerHTML = '<span aria-hidden="true">▤</span><div><strong>Document type</strong><span></span></div>';
+        detail.querySelector('div span').textContent = selectedId;
+        reviewFiles.append(detail);
+      }
+
+      [
+        ['front', 'Front of ID'],
+        ['back', 'Back of ID'],
+        ['selfie', 'Selfie'],
+      ].forEach(([side, label]) => {
+        const input = document.getElementById(side + 'Image');
+        const file = input?.files?.[0];
+        if (!file) return;
+
+        const item = document.createElement('div');
+        item.className = 'verification-review-card';
+        const preview = document.getElementById(side + 'Preview');
+        if (preview?.src) {
+          const image = document.createElement('img');
+          image.src = preview.src;
+          image.alt = label + ' preview';
+          item.append(image);
+        }
+        const info = document.createElement('div');
+        const name = document.createElement('strong');
+        const filename = document.createElement('span');
+        name.textContent = label;
+        filename.textContent = file.name;
+        info.append(name, filename);
+        item.append(info);
+        reviewFiles.append(item);
+      });
+
+      if (!document.getElementById('backImage')?.files?.length) {
+        const optional = document.createElement('div');
+        optional.className = 'verification-review-card';
+        optional.innerHTML = '<div><strong>Back of ID</strong><span>Not provided (optional)</span></div>';
+        reviewFiles.append(optional);
+      }
+    }
+
+    function render() {
+      pages.forEach(page => {
+        const current = Number(page.dataset.verificationPage) === step;
+        page.hidden = !current;
+        page.classList.toggle('active', current);
+      });
+      navigation.forEach(item => {
+        const number = Number(item.dataset.verificationNav);
+        item.classList.toggle('current', number === step);
+        item.classList.toggle('done', number < step);
+      });
+      counter.textContent = `Step 0${step} of 03`;
+      title.textContent = titles[step - 1];
+      back.hidden = step === 1;
+      next.hidden = step === 3;
+      submit.hidden = step !== 3;
+      footnote.textContent = step === 3 ? 'Your photos will be securely submitted for review' : 'Usually takes 2–3 minutes';
+      error.hidden = true;
+      if (step === 3) renderReview();
+    }
+
+    function showError(message) {
+      error.textContent = message;
+      error.hidden = false;
+      error.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+
+    back.addEventListener('click', () => {
+      if (step > 1) {
+        step--;
+        render();
+      }
+    });
+    next.addEventListener('click', () => {
+      if (step === 1) {
+        if (!document.getElementById('idType').value) {
+          showError('Choose your ID type to continue.');
+          return;
+        }
+        if (!document.getElementById('frontImage').files.length) {
+          showError('Add the front of your ID to continue.');
+          return;
+        }
+      } else if (step === 2 && !document.getElementById('selfieImage').files.length) {
+        showError('Add a selfie to continue.');
+        return;
+      }
+      step = Math.min(3, step + 1);
+      render();
+    });
+    form.querySelectorAll('.verification-file-input').forEach(input => {
+      input.addEventListener('change', () => {
+        if (step === 3) renderReview();
+      });
+    });
+    render();
+  })();
+</script>
 <script>
   (() => {
     const form = document.getElementById('identityVerificationForm');

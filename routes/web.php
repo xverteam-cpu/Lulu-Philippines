@@ -127,6 +127,7 @@ Route::get('/dashboard', function () {
     $user = Auth::user();
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user = $user->fresh();  // Refresh from database to get updated balance
+    $identityVerification = $user->identityVerification;
 
     $recentInvestments = Investment::where('user_id', $user->id)
         ->orderByDesc('created_at')
@@ -193,6 +194,7 @@ Route::get('/dashboard', function () {
 
     return view('dashboard_user', [
         'user' => $user,
+        'identityVerification' => $identityVerification,
         'notifications' => $notifications,
         'notificationsRead' => $notificationsRead,
         'unreadCount' => $unreadCount,

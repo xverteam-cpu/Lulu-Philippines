@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Investment;
+use App\Models\IdentityVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -138,6 +139,37 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertStringContainsString('$82.50', $plainText);
         $this->assertStringContainsString('$0.00', $plainText);
         $this->assertStringNotContainsString('$906.31', $plainText);
+    }
+
+    public function test_dashboard_profile_shows_verification_prompt_only_before_a_submission(): void
+    {
+        $unverifiedUser = User::factory()->create();
+
+        $this->actingAs($unverifiedUser)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('aria-label="Profile. Identity verification not submitted"', false)
+            ->assertSee('title="Submit identity verification"', false)
+            ->assertSee('class="dashboard-profile-alert" aria-hidden="true">1</span>', false);
+
+        foreach (['pending', 'verified'] as $status) {
+            $user = User::factory()->create();
+            IdentityVerification::create([
+                'user_id' => $user->id,
+                'id_type' => 'national_id',
+                'status' => $status,
+                'submitted_at' => now(),
+            ]);
+
+            $this->actingAs($user)
+                ->withSession(['investor_pin_verified' => true])
+                ->get(route('dashboard'))
+                ->assertOk()
+                ->assertSee('aria-label="Profile"', false)
+                ->assertDontSee('class="dashboard-profile-alert"', false)
+                ->assertDontSee('title="Submit identity verification"', false);
+        }
     }
 
     public function test_invest_page_sample_agreement_uses_the_preserved_six_page_contract_viewer(): void

@@ -1444,6 +1444,7 @@
   }
 
   .dashboard-profile {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1464,6 +1465,24 @@
     place-items: center;
     border-radius: 50%;
     background: #eaf5e9;
+  }
+
+  .dashboard-profile-alert {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #c94335;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(80, 24, 18, .24);
   }
 
   .dashboard-profile svg {
@@ -2618,7 +2637,9 @@
 <main class="wallet-shell dashboard-shell">
   <header class="dashboard-topbar">
     <nav class="dashboard-dash-nav" aria-label="Dashboard">
-      <a class="dashboard-profile" href="{{ route('profile') }}">
+      <a class="dashboard-profile" href="{{ route('profile') }}"
+         aria-label="{{ $identityVerification ? 'Profile' : 'Profile. Identity verification not submitted' }}"
+         @if (! $identityVerification) title="Submit identity verification" @endif>
         <span class="dashboard-profile-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="8" r="4"/>
@@ -2626,6 +2647,9 @@
           </svg>
         </span>
         <span>Profile</span>
+        @if (! $identityVerification)
+          <span class="dashboard-profile-alert" aria-hidden="true">1</span>
+        @endif
       </a>
       <a class="dashboard-logo" href="{{ route('dashboard') }}" aria-label="LuLu Philippines dashboard">
         <img src="{{ asset('logo.png') }}" alt="LuLu Philippines">

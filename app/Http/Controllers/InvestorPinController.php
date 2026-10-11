@@ -13,7 +13,7 @@ class InvestorPinController extends Controller
     public function verify(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'pin' => ['required', 'digits_between:4,6'],
+            'pin' => ['required', 'digits:4'],
         ]);
 
         $user = $request->user();

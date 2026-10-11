@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class InvestorPinTest extends TestCase
@@ -21,7 +22,8 @@ class InvestorPinTest extends TestCase
 
         $response->assertOk()
             ->assertSee('Investor Relations')
-            ->assertSee('Enter your 4–6 digit PIN to continue.')
+            ->assertSee('Enter your 4-digit PIN to continue.')
+            ->assertSee('Forgot your PIN? Reset your password to set a new one.')
             ->assertSee('Secure investor access')
             ->assertSee('grid-template-columns: repeat(3, minmax(0, 1fr));', false)
             ->assertSee('justify-content: center;', false)
@@ -30,7 +32,7 @@ class InvestorPinTest extends TestCase
             ->assertSee('icons/lulu-512.png')
             ->assertDontSee('investors-dashboard-continue');
 
-        $this->assertSame(6, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
+        $this->assertSame(4, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
     }
 
     public function test_guest_keeps_the_existing_login_and_registration_card(): void
@@ -57,11 +59,11 @@ class InvestorPinTest extends TestCase
     public function test_correct_pin_unlocks_dashboard_for_the_authenticated_user(): void
     {
         $user = User::factory()->create([
-            'pin_hash' => Hash::make('123456'),
+            'pin_hash' => Hash::make('1234'),
         ]);
 
         $this->actingAs($user)
-            ->post(route('investor.pin.verify'), ['pin' => '123456'])
+            ->post(route('investor.pin.verify'), ['pin' => '1234'])
             ->assertRedirect(route('dashboard'))
             ->assertSessionHas('investor_pin_verified', true);
 
@@ -80,6 +82,37 @@ class InvestorPinTest extends TestCase
             ->assertRedirect(route('investors'))
             ->assertSessionHasErrors('pin')
             ->assertSessionMissing('investor_pin_verified');
+    }
+
+    public function test_six_digit_legacy_pin_is_rejected_and_password_reset_clears_it(): void
+    {
+        $user = User::factory()->create([
+            'pin_hash' => Hash::make('123456'),
+        ]);
+
+        $this->actingAs($user)
+            ->from(route('investors'))
+            ->post(route('investor.pin.verify'), ['pin' => '123456'])
+            ->assertRedirect(route('investors'))
+            ->assertSessionHasErrors('pin')
+            ->assertSessionMissing('investor_pin_verified');
+
+        $token = Password::broker()->createToken($user);
+
+        $this->post(route('password.update'), [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
+        ])->assertRedirect(route('order'));
+
+        $this->assertNull($user->fresh()->pin_hash);
+        $this->assertNull($user->fresh()->pin_set_at);
+
+        $this->actingAs($user->fresh())
+            ->get(route('investors'))
+            ->assertOk()
+            ->assertSee('Create your PIN');
     }
 
     public function test_user_without_a_pin_can_set_one_and_then_access_the_dashboard(): void

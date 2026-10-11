@@ -51,6 +51,8 @@ class PasswordResetController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->password = $password;
+                $user->pin_hash = null;
+                $user->pin_set_at = null;
                 $user->setRememberToken(Str::random(60));
                 $user->save();
             }

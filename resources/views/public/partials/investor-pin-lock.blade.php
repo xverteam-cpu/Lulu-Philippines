@@ -205,12 +205,12 @@
     </style>
 
     @php($pinSetupRequired = ! auth()->user()->pin_hash)
-    @php($pinLength = $pinSetupRequired ? 4 : 6)
+    @php($pinLength = 4)
     <img class="pin-brand" src="{{ asset('icons/lulu-512.png') }}" alt="LuLu Philippines">
     <p class="pin-eyebrow">Secure investor access</p>
     <h2 id="investors-pin-title">{{ $pinSetupRequired ? 'Create your PIN' : 'Welcome back' }}</h2>
     <p class="pin-description">
-        {{ $pinSetupRequired ? 'Set a 4-digit PIN to protect your account.' : 'Enter your 4–6 digit PIN to continue.' }}
+        {{ $pinSetupRequired ? 'Set a 4-digit PIN to protect your account.' : 'Enter your 4-digit PIN to continue.' }}
     </p>
 
     <div class="pin-dots" aria-hidden="true">
@@ -236,8 +236,13 @@
     <button class="pin-submit" type="submit" disabled id="investors-pin-submit">
         {{ $pinSetupRequired ? 'Set PIN' : 'Continue' }}
     </button>
+    @unless ($pinSetupRequired)
+        <a class="pin-signout investors-pin-signout" href="{{ route('password.request') }}">
+            Forgot your PIN? Reset your password to set a new one.
+        </a>
+    @endunless
     <button class="pin-signout investors-pin-signout" type="submit" formaction="{{ route('logout') }}" formmethod="post">
-        Forgot your PIN? Sign out
+        Sign out
     </button>
 
     <script>
@@ -261,7 +266,7 @@
 
             const render = () => {
                 dots.forEach((dot, index) => dot.classList.toggle('filled', index < entered.length));
-                submit.disabled = submitting || (setup ? entered.length !== pinLength : entered.length < 4);
+                submit.disabled = submitting || entered.length !== pinLength;
             };
             const clear = () => {
                 entered = '';
@@ -270,7 +275,7 @@
                 render();
             };
             const addDigit = digit => {
-                const max = setup ? 4 : 6;
+                const max = pinLength;
                 if (submitting || entered.length >= max) return;
                 entered += digit;
                 render();

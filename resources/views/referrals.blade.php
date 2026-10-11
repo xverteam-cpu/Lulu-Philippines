@@ -323,13 +323,36 @@
           return;
         }
 
-        navigator.share({
-          title: 'LuLu Philippines Referral Program',
-          text: 'Join LuLu Philippines using my referral link:',
+        var shareData = {
+          title: 'Lulu',
+          text: 'Franchise and Bond Purchase. Join using my referral link:',
           url: referralLink
-        }).catch(function (error) {
-          if (error.name !== 'AbortError') copyReferralLink();
-        });
+        };
+        var shareImage = new File([], 'Lulus.png', { type: 'image/png' });
+        if (!navigator.canShare || !navigator.canShare({ files: [shareImage] })) {
+          navigator.share(shareData).catch(function (error) {
+            if (error.name !== 'AbortError') copyReferralLink();
+          });
+          return;
+        }
+
+        fetch('{{ asset('Lulus.png') }}')
+          .then(function (response) {
+            if (!response.ok) throw new Error('Unable to load the referral share image.');
+            return response.blob();
+          })
+          .then(function (imageBlob) {
+            shareData.files = [new File([imageBlob], 'Lulus.png', { type: imageBlob.type || 'image/png' })];
+            return navigator.share(shareData);
+          })
+          .catch(function (error) {
+            if (error.name === 'AbortError') return;
+            console.error(error);
+            delete shareData.files;
+            navigator.share(shareData).catch(function (shareError) {
+              if (shareError.name !== 'AbortError') copyReferralLink();
+            });
+          });
       });
     }
   });

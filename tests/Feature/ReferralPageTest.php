@@ -15,6 +15,10 @@ class ReferralPageTest extends TestCase
     {
         $this->get(route('signup', ['ref' => 'referral-owner']))
             ->assertOk()
+            ->assertSee('<meta property="og:title" content="Lulu">', false)
+            ->assertSee('<meta property="og:description" content="Franchise and Bond Purchase.">', false)
+            ->assertSee('<meta name="twitter:title" content="Lulu">', false)
+            ->assertSee('<meta name="twitter:description" content="Franchise and Bond Purchase.">', false)
             ->assertSee('<meta property="og:image" content="'.asset('Lulus.png').'">', false)
             ->assertSee('<meta property="og:image:secure_url" content="'.asset('Lulus.png').'">', false)
             ->assertSee('<meta name="twitter:image" content="'.asset('Lulus.png').'">', false)
@@ -80,6 +84,9 @@ class ReferralPageTest extends TestCase
             ->assertSee('partner@example.com')
             ->assertSee('Invested: $250.00')
             ->assertSee('5%')
+            ->assertSee("shareData.files = [new File([imageBlob], 'Lulus.png'", false)
+            ->assertSee("title: 'Lulu'", false)
+            ->assertSee("text: 'Franchise and Bond Purchase. Join using my referral link:'", false)
             ->assertDontSee('Unrelated User')
             ->assertDontSee('Invested: $999.00');
     }

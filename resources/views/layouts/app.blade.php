@@ -32,7 +32,7 @@
 
   <!-- Open Graph Meta Tags for Social Sharing -->
   <meta property="og:title" content="Lulu">
-  <meta property="og:description" content="Investment packages with daily returns. Start investing with Lulu.">
+  <meta property="og:description" content="Franchise and Bond Purchase.">
   <meta property="og:image" content="{{ asset('Lulus.png') }}">
   <meta property="og:image:secure_url" content="{{ asset('Lulus.png') }}">
   <meta property="og:image:type" content="image/png">
@@ -42,7 +42,7 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Lulu">
-  <meta name="twitter:description" content="Investment packages with daily returns. Start investing with Lulu.">
+  <meta name="twitter:description" content="Franchise and Bond Purchase.">
   <meta name="twitter:image" content="{{ asset('Lulus.png') }}">
   <meta name="twitter:image:alt" content="LuLu Philippines referral invitation">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">

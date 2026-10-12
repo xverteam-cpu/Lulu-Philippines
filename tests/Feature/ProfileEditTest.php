@@ -34,7 +34,8 @@ class ProfileEditTest extends TestCase
             ->assertSee('id="installApp"', false)
             ->assertSee('Add to Home Screen')
             ->assertSee("window.addEventListener('beforeinstallprompt'", false)
-            ->assertSee('In Safari on iPhone or iPad, tap Share, then Add to Home Screen.')
+            ->assertSee('lulu-home-screen.html')
+            ->assertSee("window.location.assign(installGuideUrl)", false)
             ->assertDontSee('Copy username')
             ->assertSee('Metro Manila')
             ->assertSee('referrer-user')
@@ -50,6 +51,21 @@ class ProfileEditTest extends TestCase
             ->assertDontSee('id="clock"', false)
             ->assertDontSee('11:23 PM')
             ->assertDontSee('Wi-Fi');
+    }
+
+    public function test_home_screen_guide_is_available_as_a_public_asset(): void
+    {
+        $guidePath = base_path('lulu-home-screen.html');
+        $this->assertFileExists($guidePath);
+
+        $guide = file_get_contents($guidePath);
+        $this->assertNotFalse($guide);
+        $this->assertStringContainsString('Lulu · Add to Home Screen', $guide);
+        $this->assertStringContainsString('Choose your device', $guide);
+
+        $this->get(route('home-screen.guide'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/html; charset=UTF-8');
     }
 
     public function test_authenticated_user_can_open_and_update_their_profile(): void

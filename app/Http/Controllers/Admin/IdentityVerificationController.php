@@ -27,7 +27,7 @@ class IdentityVerificationController extends Controller
     public function index(): View
     {
         $verifications = IdentityVerification::query()
-            ->with('user')
+            ->with('user.latestSignedInvestment')
             ->where('status', 'pending')
             ->orderBy('submitted_at')
             ->paginate(20);

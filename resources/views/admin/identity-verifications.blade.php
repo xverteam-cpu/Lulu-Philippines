@@ -14,6 +14,9 @@
   .verification-admin-images { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
   .verification-admin-image img { display:block; width:100%; max-height:300px; object-fit:contain; border:1px solid #dfe8e2; border-radius:10px; background:#f4f8f5; }
   .verification-admin-image figcaption { margin-bottom:7px; color:#52635b; font-size:12px; font-weight:700; }
+  .verification-admin-signature { margin-top:16px; }
+  .verification-admin-signature img { display:block; max-width:100%; max-height:180px; padding:8px; border:1px solid #dfe8e2; border-radius:10px; background:#fff; }
+  .verification-admin-signature p { margin:6px 0 0; color:#52635b; font-size:13px; }
   .verification-admin-actions { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; margin-top:18px; }
   .verification-admin-actions form { margin:0; }
   .verification-admin-actions label { display:block; margin-bottom:6px; color:#52635b; font-size:12px; font-weight:650; }
@@ -65,6 +68,13 @@
           </a>
         </figure>
       </div>
+      @if ($verification->user->latestSignedInvestment)
+        <div class="verification-admin-signature">
+          <strong>Latest signed investment agreement</strong>
+          <p>{{ $verification->user->latestSignedInvestment->package_name }} · {{ $verification->user->latestSignedInvestment->agreement_signature_name }} · {{ $verification->user->latestSignedInvestment->agreement_signed_at?->format('M j, Y g:i A') }}</p>
+          <img src="{{ $verification->user->latestSignedInvestment->agreement_signature_data }}" alt="Signature for {{ $verification->user->latestSignedInvestment->package_name }} investment agreement">
+        </div>
+      @endif
       <div class="verification-admin-actions">
         <form method="post" action="{{ route('admin.identity-verifications.approve', $verification) }}" onsubmit="return confirm('Approve this identity after comparing the selfie to the ID? Uploaded photos will be deleted immediately.');">
           @csrf

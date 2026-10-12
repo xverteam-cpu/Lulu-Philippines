@@ -863,6 +863,16 @@ Route::get('/profile', function () {
     return view('profile');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile');
 
+Route::get('/lulu-home-screen.html', function () {
+    $guidePath = base_path('lulu-home-screen.html');
+    abort_unless(is_file($guidePath), 404);
+
+    return response()->file($guidePath, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+        'Cache-Control' => 'public, max-age=3600',
+    ]);
+})->name('home-screen.guide');
+
 Route::get('/profile/verification', [IdentityVerificationController::class, 'show'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('profile.verification');

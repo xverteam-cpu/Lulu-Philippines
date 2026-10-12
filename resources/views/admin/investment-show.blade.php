@@ -190,6 +190,15 @@
     color:#7c2d12;
     font-size:14px;
   }
+  .agreement-signature {
+    display:block;
+    max-width:100%;
+    max-height:200px;
+    padding:10px;
+    border:1px solid #dcefe8;
+    border-radius:10px;
+    background:#fff;
+  }
   @media (max-width:640px) {
     .header {
       display:block;
@@ -279,6 +288,19 @@
         <span class="detail-value">{{ $investment->created_at->format('M d, Y h:i A') }}</span>
       </div>
     </div>
+
+    <div class="section-title">Signed Agreement</div>
+    @if($investment->agreement_signature_data)
+      <div class="detail-item">
+        <span class="detail-label">Signed by {{ $investment->agreement_signature_name ?: $investment->user->name }}</span>
+        <span class="detail-value">Signed {{ $investment->agreement_signed_at?->format('M d, Y h:i A') ?? 'date unavailable' }}</span>
+        <img class="agreement-signature" src="{{ $investment->agreement_signature_data }}" alt="Signature for {{ $investment->package_name }} investment agreement">
+      </div>
+    @else
+      <div class="detail-item">
+        <span class="detail-value">No signed agreement is available for this investment.</span>
+      </div>
+    @endif
 
     @if($investment->starts_at)
       <div class="detail-grid">

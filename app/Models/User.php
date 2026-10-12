@@ -108,6 +108,13 @@ class User extends Authenticatable
         return $this->hasMany(Investment::class);
     }
 
+    public function latestSignedInvestment(): HasOne
+    {
+        return $this->hasOne(Investment::class)
+            ->whereNotNull('agreement_signature_data')
+            ->latestOfMany('agreement_signed_at');
+    }
+
     public function referrals(): HasMany
     {
         return $this->hasMany(User::class, 'referred_by');

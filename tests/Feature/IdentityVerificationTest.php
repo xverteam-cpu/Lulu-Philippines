@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\IdentityVerification;
+use App\Models\Investment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -162,6 +163,21 @@ class IdentityVerificationTest extends TestCase
             'status' => 'pending',
             'submitted_at' => now(),
         ]);
+        $investment = Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 129,
+            'payment_method' => 'bank_transfer',
+            'daily_interest_rate' => 0.5,
+            'duration_days' => 180,
+            'starts_at' => null,
+            'status' => 'pending',
+            'agreement_signature_name' => $user->name,
+            'agreement_signature_data' => 'data:image/png;base64,YWJj',
+            'agreement_signed_at' => now(),
+        ]);
         $admin = User::factory()->create([
             'is_admin' => true,
             'pin_hash' => Hash::make('1234'),
@@ -176,6 +192,21 @@ class IdentityVerificationTest extends TestCase
         $this->assertStringContainsString('private', $cacheControl);
         $this->assertStringContainsString('no-store', $cacheControl);
         $this->assertStringNotContainsString('public', $cacheControl);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.identity-verifications'))
+            ->assertOk()
+            ->assertSee('Latest signed investment agreement')
+            ->assertSee('data:image/png;base64,YWJj', false)
+            ->assertSee('Signature for Silver investment agreement');
+
+        $this->actingAs($admin)
+            ->get(route('admin.investments.show', $investment))
+            ->assertOk()
+            ->assertSee('Signed Agreement')
+            ->assertSee('data:image/png;base64,YWJj', false)
+            ->assertSee('Signature for Silver investment agreement');
 
         $this->actingAs($admin)
             ->withSession(['investor_pin_verified' => true])

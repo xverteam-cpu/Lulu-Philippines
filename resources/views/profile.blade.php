@@ -97,12 +97,6 @@
   .account-footer { margin: 18px 8px 0; color: var(--account-subtle); text-align: center; font: 500 11px/1.45 var(--account-ui); }
   .account-toast { position: fixed; right: 16px; bottom: 22px; left: 16px; z-index: 50; width: fit-content; max-width: calc(100% - 32px); margin: 0 auto; padding: 12px 15px; border-radius: 14px; color: #fff; background: rgba(10, 31, 23, .94); box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .25s ease, transform .3s ease; font: 600 12.5px/1 var(--account-ui); }
   .account-toast.is-visible { opacity: 1; transform: translateY(0); }
-  .install-help-dialog { width: min(360px, calc(100% - 40px)); padding: 24px; border: 0; border-radius: 22px; color: var(--account-ink); background: #fff; box-shadow: 0 20px 60px rgba(2, 26, 18, .25); font-family: var(--account-ui); }
-  .install-help-dialog::backdrop { background: rgba(10, 31, 23, .48); backdrop-filter: blur(3px); }
-  .install-help-dialog h2 { margin: 0; font: 800 20px/1.2 var(--account-display); }
-  .install-help-dialog p { margin: 12px 0 20px; color: var(--account-muted); font: 450 14px/1.55 var(--account-ui); }
-  .install-help-dialog form { display: flex; justify-content: flex-end; }
-  .install-help-dialog button { min-height: 42px; padding: 0 18px; border: 0; border-radius: 13px; color: #fff; background: linear-gradient(180deg, #11905e, #0a6a45); cursor: pointer; font: 650 13px/1 var(--account-ui); }
   .account-main button:focus-visible,.account-back:focus-visible,.account-action:focus-visible { outline: 3px solid rgba(20, 168, 109, .4); outline-offset: 3px; }
 
   @media (min-width: 521px) and (max-height: 940px) {
@@ -253,12 +247,6 @@
   </div>
 </div>
 <div class="account-toast" id="accountToast" role="status" aria-live="polite"></div>
-<dialog class="install-help-dialog" id="installHelpDialog" aria-labelledby="installHelpTitle">
-  <h2 id="installHelpTitle">Add Lulu to your Home Screen</h2>
-  <p>In Safari on iPhone or iPad, tap Share, then Add to Home Screen. In other browsers, open the browser menu and choose Install app or Add to Home Screen.</p>
-  <form method="dialog"><button type="submit">Got it</button></form>
-</dialog>
-
 <script>
   var deferredInstallPrompt = null;
 
@@ -271,7 +259,7 @@
     var screen = document.getElementById('accountScreen');
     var chrome = document.getElementById('accountChrome');
     var installButton = document.getElementById('installApp');
-    var installHelpDialog = document.getElementById('installHelpDialog');
+    var installGuideUrl = @json(route('home-screen.guide'));
     var toast = document.getElementById('accountToast');
     var toastTimer;
 
@@ -303,11 +291,7 @@
 
       installButton.addEventListener('click', function () {
         if (!deferredInstallPrompt) {
-          if (typeof installHelpDialog.showModal === 'function') {
-            installHelpDialog.showModal();
-          } else {
-            showToast('Open your browser menu and choose Install app or Add to Home Screen.');
-          }
+          window.location.assign(installGuideUrl);
           return;
         }
 

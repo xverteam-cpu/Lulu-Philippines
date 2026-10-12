@@ -69,6 +69,7 @@
   .account-status-pending i { background: #d99a20; box-shadow: 0 0 0 4px rgba(217, 154, 32, .14); }
   .account-profile-actions { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .account-button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 8px; padding: 0 15px; border: 0; border-radius: 13px; cursor: pointer; font: 650 13px/1 var(--account-ui); transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+  .account-button[hidden] { display: none; }
   .account-button:active { transform: scale(.97); }
   .account-button-primary { color: #fff; background: linear-gradient(180deg, #11905e, #0a6a45); box-shadow: 0 8px 18px -10px rgba(10, 106, 69, .7), inset 0 1px 0 rgba(255, 255, 255, .25); text-decoration: none; }
   .account-button-ghost { color: var(--account-green-dark); background: #fff; box-shadow: inset 0 0 0 1px var(--account-line), var(--account-shadow-sm); }
@@ -96,6 +97,12 @@
   .account-footer { margin: 18px 8px 0; color: var(--account-subtle); text-align: center; font: 500 11px/1.45 var(--account-ui); }
   .account-toast { position: fixed; right: 16px; bottom: 22px; left: 16px; z-index: 50; width: fit-content; max-width: calc(100% - 32px); margin: 0 auto; padding: 12px 15px; border-radius: 14px; color: #fff; background: rgba(10, 31, 23, .94); box-shadow: 0 2px 4px rgba(4, 30, 20, .08), 0 12px 24px -8px rgba(4, 30, 20, .22); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .25s ease, transform .3s ease; font: 600 12.5px/1 var(--account-ui); }
   .account-toast.is-visible { opacity: 1; transform: translateY(0); }
+  .install-help-dialog { width: min(360px, calc(100% - 40px)); padding: 24px; border: 0; border-radius: 22px; color: var(--account-ink); background: #fff; box-shadow: 0 20px 60px rgba(2, 26, 18, .25); font-family: var(--account-ui); }
+  .install-help-dialog::backdrop { background: rgba(10, 31, 23, .48); backdrop-filter: blur(3px); }
+  .install-help-dialog h2 { margin: 0; font: 800 20px/1.2 var(--account-display); }
+  .install-help-dialog p { margin: 12px 0 20px; color: var(--account-muted); font: 450 14px/1.55 var(--account-ui); }
+  .install-help-dialog form { display: flex; justify-content: flex-end; }
+  .install-help-dialog button { min-height: 42px; padding: 0 18px; border: 0; border-radius: 13px; color: #fff; background: linear-gradient(180deg, #11905e, #0a6a45); cursor: pointer; font: 650 13px/1 var(--account-ui); }
   .account-main button:focus-visible,.account-back:focus-visible,.account-action:focus-visible { outline: 3px solid rgba(20, 168, 109, .4); outline-offset: 3px; }
 
   @media (min-width: 521px) and (max-height: 940px) {
@@ -179,9 +186,9 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
             Edit profile
           </a>
-          <button class="account-button account-button-ghost" id="copyUsername" type="button" data-username="{{ $username }}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
-            Copy username
+          <button class="account-button account-button-ghost" id="installApp" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Add to Home Screen
           </button>
         </div>
       </section>
@@ -246,12 +253,25 @@
   </div>
 </div>
 <div class="account-toast" id="accountToast" role="status" aria-live="polite"></div>
+<dialog class="install-help-dialog" id="installHelpDialog" aria-labelledby="installHelpTitle">
+  <h2 id="installHelpTitle">Add Lulu to your Home Screen</h2>
+  <p>In Safari on iPhone or iPad, tap Share, then Add to Home Screen. In other browsers, open the browser menu and choose Install app or Add to Home Screen.</p>
+  <form method="dialog"><button type="submit">Got it</button></form>
+</dialog>
 
 <script>
+  var deferredInstallPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', function (event) {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+  });
+
   document.addEventListener('DOMContentLoaded', function () {
     var screen = document.getElementById('accountScreen');
     var chrome = document.getElementById('accountChrome');
-    var copyButton = document.getElementById('copyUsername');
+    var installButton = document.getElementById('installApp');
+    var installHelpDialog = document.getElementById('installHelpDialog');
     var toast = document.getElementById('accountToast');
     var toastTimer;
 
@@ -270,22 +290,50 @@
       }, 1800);
     }
 
-    if (copyButton) {
-      copyButton.addEventListener('click', function () {
-        var username = copyButton.getAttribute('data-username') || '';
-        if (!username) return;
+    if (installButton) {
+      var isInstalled = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+      if (isInstalled) {
+        installButton.hidden = true;
+      }
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(username).then(function () {
-            showToast('Username copied');
-          }).catch(function (error) {
-            console.error(error);
-            window.prompt('Copy your username:', username);
-          });
+      window.addEventListener('appinstalled', function () {
+        installButton.hidden = true;
+        showToast('Lulu added to your Home Screen');
+      });
+
+      installButton.addEventListener('click', function () {
+        if (!deferredInstallPrompt) {
+          if (typeof installHelpDialog.showModal === 'function') {
+            installHelpDialog.showModal();
+          } else {
+            showToast('Open your browser menu and choose Install app or Add to Home Screen.');
+          }
           return;
         }
 
-        window.prompt('Copy your username:', username);
+        var installPrompt = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+        installButton.disabled = true;
+
+        try {
+          installPrompt.prompt().then(function () {
+            return installPrompt.userChoice;
+          }).then(function (choice) {
+            if (choice.outcome === 'accepted') {
+              installButton.hidden = true;
+              showToast('Lulu is being added to your Home Screen');
+            }
+          }).catch(function (error) {
+            console.error(error);
+            showToast('Unable to open the install prompt. Try your browser menu.');
+          }).then(function () {
+            installButton.disabled = false;
+          });
+        } catch (error) {
+          console.error(error);
+          installButton.disabled = false;
+          showToast('Unable to open the install prompt. Try your browser menu.');
+        }
       });
     }
   });

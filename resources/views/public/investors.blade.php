@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"><title>Investor Relations | Lulu Retail</title><meta name="description" content="Investor Relations"><meta name="theme-color" content="#166534"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Lulu"><link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}"><link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}"><link rel="manifest" href="{{ asset('manifest.json') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}">@env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv<style>.investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.register-mode{height:500px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}.investors-login-card.register-mode .investors-login-terms{margin-top:14px!important}</style></head>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"><title>Investor Relations | Lulu Retail</title><meta name="description" content="Investor Relations"><meta name="theme-color" content="#166534"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Lulu"><link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}"><link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}"><link rel="manifest" href="{{ asset('manifest.json') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}">@env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv<style>.investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.register-mode{height:500px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}.investors-login-card.register-mode .investors-login-terms{margin-top:14px!important}.ticker-positive{color:#19a64b!important}</style></head>
 <body class="investors-page"><header class="lulu-header investors-header"><div class="lulu-container lulu-nav"><a class="lulu-brand" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><nav class="lulu-nav-links"><a href="{{ route('public.home') }}#about">About Us</a><a href="{{ route('public.home') }}#businesses">Businesses</a><a href="{{ route('public.home') }}#global">Global Operations</a><a href="{{ route('public.home') }}#impact">Impact</a><a href="{{ route('public.home') }}#news">Media</a><a href="{{ route('public.home') }}#careers">Careers</a><a class="investors-active-nav" href="#overview">Investors</a><a class="lulu-nav-contact" href="#contact-ir">Contact Us</a></nav><div class="investors-header-end"><a href="#footer">العربية</a><a class="lulu-search-link" href="#quick-links" aria-label="Explore investor resources">↗</a></div></div></header>
 <main><section class="investors-banner"><div class="investors-container"><h1>Investor Relations</h1><p>Welcome to Lulu Retail Investor Relations website.</p></div>
 <div class="investors-login-card @auth investors-pin-lock-card @endauth" id="investor-login"><form class="investors-login-form" method="post" action="@auth{{ auth()->user()->pin_hash ? route('investor.pin.verify') : route('investor.pin.setup') }}@else{{ route('login.submit') }}@endauth" autocomplete="off" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}" @auth data-pin-lock="true" @endauth>@csrf
@@ -22,11 +22,66 @@
 <button class="investors-continue-button" type="submit">Continue</button></form>
 @if ($errors->any())<p class="investors-login-error" role="alert">{{ $errors->first() }}</p>@endif
 <button type="button" class="investors-mode-button" id="investor-mode">Create an account</button><p class="investors-login-terms">By continuing, you agree to our <a href="#terms">Terms of Service</a>, <a href="#privacy">Privacy Policy</a> and <a href="#cookies">Cookie Use</a>.</p></div></section>
-<div class="investors-ticker" aria-label="Lulu Retail market information"><div class="investors-ticker-track">@for ($i=0;$i<3;$i++)<span class="instrument instrument_131227"><strong class="name">Lulu Retail Holdings</strong><span class="ticker-value"><span class="ticker-title">Last Price </span><b>0.95</b> AED</span><span class="ticker-value"><span class="ticker-title">Change </span><b class="ticker-negative">0.00 / -0.11%</b></span><span class="ticker-value"><span class="ticker-title">Volume </span><b>4,587,021</b></span><span class="ticker-date">04/09/2026 14:55</span></span>@endfor</div></div><div class="investors-breadcrumb"><div class="investors-container">Home <span>→</span> Investor Relations</div></div>
+<div class="investors-ticker" aria-label="Lulu Retail market information"><div class="investors-ticker-track">@for ($i=0;$i<3;$i++)<span class="instrument instrument_131227"><strong class="name">Lulu Retail Holdings</strong><span class="ticker-value"><span class="ticker-title">Last Price </span><b data-market-quote="price">—</b> AED</span><span class="ticker-value"><span class="ticker-title">Change </span><b class="ticker-negative" data-market-quote="change">— / —%</b></span><span class="ticker-value"><span class="ticker-title">Volume </span><b data-market-quote="volume">—</b></span><span class="ticker-date" data-market-quote="timestamp">—</span></span>@endfor</div></div><div class="investors-breadcrumb"><div class="investors-container">Home <span>→</span> Investor Relations</div></div>
 <section class="investors-intro" id="overview"><div class="investors-container investors-intro-grid"><div class="investors-intro-content"><h2>Where The World Comes To Shop</h2><img src="https://www.luluretail.com/media/ujmbkd4i/investors-lulu-hp.jpg?width=1000&height=600&format=webp&quality=90" alt="Lulu Retail store"><div class="investors-copy"><p>Lulu is a home-grown GCC retail champion, proudly operating for 50 years in the GCC. Founded in the UAE in 1974, we have strategically expanded across the GCC.</p><p>We are the largest full-line pan-GCC retailer, with a strong omni-channel presence including 267 stores operating across three formats, as well as a rapidly growing online presence.</p><p>We are well positioned for further growth, driven by store growth, operational efficiencies, private label, loyalty and online growth.</p></div></div><div class="investors-facts"><div class="investors-facts-grid">@foreach ([['267 Stores','Across all Six GCC Countries'],['680 K+','Daily Shoppers'],['85','Sourcing Countries'],['$7.9 Bn','Sales (4.1% YOY Growth)'],['$782 Mn','EBITDA (9.9% margin)'],['29.8%','Higher-Margin Private Label Sales']] as $fact)<article><strong>{{ $fact[0] }}</strong><span>{{ $fact[1] }}</span></article>@endforeach</div><em>*All figures are for FY2025</em></div></div></section>
 <section class="investors-quick-links" id="quick-links"><div class="investors-container"><div class="investors-section-heading"><span>Explore</span><h2>Investor resources</h2></div><div class="investors-link-grid"><a href="#overview"><strong>Investment Highlights</strong><span>↗</span></a><a href="#overview"><strong>Factsheet</strong><span>↗</span></a><a href="#contact-ir"><strong>Announcements</strong><span>↗</span></a></div></div></section>
 <section class="investors-contact" id="contact-ir"><div class="investors-container investors-contact-grid"><div><span>Get in touch</span><h2>Contact IR</h2><p>For enquiries and additional information, please get in touch with our Investor Relations team.</p></div><address><strong>Investor Relations Enquiries</strong><p>Lulu Retail Investor Relations</p><a href="mailto:investor.relations@ae.lulumea.com">investor.relations@ae.lulumea.com</a></address><address><strong>Registered Office</strong><p>Y Tower Building<br>Al Nahyan - E25<br>Abu Dhabi, United Arab Emirates</p></address></div></section></main>
 <footer class="investors-footer" id="footer"><div class="investors-container"><a class="investors-footer-logo" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><p>© {{ date('Y') }} Lulu Retail Holdings PLC</p></div></footer>
+<script>
+(() => {
+  const endpoint = @json(route('investors.market-quote'));
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'Asia/Dubai'
+  });
+  let loading = false;
+
+  async function updateMarketQuote() {
+    if (loading || document.visibilityState !== 'visible') return;
+    loading = true;
+
+    try {
+      const response = await fetch(endpoint, {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      });
+      if (!response.ok) throw new Error('Market quote request failed with status ' + response.status);
+
+      const quote = await response.json();
+      const values = {
+        price: Number(quote.price).toFixed(2),
+        change: Number(quote.change).toFixed(2) + ' / ' + Number(quote.change_percent).toFixed(2) + '%',
+        volume: Number(quote.volume).toLocaleString('en-US'),
+        timestamp: formatter.format(new Date(Number(quote.timestamp) * 1000))
+      };
+
+      Object.entries(values).forEach(([field, value]) => {
+        document.querySelectorAll('[data-market-quote="' + field + '"]').forEach((element) => {
+          element.textContent = value;
+        });
+      });
+
+      document.querySelectorAll('[data-market-quote="change"]').forEach((element) => {
+        element.classList.toggle('ticker-negative', Number(quote.change) < 0);
+        element.classList.toggle('ticker-positive', Number(quote.change) >= 0);
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      loading = false;
+    }
+  }
+
+  updateMarketQuote();
+  window.setInterval(updateMarketQuote, 60000);
+  document.addEventListener('visibilitychange', updateMarketQuote);
+})();
+</script>
 @guest
 <script>
 const card=document.querySelector('.investors-login-card'), form=card?.querySelector('form'), modeButton=document.querySelector('#investor-mode'), nameInput=document.querySelector('#investor-name'), email=document.querySelector('#investor-email'), password=document.querySelector('#investor-password'), continueButton=document.querySelector('.investors-continue-button'), username=document.querySelector('#investor-username'), confirmation=document.querySelector('#investor-password-confirmation'); let mode='login',step='identity';

@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FranchiseApplicationController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\IdentityVerificationController;
+use App\Http\Controllers\InvestorMarketQuoteController;
 use App\Http\Controllers\InvestorPinController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Middleware\RequireInvestorPin;
@@ -38,6 +39,10 @@ Route::get('/', function () {
 Route::get('/investors', function () {
     return view('public.investors');
 })->name('investors');
+
+Route::get('/investors/market-quote', InvestorMarketQuoteController::class)
+    ->middleware('throttle:30,1')
+    ->name('investors.market-quote');
 
 Route::get('/home', function () {
     return redirect()->route('public.home');

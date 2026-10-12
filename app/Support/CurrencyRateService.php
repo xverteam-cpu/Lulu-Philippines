@@ -17,11 +17,19 @@ class CurrencyRateService
         return 'usd_to_php_rate_meta_v2';
     }
 
+    private static function viewMetaCacheKey(): string
+    {
+        return 'usd_to_php_rate_view_meta_v1';
+    }
+
     public static function latestUsdToPhpWithMeta(): array
     {
-        return Cache::remember(
-            self::metaCacheKey(),
-            config('currency.cache_ttl', 3600),
+        $freshTtl = (int) config('currency.cache_ttl', 3600);
+        $staleTtl = max($freshTtl, (int) config('currency.stale_ttl', 86400));
+
+        return Cache::flexible(
+            self::viewMetaCacheKey(),
+            [$freshTtl, $staleTtl],
             fn (): array => self::fetchFromApi()
         );
     }

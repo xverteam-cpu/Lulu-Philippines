@@ -39,7 +39,9 @@ class InvestorMarketQuoteTest extends TestCase
             ->assertSee('data-market-quote="change"', false)
             ->assertSee('data-market-quote="volume"', false)
             ->assertSee('data-market-quote="timestamp"', false)
-            ->assertDontSee('4,587,021');
+            ->assertSee('0.95')
+            ->assertSee('4,587,021')
+            ->assertSee('04/09/2026 14:55');
     }
 
     public function test_invest_page_shows_the_live_quote_ticker_at_the_bottom_of_the_balance_card(): void
@@ -58,6 +60,9 @@ class InvestorMarketQuoteTest extends TestCase
             ->assertSee('Last Price')
             ->assertSee('Change')
             ->assertSee('Volume')
+            ->assertSee('0.95')
+            ->assertSee('4,587,021')
+            ->assertSee('04/09/2026 14:55')
             ->assertSee('data-market-quote-url="'.route('investors.market-quote').'"', false)
             ->assertSee('src="'.asset('market-quote.js').'" defer', false)
             ->assertSee('invest-market-ticker-scroll', false);

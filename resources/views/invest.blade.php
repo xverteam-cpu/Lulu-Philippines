@@ -567,15 +567,15 @@
           <div class="account-package-hero-value">{{ $activePackageCount }} <small style="color:rgba(232,255,244,.62);font-size:11px;font-weight:500;">of {{ count($accountPackages) }}</small></div>
         </div>
       </div>
-      <div class="invest-market-ticker" aria-label="Lulu Retail market information" data-market-quote-url="{{ route('investors.market-quote') }}">
+      <div class="invest-market-ticker" aria-label="Lulu Retail market information; saved page values, not verified live quotes" title="Saved page values; not verified live quotes." data-market-quote-url="{{ route('investors.market-quote') }}">
         <div class="invest-market-ticker-track">
           @for ($i = 0; $i < 3; $i++)
             <span class="invest-market-ticker-item">
               <strong>Lulu Retail</strong>
-              <span>Last Price <b data-market-quote="price">—</b> AED</span>
-              <span>Change <b data-market-quote="change" class="ticker-negative">— / —%</b></span>
-              <span>Volume <b data-market-quote="volume">—</b></span>
-              <span data-market-quote="timestamp">—</span>
+              <span>Last Price <b data-market-quote="price">{{ config('market_data.fallback.price') }}</b> AED</span>
+              <span>Change <b data-market-quote="change" class="ticker-negative">{{ config('market_data.fallback.change') }}</b></span>
+              <span>Volume <b data-market-quote="volume">{{ config('market_data.fallback.volume') }}</b></span>
+              <span data-market-quote="timestamp">{{ config('market_data.fallback.timestamp') }}</span>
             </span>
           @endfor
         </div>

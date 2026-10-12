@@ -152,17 +152,17 @@
 
       <div class="signup-field">
         <label class="signup-label" for="fullname">Fullname</label>
-        <input class="signup-input" id="fullname" name="fullname" type="text" value="{{ old('fullname') }}" placeholder="Enter your name">
+        <input class="signup-input" id="fullname" name="fullname" type="text" value="{{ old('fullname') }}" placeholder="Enter your name" autocomplete="name" maxlength="255" required>
       </div>
 
       <div class="signup-field">
         <label class="signup-label" for="username">Username</label>
-        <input class="signup-input" id="username" name="username" type="text" value="{{ old('username') }}" placeholder="Choose a username">
+        <input class="signup-input" id="username" name="username" type="text" value="{{ old('username') }}" placeholder="Choose a username" autocomplete="username" maxlength="255" required>
       </div>
 
       <div class="signup-field">
         <label class="signup-label" for="email">Email Address</label>
-        <input class="signup-input" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="Enter your email address" required>
+        <input class="signup-input" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="Enter your email address" autocomplete="email" maxlength="255" required>
       </div>
 
       <div class="signup-field">
@@ -172,12 +172,12 @@
 
       <div class="signup-field">
         <label class="signup-label" for="password">Password</label>
-        <input class="signup-input" id="password" name="password" type="password" placeholder="Create password">
+        <input class="signup-input" id="password" name="password" type="password" placeholder="Create password" autocomplete="new-password" minlength="8" required>
       </div>
 
       <div class="signup-field">
         <label class="signup-label" for="password_confirmation">Confirm Password</label>
-        <input class="signup-input" id="password_confirmation" name="password_confirmation" type="password" placeholder="Confirm password">
+        <input class="signup-input" id="password_confirmation" name="password_confirmation" type="password" placeholder="Confirm password" autocomplete="new-password" minlength="8" required>
       </div>
 
       <div class="signup-actions">

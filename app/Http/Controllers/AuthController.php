@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class AuthController extends Controller
 {
@@ -25,7 +26,7 @@ class AuthController extends Controller
         $password = $credentials['password'];
 
         $user = User::where('username', $loginField)
-            ->orWhere('email', $loginField)
+            ->orWhereRaw('LOWER(email) = ?', [Str::lower($loginField)])
             ->first();
 
         if (! $user || ! Auth::attempt(['email' => $user->email, 'password' => $password], true)) {
@@ -42,10 +43,28 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        $email = $request->input('email');
+        $request->merge([
+            'email' => is_string($email) ? Str::lower(trim($email)) : $email,
+        ]);
+
         $data = $request->validate([
             'fullname' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'username' => ['nullable', 'string', 'max:255', 'unique:users,username'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! is_string($value) || $value === '') {
+                        return;
+                    }
+
+                    if (User::whereRaw('LOWER(email) = ?', [Str::lower($value)])->exists()) {
+                        $fail('The email has already been taken.');
+                    }
+                },
+            ],
             'referral' => ['nullable', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
@@ -60,7 +79,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $data['fullname'],
-            'username' => $data['username'],
+            'username' => $data['username'] ?: $this->generateUniqueUsername($data['email']),
             'email' => $data['email'],
             'phone' => null,
             'address' => '',
@@ -71,7 +90,12 @@ class AuthController extends Controller
             'referred_by' => $referrer?->id,
         ]);
 
-        Mail::to($user->email)->send(new WelcomeEmail($user));
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (TransportExceptionInterface $exception) {
+            report($exception);
+            $request->session()->flash('status', 'Your account was created, but we could not send the welcome email.');
+        }
 
         Auth::login($user, true);
         $request->session()->regenerate();
@@ -117,8 +141,9 @@ class AuthController extends Controller
                 ->withErrors(['google' => 'A verified Google email address is required.']);
         }
 
+        $email = Str::lower(trim($email));
         $referrerId = $request->session()->pull('google_referrer_id');
-        $user = User::where('email', $email)->first();
+        $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
 
         if (! $user) {
             $user = User::create([

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AuthSignupTest extends TestCase
@@ -19,7 +20,8 @@ class AuthSignupTest extends TestCase
         $response->assertSee('Username');
         $response->assertSee('Referral');
         $response->assertSee('Create password');
-        $response->assertDontSee('Email');
+        $response->assertSee('Email Address');
+        $response->assertSee('name="email"', false);
     }
 
     public function test_signup_page_preserves_the_referrer_in_the_google_signup_link(): void
@@ -59,24 +61,29 @@ class AuthSignupTest extends TestCase
         $this->assertFalse((bool) config('session.expire_on_close'));
     }
 
-    public function test_signup_form_can_create_a_user_with_the_simplified_fields(): void
+    public function test_manual_signup_creates_and_authenticates_a_user_with_a_normalized_email(): void
     {
+        Mail::fake();
+
         $response = $this->post('/register-partner', [
             'fullname' => 'Jane Doe',
             'username' => 'jane',
+            'email' => '  Jane.Doe@Example.com ',
             'referral' => '',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/pin/setup');
+        $response->assertRedirect(route('dashboard'));
         $user = User::where('username', 'jane')->firstOrFail();
         $this->assertDatabaseHas('users', [
             'username' => 'jane',
             'name' => 'Jane Doe',
+            'email' => 'jane.doe@example.com',
         ]);
         $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_password_login_remembers_the_user_across_browser_sessions(): void
@@ -94,5 +101,60 @@ class AuthSignupTest extends TestCase
         ])->assertRedirect(route('dashboard'));
 
         $this->assertNotEmpty($user->fresh()->remember_token);
+    }
+
+    public function test_email_login_ignores_case_and_surrounding_whitespace(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'Jane.Login@Example.com',
+            'password' => 'password123',
+        ]);
+
+        $this->post(route('login.submit'), [
+            'email' => '  jane.login@example.com  ',
+            'password' => 'password123',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_registration_generates_a_unique_username_when_none_is_provided(): void
+    {
+        Mail::fake();
+
+        User::factory()->create(['username' => 'janedoe']);
+
+        $this->post(route('register.partner'), [
+            'fullname' => 'Jane Doe',
+            'username' => '',
+            'email' => 'jane.doe@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('users', [
+            'username' => 'janedoe-1',
+            'email' => 'jane.doe@example.com',
+        ]);
+    }
+
+    public function test_registration_rejects_an_email_that_is_already_registered_with_different_case(): void
+    {
+        Mail::fake();
+
+        User::factory()->create(['email' => 'Jane@example.com']);
+
+        $this->from(route('signup'))
+            ->post(route('register.partner'), [
+                'fullname' => 'Jane Doe',
+                'username' => 'jane-doe',
+                'email' => 'jane@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ])
+            ->assertRedirect(route('signup'))
+            ->assertSessionHasErrors('email');
+
+        $this->assertDatabaseCount('users', 1);
     }
 }

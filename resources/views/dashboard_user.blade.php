@@ -1428,7 +1428,7 @@
     height: 46px;
     flex: 0 0 46px;
     place-items: center;
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid #e3eee4;
     border-radius: 50%;
     background: #fff;
@@ -1798,7 +1798,7 @@
     height: 50px;
     flex: 0 0 50px;
     place-items: center;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 50%;
     background: conic-gradient(from 210deg, #3ee0a1, #0e8a5a, #054a31, #c6f36b, #3ee0a1);
     box-shadow: 0 6px 16px -6px rgba(4, 30, 20, .45), 0 1px 2px rgba(4, 30, 20, .12);

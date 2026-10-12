@@ -107,7 +107,7 @@
   <h1>LULU HOLDING CORP.</h1>
   <h2>Bond Purchase Agreement</h2>
   <p>This Bond Purchase Agreement (the Agreement) is executed on <strong>{{ $agreement['commencement_date'] }}</strong> by and between:</p>
-  <p><strong>LULU HOLDING CORP.</strong>, a duly organized corporation with principal business address at ______________________________, represented herein by its authorized representative, Mr. Jhon Joem Ramirez, hereinafter referred to as the Company;</p>
+  <p><strong>LULU HOLDING CORP.</strong>, a duly organized corporation with principal business address at ______________________________, represented herein by its authorized representative, Mr. Prince Khino Batilo Armonia, hereinafter referred to as the Company;</p>
   <p>and</p>
   <p><strong>{{ $agreement['bondholder'] }}</strong>, of legal age, with civil status {{ $agreement['civil_status'] ?? '__________________' }}, and residing at {{ $agreement['residence'] ?? '________________________________________________________________________________________' }}, hereinafter referred to as the Bondholder.</p>
   <p><strong>WITNESSETH</strong></p>
@@ -179,7 +179,7 @@
     </form>
   @endif
   <div class="agreement-sign">
-    <div>LULU HOLDING CORP.<br>____________________________<br>Jhon Joem Ramirez<br>Authorized Representative</div>
+    <div>LULU HOLDING CORP.<br>____________________________<br>Prince Khino Batilo Armonia<br>Authorized Representative</div>
     <div>BONDHOLDER<br>{{ $agreement['bondholder'] }}<br>Date: {{ $agreement['commencement_date'] }}</div>
   </div>
   <h3>SIGNED IN THE PRESENCE OF</h3>
@@ -192,7 +192,7 @@
   <p>REPUBLIC OF THE PHILIPPINES )<br>CITY OF TAGUIG ) S.S.</p>
   <p>BEFORE ME, a Notary Public for and in the City of Taguig, personally appeared the following persons:</p>
   <div class="agreement-meta">
-    <div><span>Name</span><strong>Jhon Joem Ramirez; {{ $agreement['bondholder'] }}</strong></div>
+    <div><span>Name</span><strong>Prince Khino Batilo Armonia; {{ $agreement['bondholder'] }}</strong></div>
     <div><span>ID Type</span><strong>________________; ________________</strong></div>
     <div><span>ID Number</span><strong>________________; ________________</strong></div>
     <div><span>Date Issued</span><strong>________________; ________________</strong></div>
@@ -223,7 +223,7 @@
   </div>
   <h3>AUTHORIZED SIGNATURES</h3>
   <div class="agreement-sign">
-    <div>____________________________<br>Jhon Joem Ramirez<br>Authorized Representative<br>Date: ______________________</div>
+    <div>____________________________<br>Prince Khino Batilo Armonia<br>Authorized Representative<br>Date: ______________________</div>
     <div>____________________________<br>Bondholder<br>Date: ______________________</div>
   </div>
   @endif

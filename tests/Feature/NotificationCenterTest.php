@@ -38,6 +38,34 @@ class NotificationCenterTest extends TestCase
             ->assertSee('<span class="dashboard-notification-badge" aria-hidden="true">1</span>', false);
     }
 
+    public function test_marking_a_dashboard_notification_as_read_removes_its_badge(): void
+    {
+        $user = User::factory()->create();
+        $investment = Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 100,
+            'amount' => 100,
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'payment_method' => 'bank_transfer',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->post(route('notifications.read_all'), [
+                'ids' => ['investment-'.$investment->id.'-'.$investment->status],
+            ])
+            ->assertRedirect(route('notifications.index'));
+
+        $this->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('aria-label="Notifications"', false)
+            ->assertDontSee('class="dashboard-notification-badge"', false);
+    }
+
     public function test_notification_center_shows_account_transactions_interest_and_verification_updates(): void
     {
         $user = User::factory()->create();

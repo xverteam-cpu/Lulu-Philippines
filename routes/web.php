@@ -140,10 +140,10 @@ Route::get('/dashboard', function () {
         ->limit(5)
         ->get();
 
-    $dailyInterest = $user->investments()
+    $approvedInvestments = $user->investments()
         ->where('status', 'approved')
-        ->get()
-        ->sum(fn ($investment) => $investment->dailyInterestAmount());
+        ->get();
+    $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->dailyInterestAmount());
 
     if (! is_numeric($dailyInterest)) {
         $dailyInterest = 0;
@@ -151,13 +151,19 @@ Route::get('/dashboard', function () {
 
     $notifications = collect();
 
-    if ($dailyInterest > 0) {
-        $notifications->push([
-            'id' => 'daily-interest',
-            'title' => 'Daily interest credited',
-            'description' => '$'.number_format($dailyInterest, 2).' added to available balance.',
-            'time' => now(),
-        ]);
+    foreach ($approvedInvestments as $investment) {
+        $creditedDays = min((int) $investment->interest_days_credited, (int) $investment->duration_days);
+        $firstInterestDate = $investment->effectiveStartDate()->copy()->startOfDay()->addDay();
+
+        for ($day = max(0, $creditedDays - 50); $day < $creditedDays; $day++) {
+            $interestDate = $firstInterestDate->copy()->addDays($day);
+            $notifications->push([
+                'id' => 'interest-'.$investment->id.'-'.$interestDate->toDateString(),
+                'title' => 'Daily interest credited',
+                'description' => '$'.number_format($investment->dailyInterestAmount(), 2).' added to available balance.',
+                'time' => $interestDate,
+            ]);
+        }
     }
 
     foreach ($recentInvestments as $investment) {
@@ -169,7 +175,7 @@ Route::get('/dashboard', function () {
         };
 
         $notifications->push([
-            'id' => 'investment-'.$investment->id,
+            'id' => 'investment-'.$investment->id.'-'.$investment->status,
             'title' => 'Investment update',
             'description' => $description,
             'time' => $investment->created_at,
@@ -178,7 +184,7 @@ Route::get('/dashboard', function () {
 
     foreach ($recentWithdrawals as $withdrawal) {
         $notifications->push([
-            'id' => 'withdrawal-'.$withdrawal->id,
+            'id' => 'withdrawal-'.$withdrawal->id.'-'.$withdrawal->status,
             'title' => 'Withdrawal request',
             'description' => '₱'.number_format($withdrawal->amount, 2).' '.$withdrawal->status.'.',
             'time' => $withdrawal->created_at,

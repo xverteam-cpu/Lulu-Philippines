@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
@@ -39,6 +40,38 @@ class InvestorMarketQuoteTest extends TestCase
             ->assertSee('data-market-quote="volume"', false)
             ->assertSee('data-market-quote="timestamp"', false)
             ->assertDontSee('4,587,021');
+    }
+
+    public function test_invest_page_shows_the_live_quote_ticker_at_the_bottom_of_the_balance_card(): void
+    {
+        Http::fake([
+            'api.frankfurter.dev/v1/latest*' => Http::response([
+                'date' => '2026-10-12',
+                'rates' => ['PHP' => 61.31],
+            ]),
+        ]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('invest'))
+            ->assertOk()
+            ->assertSee('Lulu Retail')
+            ->assertSee('Last Price')
+            ->assertSee('Change')
+            ->assertSee('Volume')
+            ->assertSee('data-market-quote-url="'.route('investors.market-quote').'"', false)
+            ->assertSee('src="'.asset('market-quote.js').'" defer', false)
+            ->assertSee('invest-market-ticker-scroll', false);
+
+        $html = $response->getContent();
+        $cardStart = strpos($html, '<section class="investment-balance-card"');
+        $tickerPosition = strpos($html, 'class="invest-market-ticker"');
+        $cardEnd = strpos($html, '</section>', $cardStart);
+
+        $this->assertNotFalse($cardStart);
+        $this->assertNotFalse($tickerPosition);
+        $this->assertNotFalse($cardEnd);
+        $this->assertGreaterThan($cardStart, $tickerPosition);
+        $this->assertLessThan($cardEnd, $tickerPosition);
     }
 
     public function test_quote_endpoint_fetches_and_returns_valid_eodhd_quote(): void

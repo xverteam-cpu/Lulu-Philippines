@@ -377,6 +377,14 @@
   .invest-layout-redesign .investment-balance-card::before { position:absolute; inset:0; z-index:-1; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); content:""; opacity:.08; mix-blend-mode:overlay; }
   .invest-layout-redesign .investment-balance-card > * { position:relative; z-index:1; }
   .invest-layout-redesign .investment-balance-card-art { position:absolute; inset:auto -30px -10px auto; z-index:0; width:220px; height:150px; pointer-events:none; }
+  .invest-layout-redesign .invest-market-ticker { position:absolute; right:0; bottom:0; left:0; z-index:2; overflow:hidden; padding:7px 0; border-top:1px solid rgba(232,255,244,.18); color:rgba(232,255,244,.72); background:rgba(2,36,24,.42); font-size:10px; white-space:nowrap; }
+  .invest-layout-redesign .invest-market-ticker-track { display:flex; width:max-content; animation:invest-market-ticker-scroll 28s linear infinite; }
+  .invest-layout-redesign .invest-market-ticker-item { display:flex; align-items:center; gap:16px; padding:0 18px; }
+  .invest-layout-redesign .invest-market-ticker-item strong { color:#3ee0a1; }
+  .invest-layout-redesign .invest-market-ticker-item b { color:#f0fff7; }
+  .invest-layout-redesign .invest-market-ticker-item .ticker-negative { color:#ff8d93; }
+  .invest-layout-redesign .invest-market-ticker-item .ticker-positive { color:#3ee0a1; }
+  @keyframes invest-market-ticker-scroll { from { transform:translateX(0); } to { transform:translateX(-33.333%); } }
   .invest-layout-redesign .investment-balance-label { position:static; display:flex; align-items:center; gap:8px; color:rgba(232,255,244,.72); font-size:11px; font-weight:600; letter-spacing:.14em; text-align:left; }
   .invest-layout-redesign .investment-balance-label::before { width:6px; height:6px; border-radius:50%; background:#3ee0a1; box-shadow:0 0 0 3px rgba(62,224,161,.22),0 0 10px #3ee0a1; content:""; }
   .invest-layout-redesign .investment-balance-value { position:static; margin-top:16px; font-size:42px; font-weight:700; letter-spacing:-.04em; line-height:1; text-align:left; text-shadow:0 2px 18px rgba(0,0,0,.18); }
@@ -557,6 +565,19 @@
         <div class="account-package-hero-stat">
           <div class="account-package-hero-label">Active packages</div>
           <div class="account-package-hero-value">{{ $activePackageCount }} <small style="color:rgba(232,255,244,.62);font-size:11px;font-weight:500;">of {{ count($accountPackages) }}</small></div>
+        </div>
+      </div>
+      <div class="invest-market-ticker" aria-label="Lulu Retail market information" data-market-quote-url="{{ route('investors.market-quote') }}">
+        <div class="invest-market-ticker-track">
+          @for ($i = 0; $i < 3; $i++)
+            <span class="invest-market-ticker-item">
+              <strong>Lulu Retail</strong>
+              <span>Last Price <b data-market-quote="price">—</b> AED</span>
+              <span>Change <b data-market-quote="change" class="ticker-negative">— / —%</b></span>
+              <span>Volume <b data-market-quote="volume">—</b></span>
+              <span data-market-quote="timestamp">—</span>
+            </span>
+          @endfor
         </div>
       </div>
     </section>
@@ -1789,4 +1810,5 @@
     });
   })();
 </script>
+<script src="{{ asset('market-quote.js') }}" defer></script>
 @endsection

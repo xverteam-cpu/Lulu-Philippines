@@ -24,6 +24,20 @@ class InvestmentController extends Controller
             'agreement_signature_name' => ['nullable', 'string', 'max:150'],
             'agreement_signature_data' => ['required', 'string', 'max:500000'],
             'agreement_accepted' => ['required', 'accepted'],
+            'agreement_details' => [
+                'sometimes',
+                'array:full_name,civil_status,civil_status_other,address,sign_date,id_type,id_type_other,id_number,issue_date,no_issue_date',
+            ],
+            'agreement_details.full_name' => ['required_with:agreement_details', 'string', 'max:100'],
+            'agreement_details.civil_status' => ['required_with:agreement_details', 'string', 'max:30'],
+            'agreement_details.civil_status_other' => ['nullable', 'string', 'max:30'],
+            'agreement_details.address' => ['required_with:agreement_details', 'string', 'max:220'],
+            'agreement_details.sign_date' => ['required_with:agreement_details', 'date'],
+            'agreement_details.id_type' => ['required_with:agreement_details', 'string', 'max:60'],
+            'agreement_details.id_type_other' => ['nullable', 'string', 'max:60'],
+            'agreement_details.id_number' => ['required_with:agreement_details', 'string', 'max:60'],
+            'agreement_details.issue_date' => ['nullable', 'date'],
+            'agreement_details.no_issue_date' => ['required_with:agreement_details', 'boolean'],
         ]);
 
         $package = InvestmentPackages::find($data['package']);
@@ -83,8 +97,10 @@ class InvestmentController extends Controller
                 'starts_at' => $isPending ? null : now(),
                 'status' => $isPending ? 'pending' : 'approved',
                 'agreement_version' => '2026-09-20',
-                'agreement_signature_name' => $request->user()->name ?: $request->user()->email,
+                'agreement_signature_name' => $data['agreement_details']['full_name']
+                    ?? ($request->user()->name ?: $request->user()->email),
                 'agreement_signature_data' => $data['agreement_signature_data'],
+                'agreement_details' => $data['agreement_details'] ?? null,
                 'agreement_signed_at' => now(),
             ]);
 

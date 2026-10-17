@@ -295,6 +295,9 @@
         <span class="detail-label">Signed by {{ $investment->agreement_signature_name ?: $investment->user->name }}</span>
         <span class="detail-value">Signed {{ $investment->agreement_signed_at?->format('M d, Y h:i A') ?? 'date unavailable' }}</span>
         <img class="agreement-signature" src="{{ $investment->agreement_signature_data }}" alt="Signature for {{ $investment->package_name }} investment agreement">
+        @if($investment->agreement_details)
+          <p><a href="{{ route('admin.contracts.show', $investment) }}">View complete client contract</a></p>
+        @endif
       </div>
     @else
       <div class="detail-item">

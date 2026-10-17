@@ -29,6 +29,7 @@ class Investment extends Model
         'agreement_version',
         'agreement_signature_name',
         'agreement_signature_data',
+        'agreement_details',
         'agreement_signed_at',
     ];
 
@@ -43,6 +44,7 @@ class Investment extends Model
             'starts_at' => 'datetime',
             'approved_at' => 'datetime',
             'last_interest_accrued_at' => 'datetime',
+            'agreement_details' => 'array',
             'agreement_signed_at' => 'datetime',
         ];
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\InvestmentApprovalController;
 use App\Http\Controllers\Admin\AccountInvitationController;
+use App\Http\Controllers\Admin\ClientContractController;
 use App\Http\Controllers\Admin\IdentityVerificationController as AdminIdentityVerificationController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseApplicationController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -39,7 +40,9 @@ Route::get('/', function () {
 })->name('public.home');
 
 Route::get('/about', function () {
-    return view('public.about');
+    return response(file_get_contents(base_path('LuLu-Philippines-Client-Hub(1).html')), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
 })->name('about');
 
 Route::get('/privacy-policy', function () {
@@ -544,36 +547,30 @@ Route::get('/invest/agreement/sign', function (Request $request) {
     $currency = $request->query('currency', 'USD');
     abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
     $amount = (float) $request->query('amount', $package['price']);
-    $phpRate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : null;
-    $amountInUsd = $currency === 'PHP'
-        ? $amount / $phpRate
-        : $amount;
     $paymentMethod = (string) $request->query('payment_method', 'bank_transfer');
     abort_unless(in_array($paymentMethod, ['bank_transfer', 'e_wallet', 'account_balance', 'crypto'], true), 422);
-    $commencement = now()->toDateString();
 
-    return view('bond-agreement', [
-        'agreement' => [
-            'package_name' => $package['name'],
-            'amount' => '$'.number_format($amountInUsd, 2),
-            'duration_days' => $package['duration_days'].' days',
-            'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
-            'daily_interest_income' => '$'.number_format($amountInUsd * ((float) $package['daily_interest_rate'] / 100), 2),
-            'commencement_date' => $commencement,
-            'maturity_date' => now()->addDays($package['duration_days'])->toDateString(),
-            'bondholder' => $request->user()->name ?: $request->user()->email,
-            'signature_name' => null,
-            'reference' => 'PENDING',
-            'contract_number' => 'PENDING',
-        ],
-        'isSample' => false,
-        'isSigning' => true,
+    $contractPath = base_path('LuLu-Contract-Form.html');
+    abort_unless(is_file($contractPath), 500, 'The bond agreement form is unavailable.');
+
+    $contractHtml = file_get_contents($contractPath);
+    abort_if($contractHtml === false, 500, 'The bond agreement form could not be read.');
+
+    $integration = view('contracts.investment-signing', [
         'purchase' => [
             'package' => $packageKey,
+            'package_name' => $package['name'],
             'amount' => $amount,
             'currency' => $currency,
             'payment_method' => $paymentMethod,
         ],
+        'bondholder' => $request->user()->name ?: $request->user()->email,
+    ])->render();
+
+    abort_unless(str_contains($contractHtml, '</body>'), 500, 'The bond agreement form is incomplete.');
+
+    return response(str_replace('</body>', $integration.'</body>', $contractHtml), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sign');
 
@@ -1032,6 +1029,13 @@ Route::get('/admin/investments', [InvestmentApprovalController::class, 'index'])
 Route::get('/admin/investments/{investment}', [InvestmentApprovalController::class, 'show'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.investments.show');
+
+Route::get('/admin/client-contracts', [ClientContractController::class, 'index'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.contracts');
+Route::get('/admin/client-contracts/{investment}', [ClientContractController::class, 'show'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.contracts.show');
 
 Route::post('/admin/investments/{investment}/approve', [InvestmentApprovalController::class, 'approve'])
     ->middleware(['auth', RestrictUserAccess::class])

@@ -11,6 +11,19 @@
   .agreement-page h3 { margin-top:24px; font-size:17px; }
   .agreement-sign { display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:34px; font-family:Inter, sans-serif; }
   .agreement-sign div { border-top:1px solid #17202a; padding-top:8px; }
+  .agreement-captured-signature { display:block; width:min(100%,280px); height:82px; object-fit:contain; object-position:left center; }
+  .admin-contract-record { width:min(100% - 32px,850px); margin:18px auto 0; padding:18px; border:1px solid #d9e5dc; border-radius:14px; background:#fff; color:#17202a; font-family:Inter,system-ui,sans-serif; }
+  .admin-contract-record h2 { margin:0 0 14px; text-align:left; font:750 18px/1.3 Inter,system-ui,sans-serif; }
+  .admin-contract-record-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 20px; }
+  .admin-contract-record-item span { display:block; color:#64736b; font-size:12px; }
+  .admin-contract-record-item strong { display:block; overflow-wrap:anywhere; margin-top:3px; font-size:14px; }
+  .admin-contract-toolbar { display:flex; max-width:850px; justify-content:space-between; align-items:center; gap:16px; margin:24px auto 0; padding:0 18px; font-family:Inter,system-ui,sans-serif; }
+  .admin-contract-toolbar a { color:#166534; font-weight:700; }
+  @media print {
+    .admin-shell,.admin-contract-toolbar { display:none !important; }
+    .admin-contract-record { width:100%; margin:0 auto 18px; box-shadow:none; break-inside:avoid; }
+    .agreement-page { max-width:none; margin:0; padding:0; }
+  }
   .agreement-notice { margin-bottom:18px; padding:12px 14px; border-radius:8px; background:#fff7ed; color:#9a3412; font-family:Inter, sans-serif; font-size:14px; }
   .agreement-form { margin-top:28px; padding:18px; border:1px solid #d9dee5; border-radius:10px; background:#f8fafc; font-family:Inter, sans-serif; }
   .agreement-form label { display:block; margin-bottom:7px; color:#17202a; font-size:13px; font-weight:800; }
@@ -45,6 +58,28 @@
   .sample-draft-mini { display:flex; align-items:center; justify-content:center; height:80px; border-radius:10px; background:#f8fafc; color:#0f172a; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
   @media (max-width:600px) { .agreement-meta div { display:block; } .agreement-meta strong { display:block; text-align:left; } .agreement-sign { gap:20px; } .sample-draft-shell { width:100%; } }
 </style>
+@if (!empty($isAdminContract))
+  <div class="admin-shell">
+    @include('partials.admin-nav', ['activeAdminPage' => 'contracts'])
+  </div>
+  <div class="admin-contract-toolbar">
+    <a href="{{ route('admin.contracts') }}">Back to Client Contracts</a>
+    <button type="button" onclick="window.print()">Print contract</button>
+  </div>
+  <section class="admin-contract-record" aria-label="Submitted client contract details">
+    <h2>Client-submitted details</h2>
+    <div class="admin-contract-record-grid">
+      <div class="admin-contract-record-item"><span>Client account</span><strong>{{ $investment->user->name }} · {{ $investment->user->email }}</strong></div>
+      <div class="admin-contract-record-item"><span>Bondholder name</span><strong>{{ $agreementDetails['full_name'] }}</strong></div>
+      <div class="admin-contract-record-item"><span>Civil status</span><strong>{{ $agreement['civil_status'] }}</strong></div>
+      <div class="admin-contract-record-item"><span>Residential address</span><strong>{{ $agreementDetails['address'] }}</strong></div>
+      <div class="admin-contract-record-item"><span>Identification</span><strong>{{ $agreementDetails['id_type'] === 'Other' ? ($agreementDetails['id_type_other'] ?: 'Other') : $agreementDetails['id_type'] }} · {{ $agreementDetails['id_number'] }}</strong></div>
+      <div class="admin-contract-record-item"><span>ID issue date</span><strong>{{ !empty($agreementDetails['no_issue_date']) ? 'Not shown on ID' : ($agreementDetails['issue_date'] ?: 'Not provided') }}</strong></div>
+      <div class="admin-contract-record-item"><span>Contract signature date</span><strong>{{ $agreementDetails['sign_date'] }}</strong></div>
+      <div class="admin-contract-record-item"><span>Investment status</span><strong>{{ ucfirst($investment->status) }} · submitted {{ $investment->created_at->format('M j, Y g:i A') }}</strong></div>
+    </div>
+  </section>
+@endif
 <main class="agreement-page">
   @if ($isSample)
     <div class="sample-draft-shell">
@@ -180,7 +215,12 @@
   @endif
   <div class="agreement-sign">
     <div>LULU HOLDING CORP.<br>____________________________<br>Prince Khino Batilo Armonia<br>Authorized Representative</div>
-    <div>BONDHOLDER<br>{{ $agreement['bondholder'] }}<br>Date: {{ $agreement['commencement_date'] }}</div>
+    <div>BONDHOLDER<br>
+      @if (!empty($isAdminContract))
+        <img class="agreement-captured-signature" src="{{ $investment->agreement_signature_data }}" alt="Bondholder's submitted signature">
+      @endif
+      {{ $agreement['bondholder'] }}<br>Date: {{ $agreement['commencement_date'] }}
+    </div>
   </div>
   <h3>SIGNED IN THE PRESENCE OF</h3>
   <div class="agreement-sign">
@@ -193,9 +233,9 @@
   <p>BEFORE ME, a Notary Public for and in the City of Taguig, personally appeared the following persons:</p>
   <div class="agreement-meta">
     <div><span>Name</span><strong>Prince Khino Batilo Armonia; {{ $agreement['bondholder'] }}</strong></div>
-    <div><span>ID Type</span><strong>________________; ________________</strong></div>
-    <div><span>ID Number</span><strong>________________; ________________</strong></div>
-    <div><span>Date Issued</span><strong>________________; ________________</strong></div>
+    <div><span>ID Type</span><strong>________________; {{ !empty($isAdminContract) ? ($agreementDetails['id_type'] === 'Other' ? ($agreementDetails['id_type_other'] ?: 'Other') : $agreementDetails['id_type']) : '________________' }}</strong></div>
+    <div><span>ID Number</span><strong>________________; {{ !empty($isAdminContract) ? $agreementDetails['id_number'] : '________________' }}</strong></div>
+    <div><span>Date Issued</span><strong>________________; {{ !empty($isAdminContract) ? (!empty($agreementDetails['no_issue_date']) ? 'Not shown on ID' : ($agreementDetails['issue_date'] ?: 'Not provided')) : '________________' }}</strong></div>
   </div>
   <p>Known to me and identified by competent evidence of identity, the persons named above acknowledged that this Agreement is their free and voluntary act and deed and, for the Company's representative, the act and deed of the entity represented.</p>
   <p>This Agreement consists of five (5) pages, including this acknowledgment page, and has been signed by the parties and witnesses on each page.</p>
@@ -228,6 +268,11 @@
   </div>
   @endif
 </main>
+@if (!empty($autoPrint))
+  <script>
+    window.addEventListener('load', () => window.print(), { once: true });
+  </script>
+@endif
 @if (!empty($isSigning))
 <script>
   (function () {

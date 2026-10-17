@@ -49,6 +49,8 @@
     color:#fff;
   }
   .admin-nav .header-btn-secondary { background:#fff; color:#334155; }
+  .admin-nav .header-btn-secondary.active { border-color:#166534; background:#166534; color:#fff; }
+  .admin-nav .header-btn-secondary.active .nav-icon { color:#d7f0df; }
   .admin-nav .nav-icon { display:inline-flex; width:16px; height:16px; flex:0 0 16px; color:#166534; }
   .admin-nav .admin-nav-btn { position:relative; }
   .admin-nav .request-badge {
@@ -123,13 +125,10 @@
       </button>
     </form>
 
-    <form method="POST" action="{{ route('admin.send-promotional-email') }}" style="display:inline-flex;">
-      @csrf
-      <button class="header-btn header-btn-secondary" type="submit">
-        <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
-        <span>Send Promotional Email</span>
-      </button>
-    </form>
+    <a class="header-btn header-btn-secondary {{ $activeAdminPage === 'contracts' ? 'active' : '' }}" href="{{ route('admin.contracts') }}">
+      <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h6M9 14h6M9 18h6"/></svg></span>
+      <span>Client Contract</span>
+    </a>
 
     @if ($onAdminDashboard)
       <button class="header-btn header-btn-secondary" type="button" onclick="toggleModal('sendPackageModal', true)">

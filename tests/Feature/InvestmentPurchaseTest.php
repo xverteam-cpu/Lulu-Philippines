@@ -159,17 +159,78 @@ class InvestmentPurchaseTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_direct_payment_methods_continue_to_the_existing_agreement_signing_page(): void
+    public function test_direct_payment_methods_continue_to_the_replacement_agreement_signing_page(): void
     {
         $user = User::factory()->create();
 
         $this->actingAs($user)
             ->get('/invest/agreement/sign?package=loaded&amount=799&currency=USD&payment_method=account_balance')
             ->assertOk()
-            ->assertSee('Gold')
+            ->assertSee('Complete your agreement')
+            ->assertSee('id="contractForm"', false)
+            ->assertSee("submitButton.id = 'lulu-submit-purchase'", false)
+            ->assertSee('"package_name":"Gold"', false)
             ->assertSee('agreement_signature_data')
-            ->assertSee('agreement_accepted')
-            ->assertSee('Sign agreement and submit investment');
+            ->assertSee('agreement_accepted');
+    }
+
+    public function test_submitted_client_contract_is_saved_and_available_to_admin(): void
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($user)
+            ->post('/investments', [
+                'package' => 'crunch',
+                'amount' => 129,
+                'payment_method' => 'bank_transfer',
+                'agreement_signature_name' => 'Test Client',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
+                'agreement_details' => [
+                    'full_name' => 'Test Client',
+                    'civil_status' => 'Single',
+                    'civil_status_other' => '',
+                    'address' => '12 Test Street, Manila',
+                    'sign_date' => '2026-10-18',
+                    'id_type' => 'Passport',
+                    'id_type_other' => '',
+                    'id_number' => 'P1234567',
+                    'issue_date' => '2024-01-15',
+                    'no_issue_date' => '0',
+                ],
+            ])
+            ->assertRedirect('/dashboard');
+
+        $investment = $user->investments()->firstOrFail();
+        $this->assertSame('12 Test Street, Manila', $investment->agreement_details['address']);
+        $this->assertSame('P1234567', $investment->agreement_details['id_number']);
+
+        $this->actingAs($user)
+            ->get(route('admin.contracts'))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->get(route('admin.contracts'))
+            ->assertOk()
+            ->assertSee('Client Contracts')
+            ->assertSee('Test Client')
+            ->assertSee(route('admin.contracts.show', $investment))
+            ->assertSee(route('admin.contracts.show', ['investment' => $investment, 'print' => 1]))
+            ->assertSee('Print');
+
+        $this->get(route('admin.contracts.show', $investment))
+            ->assertOk()
+            ->assertSee('Client-submitted details')
+            ->assertSee('12 Test Street, Manila')
+            ->assertSee('P1234567')
+            ->assertSee('Daily Interest Rate')
+            ->assertSee('16. REGULATORY COMPLIANCE')
+            ->assertSee('data:image/png;base64,YWJj', false);
+
+        $this->get(route('admin.contracts.show', ['investment' => $investment, 'print' => 1]))
+            ->assertOk()
+            ->assertSee('window.addEventListener(\'load\', () => window.print()', false);
     }
 
     public function test_bank_transfer_investment_is_created_as_pending_and_returns_receipt_payload(): void

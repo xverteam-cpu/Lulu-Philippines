@@ -67,6 +67,18 @@ class IdentityVerificationController extends Controller
     {
         abort_unless($verification->status === 'pending', 409);
 
+        $request->validate([
+            'document_matches' => ['required', 'accepted'],
+            'images_clear' => ['required', 'accepted'],
+            'selfie_matches' => ['required', 'accepted'],
+        ]);
+
+        abort_if(
+            $verification->id_type === 'drivers_license' && ! $verification->back_image_path,
+            422,
+            'A driver’s license submission must include both sides before it can be approved.'
+        );
+
         $paths = $this->completeReview($request, $verification, 'verified', null);
         $this->deleteReviewedDocuments($paths, $verification);
 

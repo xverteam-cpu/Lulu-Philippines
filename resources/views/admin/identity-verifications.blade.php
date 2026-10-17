@@ -17,6 +17,10 @@
   .verification-admin-signature { margin-top:16px; }
   .verification-admin-signature img { display:block; max-width:100%; max-height:180px; padding:8px; border:1px solid #dfe8e2; border-radius:10px; background:#fff; }
   .verification-admin-signature p { margin:6px 0 0; color:#52635b; font-size:13px; }
+  .verification-admin-checklist { display:grid; gap:10px; margin-top:18px; padding:14px; border:1px solid #e2e9e5; border-radius:12px; background:#f7faf8; }
+  .verification-admin-checklist strong { color:#0a1f17; font-size:13px; }
+  .verification-admin-checklist label { display:flex; align-items:flex-start; gap:9px; color:#34473d; font-size:13px; line-height:1.5; }
+  .verification-admin-checklist input { flex:none; margin-top:3px; accent-color:#0a6a45; }
   .verification-admin-actions { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; margin-top:18px; }
   .verification-admin-actions form { margin:0; }
   .verification-admin-actions label { display:block; margin-bottom:6px; color:#52635b; font-size:12px; font-weight:650; }
@@ -32,7 +36,7 @@
 </div>
 <main class="verification-admin-shell">
   <h1 class="verification-admin-heading">Identity verifications</h1>
-  <p class="verification-admin-copy">Compare each selfie with the face on the submitted ID. Approving or rejecting a request deletes the ID and selfie photos immediately.</p>
+  <p class="verification-admin-copy">Manually confirm each document is the selected government ID, is clear and readable, and matches the selfie. A driver’s license must include both sides. Approving or rejecting a request deletes the ID and selfie photos immediately.</p>
 
   @if (session('status'))
     <div class="verification-admin-status" role="status">{{ session('status') }}</div>
@@ -76,14 +80,20 @@
         </div>
       @endif
       <div class="verification-admin-actions">
-        <form method="post" action="{{ route('admin.identity-verifications.approve', $verification) }}" onsubmit="return confirm('Approve this identity after comparing the selfie to the ID? Uploaded photos will be deleted immediately.');">
+        <form method="post" action="{{ route('admin.identity-verifications.approve', $verification) }}" onsubmit="return confirm('Approve this identity after confirming the document type, photo clarity, and selfie match? Uploaded photos will be deleted immediately.');">
           @csrf
+          <div class="verification-admin-checklist">
+            <strong>Required approval checks</strong>
+            <label><input type="checkbox" name="document_matches" value="1" required> The image shows the selected {{ $idTypes[$verification->id_type] ?? $verification->id_type }} and belongs to the applicant.</label>
+            <label><input type="checkbox" name="images_clear" value="1" required> All required ID sides and details are clear, readable, and unobstructed.</label>
+            <label><input type="checkbox" name="selfie_matches" value="1" required> The selfie visibly matches the face on the submitted ID.</label>
+          </div>
           <button type="submit">Approve</button>
         </form>
         <form method="post" action="{{ route('admin.identity-verifications.reject', $verification) }}" onsubmit="return confirm('Reject this identity? Uploaded photos will be deleted immediately.');">
           @csrf
           <label for="review-note-{{ $verification->id }}">Reason (shown to user for resubmission)</label>
-          <textarea id="review-note-{{ $verification->id }}" name="review_note" maxlength="500" required></textarea>
+          <textarea id="review-note-{{ $verification->id }}" name="review_note" maxlength="500" placeholder="For example: The photo is blurry, or the image is not a driver’s license. Please retake and upload the correct ID." required></textarea>
           <button class="reject-button" type="submit">Reject</button>
         </form>
       </div>

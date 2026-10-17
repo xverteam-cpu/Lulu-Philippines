@@ -19,7 +19,7 @@ class IdentityImageQuality
         }
 
         if (! $file->isValid()
-            || $file->getSize() > 10 * 1024 * 1024
+            || $file->getSize() > 20 * 1024 * 1024
             || ! str_starts_with((string) $file->getMimeType(), 'image/')) {
             return false;
         }

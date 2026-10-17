@@ -42,9 +42,9 @@ class IdentityVerificationController extends Controller
 
         $validated = $request->validate([
             'id_type' => ['required', Rule::in(array_keys(IdentityVerification::ID_TYPES))],
-            'front_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240', $this->clarityRule()],
-            'back_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240', $this->clarityRule()],
-            'selfie_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240', $this->clarityRule()],
+            'front_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:20480', $this->clarityRule()],
+            'back_image' => ['nullable', 'required_if:id_type,drivers_license', 'image', 'mimes:jpg,jpeg,png,webp', 'max:20480', $this->clarityRule()],
+            'selfie_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:20480', $this->clarityRule()],
             'consent' => ['required', 'accepted'],
         ]);
 

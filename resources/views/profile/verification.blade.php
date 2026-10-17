@@ -168,7 +168,7 @@
           </div>
           <div class="verification-content">
             <section class="verification-step-page" data-verification-page="1">
-              <p class="verification-intro">Choose an accepted government-issued ID and upload a clear photo of its front.</p>
+              <p class="verification-intro">Choose an accepted government-issued ID and upload clear photos of that exact document. If you select a driver’s license, submit both sides; a different document or an unreadable photo will be rejected for retake.</p>
               <label class="verification-label" for="idType">Document type</label>
               <div class="verification-select-wrap">
                 <select class="verification-select" id="idType" name="id_type" required>
@@ -180,7 +180,7 @@
               </div>
               @error('id_type')<div class="verification-field-error">{{ $message }}</div>@enderror
 
-              @foreach (['front' => ['Front of your ID', 'Make sure the details and photo are clearly visible.', '▤'], 'back' => ['Back of your ID (if applicable)', 'Add the back if your document has important details there.', '▤']] as $side => [$label, $copy, $icon])
+              @foreach (['front' => ['Front of your ID', 'Make sure the details and photo are clearly visible.', '▤'], 'back' => ['Back of your ID (required for a driver’s license)', 'Upload the back when your ID has details there. Both sides of a driver’s license are required.', '▤']] as $side => [$label, $copy, $icon])
                 <div class="verification-upload" data-zone="{{ $side }}">
                   <div class="verification-upload-icon" aria-hidden="true">{{ $icon }}</div>
                   <h3>{{ $label }}</h3>
@@ -193,9 +193,9 @@
                   <img class="verification-preview" id="{{ $side }}Preview" alt="{{ $label }} preview">
                   <p class="verification-file-status" id="{{ $side }}ImageStatus" aria-live="polite">
                     @if ($side === 'back')
-                      JPG, PNG, or WebP; maximum 10 MB. Make sure any text on the back is readable.
+                      JPG, PNG, or WebP. Large photos are optimized before upload; make sure any text on the back is readable.
                     @else
-                      JPG, PNG, or WebP; maximum 10 MB. Make sure all text is readable and the ID fills the frame.
+                      JPG, PNG, or WebP. Large photos are optimized before upload; make sure all text is readable and the ID fills the frame.
                     @endif
                   </p>
                   @error($side.'_image')<div class="verification-field-error">{{ $message }}</div>@enderror
@@ -216,7 +216,7 @@
                   <button class="verification-button" type="button" data-open-image="selfie" data-source="upload">Upload photo</button>
                 </div>
                 <img class="verification-preview" id="selfiePreview" alt="Selfie preview">
-                <p class="verification-file-status" id="selfieImageStatus" aria-live="polite">JPG, PNG, or WebP; maximum 10 MB. Face the camera in good light, with your full face clearly visible.</p>
+                <p class="verification-file-status" id="selfieImageStatus" aria-live="polite">JPG, PNG, or WebP. Large photos are optimized before upload. Face the camera in good light, with your full face clearly visible.</p>
                 @error('selfie_image')<div class="verification-field-error">{{ $message }}</div>@enderror
               </div>
               <div class="verification-hint"><span class="verification-hint-icon" aria-hidden="true">ⓘ</span><span><strong>Quick tip:</strong> Stand against a plain background and face the light. This is a manual visual review, not automated face recognition.</span></div>
@@ -315,7 +315,11 @@
       if (!document.getElementById('backImage')?.files?.length) {
         const optional = document.createElement('div');
         optional.className = 'verification-review-card';
-        optional.innerHTML = '<div><strong>Back of ID</strong><span>Not provided (optional)</span></div>';
+        const backIsRequired = document.getElementById('idType')?.value === 'drivers_license';
+        optional.innerHTML = '<div><strong>Back of ID</strong><span></span></div>';
+        optional.querySelector('span').textContent = backIsRequired
+          ? 'Required for a driver’s license — missing'
+          : 'Not provided (if not applicable)';
         reviewFiles.append(optional);
       }
     }
@@ -363,6 +367,11 @@
           showError('Add the front of your ID to continue.');
           return;
         }
+        if (document.getElementById('idType').value === 'drivers_license'
+          && !document.getElementById('backImage').files.length) {
+          showError('A driver’s license requires clear photos of both the front and back.');
+          return;
+        }
       } else if (step === 2 && !document.getElementById('selfieImage').files.length) {
         showError('Add a selfie to continue.');
         return;
@@ -384,6 +393,28 @@
     const qualityError = document.getElementById('verificationQualityError');
     const submit = document.getElementById('verificationSubmit');
     if (!form || !qualityError || !submit) return;
+    const idType = document.getElementById('idType');
+    const backInput = document.getElementById('backImage');
+    const backHeading = document.querySelector('[data-zone="back"] h3');
+    const backCopy = document.querySelector('[data-zone="back"] .verification-upload-copy');
+
+    function updateBackRequirement() {
+      const required = idType?.value === 'drivers_license';
+      if (backInput) backInput.required = required;
+      if (backHeading) {
+        backHeading.textContent = required
+          ? 'Back of your driver’s license (required)'
+          : 'Back of your ID (if applicable)';
+      }
+      if (backCopy) {
+        backCopy.textContent = required
+          ? 'Upload the actual back of your driver’s license. Make sure all details are readable.'
+          : 'Add the back if your document has important details there.';
+      }
+    }
+
+    idType?.addEventListener('change', updateBackRequirement);
+    updateBackRequirement();
 
     document.querySelectorAll('[data-open-image]').forEach(button => {
       button.addEventListener('click', () => {
@@ -410,10 +441,6 @@
         if (Math.min(width, height) < 350 || Math.max(width, height) < 600) {
           throw new Error('The image is too small. Take or upload a higher-resolution photo.');
         }
-        if (width * height > 12000000) {
-          throw new Error('The image resolution is too large. Resize it and upload it again.');
-        }
-
         const scale = Math.min(1, 360 / Math.max(width, height));
         const canvas = document.createElement('canvas');
         canvas.width = Math.max(1, Math.round(width * scale));
@@ -445,7 +472,51 @@
         if (variance < 28) {
           throw new Error('This photo appears blurry. Hold the phone steady, focus on the ID text, and retake it in good light.');
         }
-        return 'Photo looks clear. You can submit it.';
+        return 'Photo looks clear.';
+      } finally {
+        bitmap.close();
+      }
+    }
+
+    async function optimizeImage(file) {
+      const bitmap = await createImageBitmap(file);
+      try {
+        const pixels = bitmap.width * bitmap.height;
+        if (file.type === 'image/jpeg' && file.size <= 8 * 1024 * 1024 && pixels <= 12000000) {
+          return { file, fileList: null, originalSize: file.size, optimized: false };
+        }
+
+        const scale = Math.min(
+          1,
+          4000 / Math.max(bitmap.width, bitmap.height),
+          Math.sqrt(12000000 / pixels)
+        );
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('The photo could not be optimized. Please try another image.');
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise((resolve, reject) => {
+          canvas.toBlob(result => result
+            ? resolve(result)
+            : reject(new Error('The photo could not be optimized. Please try another image.')), 'image/jpeg', .92);
+        });
+        const optimizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', {
+          type: 'image/jpeg',
+          lastModified: Date.now(),
+        });
+        const transfer = new DataTransfer();
+        transfer.items.add(optimizedFile);
+        return {
+          file: optimizedFile,
+          fileList: transfer.files,
+          originalSize: file.size,
+          optimized: true,
+        };
       } finally {
         bitmap.close();
       }
@@ -463,23 +534,25 @@
         preview.style.display = 'none';
         if (!image) {
           status.textContent = side === 'back'
-            ? 'Back photo is optional.'
+            ? idType?.value === 'drivers_license'
+              ? 'The back of your driver’s license is required.'
+              : 'Back photo is optional if your ID has no important back details.'
             : side === 'selfie' ? 'A clear selfie is required.' : 'A clear front photo is required.';
           return;
         }
         if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
-        if (image.size > 10 * 1024 * 1024) {
-          input.value = '';
-          status.classList.add('error');
-          status.textContent = 'Image is larger than 10 MB. Choose a smaller image.';
-          return;
-        }
         status.textContent = 'Checking image resolution and clarity…';
         try {
-          const message = await inspectImage(image);
-          preview.src = URL.createObjectURL(image);
+          await inspectImage(image);
+          const result = await optimizeImage(image);
+          if (result.optimized) input.files = result.fileList;
+          await inspectImage(result.file);
+          preview.src = URL.createObjectURL(result.file);
           preview.style.display = 'block';
-          status.textContent = message;
+          const sizeMessage = result.optimized
+            ? ` Optimized from ${(result.originalSize / 1024 / 1024).toFixed(1)} MB to ${(result.file.size / 1024 / 1024).toFixed(1)} MB.`
+            : '';
+          status.textContent = `Photo looks clear and is ready to submit.${sizeMessage}`;
         } catch (error) {
           input.value = '';
           status.classList.add('error');
@@ -494,8 +567,11 @@
       qualityError.hidden = true;
       const front = document.getElementById('frontImage')?.files?.[0];
       const selfie = document.getElementById('selfieImage')?.files?.[0];
-      if (!front || !selfie) {
-      qualityError.textContent = 'Choose a clear front photo of your ID and a selfie before submitting.';
+      const back = document.getElementById('backImage')?.files?.[0];
+      if (!front || !selfie || (idType?.value === 'drivers_license' && !back)) {
+        qualityError.textContent = idType?.value === 'drivers_license' && !back
+          ? 'Upload clear photos of both the front and back of your driver’s license.'
+          : 'Choose a clear front photo of your ID and a selfie before submitting.';
         qualityError.hidden = false;
         return;
       }
@@ -505,7 +581,6 @@
       try {
         await inspectImage(front);
         await inspectImage(selfie);
-        const back = document.getElementById('backImage')?.files?.[0];
         if (back) await inspectImage(back);
         form.dataset.qualityChecked = 'true';
         form.requestSubmit();

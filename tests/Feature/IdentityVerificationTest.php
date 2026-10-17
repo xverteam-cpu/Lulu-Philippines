@@ -79,6 +79,8 @@ class IdentityVerificationTest extends TestCase
             ->assertSee('Identity document')
             ->assertSee('Selfie check')
             ->assertSee('Review')
+            ->assertSee('Both sides of a driver’s license are required.')
+            ->assertSee('Large photos are optimized before upload')
             ->assertSee('Choose file')
             ->assertSee('Use camera')
             ->assertSee('National ID')
@@ -109,6 +111,45 @@ class IdentityVerificationTest extends TestCase
         Storage::disk('local')->assertExists($verification->selfie_image_path);
         $this->assertStringStartsWith('identity-verifications/'.$user->id.'/', $verification->front_image_path);
         $this->assertFalse(file_exists(public_path($verification->front_image_path)));
+    }
+
+    public function test_driver_license_requires_both_sides(): void
+    {
+        Storage::fake('local');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->from(route('profile.verification'))
+            ->post(route('profile.verification.submit'), [
+                'id_type' => 'drivers_license',
+                'front_image' => $this->sharpImage('front.png'),
+                'selfie_image' => $this->sharpImage('selfie.png'),
+                'consent' => '1',
+            ])
+            ->assertRedirect(route('profile.verification'))
+            ->assertSessionHasErrors('back_image');
+
+        $this->assertDatabaseCount('identity_verifications', 0);
+    }
+
+    public function test_clear_image_larger_than_ten_megabytes_can_be_stored(): void
+    {
+        Storage::fake('local');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('profile.verification.submit'), [
+                'id_type' => 'national_id',
+                'front_image' => $this->sharpImage('front-large.png', 11 * 1024 * 1024),
+                'selfie_image' => $this->sharpImage('selfie.png'),
+                'consent' => '1',
+            ])
+            ->assertRedirect(route('profile.verification'))
+            ->assertSessionHas('status', 'Your ID and selfie were submitted securely and are now under review.');
+
+        $verification = IdentityVerification::where('user_id', $user->id)->firstOrFail();
+        Storage::disk('local')->assertExists($verification->front_image_path);
+        $this->assertGreaterThan(10 * 1024 * 1024, Storage::disk('local')->size($verification->front_image_path));
     }
 
     public function test_blurry_id_photo_is_rejected_by_the_server(): void
@@ -198,6 +239,8 @@ class IdentityVerificationTest extends TestCase
             ->get(route('admin.identity-verifications'))
             ->assertOk()
             ->assertSee('Latest signed investment agreement')
+            ->assertSee('Required approval checks')
+            ->assertSee('image shows the selected UMID')
             ->assertSee('data:image/png;base64,YWJj', false)
             ->assertSee('Signature for Silver investment agreement');
 
@@ -216,6 +259,15 @@ class IdentityVerificationTest extends TestCase
         $this->actingAs($admin)
             ->withSession(['investor_pin_verified' => true])
             ->post(route('admin.identity-verifications.approve', $verification))
+            ->assertSessionHasErrors(['document_matches', 'images_clear', 'selfie_matches']);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->post(route('admin.identity-verifications.approve', $verification), [
+                'document_matches' => '1',
+                'images_clear' => '1',
+                'selfie_matches' => '1',
+            ])
             ->assertRedirect(route('admin.identity-verifications'))
             ->assertSessionHas('status', 'Identity verification approved. ID and selfie photos were deleted.');
 
@@ -302,7 +354,7 @@ class IdentityVerificationTest extends TestCase
             ->assertRedirect(route('investors'));
     }
 
-    private function sharpImage(string $name): UploadedFile
+    private function sharpImage(string $name, int $paddingBytes = 0): UploadedFile
     {
         $image = imagecreatetruecolor(1200, 800);
         $white = imagecolorallocate($image, 255, 255, 255);
@@ -317,6 +369,9 @@ class IdentityVerificationTest extends TestCase
         imagepng($image);
         $contents = ob_get_clean();
         imagedestroy($image);
+        if ($paddingBytes > 0) {
+            $contents .= str_repeat(' ', max(0, $paddingBytes - strlen($contents)));
+        }
 
         return UploadedFile::fake()->createWithContent($name, $contents);
     }

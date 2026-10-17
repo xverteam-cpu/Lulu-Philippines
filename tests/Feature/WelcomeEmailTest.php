@@ -15,6 +15,7 @@ class WelcomeEmailTest extends TestCase
     public function test_new_users_receive_a_welcome_email(): void
     {
         Mail::fake();
+        $referrer = User::factory()->create(['name' => 'Wilmer Pasco']);
 
         $response = $this->post(route('register.partner'), [
             'fullname' => 'Jane Doe',
@@ -22,7 +23,7 @@ class WelcomeEmailTest extends TestCase
             'email' => 'jane@example.com',
             'password' => 'Password123',
             'password_confirmation' => 'Password123',
-            'referral' => '',
+            'referral' => $referrer->referral_code,
         ]);
 
         $response->assertRedirect();

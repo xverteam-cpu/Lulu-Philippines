@@ -476,6 +476,32 @@
     </div>
   @endif
 
+  <section aria-labelledby="account-invitation-title" style="margin:18px 0;padding:20px;background:#fff;border:1px solid #e2e9e5;border-radius:16px;">
+    <h2 id="account-invitation-title" style="margin:0 0 6px;font-size:20px;">Invite an existing client</h2>
+    <p style="margin:0 0 16px;color:#4b5b54;">Send a private, one-time link so the client can set a password and PIN. The link expires after 24 hours.</p>
+    <form method="POST" action="{{ route('admin.account-invitations.store') }}" style="display:flex;flex-wrap:wrap;align-items:end;gap:12px;">
+      @csrf
+      <div style="flex:1 1 220px;">
+        <label for="invitation-name" style="display:block;margin-bottom:6px;font-weight:600;">Client name</label>
+        <input id="invitation-name" type="text" name="name" value="{{ old('name') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+      </div>
+      <div style="flex:1 1 260px;">
+        <label for="invitation-email" style="display:block;margin-bottom:6px;font-weight:600;">Client email</label>
+        <input id="invitation-email" type="email" name="email" value="{{ old('email') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+      </div>
+      <div style="flex:1 1 260px;">
+        <label for="invitation-referrer" style="display:block;margin-bottom:6px;font-weight:600;">Referrer</label>
+        <select id="invitation-referrer" name="referrer_id" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+          <option value="">Choose a referrer</option>
+          @foreach ($referrers as $referrer)
+            <option value="{{ $referrer->id }}" @selected(old('referrer_id') == $referrer->id)>{{ $referrer->name }} — {{ $referrer->referral_code }}</option>
+          @endforeach
+        </select>
+      </div>
+      <button type="submit" style="padding:12px 18px;border:0;border-radius:9px;background:#0e8a5a;color:#fff;font-weight:700;">Send setup link</button>
+    </form>
+  </section>
+
   <!-- Send Package Modal -->
   <div id="sendPackageModal" class="modal-overlay" aria-hidden="true">
     <div class="modal-card">
@@ -674,7 +700,7 @@
                     @php
                       $referrer = $user->referrer;
                     @endphp
-                    {{ $referrer ? ($referrer->name ?: $referrer->email) : '—' }}
+                    {{ $referrer ? ($referrer->name ?: $referrer->email) : ($user->is_admin ? 'Admin account' : 'Missing referrer') }}
                   </td>
                   <!-- Available Balance -->
                   <td class="text-nowrap">
@@ -752,7 +778,7 @@
           <span class="modal-label">Referred By</span>
           <div class="modal-value">
             @php $referrer = $user->referrer; @endphp
-            {{ $referrer ? ($referrer->name ?: $referrer->email) : '—' }}
+            {{ $referrer ? ($referrer->name ?: $referrer->email) : ($user->is_admin ? 'Admin account' : 'Missing referrer') }}
           </div>
         </div>
         @php

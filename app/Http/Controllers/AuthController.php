@@ -65,16 +65,22 @@ class AuthController extends Controller
                     }
                 },
             ],
-            'referral' => ['nullable', 'string', 'max:255'],
+            'referral' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (is_string($value) && ! User::findByReferralIdentifier($value)) {
+                        $fail('Enter a valid referral code to create an account.');
+                    }
+                },
+            ],
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        $referrer = null;
-
-        if (! empty($data['referral'])) {
-            $referrer = User::where('username', $data['referral'])
-                ->orWhere('email', $data['referral'])
-                ->first();
+        $referrer = User::findByReferralIdentifier($data['referral']);
+        if (! $referrer) {
+            return back()->withErrors(['referral' => 'Enter a valid referral code to create an account.'])->withInput();
         }
 
         $user = User::create([
@@ -107,15 +113,8 @@ class AuthController extends Controller
         $request->session()->forget('google_referrer_id');
 
         $referral = trim((string) $request->query('ref', ''));
-        if ($referral !== '') {
-            $referrer = User::query()
-                ->where('username', $referral)
-                ->orWhere('email', $referral)
-                ->first();
-
-            if ($referrer) {
-                $request->session()->put('google_referrer_id', $referrer->id);
-            }
+        if ($referral !== '' && ($referrer = User::findByReferralIdentifier($referral))) {
+            $request->session()->put('google_referrer_id', $referrer->id);
         }
 
         return Socialite::driver('google')->redirect();
@@ -146,6 +145,11 @@ class AuthController extends Controller
         $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
 
         if (! $user) {
+            if (! $referrerId || ! User::whereKey($referrerId)->exists()) {
+                return redirect()->route('signup')
+                    ->withErrors(['referral' => 'A valid referral link is required to create an account.']);
+            }
+
             $user = User::create([
                 'name' => Str::limit($googleUser->getName() ?: $email, 255, ''),
                 'username' => $this->generateUniqueUsername($email),

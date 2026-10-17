@@ -75,7 +75,7 @@ class ReferralPageTest extends TestCase
             ->get(route('referrals'))
             ->assertOk()
             ->assertSee('class="referral-phone"', false)
-            ->assertSee(route('signup', ['ref' => 'referral-owner']), false)
+            ->assertSee(route('signup', ['ref' => $referrer->referral_code]), false)
             ->assertSee('$12.50')
             ->assertSee('Invited partners')
             ->assertSee('>1</div>', false)

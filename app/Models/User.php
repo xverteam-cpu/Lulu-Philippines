@@ -28,6 +28,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'username',
+        'referral_code',
         'email',
         'phone',
         'address',
@@ -73,6 +74,45 @@ class User extends Authenticatable
             'notifications_read' => 'array',
             'notification_preferences' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if (! $user->referral_code) {
+                $user->referral_code = static::makeUniqueReferralCode((string) $user->name);
+            }
+        });
+    }
+
+    public static function findByReferralIdentifier(string $identifier): ?self
+    {
+        $identifier = trim($identifier);
+
+        return static::query()
+            ->whereRaw('LOWER(referral_code) = ?', [mb_strtolower($identifier)])
+            ->first()
+            ?? static::query()
+                ->whereRaw('LOWER(username) = ?', [mb_strtolower($identifier)])
+                ->first();
+    }
+
+    public static function makeUniqueReferralCode(string $name): string
+    {
+        $parts = preg_split('/\s+/', trim(preg_replace('/[^a-zA-Z0-9]+/', ' ', \Illuminate\Support\Str::ascii($name)) ?: ''));
+        $firstName = $parts[0] ?? 'User';
+        $surnameInitial = count($parts) > 1 ? strtoupper(substr((string) end($parts), 0, 1)) : '';
+        $base = ucfirst(strtolower($firstName)).$surnameInitial;
+        $base = substr($base, 0, 240) ?: 'User';
+        $candidate = $base;
+        $suffix = 2;
+
+        while (static::query()->whereRaw('LOWER(referral_code) = ?', [mb_strtolower($candidate)])->exists()) {
+            $candidate = $base.$suffix;
+            $suffix++;
+        }
+
+        return $candidate;
     }
 
     public function getNotificationsReadIds(): array

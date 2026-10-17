@@ -22,16 +22,18 @@ class AuthSignupTest extends TestCase
         $response->assertSee('Create password');
         $response->assertSee('Email Address');
         $response->assertSee('name="email"', false);
+        $response->assertSee('name="referral"', false)
+            ->assertSee('name="referral" type="text"', false);
     }
 
     public function test_signup_page_preserves_the_referrer_in_the_google_signup_link(): void
     {
         $referrer = User::factory()->create(['username' => 'referrer']);
 
-        $this->get(route('signup', ['ref' => $referrer->username]))
+        $this->get(route('signup', ['ref' => $referrer->referral_code]))
             ->assertOk()
             ->assertSee('Continue with Google')
-            ->assertSee(route('login.google', ['ref' => $referrer->username]), false);
+            ->assertSee(route('login.google', ['ref' => $referrer->referral_code]), false);
     }
 
     public function test_authenticated_user_sees_a_continue_link_to_their_dashboard_on_investor_page(): void
@@ -64,12 +66,13 @@ class AuthSignupTest extends TestCase
     public function test_manual_signup_creates_and_authenticates_a_user_with_a_normalized_email(): void
     {
         Mail::fake();
+        $referrer = User::factory()->create(['name' => 'Wilmer Pasco']);
 
         $response = $this->post('/register-partner', [
             'fullname' => 'Jane Doe',
             'username' => 'jane',
             'email' => '  Jane.Doe@Example.com ',
-            'referral' => '',
+            'referral' => $referrer->referral_code,
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
@@ -83,7 +86,66 @@ class AuthSignupTest extends TestCase
         ]);
         $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
+        $this->assertSame($referrer->id, $user->referred_by);
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_manual_signup_requires_a_valid_referral_code(): void
+    {
+        Mail::fake();
+
+        $this->from(route('signup'))
+            ->post('/register-partner', [
+                'fullname' => 'Jane Doe',
+                'username' => 'jane',
+                'email' => 'jane@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ])
+            ->assertRedirect(route('signup'))
+            ->assertSessionHasErrors('referral');
+
+        $this->assertDatabaseMissing('users', ['email' => 'jane@example.com']);
+    }
+
+    public function test_manual_signup_rejects_an_unknown_referral_code(): void
+    {
+        Mail::fake();
+
+        $this->from(route('signup'))
+            ->post('/register-partner', [
+                'fullname' => 'Jane Doe',
+                'username' => 'jane',
+                'email' => 'jane@example.com',
+                'referral' => 'not-a-real-referral',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ])
+            ->assertRedirect(route('signup'))
+            ->assertSessionHasErrors('referral');
+
+        $this->assertDatabaseMissing('users', ['email' => 'jane@example.com']);
+    }
+
+    public function test_referral_codes_use_first_name_and_surname_initial_and_are_unique(): void
+    {
+        $firstUser = User::factory()->create(['name' => 'Wilmer Pasco']);
+        $secondUser = User::factory()->create(['name' => 'Wilmer Pasco']);
+
+        $this->assertSame('WilmerP', $firstUser->referral_code);
+        $this->assertSame('WilmerP2', $secondUser->referral_code);
+    }
+
+    public function test_admin_user_detail_includes_a_copyable_referral_link(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create(['name' => 'Wilmer Pasco']);
+
+        $this->actingAs($admin)
+            ->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSee('Copy referral link')
+            ->assertSee(route('signup', ['ref' => 'WilmerP']), false);
     }
 
     public function test_password_login_remembers_the_user_across_browser_sessions(): void
@@ -122,12 +184,13 @@ class AuthSignupTest extends TestCase
     {
         Mail::fake();
 
-        User::factory()->create(['username' => 'janedoe']);
+        $referrer = User::factory()->create(['username' => 'janedoe']);
 
         $this->post(route('register.partner'), [
             'fullname' => 'Jane Doe',
             'username' => '',
             'email' => 'jane.doe@example.com',
+            'referral' => $referrer->referral_code,
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ])->assertRedirect(route('dashboard'));
@@ -143,18 +206,20 @@ class AuthSignupTest extends TestCase
         Mail::fake();
 
         User::factory()->create(['email' => 'Jane@example.com']);
+        $referrer = User::factory()->create(['name' => 'Wilmer Pasco']);
 
         $this->from(route('signup'))
             ->post(route('register.partner'), [
                 'fullname' => 'Jane Doe',
                 'username' => 'jane-doe',
                 'email' => 'jane@example.com',
+                'referral' => $referrer->referral_code,
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
             ])
             ->assertRedirect(route('signup'))
             ->assertSessionHasErrors('email');
 
-        $this->assertDatabaseCount('users', 1);
+        $this->assertDatabaseCount('users', 2);
     }
 }

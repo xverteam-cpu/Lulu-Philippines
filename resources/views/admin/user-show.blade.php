@@ -87,6 +87,12 @@
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <a class="back-link" href="{{ route('admin.dashboard') }}">Back to users</a>
+        <button
+          type="button"
+          id="copy-user-referral-link"
+          data-referral-link="{{ route('signup', ['ref' => $managedUser->referral_code]) }}"
+          style="background:#0e8a5a;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;"
+        >Copy referral link</button>
         @if(! $managedUser->is_admin)
           <form action="{{ route('admin.users.restrict', $managedUser) }}" method="POST" style="display:inline;" onsubmit="return confirm('Restrict this user from accessing the website?');">
             @csrf
@@ -139,6 +145,10 @@
         <span class="detail-value">{{ $managedUser->is_admin ? 'Admin' : 'Partner user' }}</span>
       </div>
       <div class="detail-item">
+        <span class="detail-label">Referral Code</span>
+        <span class="detail-value">{{ $managedUser->referral_code ?: 'Not assigned' }}</span>
+      </div>
+      <div class="detail-item">
         <span class="detail-label">Referred By</span>
         @if ($managedUser->referrer)
           <span class="detail-value">
@@ -147,7 +157,7 @@
             </a>
           </span>
         @else
-          <span class="detail-value">No referrer linked</span>
+          <span class="detail-value">{{ $managedUser->is_admin ? 'Admin account' : 'Missing referrer' }}</span>
         @endif
       </div>
       <div class="detail-item" style="grid-column:1 / -1;">
@@ -157,4 +167,32 @@
     </div>
   </div>
 </div>
+<script>
+document.getElementById('copy-user-referral-link')?.addEventListener('click', async function () {
+  const button = this;
+  const link = button.dataset.referralLink;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(link);
+    } else {
+      const input = document.createElement('textarea');
+      input.value = link;
+      input.setAttribute('readonly', '');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      const copied = document.execCommand('copy');
+      input.remove();
+      if (!copied) throw new Error('Clipboard copy was rejected.');
+    }
+    button.textContent = 'Referral link copied';
+    window.setTimeout(() => { button.textContent = 'Copy referral link'; }, 2500);
+  } catch (error) {
+    console.error('Could not copy referral link.', error);
+    button.textContent = 'Copy failed';
+    window.setTimeout(() => { button.textContent = 'Copy referral link'; }, 2500);
+  }
+});
+</script>
 @endsection

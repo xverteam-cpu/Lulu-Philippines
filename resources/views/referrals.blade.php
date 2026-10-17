@@ -130,7 +130,7 @@
 
 @php
   $user = auth()->user();
-  $link = $user->username ? route('signup', ['ref' => $user->username]) : route('signup');
+  $link = route('signup', ['ref' => $user->referral_code]);
   $totalEarned = (float) $user->referralEarnings()->sum('amount');
   $referrals = $user->referrals()
       ->withSum('investments as referred_invested_amount', 'amount')

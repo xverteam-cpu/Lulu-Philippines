@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\InvestmentApprovalController;
+use App\Http\Controllers\Admin\AccountInvitationController;
 use App\Http\Controllers\Admin\IdentityVerificationController as AdminIdentityVerificationController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseApplicationController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\WithdrawalController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AccountSetupController;
 use App\Http\Controllers\FranchiseApplicationController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\IdentityVerificationController;
@@ -93,6 +95,12 @@ Route::get('/debug/test-email', function (Request $request) {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/register-partner', [AuthController::class, 'register'])->name('register.partner');
+Route::get('/account/setup/{token}', [AccountSetupController::class, 'show'])
+    ->middleware('throttle:10,1')
+    ->name('account-setup.show');
+Route::post('/account/setup/{token}', [AccountSetupController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('account-setup.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/investor/pin/verify', [InvestorPinController::class, 'verify'])
     ->middleware(['auth', 'throttle:5,1'])
@@ -988,6 +996,10 @@ Route::post('/admin/users/{user}/restrict', [UserManagementController::class, 'r
 Route::post('/admin/users/{user}/block-ip', [UserManagementController::class, 'blockIp'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.block-ip');
+
+Route::post('/admin/account-invitations', [AccountInvitationController::class, 'store'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.account-invitations.store');
 
 Route::delete('/admin/blocked-ips/{blockedIp}', [UserManagementController::class, 'unblockIp'])
     ->middleware(['auth', RestrictUserAccess::class])

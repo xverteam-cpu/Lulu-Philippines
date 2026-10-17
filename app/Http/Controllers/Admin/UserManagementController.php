@@ -56,6 +56,7 @@ class UserManagementController extends Controller
 
         return view('admin.dashboard', [
             'users' => $users,
+            'referrers' => User::query()->orderBy('name')->get(['id', 'name', 'email', 'referral_code']),
             'blockedIps' => $blockedIps,
             'totalUsers' => User::count(),
             'newUsersCount' => User::where('created_at', '>=', now()->subDay())->count(),

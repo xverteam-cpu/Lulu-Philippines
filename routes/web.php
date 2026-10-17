@@ -38,6 +38,22 @@ Route::get('/', function () {
     return view('public.home');
 })->name('public.home');
 
+Route::get('/about', function () {
+    return view('public.about');
+})->name('about');
+
+Route::get('/privacy-policy', function () {
+    return response(file_get_contents(public_path('privacy-policy.html')), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+})->name('privacy-policy');
+
+Route::get('/terms-of-service', function () {
+    return response(file_get_contents(public_path('terms-of-service.html')), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+})->name('terms-of-service');
+
 Route::get('/investors', function () {
     return view('public.investors');
 })->name('investors');

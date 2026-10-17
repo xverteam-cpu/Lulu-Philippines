@@ -476,32 +476,6 @@
     </div>
   @endif
 
-  <section aria-labelledby="account-invitation-title" style="margin:18px 0;padding:20px;background:#fff;border:1px solid #e2e9e5;border-radius:16px;">
-    <h2 id="account-invitation-title" style="margin:0 0 6px;font-size:20px;">Invite an existing client</h2>
-    <p style="margin:0 0 16px;color:#4b5b54;">Send a private, one-time link so the client can set a password and PIN. The link expires after 24 hours.</p>
-    <form method="POST" action="{{ route('admin.account-invitations.store') }}" style="display:flex;flex-wrap:wrap;align-items:end;gap:12px;">
-      @csrf
-      <div style="flex:1 1 220px;">
-        <label for="invitation-name" style="display:block;margin-bottom:6px;font-weight:600;">Client name</label>
-        <input id="invitation-name" type="text" name="name" value="{{ old('name') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
-      </div>
-      <div style="flex:1 1 260px;">
-        <label for="invitation-email" style="display:block;margin-bottom:6px;font-weight:600;">Client email</label>
-        <input id="invitation-email" type="email" name="email" value="{{ old('email') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
-      </div>
-      <div style="flex:1 1 260px;">
-        <label for="invitation-referrer" style="display:block;margin-bottom:6px;font-weight:600;">Referrer</label>
-        <select id="invitation-referrer" name="referrer_id" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
-          <option value="">Choose a referrer</option>
-          @foreach ($referrers as $referrer)
-            <option value="{{ $referrer->id }}" @selected(old('referrer_id') == $referrer->id)>{{ $referrer->name }} — {{ $referrer->referral_code }}</option>
-          @endforeach
-        </select>
-      </div>
-      <button type="submit" style="padding:12px 18px;border:0;border-radius:9px;background:#0e8a5a;color:#fff;font-weight:700;">Send setup link</button>
-    </form>
-  </section>
-
   <!-- Send Package Modal -->
   <div id="sendPackageModal" class="modal-overlay" aria-hidden="true">
     <div class="modal-card">
@@ -639,6 +613,14 @@
         <h1 class="users-page-title" id="users-page-title">User management</h1>
         <p class="users-page-subtitle">{{ $users->total() }} matching accounts</p>
       </div>
+      <button
+        type="button"
+        id="toggle-account-invitation"
+        aria-expanded="{{ $errors->hasAny(['name', 'email', 'referrer_id']) ? 'true' : 'false' }}"
+        aria-controls="account-invitation-panel"
+        onclick="toggleAccountInvitation()"
+        style="min-height:42px;padding:0 16px;border:0;border-radius:12px;background:linear-gradient(180deg,#11905e,#0a6a45);color:#fff;font-size:13px;font-weight:700;cursor:pointer;"
+      >{{ $errors->hasAny(['name', 'email', 'referrer_id']) ? 'Close setup form' : 'Send setup link' }}</button>
       <div class="search-box">
         <form class="search-form" id="user-search-form" method="get" action="{{ route('admin.dashboard') }}" autocomplete="off">
           <input
@@ -662,6 +644,37 @@
         ></div>
       </div>
     </header>
+
+    <section
+      id="account-invitation-panel"
+      aria-labelledby="account-invitation-title"
+      @if (! $errors->hasAny(['name', 'email', 'referrer_id'])) hidden @endif
+      style="margin:18px 0;padding:20px;background:#fff;border:1px solid #e2e9e5;border-radius:16px;"
+    >
+      <h2 id="account-invitation-title" style="margin:0 0 6px;font-size:20px;">Invite an existing client</h2>
+      <p style="margin:0 0 16px;color:#4b5b54;">Send a private, one-time link so the client can set a password and PIN. The link expires after 24 hours.</p>
+      <form method="POST" action="{{ route('admin.account-invitations.store') }}" style="display:flex;flex-wrap:wrap;align-items:end;gap:12px;">
+        @csrf
+        <div style="flex:1 1 220px;">
+          <label for="invitation-name" style="display:block;margin-bottom:6px;font-weight:600;">Client name</label>
+          <input id="invitation-name" type="text" name="name" value="{{ old('name') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+        </div>
+        <div style="flex:1 1 260px;">
+          <label for="invitation-email" style="display:block;margin-bottom:6px;font-weight:600;">Client email</label>
+          <input id="invitation-email" type="email" name="email" value="{{ old('email') }}" maxlength="255" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+        </div>
+        <div style="flex:1 1 260px;">
+          <label for="invitation-referrer" style="display:block;margin-bottom:6px;font-weight:600;">Referrer</label>
+          <select id="invitation-referrer" name="referrer_id" required style="box-sizing:border-box;width:100%;padding:11px;border:1px solid #cbd5d1;border-radius:9px;">
+            <option value="">Choose a referrer</option>
+            @foreach ($referrers as $referrer)
+              <option value="{{ $referrer->id }}" @selected(old('referrer_id') == $referrer->id)>{{ $referrer->name }} — {{ $referrer->referral_code }}</option>
+            @endforeach
+          </select>
+        </div>
+        <button type="submit" style="padding:12px 18px;border:0;border-radius:9px;background:#0e8a5a;color:#fff;font-weight:700;">Send setup link</button>
+      </form>
+    </section>
 
     <div class="table-wrap">
       <table class="users-table">
@@ -1108,6 +1121,22 @@
 </div>
 
 <script>
+  function toggleAccountInvitation() {
+    var panel = document.getElementById('account-invitation-panel');
+    var button = document.getElementById('toggle-account-invitation');
+    if (!panel || !button) {
+      return;
+    }
+
+    panel.hidden = !panel.hidden;
+    button.setAttribute('aria-expanded', String(!panel.hidden));
+    button.textContent = panel.hidden ? 'Send setup link' : 'Close setup form';
+
+    if (!panel.hidden) {
+      document.getElementById('invitation-name')?.focus();
+    }
+  }
+
   function toggleModal(modalId, open) {
     var modal = document.getElementById(modalId);
     if (!modal) {

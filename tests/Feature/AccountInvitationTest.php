@@ -70,7 +70,9 @@ class AccountInvitationTest extends TestCase
             ->withSession(['investor_pin_verified' => true])
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertSee('Invite an existing client')
+            ->assertSee('Send setup link')
+            ->assertSee('id="account-invitation-panel"', false)
+            ->assertSee('aria-expanded="false"', false)
             ->assertSee(route('admin.account-invitations.store'), false)
             ->assertSee('Referrer');
     }

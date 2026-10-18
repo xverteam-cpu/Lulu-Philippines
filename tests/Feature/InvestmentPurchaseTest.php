@@ -224,13 +224,39 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Client-submitted details')
             ->assertSee('12 Test Street, Manila')
             ->assertSee('P1234567')
-            ->assertSee('Daily Interest Rate')
-            ->assertSee('16. REGULATORY COMPLIANCE')
-            ->assertSee('data:image/png;base64,YWJj', false);
+            ->assertSee('window.LuluContractInitialData', false)
+            ->assertSee('"civilStatus":"Single"', false)
+            ->assertSee('"address":"12 Test Street, Manila"', false)
+            ->assertSee('"idNumber":"P1234567"', false)
+            ->assertSee('id="pageImage"', false)
+            ->assertSee('id="previewOverlay"', false)
+            ->assertSee('YWJj')
+            ->assertDontSee('id="lulu-submit-purchase"', false);
 
         $this->get(route('admin.contracts.show', ['investment' => $investment, 'print' => 1]))
             ->assertOk()
-            ->assertSee('window.addEventListener(\'load\', () => window.print()', false);
+            ->assertSee('window.LuluContractPrintOnLoad = true', false);
+    }
+
+    public function test_large_mobile_signature_is_saved_without_truncation(): void
+    {
+        $user = User::factory()->create();
+        $signatureData = 'data:image/png;base64,'.str_repeat('A', 100_000);
+
+        $this->actingAs($user)
+            ->post('/investments', [
+                'package' => 'crunch',
+                'amount' => 129,
+                'payment_method' => 'bank_transfer',
+                'agreement_signature_data' => $signatureData,
+                'agreement_accepted' => '1',
+            ])
+            ->assertRedirect('/dashboard');
+
+        $this->assertSame(
+            $signatureData,
+            $user->investments()->firstOrFail()->agreement_signature_data,
+        );
     }
 
     public function test_bank_transfer_investment_is_created_as_pending_and_returns_receipt_payload(): void

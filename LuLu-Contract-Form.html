@@ -338,6 +338,19 @@
     data.signatureMode=mode;document.querySelectorAll('[data-mode]').forEach(el=>{const selected=el.dataset.mode===mode;el.classList.toggle('selected',selected);el.setAttribute('aria-pressed',String(selected));});
     $('drawPanel').hidden=mode!=='draw';$('uploadPanel').hidden=mode!=='upload';$('paperPanel').hidden=mode!=='paper';if(reset)changed('signature');syncSignature();
   }
+  async function setContractData(source){
+    const next=empty();
+    for(const key of fields)if(typeof source[key]==='string')next[key]=source[key].slice(0,500);
+    next.noIssueDate=!!source.noIssueDate;next.confirmed=true;
+    next.signatureMode=['draw','upload','paper'].includes(source.signatureMode)?source.signatureMode:'draw';
+    if(typeof source.signature==='string'&&/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(source.signature))next.signature=source.signature;
+    signatureRevision++;strokes=[];drawing=false;drawBase=null;signatureImage=null;data=next;
+    for(const key of fields)$(key).value=data[key];
+    $('noIssueDate').checked=data.noIssueDate;$('confirmed').checked=true;
+    setMode(data.signatureMode,false);
+    await signatureReady;
+    refresh();
+  }
   async function uploadSignature(file){
     if(!file)return;
     if(!['image/png','image/jpeg'].includes(file.type)){setError('signature','Choose a PNG or JPG image.');return;}
@@ -409,8 +422,11 @@
   $('contractForm').addEventListener('submit',e=>{e.preventDefault();if(step===0)$('nextPersonal').click();else if(step===1)$('nextSignature').click();else downloadFilled();});
   window.addEventListener('beforeprint',populatePrint);
   A.pages.forEach((src,i)=>{const button=document.createElement('button');button.type='button';button.className='thumbnail';button.dataset.pageThumb=String(i);button.setAttribute('aria-label','View '+(i===5?'certificate, page 6':'agreement page '+(i+1)));const figure=document.createElement('figure'),img=document.createElement('img');img.src=src;img.alt='';figure.appendChild(img);button.append(figure,document.createTextNode(i===5?'6 · Cert.':String(i+1)));button.addEventListener('click',()=>showPage(i));$('thumbnails').appendChild(button);});
-  setStep(0);refresh();paintPad();restoreDraft();
-  window.LuluContractApp={getData:()=>({...data}),showPage,setStep,createPDF,checkSection};
+  setStep(0);refresh();paintPad();
+  if(window.LuluContractInitialData){
+    setContractData(window.LuluContractInitialData).then(()=>{if(window.LuluContractPrintOnLoad)printDocument();});
+  }else restoreDraft();
+  window.LuluContractApp={getData:()=>({...data}),showPage,setStep,createPDF,checkSection,setData:setContractData,printDocument};
 })();
 </script>
 </body>

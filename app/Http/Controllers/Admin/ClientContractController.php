@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Investment;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ClientContractController extends Controller
@@ -30,37 +31,53 @@ class ClientContractController extends Controller
         return view('admin.client-contracts', ['contracts' => $contracts]);
     }
 
-    public function show(Investment $investment, Request $request): View
+    public function show(Investment $investment, Request $request): Response
     {
         abort_unless($investment->agreement_details && $investment->agreement_signature_data, 404);
 
         $details = $investment->agreement_details;
-        $commencementDate = $details['sign_date'];
-        $signedDate = \Illuminate\Support\Carbon::parse($commencementDate);
+        $investment->load('user');
+        $contractPath = base_path('LuLu-Contract-Form.html');
+        abort_unless(is_file($contractPath), 500, 'The bond agreement form is unavailable.');
 
-        return view('bond-agreement', [
-            'isSample' => false,
-            'isAdminContract' => true,
-            'autoPrint' => $request->boolean('print'),
-            'agreementDetails' => $details,
-            'investment' => $investment->load('user'),
-            'agreement' => [
-                'package_name' => $investment->package_name,
-                'amount' => '$'.number_format((float) $investment->amount, 2),
-                'daily_interest_rate' => number_format((float) $investment->daily_interest_rate, 2).'%',
-                'daily_interest_income' => '$'.number_format($investment->dailyInterestAmount(), 2),
-                'duration_days' => $investment->duration_days.' days',
-                'commencement_date' => $signedDate->toDateString(),
-                'maturity_date' => $signedDate->copy()->addDays($investment->duration_days)->toDateString(),
-                'bondholder' => $details['full_name'],
-                'civil_status' => $details['civil_status'] === 'Other'
-                    ? ($details['civil_status_other'] ?? 'Other')
-                    : $details['civil_status'],
-                'residence' => $details['address'],
-                'signature_name' => $investment->agreement_signature_name,
-                'reference' => 'LOT-INV-'.str_pad((string) $investment->id, 6, '0', STR_PAD_LEFT),
-                'contract_number' => 'LOT-INV-'.str_pad((string) $investment->id, 6, '0', STR_PAD_LEFT),
+        $contractHtml = file_get_contents($contractPath);
+        abort_if($contractHtml === false, 500, 'The bond agreement form could not be read.');
+
+        $headIntegration = view('contracts.investment-admin-head', [
+            'initialData' => [
+                'fullName' => $details['full_name'],
+                'civilStatus' => $details['civil_status'],
+                'civilOther' => $details['civil_status_other'] ?? '',
+                'address' => $details['address'],
+                'signDate' => $details['sign_date'],
+                'idType' => $details['id_type'],
+                'idOther' => $details['id_type_other'] ?? '',
+                'idNumber' => $details['id_number'],
+                'issueDate' => $details['issue_date'] ?? '',
+                'noIssueDate' => filter_var($details['no_issue_date'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'signatureMode' => 'upload',
+                'signature' => $investment->agreement_signature_data,
             ],
+            'autoPrint' => $request->boolean('print'),
+        ])->render();
+        $contractPanel = view('contracts.investment-admin-panel', [
+            'investment' => $investment,
+            'agreementDetails' => $details,
+        ])->render();
+
+        abort_unless(
+            str_contains($contractHtml, '</head>')
+                && str_contains($contractHtml, '<div class="intro">')
+                && str_contains($contractHtml, '</body>'),
+            500,
+            'The bond agreement form is incomplete.',
+        );
+
+        $contractHtml = str_replace('</head>', $headIntegration.'</head>', $contractHtml);
+        $contractHtml = str_replace('<div class="intro">', $contractPanel.'<div class="intro">', $contractHtml);
+
+        return response($contractHtml, 200, [
+            'Content-Type' => 'text/html; charset=UTF-8',
         ]);
     }
 }

@@ -58,7 +58,37 @@ Route::get('/terms-of-service', function () {
 })->name('terms-of-service');
 
 Route::get('/payment-options', function () {
-    return view('public.payment-options');
+    $providers = [
+        'bpi' => [
+            'name' => 'BPI',
+            'qr' => 'BPIQR.png',
+            'initials' => 'BPI',
+            'background' => '#005baa',
+            'accent' => '#d71920',
+        ],
+        'landbank' => [
+            'name' => 'Landbank',
+            'qr' => 'LandbankQR.png',
+            'initials' => 'LANDBANK',
+            'background' => '#006b3f',
+            'accent' => '#f5c542',
+        ],
+        'palawanpay' => [
+            'name' => 'Palawan Pay',
+            'qr' => 'PalawanPay.png',
+            'initials' => 'PALAWAN',
+            'background' => '#078b4f',
+            'accent' => '#f4c542',
+        ],
+    ];
+    $providerKey = (string) request()->query('provider', 'bpi');
+    abort_unless(isset($providers[$providerKey]), 404);
+
+    return view('public.payment-options', [
+        'providers' => $providers,
+        'providerKey' => $providerKey,
+        'provider' => $providers[$providerKey],
+    ]);
 })->name('payment-options');
 
 Route::get('/investors', function () {

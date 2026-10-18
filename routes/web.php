@@ -57,6 +57,10 @@ Route::get('/terms-of-service', function () {
     ]);
 })->name('terms-of-service');
 
+Route::get('/payment-options', function () {
+    return view('public.payment-options');
+})->name('payment-options');
+
 Route::get('/investors', function () {
     return view('public.investors');
 })->name('investors');

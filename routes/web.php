@@ -144,6 +144,18 @@ Route::get('/franchising', function () {
     return view('franchising', ['referral' => request('ref')]);
 })->name('franchising');
 
+Route::get('/insurance', function () {
+    $insurancePath = base_path('Car-Insurance.html');
+    abort_unless(is_file($insurancePath), 500, 'The car insurance page is unavailable.');
+
+    $insuranceHtml = file_get_contents($insurancePath);
+    abort_if($insuranceHtml === false, 500, 'The car insurance page could not be read.');
+
+    return response($insuranceHtml, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('insurance');
+
 Route::post('/franchise-applications', [FranchiseApplicationController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('franchise-applications.store');

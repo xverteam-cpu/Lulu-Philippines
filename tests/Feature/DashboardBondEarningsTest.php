@@ -123,6 +123,8 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('9:41')
             ->assertDontSee('dashboard-statusbar')
             ->assertDontSee('dashboard-status-icons')
+            ->assertSee('href="'.route('insurance').'"', false)
+            ->assertSee('>Insurance</span>', false)
             ->assertSee('Purchase Bonds')
             ->assertSee('Apply for Franchise')
             ->assertSee(asset('banner-bonds.jpg'), false)
@@ -141,6 +143,18 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertStringContainsString('$82.50', $plainText);
         $this->assertStringContainsString('$0.00', $plainText);
         $this->assertStringNotContainsString('$906.31', $plainText);
+    }
+
+    public function test_insurance_quick_action_displays_the_car_insurance_page(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('insurance'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->assertSee('<title>Car Insurance | Standard Insurance</title>', false)
+            ->assertSee('Lulu x Standard insurance');
     }
 
     public function test_dashboard_profile_reminder_remains_until_identity_verification_is_approved(): void

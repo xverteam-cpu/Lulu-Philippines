@@ -281,6 +281,7 @@
                 render();
                 status.classList.remove('error');
                 status.textContent = `${entered.length} digit${entered.length === 1 ? '' : 's'} entered`;
+                if (entered.length === pinLength) submitPin();
             };
             const submitPin = () => {
                 if (submit.disabled || submitting) return;

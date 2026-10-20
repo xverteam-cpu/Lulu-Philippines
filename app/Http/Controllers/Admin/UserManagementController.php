@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class UserManagementController extends Controller
@@ -244,25 +245,33 @@ class UserManagementController extends Controller
     {
         $packages = InvestmentPackages::all();
 
-        $request->validate([
+        $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'package' => 'required|in:'.implode(',', array_keys($packages)),
+            'amount' => 'required|numeric|decimal:0,2',
         ]);
 
-        $user = User::findOrFail($request->user_id);
-        $package = $packages[$request->package];
+        $user = User::findOrFail($validated['user_id']);
+        $package = $packages[$validated['package']];
+        $amount = $validated['amount'];
 
-        $created = DB::transaction(function () use ($user, $package, $request) {
-            if (! InvestmentPackages::reserveSlot($request->package)) {
+        if ((float) $amount < $package['min_amount'] || (float) $amount > $package['max_amount']) {
+            throw ValidationException::withMessages([
+                'amount' => 'Amount for '.$package['name'].' must be between $'.number_format($package['min_amount'], 2).' and $'.number_format($package['max_amount'], 2).'.',
+            ]);
+        }
+
+        $created = DB::transaction(function () use ($user, $package, $validated, $amount) {
+            if (! InvestmentPackages::reserveSlot($validated['package'])) {
                 return false;
             }
 
             $investment = Investment::create([
                 'user_id' => $user->id,
-                'package_key' => $request->package,
+                'package_key' => $validated['package'],
                 'package_name' => $package['name'],
-                'package_price' => $package['price'],
-                'amount' => $package['price'],
+                'package_price' => $amount,
+                'amount' => $amount,
                 'daily_interest_rate' => $package['daily_interest_rate'],
                 'duration_days' => $package['duration_days'],
                 'payment_method' => 'admin_transfer',

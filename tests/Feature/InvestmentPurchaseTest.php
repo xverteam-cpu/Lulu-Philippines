@@ -371,6 +371,7 @@ class InvestmentPurchaseTest extends TestCase
             ->post('/admin/send-package', [
                 'user_id' => $target->id,
                 'package' => 'supreme',
+                'amount' => '7999.00',
             ]);
 
         $response->assertRedirect('/admin/dashboard');
@@ -408,6 +409,7 @@ class InvestmentPurchaseTest extends TestCase
             ->post('/admin/send-package', [
                 'user_id' => $user->id,
                 'package' => 'crunch',
+                'amount' => '129.00',
             ]);
 
         $response->assertRedirect('/admin/dashboard');

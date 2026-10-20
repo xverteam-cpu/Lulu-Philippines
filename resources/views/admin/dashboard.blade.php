@@ -482,7 +482,7 @@
       <div class="modal-header">
         <div>
           <h2 class="modal-title">Send Package to User</h2>
-          <p class="modal-subtitle">Choose a user and package to gift instantly.</p>
+          <p class="modal-subtitle">Choose a user, package, and amount to gift instantly.</p>
         </div>
         <button type="button" class="modal-close" onclick="toggleModal('sendPackageModal', false)" aria-label="Close send package modal">&times;</button>
       </div>
@@ -491,13 +491,27 @@
         @csrf
 
         <div class="modal-field">
-          <label class="modal-label" for="send-package-user">Select User</label>
-          <select id="send-package-user" name="user_id" required class="modal-select">
-            <option value="">-- Choose a user --</option>
-            @foreach($users as $user)
-              <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-            @endforeach
-          </select>
+          <label class="modal-label" for="send-package-user-search">Select User</label>
+          <div class="send-package-user-picker">
+            <input
+              id="send-package-user-search"
+              type="search"
+              required
+              class="modal-input"
+              placeholder="Search by name or email..."
+              autocomplete="off"
+              aria-autocomplete="list"
+              aria-controls="send-package-user-suggestions"
+              aria-expanded="false"
+            >
+            <input id="send-package-user-id" type="hidden" name="user_id">
+            <div
+              id="send-package-user-suggestions"
+              class="user-search-suggestions"
+              role="listbox"
+              aria-label="Matching users"
+            ></div>
+          </div>
         </div>
 
         <div class="modal-field">
@@ -505,17 +519,31 @@
           <select id="adminPackageSelect" name="package" required class="modal-select">
             <option value="">-- Choose a package --</option>
             @foreach($packages as $packageKey => $package)
-              <option value="{{ $packageKey }}">{{ $package['name'] }} — ${{ number_format($package['price'], 2, '.', ',') }} — {{ number_format($package['daily_interest_rate'], 2) }}% daily</option>
+              <option
+                value="{{ $packageKey }}"
+                data-min-amount="{{ number_format($package['min_amount'], 2, '.', '') }}"
+                data-max-amount="{{ number_format($package['max_amount'], 2, '.', '') }}"
+              >{{ $package['name'] }} — ${{ number_format($package['price'], 2, '.', ',') }} — {{ number_format($package['daily_interest_rate'], 2) }}% daily</option>
             @endforeach
           </select>
         </div>
 
-        <div class="package-quick-row">
-          @foreach($packages as $packageKey => $package)
-            <button type="button" class="package-quick-btn" data-package-key="{{ $packageKey }}">
-              {{ $package['name'] }}
-            </button>
-          @endforeach
+        <div class="modal-field">
+          <label class="modal-label" for="send-package-amount">Amount (USD)</label>
+          <input
+            id="send-package-amount"
+            type="number"
+            name="amount"
+            required
+            min="0.01"
+            max="50000.00"
+            step="0.01"
+            class="modal-input"
+            placeholder="Select a package first"
+            inputmode="decimal"
+            aria-describedby="send-package-amount-help"
+          >
+          <small id="send-package-amount-help" class="modal-help">Select a package to see its allowed amount range.</small>
         </div>
 
         <div class="modal-actions">
@@ -958,6 +986,179 @@
     var activeIndex = -1;
     var currentUsers = [];
     var requestNumber = 0;
+
+    var packageUserSearch = document.getElementById('send-package-user-search');
+    var packageUserId = document.getElementById('send-package-user-id');
+    var packageUserSuggestions = document.getElementById('send-package-user-suggestions');
+    var packageForm = packageUserSearch ? packageUserSearch.closest('form') : null;
+    var packageSelect = document.getElementById('adminPackageSelect');
+    var packageAmount = document.getElementById('send-package-amount');
+    var packageAmountHelp = document.getElementById('send-package-amount-help');
+    var packageDebounceTimer;
+    var packageActiveIndex = -1;
+    var packageUsers = [];
+    var packageRequestNumber = 0;
+
+    function updatePackageAmountRange() {
+      if (!packageSelect || !packageAmount || !packageAmountHelp) return;
+
+      var selectedPackage = packageSelect.options[packageSelect.selectedIndex];
+      var minAmount = selectedPackage && selectedPackage.dataset.minAmount;
+      var maxAmount = selectedPackage && selectedPackage.dataset.maxAmount;
+
+      if (!minAmount || !maxAmount) {
+        packageAmount.min = '0.01';
+        packageAmount.max = '50000.00';
+        packageAmount.placeholder = 'Select a package first';
+        packageAmountHelp.textContent = 'Select a package to see its allowed amount range.';
+        return;
+      }
+
+      packageAmount.min = minAmount;
+      packageAmount.max = maxAmount;
+      packageAmount.placeholder = minAmount + ' - ' + maxAmount;
+      packageAmountHelp.textContent = 'Allowed range: $' + minAmount + ' to $' + maxAmount + '.';
+    }
+
+    if (packageSelect) {
+      packageSelect.addEventListener('change', updatePackageAmountRange);
+      updatePackageAmountRange();
+    }
+
+    function closePackageUserSuggestions() {
+      packageUserSuggestions.classList.remove('is-open');
+      packageUserSearch.setAttribute('aria-expanded', 'false');
+      packageUserSearch.removeAttribute('aria-activedescendant');
+      packageActiveIndex = -1;
+    }
+
+    function choosePackageUser(index) {
+      var user = packageUsers[index];
+      if (!user) return;
+
+      packageUserSearch.value = user.name + ' (' + user.email + ')';
+      packageUserId.value = user.id;
+      packageUserSearch.setCustomValidity('');
+      closePackageUserSuggestions();
+    }
+
+    function renderPackageUserSuggestions(users) {
+      packageUsers = users;
+      packageActiveIndex = -1;
+      packageUserSuggestions.replaceChildren();
+
+      if (!users.length) {
+        var emptyMessage = document.createElement('div');
+        emptyMessage.className = 'user-search-suggestions-empty';
+        emptyMessage.textContent = 'No matching users found.';
+        packageUserSuggestions.appendChild(emptyMessage);
+        packageUserSuggestions.classList.add('is-open');
+        packageUserSearch.setAttribute('aria-expanded', 'true');
+        return;
+      }
+
+      users.forEach(function (user, index) {
+        var option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'user-search-suggestion';
+        option.id = 'send-package-user-option-' + user.id;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.addEventListener('mousedown', function (event) {
+          event.preventDefault();
+          choosePackageUser(index);
+        });
+
+        var name = document.createElement('span');
+        name.className = 'user-search-suggestion-name';
+        name.textContent = user.name || 'Unnamed user';
+
+        var email = document.createElement('span');
+        email.className = 'user-search-suggestion-meta';
+        email.textContent = user.email || '';
+
+        option.appendChild(name);
+        option.appendChild(email);
+        packageUserSuggestions.appendChild(option);
+      });
+
+      packageUserSuggestions.classList.add('is-open');
+      packageUserSearch.setAttribute('aria-expanded', 'true');
+    }
+
+    if (packageUserSearch && packageUserId && packageUserSuggestions && packageForm) {
+      packageUserSearch.addEventListener('input', function () {
+        packageUserId.value = '';
+        packageUserSearch.setCustomValidity('');
+        window.clearTimeout(packageDebounceTimer);
+        var query = packageUserSearch.value.trim();
+        var thisRequest = ++packageRequestNumber;
+
+        if (query.length < 2) {
+          packageUsers = [];
+          closePackageUserSuggestions();
+          return;
+        }
+
+        packageDebounceTimer = window.setTimeout(function () {
+          fetch(suggestionUrl + '?q=' + encodeURIComponent(query), {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+          }).then(function (response) {
+            if (!response.ok) throw new Error('User suggestions failed with status ' + response.status);
+            return response.json();
+          }).then(function (result) {
+            if (thisRequest !== packageRequestNumber || query !== packageUserSearch.value.trim()) return;
+            renderPackageUserSuggestions(result.users);
+          }).catch(function (error) {
+            if (thisRequest === packageRequestNumber) {
+              packageUsers = [];
+              renderPackageUserSuggestions([]);
+              packageUserSuggestions.querySelector('.user-search-suggestions-empty').textContent = 'Unable to load users. Please try again.';
+              console.error(error);
+            }
+          });
+        }, 200);
+      });
+
+      packageUserSearch.addEventListener('keydown', function (event) {
+        if (!packageUserSuggestions.classList.contains('is-open') || !packageUsers.length) {
+          if (event.key === 'Escape') closePackageUserSuggestions();
+          return;
+        }
+
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          var direction = event.key === 'ArrowDown' ? 1 : -1;
+          packageActiveIndex = packageActiveIndex < 0
+            ? (direction === 1 ? 0 : packageUsers.length - 1)
+            : (packageActiveIndex + direction + packageUsers.length) % packageUsers.length;
+          packageUserSuggestions.querySelectorAll('.user-search-suggestion').forEach(function (option, index) {
+            var isActive = index === packageActiveIndex;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-selected', String(isActive));
+          });
+          packageUserSearch.setAttribute('aria-activedescendant', 'send-package-user-option-' + packageUsers[packageActiveIndex].id);
+        } else if (event.key === 'Enter' && packageActiveIndex >= 0) {
+          event.preventDefault();
+          choosePackageUser(packageActiveIndex);
+        } else if (event.key === 'Escape') {
+          closePackageUserSuggestions();
+        }
+      });
+
+      packageUserSearch.addEventListener('blur', function () {
+        window.setTimeout(closePackageUserSuggestions, 120);
+      });
+
+      packageForm.addEventListener('submit', function (event) {
+        if (!packageUserId.value) {
+          event.preventDefault();
+          packageUserSearch.setCustomValidity('Choose a user from the matching results.');
+          packageUserSearch.reportValidity();
+        }
+      });
+    }
 
     function closeSuggestions() {
       suggestions.classList.remove('is-open');

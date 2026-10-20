@@ -600,6 +600,12 @@
     word-break: break-word;
   }
 
+  .modal-help {
+    color: #64748B;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
   .modal-actions {
     display: flex;
     gap: 12px;
@@ -635,26 +641,8 @@
     background: #F8FAFC;
   }
 
-  .package-quick-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-
-  .package-quick-btn {
-    border: 1px solid #D1D5DB;
-    background: #ffffff;
-    color: #0F172A;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .18s ease;
-  }
-
-  .package-quick-btn:hover {
-    background: #F8FAFC;
+  .send-package-user-picker {
+    position: relative;
   }
 
   .toolbar-actions {

@@ -29,6 +29,7 @@ class PackageGiftEmailTest extends TestCase
         $response = $this->post(route('admin.send-package'), [
             'user_id' => $recipient->id,
             'package' => 'loaded',
+            'amount' => '799.00',
         ]);
 
         $response->assertRedirect('/admin/dashboard');
@@ -54,6 +55,7 @@ class PackageGiftEmailTest extends TestCase
         $response = $this->post(route('admin.send-package'), [
             'user_id' => $recipient->id,
             'package' => 'loaded',
+            'amount' => '799.00',
         ]);
 
         $response->assertRedirect();
@@ -65,11 +67,54 @@ class PackageGiftEmailTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-07-02 09:00:00'));
         $accrued = DailyInterestAccrualService::accrueDueInterestForUser($recipient->fresh());
 
-        $this->assertEquals(5.60, round($accrued, 2));
-        $this->assertEquals(5.60, round((float) $recipient->fresh()->balance, 2));
+        $this->assertEquals(6.39, round($accrued, 2));
+        $this->assertEquals(6.39, round((float) $recipient->fresh()->balance, 2));
 
         Mail::assertSent(PackageGiftedEmail::class, function (PackageGiftedEmail $mail) use ($recipient): bool {
             return $mail->hasTo($recipient->email);
         });
+    }
+
+    public function test_admin_can_set_a_custom_amount_for_a_selected_package(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
+        $recipient = User::factory()->create(['email' => 'recipient@example.com', 'balance' => 0]);
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->post(route('admin.send-package'), [
+                'user_id' => $recipient->id,
+                'package' => 'loaded',
+                'amount' => '1250.50',
+            ])
+            ->assertRedirect('/admin/dashboard');
+
+        $this->assertDatabaseHas('investments', [
+            'user_id' => $recipient->id,
+            'package_key' => 'loaded',
+            'package_price' => 1250.50,
+            'amount' => 1250.50,
+            'daily_interest_rate' => 0.8,
+            'duration_days' => 120,
+        ]);
+    }
+
+    public function test_admin_gift_amount_must_fit_the_selected_package_range(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
+        $recipient = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->post(route('admin.send-package'), [
+                'user_id' => $recipient->id,
+                'package' => 'loaded',
+                'amount' => '125.50',
+            ])
+            ->assertSessionHasErrors('amount');
+
+        $this->assertDatabaseCount('investments', 0);
     }
 }

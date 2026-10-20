@@ -2642,7 +2642,9 @@
       $dailyInterest = $investments->sum(fn($i) => $i->dailyInterestAmount());
   }
   $availableBalance = (float) $user->balance;
-  $approvedInvestments = $investments->where('status', 'approved');
+  $approvedInvestments = $investments
+      ->where('status', 'approved')
+      ->whereNull('cancelled_at');
   $totalInvestment = $approvedInvestments->sum(fn($investment) => (float) $investment->amount);
   $packageDefinitions = \App\Support\InvestmentPackages::all();
   $packageEarnings = $approvedInvestments

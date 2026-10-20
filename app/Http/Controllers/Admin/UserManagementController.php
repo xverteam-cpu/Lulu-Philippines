@@ -151,6 +151,42 @@ class UserManagementController extends Controller
             ->with('status', 'User account deleted successfully.');
     }
 
+    public function destroyInvestment(User $user, Investment $investment): RedirectResponse
+    {
+        $result = DB::transaction(function () use ($user, $investment): string {
+            $investment = $user->investments()
+                ->whereKey($investment->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($investment->cancelled_at) {
+                return 'already_deleted';
+            }
+
+            if ($investment->status !== 'approved') {
+                return 'not_active';
+            }
+
+            $investment->accrueDailyInterest();
+            $investment->forceFill(['cancelled_at' => now()])->save();
+
+            return 'deleted';
+        });
+
+        if ($result === 'already_deleted') {
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['investment' => 'This package has already been deleted.']);
+        }
+
+        if ($result === 'not_active') {
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['investment' => 'Only active packages can be deleted.']);
+        }
+
+        return redirect()->route('admin.dashboard')
+            ->with('status', 'Package deleted. Previously credited income was kept and no further interest will accrue.');
+    }
+
     public function restrict(User $user)
     {
         if ($user->is_admin) {

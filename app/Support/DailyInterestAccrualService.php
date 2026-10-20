@@ -14,6 +14,7 @@ class DailyInterestAccrualService
 
         $investments = Investment::query()
             ->where('status', 'approved')
+            ->whereNull('cancelled_at')
             ->where(function ($query) {
                 $query->whereNotNull('starts_at')
                     ->orWhereNotNull('approved_at');
@@ -37,6 +38,7 @@ class DailyInterestAccrualService
 
         $investments = $user->investments()
             ->where('status', 'approved')
+            ->whereNull('cancelled_at')
             ->where(function ($query) {
                 $query->whereNotNull('starts_at')
                     ->orWhereNotNull('approved_at');

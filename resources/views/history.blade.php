@@ -204,8 +204,10 @@
           <div class="history-body" id="history-investments"><div class="history-inner"><div class="history-entries">
             @forelse ($investments as $investment)
               @php
-                $statusLabel = ucfirst(str_replace('_', ' ', (string) $investment->status));
-                $statusClass = $historyTagClass($investment->status);
+                $statusLabel = $investment->cancelled_at
+                    ? 'Deleted'
+                    : ucfirst(str_replace('_', ' ', (string) $investment->status));
+                $statusClass = $investment->cancelled_at ? 'neutral' : $historyTagClass($investment->status);
               @endphp
               <div class="history-entry">
                 <div><div class="history-entry-name">{{ $investment->package_name }}</div><div class="history-entry-date">{{ $investment->created_at->format('F j, Y') }}</div></div>

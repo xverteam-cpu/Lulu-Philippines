@@ -23,6 +23,7 @@ class Investment extends Model
         'status',
         'approved_by',
         'approved_at',
+        'cancelled_at',
         'rejection_reason',
         'interest_days_credited',
         'last_interest_accrued_at',
@@ -43,6 +44,7 @@ class Investment extends Model
             'interest_days_credited' => 'integer',
             'starts_at' => 'datetime',
             'approved_at' => 'datetime',
+            'cancelled_at' => 'datetime',
             'last_interest_accrued_at' => 'datetime',
             'agreement_details' => 'array',
             'agreement_signed_at' => 'datetime',
@@ -72,7 +74,7 @@ class Investment extends Model
     public function elapsedInterestDays(): int
     {
         $firstInterestDate = $this->effectiveStartDate()->copy()->startOfDay()->addDay();
-        $today = now()->startOfDay();
+        $today = ($this->cancelled_at ?? now())->copy()->startOfDay();
 
         if ($today->lt($firstInterestDate)) {
             return 0;
@@ -98,7 +100,7 @@ class Investment extends Model
     {
         $effectiveStartDate = $this->effectiveStartDate();
 
-        if ($this->status !== 'approved' || ! $effectiveStartDate) {
+        if ($this->status !== 'approved' || $this->cancelled_at || ! $effectiveStartDate) {
             return 0.0;
         }
 

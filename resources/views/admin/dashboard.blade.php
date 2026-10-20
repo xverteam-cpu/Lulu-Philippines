@@ -795,7 +795,8 @@
           </div>
         </div>
         @php
-          $approvedInvestments = $user->investments()->where('status', 'approved')->get();
+          $userInvestments = $user->investments()->latest()->get();
+          $approvedInvestments = $userInvestments->where('status', 'approved');
           $investmentIncomeRecords = $approvedInvestments;
           $totalCreditedInterest = $approvedInvestments->sum(fn($investment) => $investment->creditedInterest());
           $displayBalance = (float) ($user->balance ?? 0);
@@ -859,16 +860,23 @@
 
       <details class="user-history-section">
         <summary class="user-history-title">Deposit / Investment History</summary>
-        @if($user->investments()->latest()->get()->isNotEmpty())
+        @if($userInvestments->isNotEmpty())
           <div class="user-history-list">
-            @foreach($user->investments()->latest()->get() as $investment)
+            @foreach($userInvestments as $investment)
               <div class="user-history-item">
                 <strong>{{ $investment->package_name ?: 'Investment' }}</strong>
                 <div class="user-history-meta">
-                  <span>{{ $investment->status }}</span>
+                  <span>{{ $investment->cancelled_at ? 'Deleted' : ucfirst($investment->status) }}</span>
                   <span>${{ number_format((float) $investment->amount, 2) }}</span>
                   <span>{{ $investment->created_at?->format('M d, Y') ?: '—' }}</span>
                 </div>
+                @if ($investment->status === 'approved' && ! $investment->cancelled_at)
+                  <form action="{{ route('admin.users.investments.destroy', [$user, $investment]) }}" method="POST" style="margin-top:12px;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="admin-nav-btn" style="border-color:#b91c1c;color:#b91c1c;" onclick="return confirm('Delete the {{ $investment->package_name ?: 'investment' }} package? Previously credited income will remain, but no further daily interest will accrue.')">Delete package</button>
+                  </form>
+                @endif
               </div>
             @endforeach
           </div>

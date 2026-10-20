@@ -220,6 +220,7 @@ Route::get('/dashboard', function () {
 
     $approvedInvestments = $user->investments()
         ->where('status', 'approved')
+        ->whereNull('cancelled_at')
         ->get();
     $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->dailyInterestAmount());
 
@@ -482,7 +483,9 @@ Route::get('/invest/advertisement', function () {
 Route::get('/invest', function () {
     $meta = CurrencyRateService::latestUsdToPhpWithMeta();
     $user = Auth::user();
-    $totalInvestment = $user ? (float) $user->investments()->where('status', 'approved')->sum('amount') : 0;
+    $totalInvestment = $user
+        ? (float) $user->investments()->where('status', 'approved')->whereNull('cancelled_at')->sum('amount')
+        : 0;
     $approvedInvestments = collect();
     $packageEarnings = collect();
     $availableBalance = 0;
@@ -490,7 +493,9 @@ Route::get('/invest', function () {
         DailyInterestAccrualService::accrueDueInterestForUser($user);
         $user->refresh();
         $investments = $user->investments()->latest()->get();
-        $approvedInvestments = $investments->where('status', 'approved');
+        $approvedInvestments = $investments
+            ->where('status', 'approved')
+            ->whereNull('cancelled_at');
         $packageEarnings = $approvedInvestments
             ->groupBy('package_key')
             ->map(fn ($packageInvestments) => $packageInvestments->sum(fn ($investment) => $investment->creditedInterest()));
@@ -1043,6 +1048,10 @@ Route::get('/admin/users/{user}', function (User $user) {
 
     return app(UserManagementController::class)->show($user);
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.users.show');
+
+Route::delete('/admin/users/{user}/investments/{investment}', [UserManagementController::class, 'destroyInvestment'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.users.investments.destroy');
 
 Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])
     ->middleware(['auth', RestrictUserAccess::class])

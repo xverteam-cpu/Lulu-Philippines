@@ -21,6 +21,13 @@
             text-align: center;
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
+        .investors-pin-lock-form {
+            display: flex;
+            width: 100%;
+            min-height: 0;
+            flex: 1;
+            flex-direction: column;
+        }
         .investors-pin-lock *,
         .investors-pin-lock *::before,
         .investors-pin-lock *::after {
@@ -40,13 +47,9 @@
         }
         .investors-pin-lock .pin-brand {
             display: block;
-            width: 50px;
-            height: 50px;
+            width: 128px;
+            height: 48px;
             margin: 0 auto 12px;
-            padding: 5px;
-            border: 1px solid #e5eee8;
-            border-radius: 15px;
-            background: #f4f8f4;
             object-fit: contain;
         }
         .investors-pin-lock .pin-eyebrow {
@@ -316,7 +319,7 @@
                 height: 100%;
                 overflow: hidden;
                 background: #032818;
-                background-image: linear-gradient(#00180c66, #00180c66), url("{{ asset('pin-login-background.webp') }}");
+                background-image: url("{{ asset('investor-mobile-background.png') }}");
                 background-position: center;
                 background-size: cover;
                 background-repeat: no-repeat;
@@ -337,7 +340,7 @@
                 border: 0;
                 border-radius: 0;
                 background: #062b19;
-                background-image: url("{{ asset('pin-login-background.webp') }}");
+                background-image: url("{{ asset('investor-mobile-background.png') }}");
                 background-position: center;
                 background-size: cover;
                 box-shadow: 0 28px 90px #0008;
@@ -595,7 +598,7 @@
             overflow: hidden;
             border: 0;
             border-radius: 38px;
-            background: #f3f7f5;
+            background: #f3f7f5 url("{{ asset('investor-mobile-background.png') }}") center / cover no-repeat;
             box-shadow: 0 28px 70px rgba(8, 42, 28, .22);
         }
         .investors-pin-lock {
@@ -603,7 +606,7 @@
             height: 100%;
             min-height: 0;
             flex-direction: column;
-            background: radial-gradient(ellipse at 100% 10%, #e1efdf, transparent 48%), #f3f7f5;
+            background: transparent;
             color: #082a1c;
             font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
@@ -634,6 +637,13 @@
             font-size: 10px;
         }
         .investors-pin-lock .pin-hero-copy span { color: #116337; }
+        .investors-pin-lock .pin-wordmark {
+            display: block;
+            width: 112px;
+            height: 42px;
+            object-fit: contain;
+            object-position: left center;
+        }
         .investors-pin-lock .pin-panel {
             display: flex;
             min-height: 0;
@@ -795,15 +805,16 @@
         @media (max-width: 780px) {
             body.investors-pin-screen {
                 background: #dce5df;
-                background-image:
-                    radial-gradient(at 20% 15%, rgba(56, 178, 119, .12) 0, transparent 50%),
-                    radial-gradient(at 80% 85%, rgba(8, 42, 28, .12) 0, transparent 50%);
+                background-image: url("{{ asset('investor-mobile-background.png') }}");
+                background-position: center;
+                background-size: cover;
+                background-repeat: no-repeat;
             }
             body.investors-pin-screen .investors-login-card.investors-pin-lock-card {
                 height: 100vh !important;
                 height: 100dvh !important;
                 min-height: 0 !important;
-                background: #f3f7f5;
+                background: #f3f7f5 url("{{ asset('investor-mobile-background.png') }}") center / cover no-repeat;
                 box-shadow: none;
             }
             .investors-pin-lock .pin-hero {
@@ -839,11 +850,11 @@
     @php($pinLength = 4)
     <header class="pin-hero">
         <div class="pin-topbar">
-            <span class="pin-wordmark" aria-label="LuLu">LuLu</span>
+            <img class="pin-wordmark" src="{{ asset('cxcx.png') }}" alt="LuLu Philippines">
             <span class="pin-brand-divider" aria-hidden="true"></span>
             <span class="pin-country">PHILIPPINES</span>
         </div>
-        <p class="pin-hero-copy">Your everyday, <span>made easier.</span></p>
+        <p class="pin-hero-copy">Your everyday, <span>elevated.</span></p>
     </header>
 
     <div class="pin-panel">
@@ -852,7 +863,7 @@
                 <div class="pin-lock-badge" aria-hidden="true">
                     <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"></path></svg>
                 </div>
-                <img class="pin-brand" src="{{ asset('icons/lulu-512.png') }}" alt="LuLu Philippines">
+                <img class="pin-brand" src="{{ asset('cxcx.png') }}" alt="LuLu Philippines">
                 <p class="pin-eyebrow">Secure investor access</p>
                 <h1 id="investors-pin-title">{{ $pinSetupRequired ? 'Create your PIN' : 'Welcome back.' }}</h1>
                 <p class="pin-description">
@@ -912,7 +923,7 @@
 
     <script>
         (() => {
-            const form = document.querySelector('.investors-login-form[data-pin-lock="true"]');
+            const form = document.querySelector('.investors-pin-lock-form[data-pin-lock="true"]');
             const setup = @json($pinSetupRequired);
             const pinLength = @json($pinLength);
             const pinInput = document.getElementById('investors-pin-value');

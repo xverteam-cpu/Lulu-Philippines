@@ -56,7 +56,10 @@
         </section>
         @else
         <section class="investors-login-card investors-pin-lock-card" id="investor-login">
-            @include('public.partials.investor-pin-lock')
+            <form class="investors-pin-lock-form" method="post" action="{{ auth()->user()->pin_hash ? route('investor.pin.verify') : route('investor.pin.setup') }}" data-pin-lock="true">
+                @csrf
+                @include('public.partials.investor-pin-lock')
+            </form>
         </section>
         @endguest
     </section>

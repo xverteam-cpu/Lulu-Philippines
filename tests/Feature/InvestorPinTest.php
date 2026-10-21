@@ -23,16 +23,46 @@ class InvestorPinTest extends TestCase
         $response->assertOk()
             ->assertSee('Investor Relations')
             ->assertSee('Enter your 4-digit PIN to continue.')
+            ->assertSeeInOrder([
+                '<form class="investors-pin-lock-form" method="post" action="'.route('investor.pin.verify').'" data-pin-lock="true">',
+                'name="_token"',
+                'class="pin-signout investors-pin-signout" type="submit" formaction="'.route('logout').'"',
+            ], false)
+            ->assertSee("document.querySelector('.investors-pin-lock-form[data-pin-lock=\"true\"]')", false)
             ->assertSee('Forgot your PIN? Reset your password to set a new one.')
             ->assertSee('Secure investor access')
             ->assertSee('grid-template-columns: repeat(3, minmax(0, 1fr));', false)
             ->assertSee('justify-content: center;', false)
             ->assertSee('min-width: 0;', false)
             ->assertSee('background: #fff;', false)
-            ->assertSee('icons/lulu-512.png')
+            ->assertSee('investor-mobile-background.png')
+            ->assertSee('cxcx.png')
             ->assertDontSee('investors-dashboard-continue');
 
         $this->assertSame(4, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
+    }
+
+    public function test_investor_can_sign_out_from_the_pin_screen(): void
+    {
+        $user = User::factory()->create([
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('investors'))
+            ->assertOk()
+            ->assertSee('data-pin-lock="true"', false)
+            ->assertSee('formaction="'.route('logout').'"', false);
+
+        $this->post(route('logout'))
+            ->assertRedirect(route('investors'));
+        $this->assertGuest();
+
+        $this->get(route('investors'))
+            ->assertOk()
+            ->assertSee('Your everyday.')
+            ->assertSee('Continue with Google')
+            ->assertDontSee('Welcome back.');
     }
 
     public function test_guest_sees_the_investor_relations_login_without_the_old_page_layout(): void

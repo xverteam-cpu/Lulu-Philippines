@@ -35,13 +35,16 @@ class InvestorPinTest extends TestCase
         $this->assertSame(4, substr_count($response->getContent(), '<span class="pin-dot"></span>'));
     }
 
-    public function test_guest_keeps_the_existing_login_and_registration_card(): void
+    public function test_guest_sees_the_investor_relations_login_without_the_old_page_layout(): void
     {
         $this->get(route('investors'))
             ->assertOk()
             ->assertSee('Investor Relations')
+            ->assertSee('Your everyday.')
             ->assertSee('Continue with Google')
             ->assertSee('Create an account')
+            ->assertDontSee('Lulu Retail Holdings')
+            ->assertDontSee('Where The World Comes To Shop')
             ->assertDontSee('Create your PIN');
     }
 

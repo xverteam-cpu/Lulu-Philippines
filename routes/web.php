@@ -36,7 +36,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 Route::get('/', function () {
-    return view('public.home');
+    return redirect()->route('investors');
 })->name('public.home');
 
 Route::get('/about', function () {
@@ -100,7 +100,7 @@ Route::get('/investors/market-quote', InvestorMarketQuoteController::class)
     ->name('investors.market-quote');
 
 Route::get('/home', function () {
-    return redirect()->route('public.home');
+    return redirect()->route('investors');
 })->name('home');
 
 Route::get('/order', function () {

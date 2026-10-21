@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#087e50">
+<title>LuLu Philippines · Sign in</title>
+<style>
+:root{color-scheme:light;--green:#087e50;--view-height:100dvh}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{position:fixed;inset:0;background:#edf3ee;color:white;font-family:Arial,Helvetica,sans-serif}
+button,input{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d6f39a;outline-offset:4px}
+.screen{position:absolute;top:0;left:0;width:100%;height:var(--view-height,100dvh);overflow:hidden;display:flex;flex-direction:column;background:radial-gradient(ellipse at 0% 0%,#1a9866 0,transparent 55%),linear-gradient(150deg,#0b8959,#06794b);padding:max(20px,env(safe-area-inset-top)) max(26px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(26px,env(safe-area-inset-left));isolation:isolate}
+.screen::before,.screen::after{content:"";position:absolute;z-index:-1;border:1px solid #ffffff10;border-radius:50%;width:620px;height:620px;right:-430px;top:-250px;pointer-events:none}.screen::after{right:auto;left:-490px;top:auto;bottom:-300px;width:800px;height:800px}
+header{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;max-width:380px;width:100%;margin:0 auto}
+.brand{font-weight:800;font-size:20px;letter-spacing:-.6px}.brand span{display:block;font-size:8px;letter-spacing:2px;font-weight:600;margin-top:5px}
+.badge{display:flex;align-items:center;gap:6px;font-size:10px;color:#d1ebdc}.badge svg{width:14px;height:14px}
+main{width:100%;max-width:380px;margin:auto;min-height:0;flex-shrink:0}
+.intro{margin-bottom:clamp(24px,5dvh,42px)}.eyebrow{font-size:10px;font-weight:700;letter-spacing:2px;color:#c1e4ce;margin:0 0 12px}h1{font-size:clamp(30px,8vw,39px);font-weight:600;letter-spacing:-1.4px;margin:0 0 10px;line-height:1.1}.subtitle{font-size:13px;line-height:1.5;margin:0;color:#cce7d8}
+.google,.continue{border:1px solid #d9e5dd;background:#fff;border-radius:100px;width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:12px;transition:transform .15s,box-shadow .15s;box-shadow:0 5px 16px #0043260c}.google:active,.continue:active{transform:scale(.98)}.google{color:#37433c;font-size:11px;letter-spacing:1.3px;font-weight:600}.google svg{width:19px;height:19px}
+.divider{display:flex;align-items:center;gap:14px;margin:22px 0;font-size:11px;letter-spacing:2px;color:#cce7d8}.divider::before,.divider::after{content:"";height:1px;flex:1;background:#ffffff40}
+label{display:block;font-size:11px;font-weight:600;margin:0 0 9px 4px;color:#e4f1e8}input{display:block;width:100%;height:50px;border:1px solid #ffffff75;border-radius:100px;padding:0 18px;color:white;background:#ffffff20;outline:none;font-size:16px;box-shadow:inset 0 1px 0 #ffffff0a}input::placeholder{color:#e0eee6;font-size:12px}input:focus{border-color:#fff;box-shadow:0 0 0 3px #ffffff16;background:#ffffff28}.continue{margin-top:16px;color:#08794b;font-size:13px;font-weight:600}.create{display:block;background:none;border:0;color:white;text-align:center;font-size:12px;font-weight:700;margin:12px auto 0;min-height:44px;padding:8px 16px}
+footer{width:100%;max-width:340px;margin:0 auto;flex-shrink:0;text-align:center;font-size:9px;line-height:1.65;color:#d3e8dc}footer a{color:inherit;text-decoration:underline;text-underline-offset:2px}.demo{opacity:.65;margin:10px 0 0;font-size:8px;letter-spacing:.6px}
+.error{color:#fff0c7;font-size:11px;line-height:1.3;margin:8px 6px 0}.error:empty{display:none}
+dialog{width:min(340px,calc(100% - 40px));max-height:calc(100% - 28px);border:0;border-radius:24px;padding:26px;color:#123f2b;background:#f7faf6;box-shadow:0 22px 90px #00351d55}dialog::backdrop{background:#00271999;backdrop-filter:blur(5px)}dialog h2{font-size:20px;margin:0 0 12px}dialog p{font-size:13px;line-height:1.55;color:#50705e;margin:0 0 20px}dialog button{border:0;border-radius:100px;background:#087e50;color:white;min-height:46px;width:100%;font-size:13px}
+@media(min-width:700px) and (min-height:600px){.screen{width:440px;left:50%;transform:translateX(-50%);box-shadow:0 0 80px #16482d20;padding-left:34px;padding-right:34px}}
+@media(max-height:670px){.screen{padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}.intro{margin-bottom:22px}h1{font-size:30px}.eyebrow{margin-bottom:8px}.divider{margin:17px 0}.demo{margin-top:5px}}
+@media(max-height:550px){.intro{margin-bottom:16px}.eyebrow,.subtitle,.badge{display:none}h1{font-size:25px;margin-bottom:0}.brand{font-size:17px}.brand span{font-size:7px}.google,.continue,input{min-height:44px;height:44px}.divider{margin:12px 0}.continue{margin-top:12px}.create{margin-top:3px}footer{font-size:8px}.demo{display:none}}
+.screen.keyboard-open{padding-top:10px;padding-bottom:8px}.keyboard-open header,.keyboard-open .intro,.keyboard-open footer{display:none}.keyboard-open main{margin:auto}.keyboard-open .google{height:44px;min-height:44px}.keyboard-open .divider{margin:10px 0}.keyboard-open input,.keyboard-open .continue{height:44px;min-height:44px}.keyboard-open .continue{margin-top:10px}.keyboard-open .create{margin-top:0}.keyboard-open label{margin-bottom:6px}
+@media(orientation:landscape) and (max-height:500px){header,footer{display:none}main{max-width:650px;display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:center}.intro{grid-column:1;grid-row:1 / 5}.google,.divider,form,.create{grid-column:2}.create{margin-top:0}.screen{padding-top:12px;padding-bottom:12px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Floating login card on a soft LuLu canvas. */
+.screen{background:radial-gradient(ellipse at 100% 0%,#d6e8ca 0,transparent 47%),radial-gradient(ellipse at 0% 100%,#d6e8dd 0,transparent 52%),#f3f6ef;color:#143e2b;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));}
+.screen::before,.screen::after{border-color:#2d714716;}
+header{max-width:390px;}.brand{color:#087e50;}.badge{color:#69816f;}
+main{max-width:390px;flex-shrink:1;}
+.intro{margin:0 8px clamp(18px,3.5dvh,30px);}.eyebrow{color:#548866;}h1{font-size:clamp(27px,7.6vw,36px);letter-spacing:-1.1px;}.subtitle{color:#6b8071;}
+.auth-card{position:relative;isolation:isolate;width:100%;padding:clamp(22px,3.7dvh,32px) 22px 22px;border-radius:28px;border:1px solid #ffffff60;background:radial-gradient(ellipse at 0% 0%,#279a6b66,transparent 68%),linear-gradient(145deg,#0b8959,#06794b);color:white;box-shadow:0 22px 44px -17px #1b583c66,0 5px 12px #174b2d0b,inset 0 1px 0 #ffffff38;}
+.auth-card::before{content:"";position:absolute;z-index:-1;inset:6px;border:1px solid #ffffff0a;border-radius:23px;pointer-events:none;}
+.auth-card footer{margin-top:16px;max-width:290px;font-size:8px;}.auth-card .demo{font-size:7px;margin-top:8px;}
+.google{font-size:10px;letter-spacing:1px;}.divider{margin:19px 0;}
+@media(min-width:700px) and (min-height:600px){.screen{width:100%;left:0;transform:none;box-shadow:none;padding-left:30px;padding-right:30px;}header{max-width:390px;}}
+@media(max-height:670px){.intro{margin-bottom:18px;}.auth-card{padding:22px 20px 18px;}h1{font-size:28px;}.divider{margin:14px 0;}.auth-card footer{margin-top:10px;}}
+@media(max-height:580px){.intro{margin-bottom:14px;}.intro .eyebrow,.intro .subtitle{display:none;}h1{font-size:24px;}.auth-card{padding:18px 18px 14px;border-radius:24px;}.google,.continue,input{height:44px;min-height:44px;}.divider{margin:12px 0;}.continue{margin-top:12px;}.create{margin-top:2px;}.auth-card footer{margin-top:7px;}.auth-card .demo{display:none;}}
+.screen.keyboard-open{padding:8px 14px;}.keyboard-open .auth-card{padding:14px 18px 10px;border-radius:22px;}.keyboard-open main{display:block;max-width:390px;}
+@media(orientation:landscape) and (max-height:500px){main{max-width:680px;grid-template-columns:1fr 1.2fr;gap:24px;}.intro{grid-column:1;grid-row:auto;margin:0;}.auth-card{grid-column:2;padding:16px 20px 12px;}.auth-card .google,.auth-card .divider,.auth-card form,.auth-card .create{grid-column:auto;}.auth-card footer{display:none;}}
+
+</style>
+</head>
+<body>
+<div class="screen" id="screen">
+<header><div class="brand">LuLu<span>PHILIPPINES</span></div><div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Account login</div></header>
+<main>
+<div class="intro"><p class="eyebrow">WELCOME TO LULU</p><h1>Your everyday.<br>A little easier.</h1><p class="subtitle">Sign in to your LuLu account.</p></div>
+<section class="auth-card" aria-label="Sign in to LuLu">
+<button type="button" class="google" id="google"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4.1 6v5h6.6c3.9-3.6 6.1-8.5 6.1-14.7z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.2C9.2 39.5 16.1 44 24 44z"/><path fill="#FBBC05" d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.2H5.8a20 20 0 0 0 0 17.6z"/><path fill="#EA4335" d="M24 12c3 0 5.6 1 7.7 3l5.7-5.7A19.3 19.3 0 0 0 24 4C16.1 4 9.2 8.5 5.8 15.2l6.8 5.2C14.2 15.6 18.7 12 24 12z"/></svg>CONTINUE WITH GOOGLE</button>
+<div class="divider">OR</div>
+<form id="login" novalidate><label for="identity">Email or username</label><input id="identity" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Enter your email or username" aria-describedby="error" required><p id="error" class="error" role="alert"></p><button class="continue" type="submit">Continue</button></form>
+<button type="button" class="create" id="create">Create an account</button>
+<footer>By continuing, you agree to our <a href="#terms" data-info="Terms of Service">Terms of Service</a>, <a href="#privacy" data-info="Privacy Policy">Privacy Policy</a> and <a href="#cookies" data-info="Cookie Use">Cookie Use</a>.<p class="demo">LULU PHILIPPINES · DESIGN PREVIEW</p></footer>
+</section>
+</main>
+</div>
+<dialog id="notice" aria-labelledby="noticeTitle"><h2 id="noticeTitle"></h2><p id="noticeText"></p><button type="button" id="close">Got it</button></dialog>
+<script>
+// UI prototype: connect these actions to your real authentication service.
+const screen=document.getElementById('screen'),input=document.getElementById('identity'),error=document.getElementById('error'),notice=document.getElementById('notice');
+function show(title,message){document.getElementById('noticeTitle').textContent=title;document.getElementById('noticeText').textContent=message;input.blur();notice.showModal()}
+document.getElementById('close').onclick=()=>notice.close();
+document.getElementById('google').onclick=()=>show('Continue with Google','This is a design preview. Connect Google sign-in to enable account access.');
+document.getElementById('create').onclick=()=>show('Create your LuLu account','Account registration will open here when this layout is connected to your application.');
+document.querySelectorAll('[data-info]').forEach(a=>a.onclick=e=>{e.preventDefault();show(a.dataset.info,'Connect this link to your published '+a.dataset.info.toLowerCase()+' page before launching.');});
+document.getElementById('login').onsubmit=e=>{e.preventDefault();const value=input.value.trim();if(!value){error.textContent='Please enter your email or username.';input.setAttribute('aria-invalid','true');input.focus();return}if(value.includes('@')&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){error.textContent='Please enter a valid email address.';input.setAttribute('aria-invalid','true');input.focus();return}error.textContent='';input.removeAttribute('aria-invalid');show('Ready to continue','Your entry is valid. This preview does not send or store it. Connect your login service to continue signing in.');};
+input.addEventListener('input',()=>{error.textContent='';input.removeAttribute('aria-invalid')});
+function fit(){const viewport=window.visualViewport;const h=viewport?viewport.height:window.innerHeight;screen.style.setProperty('--view-height',h+'px');screen.classList.toggle('keyboard-open',h<500&&document.activeElement===input)}
+window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);input.addEventListener('focus',fit);input.addEventListener('blur',fit);fit();
+</script>
+</body>
+</html>

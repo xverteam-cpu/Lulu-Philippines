@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#073d2d">
+<title>LuLu Philippines · PIN login demo</title>
+<style>
+:root{--forest:#073d2d;--green:#087b45;--lime:#d9ef8c;--ink:#163c2e;--muted:#758579;--paper:#fcfdf9;--line:#e6ece1;--red:#b63838;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:0;background:#e8eee7;background-image:radial-gradient(ellipse at 10% 10%,#f7f9f1,transparent 60%)}button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:focus-visible{outline:3px solid #70ad43;outline-offset:3px}button:disabled{cursor:default}svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.app{width:100%;max-width:420px;height:min(840px,100svh);min-height:560px;display:flex;flex-direction:column;overflow:hidden;position:relative;border-radius:34px;box-shadow:0 26px 85px #123b2428,0 0 0 1px #fff9;background:var(--paper)}.hero{height:164px;flex-shrink:0;background:var(--forest);position:relative;overflow:hidden;padding:25px 27px;color:white}.hero:before,.hero:after{content:"";position:absolute;border:1px solid #ffffff12;width:260px;height:260px;border-radius:50%;right:-120px;top:15px}.hero:after{width:350px;height:350px;right:-165px;top:-30px}.topbar{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}.brand{display:flex;align-items:center;gap:10px}.wordmark{font-family:"Arial Rounded MT Bold","Trebuchet MS",sans-serif;font-weight:900;font-style:italic;font-size:36px;letter-spacing:-3px;line-height:1}.brand-divider{height:28px;width:1px;background:#ffffff40}.brand-country{font-size:9px;font-weight:700;letter-spacing:2px;line-height:1.65}.help{display:flex;align-items:center;gap:5px;color:#fff;background:#ffffff10;border:1px solid #ffffff2b;border-radius:30px;padding:8px 11px;font-size:11px}.help svg{width:14px;height:14px}.hero-copy{font-size:12px;letter-spacing:.3px;margin:21px 0 0;color:#e0eddd}.hero-copy span{color:var(--lime)}.panel{margin-top:-22px;z-index:2;background:var(--paper);border-radius:28px 28px 0 0;flex:1;min-height:0;display:flex;flex-direction:column;padding:22px 25px 14px;align-items:center}.intro{text-align:center;width:100%}.lock-badge{width:43px;height:43px;margin:0 auto 12px;border-radius:15px;display:grid;place-items:center;background:#eaf2e2;color:var(--green);border:1px solid #dfebd6}.lock-badge svg{width:21px}h1{font-size:28px;letter-spacing:-1px;margin:0 0 7px;font-weight:750;line-height:1.1}.subtitle{font-size:12px;margin:0;color:var(--muted);line-height:1.5}.pin-region{width:100%;margin-top:24px}.pin-head{display:flex;align-items:center;justify-content:space-between;margin:0 1px 10px}.pin-label{font-size:10px;font-weight:700;letter-spacing:1.7px;color:#66806e}.reveal{border:0;background:none;color:#64816b;font-size:11px;display:flex;align-items:center;gap:5px;padding:4px}.reveal svg{height:15px;width:15px}.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.slot{height:49px;border:1px solid var(--line);background:#f5f7f0;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:650;transition:background .15s,border-color .15s}.slot.filled{border-color:#a4be8a;background:#eff4e8}.slot.active{border-color:#3c8d50;box-shadow:0 0 0 2px #5e9f4d14}.dot{height:8px;width:8px;border-radius:50%;background:var(--green)}.message{height:32px;display:flex;justify-content:center;align-items:center;color:var(--muted);font-size:11px;text-align:center;line-height:1.35}.message.error{color:var(--red)}.slots.error .slot{border-color:#d99f9a;background:#fff4f1}.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:5px 8px;width:100%;margin:auto 0 10px}.key{height:51px;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--ink);font-size:25px;line-height:1;display:grid;place-items:center;font-weight:500;transition:background .15s,transform .1s}.key:hover{background:#edf3e6}.key:active{transform:scale(.93);background:#e0ebd3}.key.utility{font-size:10px;font-weight:600;color:#71826c;gap:4px;align-content:center}.key.utility svg{height:20px;width:20px}.key:disabled{opacity:.3}.unlock{display:flex;align-items:center;justify-content:center;gap:9px;min-height:49px;border:0;border-radius:15px;width:100%;background:var(--green);color:#fff;font-size:13px;font-weight:700;box-shadow:0 7px 16px #087b4524;transition:background .15s,transform .15s}.unlock:disabled{background:#e1e8da;color:#91a08a;box-shadow:none}.unlock:not(:disabled):active{transform:scale(.985)}.unlock svg{height:17px;width:17px}.forgot{background:transparent;border:0;color:var(--green);font-size:11px;font-weight:650;padding:15px 12px 11px}.footer{text-align:center;margin-top:auto;padding-top:7px;width:100%;border-top:1px solid var(--line)}.privacy{display:flex;align-items:center;justify-content:center;gap:5px;font-size:9px;color:#7e8c7a}.privacy svg{height:12px;width:12px}.demo{font-size:9px;color:#8b9885;margin:7px 0 0;letter-spacing:.1px}.demo b{font-weight:600;color:#65745f}.shake{animation:shake .3s}@keyframes shake{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}dialog{border:0;border-radius:26px;padding:29px 25px;max-width:calc(100% - 40px);width:350px;color:var(--ink);box-shadow:0 24px 70px #002e2433;background:var(--paper)}dialog::backdrop{background:#05291f99;backdrop-filter:blur(5px)}dialog h2{font-size:23px;letter-spacing:-.7px;margin:0 0 12px}dialog p{font-size:13px;line-height:1.7;color:#697c6a;margin:0 0 22px}dialog .close{margin:8px auto 0;display:block}.success{position:absolute;inset:0;background:var(--paper);z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:34px;overflow:auto}.success[hidden]{display:none}.success .wordmark{color:var(--green);margin-bottom:48px}.success-mark{height:92px;width:92px;display:grid;place-items:center;background:#e5f1d6;border-radius:50%;margin-bottom:25px;box-shadow:0 0 0 12px #f0f6e9}.success-mark svg{height:40px;width:40px;color:var(--green);stroke-width:2.2}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:700;color:var(--green);margin:10px 0 13px}.success h2{font-size:32px;letter-spacing:-1px;margin:0 0 13px}.success p{color:#788674;font-size:13px;line-height:1.6;margin:0 0 34px;max-width:260px}.success .demo{margin-top:22px;font-size:10px}.success button{width:100%}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:480px){body{padding:0;background:var(--paper)}.app{height:100svh;min-height:0;max-width:440px;border-radius:0;box-shadow:none}.hero{padding-top:max(24px,env(safe-area-inset-top));height:170px}.panel{padding-bottom:max(14px,env(safe-area-inset-bottom))}}
+@media(max-height:740px){.hero{height:140px;padding-top:20px}.hero-copy{margin-top:17px}.panel{padding-top:17px}.lock-badge{width:35px;height:35px;border-radius:12px;margin-bottom:9px}h1{font-size:26px}.pin-region{margin-top:17px}.key{height:45px}.keypad{gap:2px 8px;margin-bottom:7px}.forgot{padding-top:12px;padding-bottom:9px}.slot{height:45px}.footer{padding-top:7px}}
+@media(max-height:620px){.hero{height:109px;padding:16px 23px}.wordmark{font-size:31px}.hero-copy{margin-top:12px;font-size:11px}.panel{padding:14px 22px 9px}.lock-badge{display:none}h1{font-size:24px}.subtitle{font-size:11px}.pin-region{margin-top:12px}.pin-head{margin-bottom:5px}.slot{height:39px;border-radius:10px}.message{height:25px;font-size:10px}.key{height:39px;font-size:23px}.keypad{gap:0 8px;margin-bottom:5px}.unlock{min-height:42px;border-radius:12px}.forgot{padding:10px}.footer{padding-top:5px}.privacy,.demo{font-size:8px}.demo{margin-top:5px}}
+@media(max-height:510px){body{display:block}.app{height:auto;min-height:510px;margin:auto}.panel{min-height:423px}}
+/* Let keypad rows use the available height, keeping every control in view. */
+.intro,.pin-region,.unlock,.forgot,.footer{flex-shrink:0}.keypad{flex:1;min-height:152px;max-height:232px;grid-template-rows:repeat(4,minmax(0,1fr));margin:5px 0 10px}.key{height:100%;min-height:0}.footer{margin-top:0}
+@media(max-height:740px){.hero{height:110px}.lock-badge{display:none}.panel{padding-top:18px;padding-bottom:12px}.intro h1{font-size:26px}.pin-region{margin-top:13px}.pin-head{margin-bottom:5px}.message{height:24px}.slot{height:44px}.keypad{min-height:136px;margin:0 0 7px}.unlock{min-height:44px}.forgot{padding:10px 12px}.footer{padding-top:6px}.privacy,.demo{font-size:8px}.demo{margin-top:5px}}
+@media(max-height:620px){.hero{height:82px;padding:14px 22px}.hero-copy{margin-top:10px}.panel{padding:13px 22px 9px}.intro h1{font-size:23px;margin-bottom:5px}.pin-region{margin-top:9px}.pin-head{margin-bottom:5px}.slot{height:38px}.message{height:24px}.keypad{min-height:128px;margin:0 0 5px}.key{font-size:23px}.unlock{min-height:40px}.forgot{padding:9px}.footer{padding-top:5px}}
+@media(max-height:620px){.hero-copy{display:none}}
+@media(max-height:510px){.hero{height:91px}.panel{min-height:441px}.keypad{min-height:140px}.app{min-height:510px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg class="sr-only" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></symbol>
+<symbol id="i-backspace" viewBox="0 0 24 24"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-7-7 7-7Z"/><path d="m12 9 6 6m0-6-6 6"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .7-1.5 1-1.5 2M12 16h.01"/></symbol>
+</defs></svg>
+<main class="app" aria-label="LuLu Philippines PIN login demo">
+ <header class="hero"><div class="topbar"><div class="brand" aria-label="LuLu Philippines"><span class="wordmark">LuLu</span><span class="brand-divider"></span><span class="brand-country">PHILIPPINES</span></div><button class="help" id="help"><svg aria-hidden="true"><use href="#i-help"/></svg>Help</button></div><p class="hero-copy">Your everyday, <span>made easier.</span></p></header>
+ <section class="panel" aria-labelledby="welcome-title">
+  <div class="intro"><div class="lock-badge"><svg aria-hidden="true"><use href="#i-lock"/></svg></div><h1 id="welcome-title">Welcome back.</h1><p class="subtitle">Enter your 6-digit PIN to continue.</p></div>
+  <div class="pin-region"><div class="pin-head"><span class="pin-label">YOUR PIN</span><button id="reveal" class="reveal" aria-pressed="false"><svg aria-hidden="true"><use href="#i-eye"/></svg><span>Show</span></button></div><div class="slots" id="slots" aria-hidden="true"><div class="slot active"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div></div><span class="sr-only" id="pin-progress" role="status" aria-live="polite">0 of 6 digits entered.</span><div class="message" id="message" role="status" aria-live="polite">Use the keypad below.</div></div>
+  <div class="keypad" aria-label="PIN keypad"><button class="key" data-digit="1">1</button><button class="key" data-digit="2">2</button><button class="key" data-digit="3">3</button><button class="key" data-digit="4">4</button><button class="key" data-digit="5">5</button><button class="key" data-digit="6">6</button><button class="key" data-digit="7">7</button><button class="key" data-digit="8">8</button><button class="key" data-digit="9">9</button><button class="key utility" id="clear" aria-label="Clear PIN">Clear</button><button class="key" data-digit="0">0</button><button class="key utility" id="erase" aria-label="Delete last digit"><svg aria-hidden="true"><use href="#i-backspace"/></svg></button></div>
+  <button class="unlock" id="unlock" disabled>Unlock<svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+  <button class="forgot" id="forgot">Forgot your PIN?</button>
+  <footer class="footer"><div class="privacy"><svg aria-hidden="true"><use href="#i-shield"/></svg>Your PIN stays hidden on this screen.</div><p class="demo">INTERACTIVE DEMO &nbsp;·&nbsp; Try PIN <b>123456</b></p></footer>
+ </section>
+ <section class="success" id="success" aria-labelledby="success-title" hidden><div class="wordmark" aria-label="LuLu">LuLu</div><div class="success-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></div><div class="eyebrow">YOU’RE ALL SET</div><h2 id="success-title" tabindex="-1">Welcome to LuLu.</h2><p>Your demo PIN was verified.<br>You’re ready to explore.</p><button class="unlock" id="lock-again"><svg aria-hidden="true"><use href="#i-lock"/></svg>Lock again</button><div class="demo">Demo preview · No account connected</div></section>
+</main>
+<dialog id="info" aria-labelledby="dialog-title"><h2 id="dialog-title"></h2><p id="dialog-copy"></p><button class="unlock" id="dialog-close">Got it</button></dialog>
+<script>
+'use strict';
+/* Standalone UI prototype. Never use a client-side PIN check for real authentication.
+   Production integration: replace verifyPin() with a server-side authentication
+   request and enforce attempt limits, recovery and session management there.
+   No entered PIN is logged, persisted or transmitted by this file. */
+const DEMO_PIN='123456', MAX_ATTEMPTS=3, LOCK_SECONDS=30;
+const $=id=>document.getElementById(id);
+let pin='', revealed=false, attempts=0, lockedUntil=0, busy=false, timer=null, verificationTimer=null, focusBeforeDialog=null;
+const digitButtons=[...document.querySelectorAll('[data-digit]')];
+function isLocked(){return Date.now()<lockedUntil}
+function update(){
+ const locked=isLocked();
+ [...$('slots').children].forEach((slot,i)=>{slot.replaceChildren();slot.classList.toggle('filled',i<pin.length);slot.classList.toggle('active',i===pin.length&&!locked&&!busy);if(i<pin.length){if(revealed)slot.textContent=pin[i];else{const dot=document.createElement('span');dot.className='dot';slot.appendChild(dot)}}});
+ $('pin-progress').textContent=pin.length+' of 6 digits entered.';
+ digitButtons.forEach(b=>b.disabled=locked||busy||pin.length===6);
+ $('erase').disabled=locked||busy||!pin.length;$('clear').disabled=locked||busy||!pin.length;
+ $('unlock').disabled=locked||busy||pin.length!==6;
+ $('reveal').disabled=locked||busy;$('help').disabled=busy;$('forgot').disabled=busy;
+ $('reveal').setAttribute('aria-pressed',String(revealed));$('reveal').querySelector('span').textContent=revealed?'Hide':'Show';
+ document.querySelector('.privacy').lastChild.textContent=revealed?'Your PIN is visible. Tap Hide to mask it.':'Your PIN stays hidden on this screen.';
+}
+function message(text,error=false){$('message').textContent=text;$('message').classList.toggle('error',error)}
+function clearError(){$('slots').classList.remove('error','shake')}
+function addDigit(value){if(isLocked()||busy||pin.length>=6||!$('success').hidden||$('info').open)return;clearError();pin+=value;message(pin.length===6?'Ready when you are. Tap Unlock.':'Use the keypad below.');update()}
+function removeDigit(all=false){if(isLocked()||busy||!$('success').hidden||$('info').open)return;pin=all?'':pin.slice(0,-1);clearError();message('Use the keypad below.');update()}
+function lockTick(){const remaining=Math.ceil((lockedUntil-Date.now())/1000);if(remaining>0){message('Too many attempts. Try again in '+remaining+'s.',true)}else{clearInterval(timer);timer=null;lockedUntil=0;attempts=0;clearError();message('You can try again. Demo PIN: 123456.');update()}}
+function resetLogin(){clearTimeout(verificationTimer);verificationTimer=null;pin='';revealed=false;busy=false;clearError();update()}
+async function verifyPin(){
+ if(pin.length!==6||busy||isLocked()||!$('success').hidden||$('info').open)return;
+ busy=true;update();message('Checking your PIN…');
+ // A short local delay demonstrates the loading state. No network request is made.
+ verificationTimer=setTimeout(()=>{
+  verificationTimer=null;busy=false;
+  if(pin===DEMO_PIN){attempts=0;pin='';revealed=false;update();document.querySelector('.hero').inert=true;document.querySelector('.panel').inert=true;$('success').hidden=false;$('success-title').focus();return}
+  attempts++;pin='';revealed=false;$('slots').classList.add('error','shake');
+  if(attempts>=MAX_ATTEMPTS){lockedUntil=Date.now()+LOCK_SECONDS*1000;lockTick();timer=setInterval(lockTick,250)}else message('Incorrect PIN. '+(MAX_ATTEMPTS-attempts)+' '+(MAX_ATTEMPTS-attempts===1?'attempt':'attempts')+' remaining.',true);
+  update();
+ },450);
+}
+digitButtons.forEach(button=>button.addEventListener('click',()=>addDigit(button.dataset.digit)));
+$('erase').addEventListener('click',()=>removeDigit());$('clear').addEventListener('click',()=>removeDigit(true));
+$('unlock').addEventListener('click',verifyPin);
+$('reveal').addEventListener('click',()=>{revealed=!revealed;update()});
+$('lock-again').addEventListener('click',()=>{$('success').hidden=true;document.querySelector('.hero').inert=false;document.querySelector('.panel').inert=false;resetLogin();message('Use the keypad below.');digitButtons[0].focus()});
+function showInfo(title,copy){focusBeforeDialog=document.activeElement;pin='';revealed=false;clearError();update();$('dialog-title').textContent=title;$('dialog-copy').textContent=copy;$('info').showModal()}
+$('help').addEventListener('click',()=>showInfo('A little help?','Use PIN 123456 to try this interactive demo. Tap the numbers or use your keyboard. Backspace removes a digit, Escape clears the PIN, and Enter unlocks. Three incorrect attempts pause entry for 30 seconds.'));
+$('forgot').addEventListener('click',()=>showInfo('Forgot your PIN?','This preview has no connected account. Use the demo PIN 123456. In a live app, PIN recovery should verify your identity through your registered contact details before you create a new PIN.'));
+$('dialog-close').addEventListener('click',()=>$('info').close());
+$('info').addEventListener('close',()=>{if(focusBeforeDialog)focusBeforeDialog.focus()});
+document.addEventListener('keydown',event=>{if($('info').open||!$('success').hidden||event.ctrlKey||event.metaKey||event.altKey)return;if(/^\d$/.test(event.key)){event.preventDefault();addDigit(event.key)}else if(event.key==='Backspace'){event.preventDefault();removeDigit()}else if(event.key==='Escape'){event.preventDefault();removeDigit(true)}else if(event.key==='Enter'&&(event.target===document.body||event.target.matches('[data-digit]'))){event.preventDefault();verifyPin()}});
+// Discard a partial entry when this document is hidden; lockout time remains intact.
+document.addEventListener('visibilitychange',()=>{if(document.hidden){resetLogin();if(!isLocked())message('Use the keypad below.')}});
+update();
+</script>
+</body>
+</html>

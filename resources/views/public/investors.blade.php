@@ -1,93 +1,150 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"><title>Investor Relations | Lulu Retail</title><meta name="description" content="Investor Relations"><meta name="theme-color" content="#166534"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Lulu"><link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}"><link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/lulu-192.png') }}">
-    <link rel="apple-touch-icon" sizes="167x167" href="{{ asset('icons/lulu-192.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('icons/lulu-192.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icons/lulu-192.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icons/lulu-512.png') }}"><link rel="manifest" href="{{ asset('manifest.json') }}"><link rel="stylesheet" href="{{ asset('lulu-public.css') }}">@env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv<style>.investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.register-mode{height:500px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}.investors-login-card.register-mode .investors-login-terms{margin-top:14px!important}.ticker-positive{color:#19a64b!important}</style></head>
-<body class="investors-page"><header class="lulu-header investors-header"><div class="lulu-container lulu-nav"><a class="lulu-brand" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><nav class="lulu-nav-links"><a href="{{ route('public.home') }}#about">About Us</a><a href="{{ route('public.home') }}#businesses">Businesses</a><a href="{{ route('public.home') }}#global">Global Operations</a><a href="{{ route('public.home') }}#impact">Impact</a><a href="{{ route('public.home') }}#news">Media</a><a href="{{ route('public.home') }}#careers">Careers</a><a class="investors-active-nav" href="#overview">Investors</a><a class="lulu-nav-contact" href="#contact-ir">Contact Us</a></nav><div class="investors-header-end"><a href="#footer">العربية</a><a class="lulu-search-link" href="#quick-links" aria-label="Explore investor resources">↗</a></div></div></header>
-<main><section class="investors-banner"><div class="investors-container"><h1>Investor Relations</h1><p>Welcome to Lulu Retail Investor Relations website.</p></div>
-<div class="investors-login-card @auth investors-pin-lock-card @endauth" id="investor-login"><form class="investors-login-form" method="post" action="@auth{{ auth()->user()->pin_hash ? route('investor.pin.verify') : route('investor.pin.setup') }}@else{{ route('login.submit') }}@endauth" autocomplete="off" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}" @auth data-pin-lock="true" @endauth>@csrf
-@auth
-<style>
-  .investors-login-form > :not(.investors-pin-lock),
-  .investors-login-error,
-  .investors-mode-button,
-  .investors-login-terms { display:none !important; }
-  .investors-login-card { height:auto !important; min-height:0 !important; }
-  .investors-login-form { display:block; }
-</style>
-@include('public.partials.investor-pin-lock')
-@endauth
-<div class="investor-identity-step"><a class="investors-google-button" href="{{ route('login.google') }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg><span>Continue with Google</span></a><div class="investors-login-divider"><span>or</span></div></div>
-<label class="sr-only" for="investor-name">Full name</label><input id="investor-name" name="fullname" type="text" autocomplete="name" placeholder="Full name" hidden>
-<label class="sr-only" for="investor-email">Email or username</label><input id="investor-email" name="email" type="text" autocomplete="new-password" placeholder="Email or username" required @auth disabled @endauth>
-<label class="sr-only" for="investor-referral">Referral code</label><input id="investor-referral" name="referral" type="text" autocomplete="off" placeholder="Referral code" value="{{ request('ref') }}" hidden>
-<label class="sr-only" for="investor-password">Password</label><input id="investor-password" class="investors-password-morph" name="password" type="password" autocomplete="current-password" placeholder="Password" hidden>
-<input name="username" id="investor-username" type="hidden"><input name="password_confirmation" id="investor-password-confirmation" type="hidden">
-<button class="investors-continue-button" type="submit">Continue</button></form>
-@if ($errors->any())<p class="investors-login-error" role="alert">{{ $errors->first() }}</p>@endif
-<button type="button" class="investors-mode-button" id="investor-mode">Create an account</button><p class="investors-login-terms">By continuing, you agree to our <a href="#terms">Terms of Service</a>, <a href="#privacy">Privacy Policy</a> and <a href="#cookies">Cookie Use</a>.</p></div></section>
-<div class="investors-ticker" aria-label="Lulu Retail market information; saved page values, not verified live quotes" title="Saved page values; not verified live quotes." data-market-quote-url="{{ route('investors.market-quote') }}"><div class="investors-ticker-track">@for ($i=0;$i<3;$i++)<span class="instrument instrument_131227"><strong class="name">Lulu Retail Holdings</strong><span class="ticker-value"><span class="ticker-title">Last Price </span><b data-market-quote="price">{{ config('market_data.fallback.price') }}</b> AED</span><span class="ticker-value"><span class="ticker-title">Change </span><b class="ticker-negative" data-market-quote="change">{{ config('market_data.fallback.change') }}</b></span><span class="ticker-value"><span class="ticker-title">Volume </span><b data-market-quote="volume">{{ config('market_data.fallback.volume') }}</b></span><span class="ticker-date" data-market-quote="timestamp">{{ config('market_data.fallback.timestamp') }}</span></span>@endfor</div></div><div class="investors-breadcrumb"><div class="investors-container">Home <span>→</span> Investor Relations</div></div>
-<section class="investors-intro" id="overview"><div class="investors-container investors-intro-grid"><div class="investors-intro-content"><h2>Where The World Comes To Shop</h2><img src="https://www.luluretail.com/media/ujmbkd4i/investors-lulu-hp.jpg?width=1000&height=600&format=webp&quality=90" alt="Lulu Retail store"><div class="investors-copy"><p>Lulu is a home-grown GCC retail champion, proudly operating for 50 years in the GCC. Founded in the UAE in 1974, we have strategically expanded across the GCC.</p><p>We are the largest full-line pan-GCC retailer, with a strong omni-channel presence including 267 stores operating across three formats, as well as a rapidly growing online presence.</p><p>We are well positioned for further growth, driven by store growth, operational efficiencies, private label, loyalty and online growth.</p></div></div><div class="investors-facts"><div class="investors-facts-grid">@foreach ([['267 Stores','Across all Six GCC Countries'],['680 K+','Daily Shoppers'],['85','Sourcing Countries'],['$7.9 Bn','Sales (4.1% YOY Growth)'],['$782 Mn','EBITDA (9.9% margin)'],['29.8%','Higher-Margin Private Label Sales']] as $fact)<article><strong>{{ $fact[0] }}</strong><span>{{ $fact[1] }}</span></article>@endforeach</div><em>*All figures are for FY2025</em></div></div></section>
-<section class="investors-quick-links" id="quick-links"><div class="investors-container"><div class="investors-section-heading"><span>Explore</span><h2>Investor resources</h2></div><div class="investors-link-grid"><a href="#overview"><strong>Investment Highlights</strong><span>↗</span></a><a href="#overview"><strong>Factsheet</strong><span>↗</span></a><a href="#contact-ir"><strong>Announcements</strong><span>↗</span></a></div></div></section>
-<section class="investors-contact" id="contact-ir"><div class="investors-container investors-contact-grid"><div><span>Get in touch</span><h2>Contact IR</h2><p>For enquiries and additional information, please get in touch with our Investor Relations team.</p></div><address><strong>Investor Relations Enquiries</strong><p>Lulu Retail Investor Relations</p><a href="mailto:investor.relations@ae.lulumea.com">investor.relations@ae.lulumea.com</a></address><address><strong>Registered Office</strong><p>Y Tower Building<br>Al Nahyan - E25<br>Abu Dhabi, United Arab Emirates</p></address></div></section></main>
-<footer class="investors-footer" id="footer"><div class="investors-container"><a class="investors-footer-logo" href="{{ route('public.home') }}"><img src="{{ asset('icons/lulu-512.png') }}" alt="Lulu Philippines" style="width:52px!important;height:52px!important;object-fit:contain;filter:none;"></a><p>© {{ date('Y') }} Lulu Retail Holdings PLC</p></div></footer>
-<script src="{{ asset('market-quote.js') }}" defer></script>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#087e50">
+    <title>Investor Relations | LuLu Philippines</title>
+    <meta name="description" content="Investor Relations sign in for LuLu Philippines.">
+    <link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
+    <link rel="stylesheet" href="{{ asset('lulu-public.css') }}">
+    @env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv
+</head>
+<body class="investors-page @auth investors-pin-screen @endauth">
+<main>
+    <section class="investors-banner">
+        <div class="investors-container">
+            <div class="investors-auth-header">
+                <img class="investors-auth-logo" src="{{ asset('cxcx.png') }}" alt="LuLu Philippines">
+                <span class="investors-auth-badge">Account login</span>
+            </div>
+            <h1>Investor Relations</h1>
+            <p>Welcome to Lulu Retail Investor Relations website.</p>
+        </div>
+        @guest
+        <section class="investors-login-card" id="investor-login" aria-label="Sign in to LuLu">
+            <div class="investors-login-heading">
+                <span>Account login</span>
+                <h2>Your everyday.<br>A little easier.</h2>
+                <p>Sign in to your LuLu account.</p>
+            </div>
+            <form class="investors-login-form" method="post" action="{{ route('login.submit') }}" autocomplete="on" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}">
+                @csrf
+                <div class="investor-identity-step">
+                    <a class="investors-google-button" href="{{ route('login.google') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09a6.6 6.6 0 0 1 0-4.18V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+                        <span>Continue with Google</span>
+                    </a>
+                    <div class="investors-login-divider"><span>or</span></div>
+                </div>
+                <label class="sr-only" for="investor-name">Full name</label>
+                <input id="investor-name" name="fullname" type="text" autocomplete="name" placeholder="Full name" hidden>
+                <label class="sr-only" for="investor-email">Email or username</label>
+                <input id="investor-email" name="email" type="text" autocomplete="username" placeholder="Email or username" value="{{ old('email', request('email', '')) }}" aria-describedby="investor-login-error" required>
+                <label class="sr-only" for="investor-referral">Referral code</label>
+                <input id="investor-referral" name="referral" type="text" autocomplete="off" placeholder="Referral code" value="{{ request('ref', old('referral', '')) }}" hidden>
+                <label class="sr-only" for="investor-password">Password</label>
+                <input id="investor-password" class="investors-password-morph" name="password" type="password" autocomplete="current-password" placeholder="Password" aria-describedby="investor-login-error" hidden>
+                <input name="password_confirmation" id="investor-password-confirmation" type="hidden">
+                <button class="investors-continue-button" type="submit">Continue</button>
+            </form>
+            @if ($errors->any())
+                <p class="investors-login-error" id="investor-login-error" role="alert">{{ $errors->first() }}</p>
+            @endif
+            <button type="button" class="investors-mode-button" id="investor-mode">Create an account</button>
+            <p class="investors-login-terms">By continuing, you agree to our <a href="{{ route('terms-of-service') }}">Terms of Service</a>, <a href="{{ route('privacy-policy') }}">Privacy Policy</a> and Cookie Use.</p>
+        </section>
+        @else
+        <section class="investors-login-card investors-pin-lock-card" id="investor-login">
+            @include('public.partials.investor-pin-lock')
+        </section>
+        @endguest
+    </section>
+</main>
 @guest
 <script>
-const card=document.querySelector('.investors-login-card'), form=card?.querySelector('form'), modeButton=document.querySelector('#investor-mode'), nameInput=document.querySelector('#investor-name'), email=document.querySelector('#investor-email'), password=document.querySelector('#investor-password'), continueButton=document.querySelector('.investors-continue-button'), username=document.querySelector('#investor-username'), confirmation=document.querySelector('#investor-password-confirmation'); let mode='login',step='identity';
-function sync(){const passwordStep=step==='password';nameInput.hidden=mode==='login'||!(!passwordStep&&mode==='register');password.hidden=!passwordStep;email.hidden=passwordStep;card.classList.toggle('investors-password-step',passwordStep);card.style.height=passwordStep?'245px':'';card.querySelector('.investor-identity-step').style.display=passwordStep?'none':'';continueButton.textContent='Continue';continueButton.classList.toggle('investors-password-morph',passwordStep);form.action=mode==='login'?form.dataset.loginAction:form.dataset.registerAction;}
-form?.addEventListener('submit',e=>{if(step==='identity'){e.preventDefault();if(!email.value.trim())return;step='password';sync();password.focus();return;}if(mode==='register'){confirmation.value=password.value;}});
-modeButton?.addEventListener('click',()=>{mode=mode==='login'?'register':'login';step='identity';modeButton.textContent=mode==='login'?'Create an account':'Already have an account? Sign in';sync();});sync();
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const emailInput = document.querySelector('#investor-email');
-  if (!emailInput) return;
-  emailInput.value = '';
-  window.setTimeout(function () { emailInput.value = ''; }, 100);
-});
-window.addEventListener('pageshow', function () {
-  const emailInput = document.querySelector('#investor-email');
-  if (emailInput && !emailInput.matches(':focus')) emailInput.value = '';
-});
-</script>
-<script>
 (function () {
-  const card = document.querySelector('.investors-login-card');
-  const form = card?.querySelector('form');
-  const modeButton = document.querySelector('#investor-mode');
-  const referral = document.querySelector('#investor-referral');
-  const password = document.querySelector('#investor-password');
-  const googleButton = document.querySelector('.investors-google-button');
-  if (!card || !form || !modeButton || !referral || !password) return;
-  modeButton.addEventListener('click', function () {
-    const registering = modeButton.textContent.trim() === 'Already have an account? Sign in';
-    referral.hidden = !registering || !password.hidden;
-    referral.required = registering;
-  });
-  googleButton?.addEventListener('click', function (event) {
-    if (modeButton.textContent.trim() !== 'Already have an account? Sign in') return;
-    const code = referral.value.trim();
-    if (!code) {
-      event.preventDefault();
-      referral.hidden = false;
-      referral.required = true;
-      referral.focus();
-      return;
+    const card = document.querySelector('.investors-login-card');
+    const form = card?.querySelector('form');
+    const modeButton = document.querySelector('#investor-mode');
+    const nameInput = document.querySelector('#investor-name');
+    const emailInput = document.querySelector('#investor-email');
+    const referralInput = document.querySelector('#investor-referral');
+    const passwordInput = document.querySelector('#investor-password');
+    const confirmationInput = document.querySelector('#investor-password-confirmation');
+    const continueButton = card?.querySelector('.investors-continue-button');
+    const identityStep = card?.querySelector('.investor-identity-step');
+    const googleButton = card?.querySelector('.investors-google-button');
+    const screen = document.querySelector('.investors-banner');
+    if (!card || !form || !modeButton || !nameInput || !emailInput || !referralInput || !passwordInput || !confirmationInput || !continueButton || !identityStep || !screen) return;
+
+    let mode = 'login';
+    let step = 'identity';
+    function sync() {
+        const passwordStep = step === 'password';
+        const registering = mode === 'register';
+        nameInput.hidden = !registering || passwordStep;
+        nameInput.required = registering && !passwordStep;
+        emailInput.hidden = passwordStep;
+        emailInput.type = registering ? 'email' : 'text';
+        emailInput.placeholder = registering ? 'Email address' : 'Email or username';
+        referralInput.hidden = !registering || passwordStep;
+        referralInput.required = registering && !passwordStep;
+        passwordInput.hidden = !passwordStep;
+        passwordInput.required = passwordStep;
+        passwordInput.autocomplete = registering ? 'new-password' : 'current-password';
+        identityStep.hidden = passwordStep;
+        card.classList.toggle('investors-password-step', passwordStep);
+        card.classList.toggle('register-mode', registering);
+        continueButton.textContent = 'Continue';
+        form.action = registering ? form.dataset.registerAction : form.dataset.loginAction;
+        modeButton.textContent = registering ? 'Already have an account? Sign in' : 'Create an account';
     }
-    const url = new URL(googleButton.href, window.location.origin);
-    url.searchParams.set('ref', code);
-    googleButton.href = url.toString();
-    card.classList.toggle('register-mode', registering);
-    if (registering) card.style.height = '500px';
-  });
-  form.addEventListener('submit', function () {
-    if (!password.hidden) {
-      referral.hidden = true;
-      card.classList.remove('register-mode');
-      card.classList.add('password-step');
-      card.style.height = '245px';
+
+    modeButton.addEventListener('click', function () {
+        mode = mode === 'login' ? 'register' : 'login';
+        step = 'identity';
+        sync();
+        (mode === 'register' ? nameInput : emailInput).focus();
+    });
+    form.addEventListener('submit', function (event) {
+        if (step === 'identity') {
+            event.preventDefault();
+            step = 'password';
+            sync();
+            passwordInput.focus();
+            return;
+        }
+        if (mode === 'register') confirmationInput.value = passwordInput.value;
+    });
+    googleButton?.addEventListener('click', function (event) {
+        if (mode !== 'register') return;
+        const code = referralInput.value.trim();
+        if (!code) {
+            event.preventDefault();
+            referralInput.hidden = false;
+            referralInput.required = true;
+            referralInput.focus();
+            return;
+        }
+        const url = new URL(googleButton.href, window.location.origin);
+        url.searchParams.set('ref', code);
+        googleButton.href = url.toString();
+    });
+
+    function fitScreen() {
+        const height = window.visualViewport?.height || window.innerHeight;
+        screen.classList.toggle('keyboard-open', height < 500 && [nameInput, emailInput, referralInput, passwordInput].includes(document.activeElement));
     }
-  });
+    window.addEventListener('resize', fitScreen);
+    window.visualViewport?.addEventListener('resize', fitScreen);
+    [nameInput, emailInput, referralInput, passwordInput].forEach(function (input) {
+        input.addEventListener('focus', fitScreen);
+        input.addEventListener('blur', fitScreen);
+    });
+    sync();
 })();
-</script>@endguest</body></html>
+</script>
+@endguest
+</body>
+</html>

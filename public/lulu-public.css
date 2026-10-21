@@ -1289,3 +1289,46 @@ html:has(.account-shell), body:has(.account-shell) { overscroll-behavior-y: none
 .investors-mode-button{color:#fff;font-size:11px;text-shadow:0 1px 2px #075b39}
 .investors-login-card{transition:height .3s ease,padding .3s ease}.investors-login-card.password-step{height:245px}.investors-login-card.password-step .investor-identity-step{display:none}.investors-login-card.password-step .investors-login-terms{margin-top:17px!important}
 @media (max-width:780px){.investors-banner{display:block;min-height:0;padding:150px 0 40px}.investors-banner>.investors-container{width:calc(100% - 40px)}.investors-login-card{position:relative;right:auto;bottom:auto;left:auto;width:min(347px,calc(100vw - 32px));max-width:347px;margin:34px auto 0;transform:none}.investors-login-card.register-mode{height:500px}}
+.investors-login-card{height:440px;border-radius:28px;background:radial-gradient(ellipse at 0% 0%,#279a6b66,transparent 68%),linear-gradient(145deg,#0b8959,#06794b);box-shadow:0 22px 44px -17px #1b583c66,0 5px 12px #174b2d0b,inset 0 1px 0 #ffffff38}
+.investors-login-heading{margin:0 8px 18px}.investors-login-heading>span{color:#c1e4ce;font-size:10px;letter-spacing:2px}.investors-login-heading h2{margin:0 0 8px;color:#fff;font:600 clamp(27px,7vw,34px)/1.05 Arial,Helvetica,sans-serif;letter-spacing:-1px}.investors-login-heading p{margin:0;color:#cce7d8;font-size:12px;font-weight:400}
+.investors-login-card.investors-password-step .investors-login-heading{display:none}
+.investors-page{position:fixed!important;inset:0;width:100%;height:100%;min-height:0!important;overflow:hidden;background:radial-gradient(ellipse at 100% 0%,#d6e8ca 0,transparent 47%),radial-gradient(ellipse at 0% 100%,#d6e8dd 0,transparent 52%),#f3f6ef!important;color:#143e2b;font-family:Arial,Helvetica,sans-serif}
+.investors-page>.investors-header,.investors-page>.investors-footer,.investors-page>main>:not(.investors-banner){display:none!important}
+.investors-page>main{position:fixed;inset:0;width:100%;height:100%;min-height:0;margin:0;padding:0;overflow:auto}
+.investors-page .investors-banner{box-sizing:border-box;display:flex;min-height:100vh;min-height:100dvh;height:100%;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,3.5dvh,30px);overflow:auto;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:radial-gradient(ellipse at 100% 0%,#d6e8ca 0,transparent 47%),radial-gradient(ellipse at 0% 100%,#d6e8dd 0,transparent 52%),#f3f6ef;color:#143e2b}
+.investors-page .investors-banner>.investors-container{box-sizing:border-box;width:min(390px,100%);margin:0;color:#143e2b}
+.investors-page .investors-auth-header{display:flex;align-items:center;justify-content:space-between;margin:0 8px clamp(18px,4dvh,32px)}
+.investors-page .investors-auth-logo{display:block;width:145px;max-width:calc(100% - 90px);height:auto;object-fit:contain}
+.investors-page .investors-auth-badge{color:#69816f;font-size:10px}
+.investors-page .investors-banner h1{margin:0 8px 10px;color:#087e50;font:700 10px/1.2 Arial,Helvetica,sans-serif;letter-spacing:2px;text-transform:uppercase}
+.investors-page .investors-banner>.investors-container p{margin:0 8px;color:#6b8071;font-size:13px;font-weight:400;line-height:1.5}
+.investors-page .investors-login-card{position:relative;inset:auto;box-sizing:border-box;width:min(390px,100%);max-width:390px;height:auto!important;min-height:0;margin:0;padding:clamp(22px,3.7dvh,32px) 22px 22px;border:1px solid #ffffff60;border-radius:28px;background:radial-gradient(ellipse at 0% 0%,#279a6b66,transparent 68%),linear-gradient(145deg,#0b8959,#06794b);box-shadow:0 22px 44px -17px #1b583c66,0 5px 12px #174b2d0b,inset 0 1px 0 #ffffff38;color:#fff;backdrop-filter:none;transform:none}
+.investors-page .investors-login-heading{margin:0 8px 20px}
+.investors-page .investors-login-heading>span{color:#c1e4ce;font-size:10px;font-weight:700;letter-spacing:2px}
+.investors-page .investors-login-heading h2{margin:0 0 10px;color:#fff;font:600 clamp(27px,7.6vw,36px)/1.05 Arial,Helvetica,sans-serif;letter-spacing:-1.1px}
+.investors-page .investors-login-heading p{margin:0;color:#cce7d8;font-size:13px;line-height:1.5}
+.investors-page .investors-login-form{display:grid;gap:10px}
+.investors-page .investors-login-form input[type=email],.investors-page .investors-login-form input[type=password],.investors-page .investors-login-form input[type=text]{box-sizing:border-box;width:100%;height:50px;min-height:50px;padding:0 18px;border:1px solid #ffffff75;border-radius:100px;background:#ffffff20;color:#fff;font:16px Arial,Helvetica,sans-serif;box-shadow:inset 0 1px 0 #ffffff0a}
+.investors-page .investors-login-form input::placeholder{color:#e0eee6;font-size:12px}
+.investors-page .investors-login-form input:focus{border-color:#fff;background:#ffffff28;box-shadow:0 0 0 3px #ffffff16}
+.investors-page .investors-login-form .investors-google-button{height:50px;min-height:50px;padding:12px;border-radius:100px;font-size:11px;letter-spacing:1px}
+.investors-page .investors-login-divider{display:flex;align-items:center;gap:14px;margin:10px 0;font-size:11px;letter-spacing:2px;color:#cce7d8}
+.investors-page .investors-login-divider:before,.investors-page .investors-login-divider:after{height:1px;flex:1;background:#ffffff40;content:""}
+.investors-page .investors-login-form .investors-continue-button{box-sizing:border-box;justify-content:center;width:100%;height:50px;min-height:50px;margin:4px 0 0;padding:12px 18px;border:1px solid #d9e5dd;border-radius:100px;background:#fff;color:#08794b;font:600 13px Arial,Helvetica,sans-serif;letter-spacing:0;text-transform:none}
+.investors-page .investors-mode-button{display:block;min-height:44px;margin:8px auto 0;padding:8px 16px;background:transparent;color:#fff;font-size:12px;font-weight:700;text-shadow:none}
+.investors-page .investors-login-terms{margin:12px 0 0!important;color:#d3e8dc;font-size:9px!important;line-height:1.65}
+.investors-page .investors-login-terms a{color:inherit;font-size:inherit!important}
+.investors-page .investors-login-error{margin:10px 6px 0;color:#fff0c7;font-size:12px;line-height:1.4}
+.investors-page.investors-pin-screen .investors-banner>.investors-container{display:none}
+.investors-page.investors-pin-screen .investors-login-card{padding:0}
+@media(max-height:670px){.investors-page .investors-banner{gap:16px}.investors-page .investors-login-card{padding:22px 20px 18px}.investors-page .investors-login-heading{margin-bottom:14px}.investors-page .investors-login-heading h2{font-size:28px}.investors-page .investors-login-divider{margin:6px 0}}
+@media(max-height:550px){.investors-page .investors-banner{justify-content:flex-start;gap:12px}.investors-page .investors-banner>.investors-container p{display:none}.investors-page .investors-login-heading{margin-bottom:10px}.investors-page .investors-login-heading h2{font-size:24px}.investors-page .investors-login-card{padding:16px 18px 12px}.investors-page .investors-login-form input[type=email],.investors-page .investors-login-form input[type=password],.investors-page .investors-login-form input[type=text],.investors-page .investors-login-form .investors-google-button,.investors-page .investors-login-form .investors-continue-button{height:44px;min-height:44px}.investors-page .investors-login-terms{margin-top:6px!important}}
+.investors-page .investors-banner.keyboard-open{justify-content:center;gap:0;padding-top:8px;padding-bottom:8px}
+.investors-page .investors-banner.keyboard-open>.investors-container,.investors-page .investors-banner.keyboard-open .investors-login-heading,.investors-page .investors-banner.keyboard-open .investors-login-terms{display:none}
+.investors-page .investors-banner.keyboard-open .investors-login-card{padding:14px 18px 10px;border-radius:22px}
+.investors-page .investors-banner.keyboard-open .investors-login-form input[type=email],.investors-page .investors-banner.keyboard-open .investors-login-form input[type=password],.investors-page .investors-banner.keyboard-open .investors-login-form input[type=text],.investors-page .investors-banner.keyboard-open .investors-login-form .investors-google-button,.investors-page .investors-banner.keyboard-open .investors-login-form .investors-continue-button{height:44px;min-height:44px}
+@media(max-width:780px){.investors-page .investors-banner{background:#f6f1df url('/investor-mobile-background.png') center center/cover no-repeat}}
+.investors-page .investors-login-card{isolation:isolate;transform:translateY(-8px);border-color:#ffffffad;box-shadow:0 34px 56px -22px #103e2d80,0 15px 25px -12px #173e2b55,0 3px 8px #173e2b1c,inset 0 1px 0 #ffffff55;transition:transform .25s ease,box-shadow .25s ease}
+.investors-page .investors-login-card::before{position:absolute;z-index:-1;inset:16px 12px -20px;border-radius:inherit;background:#153e2b66;content:"";filter:blur(22px);pointer-events:none}
+@media(hover:hover){.investors-page .investors-login-card:hover{transform:translateY(-12px);box-shadow:0 42px 64px -24px #103e2d88,0 18px 30px -12px #173e2b66,0 3px 8px #173e2b1c,inset 0 1px 0 #ffffff55}}
+@media(prefers-reduced-motion:reduce){.investors-page .investors-login-card{transition:none}}

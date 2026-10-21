@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LuLu Philippines | PIN Login</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-surface: #f3f7f5;
+      --emerald-top: #1c6b48;
+      --emerald-bot: #082a1c;
+      --mint-neon: #76e072;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: #dce5df;
+      background-image: 
+        radial-gradient(at 20% 15%, rgba(56, 178, 119, 0.12) 0px, transparent 50%),
+        radial-gradient(at 80% 85%, rgba(8, 42, 28, 0.12) 0px, transparent 50%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #082a1c;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Sleek Mobile Frame */
+    .phone-chassis {
+      width: 100%;
+      max-width: 392px;
+      height: 100dvh;
+      max-height: 844px;
+      background-color: var(--bg-surface);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 430px) {
+      .phone-chassis {
+        height: 836px;
+        border-radius: 50px;
+        box-shadow: 
+          0 0 0 11px #141816,
+          0 0 0 13px #2c3531,
+          0 28px 60px -12px rgba(8, 42, 28, 0.35);
+      }
+    }
+
+    /* Deep Forest Emerald Card with Reference Gradient */
+    .emerald-card {
+      background: 
+        radial-gradient(110% 95% at 15% 10%, #247a54 0%, rgba(28, 107, 72, 0.35) 45%, transparent 75%),
+        linear-gradient(140deg, #1c6b48 0%, #0d422c 55%, #082a1c 100%);
+      border-radius: 28px;
+      box-shadow: 
+        0 18px 36px -12px rgba(8, 42, 28, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Frosted Glassmorphic Inner Pill */
+    .frosted-pill {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    /* Top Left Account Pill */
+    .account-pill {
+      background: #ffffff;
+      border-radius: 9999px;
+      box-shadow: 
+        0 4px 14px rgba(8, 42, 28, 0.06),
+        0 1px 2px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(215, 232, 223, 0.85);
+      transition: transform 0.15s ease;
+    }
+    .account-pill:active {
+      transform: scale(0.96);
+    }
+
+    /* Top Right Glowing Mint Ring Button */
+    .glowing-ring-btn {
+      background: #ffffff;
+      border-radius: 9999px;
+      box-shadow: 
+        0 0 0 2px #76e072,
+        0 4px 14px rgba(56, 178, 119, 0.28),
+        0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.15s ease;
+    }
+    .glowing-ring-btn:active {
+      transform: scale(0.93);
+    }
+
+    /* 76px Circular Tactile Keypad Buttons */
+    .circle-key {
+      width: 76px;
+      height: 76px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid #e1ece6;
+      box-shadow: 
+        0 6px 16px -4px rgba(8, 42, 28, 0.07),
+        0 2px 4px rgba(8, 42, 28, 0.04),
+        inset 0 1px 0 #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 
+        transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 0.1s ease,
+        border-color 0.1s ease,
+        box-shadow 0.1s ease;
+      touch-action: manipulation;
+    }
+
+    .circle-key:active,
+    .circle-key.pressed {
+      transform: scale(0.94);
+      background-color: #e6f5ec;
+      border-color: #a8dec0;
+      box-shadow: 0 2px 6px rgba(8, 42, 28, 0.05);
+    }
+
+    .circle-key.utility-key {
+      background: rgba(255, 255, 255, 0.65);
+      border-color: #dfeae4;
+      box-shadow: 0 4px 10px -2px rgba(8, 42, 28, 0.04);
+    }
+    .circle-key.utility-key:active,
+    .circle-key.utility-key.pressed {
+      background-color: #dff0e6;
+      transform: scale(0.94);
+    }
+
+    /* 4-Digit PIN Dots inside Frosted Pill */
+    .pin-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.24);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pin-dot.active {
+      background: #76e072;
+      border-color: #76e072;
+      transform: scale(1.22);
+      box-shadow: 0 0 12px #76e072, 0 0 4px #ffffff;
+    }
+
+    .pin-dot.pulse-unlock {
+      background: #ffffff;
+      border-color: #76e072;
+      transform: scale(1.32);
+      box-shadow: 0 0 16px #76e072, 0 0 8px #ffffff;
+    }
+
+    /* Glassmorphic Eye Button on Dashboard */
+    .glass-eye-btn {
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 14px;
+      transition: all 0.15s ease;
+    }
+    .glass-eye-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    /* 3D Glossy Emerald Orb (+ FAB) */
+    .emerald-orb-3d {
+      background: radial-gradient(circle at 35% 25%, #52c98d 0%, #17784d 45%, #094229 88%, #052818 100%);
+      box-shadow: 
+        0 6px 16px rgba(15, 104, 72, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.55),
+        inset 0 -3px 6px rgba(4, 24, 15, 0.6);
+    }
+    .emerald-orb-ring {
+      background: #ffffff;
+      padding: 5px;
+      border-radius: 9999px;
+      box-shadow: 
+        0 0 16px rgba(118, 224, 114, 0.45),
+        0 6px 20px rgba(9, 46, 32, 0.14);
+    }
+
+    /* Frosted Banner CTA Button */
+    .frosted-cta-pill {
+      background: rgba(58, 97, 77, 0.62);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: all 0.15s ease;
+    }
+    .frosted-cta-pill:active {
+      transform: scale(0.96);
+    }
+
+    /* View Transitions */
+    .view-layer {
+      transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .view-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.97) translateY(8px);
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Bottom Sheet Modal */
+    .sheet-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .sheet-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .bottom-sheet {
+      transform: translateY(105%);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .sheet-backdrop.open .bottom-sheet {
+      transform: translateY(0);
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  
+/* Viewport-fitted LuLu authentication */
+html, body {width:100%;height:100%;overflow:hidden;overscroll-behavior:none;}
+body {padding:0!important;position:fixed;inset:0;font-family:"Plus Jakarta Sans",Arial,sans-serif;}
+.phone-chassis {height:100vh;height:100dvh;max-height:none;max-width:460px;border-radius:0;box-shadow:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:radial-gradient(ellipse at 100% 10%,#e1efdf,transparent 48%),#f5f8f3;}
+.phone-chassis>header {padding:clamp(10px,2.2dvh,22px) 24px 8px;}
+.brand-lockup {display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(10px,2dvh,20px);}
+.brand-name {font-family:Arial,sans-serif;font-style:italic;font-weight:900;font-size:36px;letter-spacing:-3px;line-height:1;color:#116337;}
+.brand-name small {display:block;font-style:normal;font-size:8px;letter-spacing:2.3px;margin:5px 0 0 3px;}
+.brand-tag {font-size:9px;letter-spacing:1.4px;color:#67836d;font-weight:700;text-transform:uppercase;}
+#pinView {min-height:0;padding:clamp(8px,1.5dvh,16px) 24px 10px;display:flex;flex-direction:column;gap:clamp(8px,1.7dvh,18px);justify-content:space-between;}
+#pinView>.emerald-card {margin:0;flex-shrink:0;padding:clamp(16px,2.7dvh,26px);border-radius:26px;}
+.welcome {margin:0 0 5px;font-size:clamp(21px,3.5dvh,29px);font-weight:800;letter-spacing:-.8px;}
+.welcome-sub {margin:0 0 clamp(12px,2dvh,20px);font-size:12px;color:#cae4d1;}
+#pinView .emerald-card>div.relative {margin-bottom:12px;}
+#pinPillContainer {padding:clamp(13px,2dvh,20px) 12px;gap:clamp(16px,5vw,24px);margin-bottom:0!important;}
+#pinView>section:nth-of-type(2) {margin:0;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;padding:0;}
+#pinView>section:nth-of-type(2)>div {width:100%;max-width:310px;display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;gap:clamp(7px,1.6dvh,16px) 20px;}
+.circle-key {width:clamp(48px,8.5dvh,78px);height:clamp(48px,8.5dvh,78px);touch-action:manipulation;}
+#pinView footer {flex-shrink:0;padding:0;}
+.footer-note {font-size:9px;color:#7a8c80;margin:8px 0 0;letter-spacing:.5px;}
+.phone-chassis>div:last-of-type:not(#sheetBackdrop) {display:none;}
+.view-hidden {display:none!important;}
+button:focus-visible {outline:3px solid #86bd38;outline-offset:3px;}
+#dashboardView {min-height:0;}
+#dashboardView>div:first-child {overflow:hidden;padding-bottom:8px;display:flex;flex-direction:column;gap:10px;min-height:0;}
+#dashboardView>div:first-child>section {margin:0;min-height:0;flex:1;}
+#dashboardView>div:first-child>section:first-child {flex:1.3;}
+#dashboardView nav {flex-shrink:0;}
+.bottom-sheet {max-height:100%;padding-bottom:max(24px,env(safe-area-inset-bottom));}
+@media(max-height:650px) {.brand-lockup{margin-bottom:8px}.brand-name{font-size:28px}.brand-tag{font-size:8px}#pinView{gap:8px}.welcome{font-size:21px}.welcome-sub{margin-bottom:10px}#pinView .emerald-card>div.relative{margin-bottom:8px}.footer-note{margin-top:5px}.phone-chassis>header{padding-top:8px}.circle-key span{font-size:23px}}
+@media(max-height:490px) {.brand-lockup{display:none}#pinView{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:14px}#pinView>section:nth-of-type(2){grid-column:2;grid-row:1 / 3}#pinView footer{grid-column:1}.circle-key{width:44px;height:44px}#pinView>section:nth-of-type(2)>div{gap:7px}.welcome-sub{font-size:10px}.welcome{font-size:20px}#pinPillContainer{gap:12px}.brand-tag{display:none}}
+@media(prefers-reduced-motion:reduce) {*,*::before,*::after{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body class="p-0 sm:p-4">
+
+  <div class="phone-chassis">
+
+    <!-- ===================================================================== -->
+    <!-- MINIMAL TOP BAR (User Pill Left + Glowing Mint Ring Support Right)    -->
+    <!-- ===================================================================== -->
+    <header class="relative z-20 px-6 pt-5 pb-3 flex items-center justify-between shrink-0">
+      <!-- Left: Clean White Pill with User Icon + Masked Number + Subtle Switch Icon -->
+      <button onclick="openSheet('account')" class="account-pill pl-1.5 pr-3.5 py-1.5 flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-[#e6f5ec] border border-[#c5e6d3] flex items-center justify-center text-[#12613f]">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <span id="maskedNumberLabel" class="font-mono text-[13.5px] font-bold text-[#082a1c] tracking-tight">••• 8492</span>
+        <svg class="w-3.5 h-3.5 text-[#5e8c76]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+        </svg>
+      </button>
+
+      <!-- Right: Clean Circular Support Button with Glowing Mint Ring Accent -->
+      <button onclick="openSheet('support')" class="glowing-ring-btn w-10 h-10 flex items-center justify-center text-[#0f5c3c]" aria-label="Support">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: ULTRA-CLEAN PIN LOGIN SCREEN                                  -->
+    <!-- ===================================================================== -->
+    <main id="pinView" class="view-layer flex-1 flex flex-col justify-between px-6 pt-2 pb-6 relative z-10">
+
+      <div class="brand-lockup"><div class="brand-name">LuLu<small>PHILIPPINES</small></div><span class="brand-tag">Your everyday, elevated</span></div>
+<!-- 1. DEEP EMERALD HERO CARD (Minimal: Glowing Dot + ENTER PIN + Frosted Pill) -->
+      <section class="emerald-card p-6 text-white my-auto">
+        <!-- Sweeping Lime-Green Vector Arcs in Background -->
+        <svg class="pointer-events-none absolute inset-0 w-full h-full" viewBox="0 0 360 190" fill="none" preserveAspectRatio="none">
+          <path d="M95 150 C 165 110, 240 42, 345 14" stroke="#76e072" stroke-width="1.7" stroke-opacity="0.72" />
+          <path d="M130 165 C 200 125, 265 68, 355 42" stroke="#2eb872" stroke-width="1.2" stroke-opacity="0.45" />
+          <path d="M175 178 C 240 148, 290 100, 360 80" stroke="#2eb872" stroke-width="1" stroke-opacity="0.28" />
+        </svg>
+
+        <div class="relative z-10"><h1 class="welcome">Welcome back.</h1><p class="welcome-sub">Enter your 4-digit PIN to continue.</p></div>
+<!-- Minimal Header Label -->
+        <div class="relative z-10 flex items-center justify-center gap-2 mb-5">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#76e072] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#76e072] shadow-[0_0_8px_#76e072]"></span>
+          </span>
+          <span id="pinStatusLabel" class="text-[11.5px] font-bold tracking-[0.2em] text-[#b4e4cb] uppercase">
+            ENTER PIN
+          </span>
+        </div>
+
+        <!-- 4-Digit PIN Dots Inside Frosted Glassmorphic Inner Pill -->
+        <div id="pinPillContainer" class="frosted-pill relative z-10 py-5 px-6 flex items-center justify-center gap-5">
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+          <div class="pin-dot"></div>
+        </div>
+      </section>
+
+      <!-- 2. CLEAN CIRCULAR TACTILE KEYPAD (76px diameter, no sub-labels) -->
+      <section class="my-auto py-2">
+        <div class="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center max-w-[296px] mx-auto">
+          <button type="button" class="circle-key num-key" data-digit="1" onclick="pressDigit('1', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">1</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="2" onclick="pressDigit('2', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">2</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="3" onclick="pressDigit('3', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">3</span>
+          </button>
+
+          <button type="button" class="circle-key num-key" data-digit="4" onclick="pressDigit('4', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">4</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="5" onclick="pressDigit('5', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">5</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="6" onclick="pressDigit('6', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">6</span>
+          </button>
+
+          <button type="button" class="circle-key num-key" data-digit="7" onclick="pressDigit('7', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">7</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="8" onclick="pressDigit('8', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">8</span>
+          </button>
+          <button type="button" class="circle-key num-key" data-digit="9" onclick="pressDigit('9', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">9</span>
+          </button>
+
+          <!-- Bottom-Left: Subtle Biometric Icon -->
+          <button type="button" class="circle-key utility-key text-[#1c6b48]" onclick="triggerBiometric(this)" aria-label="Biometric Unlock">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8V6a2 2 0 0 1 2-2h2" />
+              <path d="M4 16v2a2 2 0 0 0 2 2h2" />
+              <path d="M16 4h2a2 2 0 0 1 2 2v2" />
+              <path d="M16 20h2a2 2 0 0 0 2-2v-2" />
+              <path d="M9 10h.01" />
+              <path d="M15 10h.01" />
+              <path d="M9.5 15.5a3.5 3.5 0 0 0 5 0" />
+            </svg>
+          </button>
+
+          <!-- Bottom-Center: 0 -->
+          <button type="button" class="circle-key num-key" data-digit="0" onclick="pressDigit('0', this)">
+            <span class="font-mono text-[26px] font-semibold text-[#082a1c]">0</span>
+          </button>
+
+          <!-- Bottom-Right: Clean Backspace SVG Icon -->
+          <button type="button" id="backspaceBtn" class="circle-key utility-key text-[#082a1c]" onclick="pressBackspace(this)" aria-label="Backspace">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
+              <line x1="18" y1="9" x2="12" y2="15" />
+              <line x1="12" y1="9" x2="18" y2="15" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. MINIMAL FOOTER -->
+      <footer class="text-center pt-1">
+        <button onclick="openSheet('forgot')" class="text-[13px] font-semibold text-[#1c6b48] hover:text-[#082a1c] transition">
+          Forgot PIN?
+        </button><p class="footer-note">LuLu Philippines · PIN login preview</p>
+      </footer>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: UNLOCKED REFERENCE HOME DASHBOARD                             -->
+    <!-- ===================================================================== -->
+    <main id="dashboardView" class="view-layer view-hidden flex-1 flex flex-col justify-between overflow-hidden relative z-10">
+
+      <div class="flex-1 overflow-y-auto no-scrollbar px-5 pt-1 pb-24 space-y-4">
+
+        <!-- AVAILABLE BALANCE CARD ($788.18 + ASSETS $1,057.00) -->
+        <section class="emerald-card p-5 text-white">
+          <svg class="pointer-events-none absolute inset-0 w-full h-full" viewBox="0 0 360 210" fill="none" preserveAspectRatio="none">
+            <path d="M105 150 C 175 108, 245 45, 345 16" stroke="#76e072" stroke-width="1.8" stroke-opacity="0.78" />
+            <path d="M135 165 C 205 125, 270 68, 355 42" stroke="#2eb872" stroke-width="1.2" stroke-opacity="0.48" />
+            <path d="M175 178 C 240 148, 295 102, 360 80" stroke="#2eb872" stroke-width="1" stroke-opacity="0.3" />
+          </svg>
+
+          <div class="relative z-10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#76e072] opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#76e072] shadow-[0_0_8px_#76e072]"></span>
+              </span>
+              <span class="text-[11.5px] font-bold tracking-[0.13em] text-[#a8dcc3] uppercase">
+                AVAILABLE BALANCE
+              </span>
+            </div>
+
+            <button onclick="toggleBalancePrivacy()" class="glass-eye-btn w-9 h-9 flex items-center justify-center text-white/90" aria-label="Toggle Balance">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="relative z-10 my-3 flex items-baseline">
+            <span class="text-[24px] font-extrabold text-[#a8dcc3] mr-1">$</span>
+            <span id="dashBalance" class="text-[42px] font-extrabold tracking-tight text-white leading-none">788</span>
+            <span id="dashCents" class="text-[38px] font-extrabold text-[#8ab8a3] leading-none">.18</span>
+          </div>
+
+          <div class="frosted-pill relative z-10 p-3 px-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-[#2eb872]/25 border border-[#76e072]/30 flex items-center justify-center text-[#76e072]">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                  <polyline points="2 12 12 17 22 12" />
+                  <polyline points="2 17 12 22 22 17" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-[10.5px] font-bold tracking-[0.12em] text-[#9ecdb7] uppercase">ASSETS</p>
+                <p id="dashAssets" class="text-[19px] font-extrabold text-white leading-tight mt-0.5">
+                  $1,057<span class="text-[#8ab8a3] text-[14px] font-bold">.00</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PURCHASE BONDS CARD -->
+        <section class="relative h-[184px] rounded-[26px] overflow-hidden shadow-[0_12px_28px_rgba(9,46,32,0.1)]">
+          <div class="absolute inset-0 bg-gradient-to-br from-[#5aa382] via-[#2c6e4f] to-[#0d3b26]"></div>
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 360 200" preserveAspectRatio="none">
+            <polygon points="155,0 360,0 360,200 95,200" fill="#dff0e6" opacity="0.85" />
+            <polygon points="195,55 360,12 360,115 195,125" fill="#2d7a53" />
+            <polygon points="195,112 360,92 360,195 195,195" fill="#184d34" />
+            <circle cx="295" cy="72" r="14" fill="#c93b2b" opacity="0.9" />
+            <g transform="translate(185, 118) rotate(-10)">
+              <rect x="0" y="0" width="110" height="70" rx="8" fill="#cde2d5" stroke="#1c6b48" stroke-width="1.5" />
+              <circle cx="48" cy="26" r="10" fill="#1c6b48" opacity="0.85" />
+            </g>
+          </svg>
+          <div class="absolute inset-0 bg-gradient-to-r from-[#07291b]/90 via-[#154d35]/65 to-transparent"></div>
+          <div class="relative z-10 h-full p-5 flex flex-col justify-end items-start">
+            <h2 class="text-[22px] font-extrabold text-white tracking-tight leading-tight mb-3">
+              Purchase Bonds
+            </h2>
+            <button class="frosted-cta-pill px-4 py-2 text-white text-[12.5px] font-bold flex items-center gap-2">
+              <span>View Bond Packages</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- APPLY FOR FRANCHISE CARD -->
+        <section class="relative h-[184px] rounded-[26px] overflow-hidden shadow-[0_12px_28px_rgba(9,46,32,0.1)]">
+          <div class="absolute inset-0 bg-gradient-to-b from-[#99bdd6] via-[#dce6ed] to-[#1a382b]"></div>
+          <div class="absolute inset-x-0 top-5 h-22 bg-gradient-to-r from-[#13422e] via-[#1b523b] to-[#13422e] border-y-4 border-[#d5dad7] flex flex-col items-center justify-center py-2">
+            <span class="font-serif italic text-[25px] font-bold text-[#e6ece8] tracking-wide leading-none">LuLu</span>
+            <span class="text-[9px] font-extrabold tracking-[0.28em] text-[#cbd9d1] mt-0.5">DAILY</span>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-[#051d13]/90 via-[#082619]/40 to-transparent"></div>
+          <div class="relative z-10 h-full p-5 flex flex-col justify-end items-start">
+            <h2 class="text-[22px] font-extrabold text-white tracking-tight leading-tight mb-3">
+              Apply for Franchise
+            </h2>
+            <button class="frosted-cta-pill px-4 py-2 text-white text-[12.5px] font-bold flex items-center gap-2">
+              <span>View Franchise Details</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- BOTTOM NAVIGATION BAR WITH GLOSSY 3D EMERALD '+' ORB & LOCK BUTTON -->
+      <nav class="relative z-20 mx-4 mb-3 bg-white rounded-[28px] px-3 py-2 shadow-[0_10px_30px_rgba(9,46,32,0.12)] border border-[#e4eee8] flex items-center justify-between">
+        <button class="flex flex-col items-center justify-center w-14">
+          <div class="w-11 h-7 rounded-xl bg-[#e7f5ed] flex items-center justify-center text-[#126945]">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+          </div>
+          <span class="text-[11px] font-bold text-[#126945] mt-0.5">Home</span>
+        </button>
+
+        <button class="flex flex-col items-center justify-center w-16 text-[#687770]">
+          <div class="h-7 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <span class="text-[11px] font-semibold mt-0.5">Transactions</span>
+        </button>
+
+        <div class="-mt-8">
+          <button class="emerald-orb-ring active:scale-95 transition" aria-label="Quick Action">
+            <div class="w-14 h-14 rounded-full emerald-orb-3d flex items-center justify-center text-white">
+              <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <button class="flex flex-col items-center justify-center w-14 text-[#687770]">
+          <div class="h-7 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <span class="text-[11px] font-semibold mt-0.5">Referral</span>
+        </button>
+
+        <!-- Lock Button to Return to Minimal PIN Screen -->
+        <button onclick="lockScreen()" class="flex flex-col items-center justify-center w-12 text-[#126945] hover:text-[#082a1c] transition" title="Lock PIN">
+          <div class="h-7 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 018 0v4" />
+            </svg>
+          </div>
+          <span class="text-[11px] font-semibold mt-0.5">Lock</span>
+        </button>
+      </nav>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- MINIMAL BOTTOM SHEET DRAWER                                           -->
+    <!-- ===================================================================== -->
+    <div id="sheetBackdrop" class="sheet-backdrop absolute inset-0 z-40 bg-[#041b11]/50 backdrop-blur-xs flex flex-col justify-end" onclick="closeSheet()">
+      <div class="bottom-sheet bg-white rounded-t-[28px] p-6 pt-3 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="w-10 h-1.5 bg-[#d5e6dc] rounded-full mx-auto mb-4"></div>
+        <div id="sheetContent"></div>
+      </div>
+    </div>
+
+    <!-- Home Indicator Bar -->
+    <div class="w-32 h-1 bg-[#1e2622]/75 rounded-full mx-auto mb-2 shrink-0"></div>
+  </div>
+
+  <script>
+    const MAX_PIN = 4;
+    let currentPin = "";
+    let isLocked = false;
+    let balanceHidden = false;
+
+    const ACCOUNTS = [
+      { masked: '••• 8492', balance: '788', cents: '.18', assets: '$1,057' },
+      { masked: '••• 3109', balance: '2,410', cents: '.50', assets: '$4,890' }
+    ];
+    let activeAccount = 0;
+
+    // Subtle Web Audio Tactile Click
+    let audioCtx = null;
+    function playClick(type = 'tap') {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (type === 'tap') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(52, now + 0.028);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.03);
+        } else if (type === 'back') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 0.028);
+          gain.gain.setValueAtTime(0.11, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.03);
+        } else if (type === 'unlock') {
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(freq, now + i * 0.05);
+            g.gain.setValueAtTime(0.09, now + i * 0.05);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.18);
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.start(now + i * 0.05);
+            o.stop(now + i * 0.05 + 0.2);
+          });
+        }
+      } catch (e) {}
+    }
+
+    function updateDots(unlocking = false) {
+      const dots = document.querySelectorAll('.pin-dot');
+      dots.forEach((dot, idx) => {
+        dot.classList.remove('active', 'pulse-unlock');
+        if (unlocking) {
+          dot.classList.add('pulse-unlock');
+        } else if (idx < currentPin.length) {
+          dot.classList.add('active');
+        }
+      });
+    }
+
+    function pressDigit(digit, btnEl) {
+      if (isLocked || currentPin.length >= MAX_PIN) return;
+      currentPin += digit;
+      playClick('tap');
+      if (navigator.vibrate) { try { navigator.vibrate(10); } catch (e) {} }
+      updateDots(false);
+
+      if (currentPin.length === MAX_PIN) {
+        isLocked = true;
+        setTimeout(() => {
+          playClick('unlock');
+          updateDots(true);
+          setTimeout(() => {
+            document.getElementById('pinView').classList.add('view-hidden');
+            document.getElementById('dashboardView').classList.remove('view-hidden');
+            currentPin = "";
+            updateDots(false);
+            isLocked = false;
+          }, 260);
+        }, 120);
+      }
+    }
+
+    function pressBackspace(btnEl) {
+      if (isLocked || currentPin.length === 0) return;
+      currentPin = currentPin.slice(0, -1);
+      playClick('back');
+      if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
+      updateDots(false);
+    }
+
+    function triggerBiometric(btnEl) { openSheet("biometric"); return;
+      if (isLocked) return;
+      isLocked = true;
+      currentPin = "";
+      const digits = ['1', '2', '3', '4'];
+      digits.forEach((d, i) => {
+        setTimeout(() => {
+          currentPin += d;
+          playClick('tap');
+          updateDots(false);
+          if (i === digits.length - 1) {
+            setTimeout(() => {
+              playClick('unlock');
+              updateDots(true);
+              setTimeout(() => {
+                document.getElementById('pinView').classList.add('view-hidden');
+                document.getElementById('dashboardView').classList.remove('view-hidden');
+                currentPin = "";
+                updateDots(false);
+                isLocked = false;
+              }, 240);
+            }, 100);
+          }
+        }, i * 55);
+      });
+    }
+
+    function lockScreen() {
+      playClick('back');
+      currentPin = "";
+      updateDots(false);
+      document.getElementById('dashboardView').classList.add('view-hidden');
+      document.getElementById('pinView').classList.remove('view-hidden');
+    }
+
+    function toggleBalancePrivacy() {
+      balanceHidden = !balanceHidden;
+      playClick('tap');
+      const acct = ACCOUNTS[activeAccount];
+      document.getElementById('dashBalance').textContent = balanceHidden ? '•••' : acct.balance;
+      document.getElementById('dashCents').textContent = balanceHidden ? '.••' : acct.cents;
+      document.getElementById('dashAssets').innerHTML = balanceHidden
+        ? '$•,•••<span class="text-[#8ab8a3] text-[14px] font-bold">.••</span>'
+        : `${acct.assets}<span class="text-[#8ab8a3] text-[14px] font-bold">.00</span>`;
+    }
+
+    function openSheet(kind) {
+      playClick('tap');
+      const backdrop = document.getElementById('sheetBackdrop');
+      const content = document.getElementById('sheetContent');
+
+      if (kind === 'account') {
+        content.innerHTML = `
+          <p class="text-sm font-bold text-[#082a1c] mb-3">Select Account</p>
+          <div class="space-y-2 mb-4">
+            ${ACCOUNTS.map((a, i) => `
+              <button onclick="switchAccount(${i})" class="w-full p-3.5 rounded-2xl border ${i === activeAccount ? 'bg-[#e6f5ec] border-[#1c6b48]' : 'bg-[#f3f7f5] border-transparent'} flex items-center justify-between">
+                <span class="font-mono text-sm font-bold text-[#082a1c]">${a.masked}</span>
+                <span class="text-xs font-bold text-[#1c6b48]">${i === activeAccount ? 'Active' : 'Switch'}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      } else if (kind === 'biometric') {
+ content.innerHTML = `<p class="text-sm font-bold mb-3">Biometric login</p><p class="text-xs mb-4">Biometric login requires your connected authentication service. Use the keypad to try this preview.</p><button onclick="closeSheet()" class="w-full py-3 rounded-2xl bg-[#1c6b48] text-white">Use PIN</button>`;
+ } else if (kind === 'forgot') {
+        content.innerHTML = `
+          <p class="text-sm font-bold text-[#082a1c] mb-1">Reset PIN</p>
+          <p class="text-xs text-[#4d7563] mb-4">In the connected app, verify your registered mobile number (${ACCOUNTS[activeAccount].masked}) by SMS to reset your PIN. This preview does not send codes.</p>
+          <button onclick="closeSheet()" class="w-full py-3 rounded-2xl bg-[#1c6b48] text-white text-xs font-bold">Close preview</button>
+        `;
+      } else {
+        content.innerHTML = `
+          <p class="text-sm font-bold text-[#082a1c] mb-1">Support</p>
+          <p class="text-xs text-[#4d7563] mb-4">Enter any 4 digits on the keypad to unlock the home dashboard.</p>
+          <button onclick="closeSheet()" class="w-full py-3 rounded-2xl bg-[#082a1c] text-white text-xs font-bold">Got It</button>
+        `;
+      }
+
+      backdrop.classList.add('open');
+    }
+
+    function closeSheet() {
+      document.getElementById('sheetBackdrop').classList.remove('open');
+    }
+
+    function switchAccount(idx) {
+      activeAccount = idx;
+      const acct = ACCOUNTS[idx];
+      document.getElementById('maskedNumberLabel').textContent = acct.masked;
+      document.getElementById('dashBalance').textContent = acct.balance;
+      document.getElementById('dashCents').textContent = acct.cents;
+      document.getElementById('dashAssets').innerHTML = `${acct.assets}<span class="text-[#8ab8a3] text-[14px] font-bold">.00</span>`;
+      closeSheet();
+    }
+
+    // Physical keyboard support
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('sheetBackdrop').classList.contains('open')) {
+        if (e.key === 'Escape') closeSheet();
+        return;
+      }
+      if (document.getElementById('pinView').classList.contains('view-hidden')) return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        const btn = document.querySelector(`.num-key[data-digit="${e.key}"]`);
+        if (btn) {
+          btn.classList.add('pressed');
+          setTimeout(() => btn.classList.remove('pressed'), 100);
+          pressDigit(e.key, btn);
+        }
+      } else if (e.key === 'Backspace') {
+        const back = document.getElementById('backspaceBtn');
+        back.classList.add('pressed');
+        setTimeout(() => back.classList.remove('pressed'), 100);
+        pressBackspace(back);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -159,7 +159,7 @@
           <p class="about-resources-intro">Choose an area to learn more. These pages are publicly accessible; any account requirements are explained where relevant.</p>
         </div>
         <div class="about-resource-grid">
-          <a class="about-resource" href="{{ route('public.home') }}#businesses">
+          <a class="about-resource" href="{{ route('investors') }}#overview">
             <span class="about-resource-icon" aria-hidden="true">L</span>
             <h3>Our business</h3>
             <p>Visit the homepage to explore Lulu’s business information and company highlights.</p>

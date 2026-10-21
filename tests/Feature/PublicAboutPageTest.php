@@ -29,11 +29,17 @@ class PublicAboutPageTest extends TestCase
             ->assertSee(asset('Lulucerttosell.png'), false);
     }
 
-    public function test_homepage_links_to_the_about_page(): void
+    public function test_homepage_redirects_to_the_investor_relations_page(): void
     {
         $this->get(route('public.home'))
+            ->assertRedirect(route('investors'));
+
+        $this->get(route('home'))
+            ->assertRedirect(route('investors'));
+
+        $this->get(route('investors'))
             ->assertOk()
-            ->assertSee('About Us')
-            ->assertSee(route('about'), false);
+            ->assertSee('Investor Relations')
+            ->assertSee('Your everyday.');
     }
 }

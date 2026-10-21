@@ -1,7 +1,7 @@
 {
   "name": "Lulu",
   "short_name": "Lulu",
-  "start_url": "/",
+  "start_url": "/investors",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#166534",

@@ -70,6 +70,8 @@ class InvestorPinTest extends TestCase
         $this->get(route('investors'))
             ->assertOk()
             ->assertSee('Investor Relations')
+            ->assertSee('rel="apple-touch-icon" sizes="512x512" href="'.asset('icons/lulu-512.png').'"', false)
+            ->assertSee('rel="manifest" href="'.asset('manifest.json').'"', false)
             ->assertSee('Your everyday.')
             ->assertSee('Continue with Google')
             ->assertSee('Create an account')

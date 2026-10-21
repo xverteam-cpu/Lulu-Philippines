@@ -4,9 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="theme-color" content="#087e50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Lulu">
     <title>Investor Relations | LuLu Philippines</title>
     <meta name="description" content="Investor Relations sign in for LuLu Philippines.">
     <link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icons/lulu-512.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('icons/lulu-512.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="stylesheet" href="{{ asset('lulu-public.css') }}?v={{ filemtime(public_path('lulu-public.css')) }}">
     @env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv
 </head>

@@ -1327,7 +1327,8 @@ html:has(.account-shell), body:has(.account-shell) { overscroll-behavior-y: none
 .investors-page .investors-banner.keyboard-open>.investors-container,.investors-page .investors-banner.keyboard-open .investors-login-heading,.investors-page .investors-banner.keyboard-open .investors-login-terms{display:none}
 .investors-page .investors-banner.keyboard-open .investors-login-card{padding:14px 18px 10px;border-radius:22px}
 .investors-page .investors-banner.keyboard-open .investors-login-form input[type=email],.investors-page .investors-banner.keyboard-open .investors-login-form input[type=password],.investors-page .investors-banner.keyboard-open .investors-login-form input[type=text],.investors-page .investors-banner.keyboard-open .investors-login-form .investors-google-button,.investors-page .investors-banner.keyboard-open .investors-login-form .investors-continue-button{height:44px;min-height:44px}
-@media(max-width:780px){.investors-page .investors-banner{background:#f6f1df url('/investor-mobile-background.png') center center/cover no-repeat}}
+.investors-page .investors-banner{background:#f6f1df url('/investor-desktop-background.png') center center/cover no-repeat}
+@media(max-width:780px){.investors-page .investors-banner{background-image:url('/investor-mobile-background.png')}}
 .investors-page .investors-login-card{isolation:isolate;transform:translateY(-8px);border-color:#ffffffad;box-shadow:0 34px 56px -22px #103e2d80,0 15px 25px -12px #173e2b55,0 3px 8px #173e2b1c,inset 0 1px 0 #ffffff55;transition:transform .25s ease,box-shadow .25s ease}
 .investors-page .investors-login-card::before{position:absolute;z-index:-1;inset:16px 12px -20px;border-radius:inherit;background:#153e2b66;content:"";filter:blur(22px);pointer-events:none}
 @media(hover:hover){.investors-page .investors-login-card:hover{transform:translateY(-12px);box-shadow:0 42px 64px -24px #103e2d88,0 18px 30px -12px #173e2b66,0 3px 8px #173e2b1c,inset 0 1px 0 #ffffff55}}

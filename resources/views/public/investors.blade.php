@@ -7,7 +7,7 @@
     <title>Investor Relations | LuLu Philippines</title>
     <meta name="description" content="Investor Relations sign in for LuLu Philippines.">
     <link rel="icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
-    <link rel="stylesheet" href="{{ asset('lulu-public.css') }}">
+    <link rel="stylesheet" href="{{ asset('lulu-public.css') }}?v={{ filemtime(public_path('lulu-public.css')) }}">
     @env('production')<script src="{{ asset('public-protection.js') }}" defer></script>@endenv
 </head>
 <body class="investors-page @auth investors-pin-screen @endauth">

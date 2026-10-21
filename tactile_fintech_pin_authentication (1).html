@@ -15,6 +15,9 @@
     tailwind.config = {
       theme: {
         extend: {
+          maxWidth: {
+            74: '18.5rem',
+          },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             mono: ['"Space Grotesk"', 'monospace'],
@@ -376,7 +379,7 @@ button:focus-visible {outline:3px solid #86bd38;outline-offset:3px;}
 
       <!-- 2. CLEAN CIRCULAR TACTILE KEYPAD (76px diameter, no sub-labels) -->
       <section class="my-auto py-2">
-        <div class="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center max-w-[296px] mx-auto">
+        <div class="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center max-w-74 mx-auto">
           <button type="button" class="circle-key num-key" data-digit="1" onclick="pressDigit('1', this)">
             <span class="font-mono text-[26px] font-semibold text-[#082a1c]">1</span>
           </button>

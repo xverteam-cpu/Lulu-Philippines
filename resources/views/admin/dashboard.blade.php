@@ -608,13 +608,27 @@
         @csrf
 
         <div class="modal-field">
-          <label class="modal-label" for="send-funds-user">Select User</label>
-          <select id="send-funds-user" name="user_id" required class="modal-select">
-            <option value="">-- Choose a user --</option>
-            @foreach($users as $user)
-              <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-            @endforeach
-          </select>
+          <label class="modal-label" for="send-funds-user-search">Select User</label>
+          <div class="send-package-user-picker">
+            <input
+              id="send-funds-user-search"
+              type="search"
+              required
+              class="modal-input"
+              placeholder="Search by name or email..."
+              autocomplete="off"
+              aria-autocomplete="list"
+              aria-controls="send-funds-user-suggestions"
+              aria-expanded="false"
+            >
+            <input id="send-funds-user-id" type="hidden" name="user_id">
+            <div
+              id="send-funds-user-suggestions"
+              class="user-search-suggestions"
+              role="listbox"
+              aria-label="Matching users"
+            ></div>
+          </div>
         </div>
 
         <div class="modal-field">
@@ -999,6 +1013,15 @@
     var packageUsers = [];
     var packageRequestNumber = 0;
 
+    var fundsUserSearch = document.getElementById('send-funds-user-search');
+    var fundsUserId = document.getElementById('send-funds-user-id');
+    var fundsUserSuggestions = document.getElementById('send-funds-user-suggestions');
+    var fundsForm = fundsUserSearch ? fundsUserSearch.closest('form') : null;
+    var fundsDebounceTimer;
+    var fundsActiveIndex = -1;
+    var fundsUsers = [];
+    var fundsRequestNumber = 0;
+
     function updatePackageAmountRange() {
       if (!packageSelect || !packageAmount || !packageAmountHelp) return;
 
@@ -1156,6 +1179,141 @@
           event.preventDefault();
           packageUserSearch.setCustomValidity('Choose a user from the matching results.');
           packageUserSearch.reportValidity();
+        }
+      });
+    }
+
+    function closeFundsUserSuggestions() {
+      fundsUserSuggestions.classList.remove('is-open');
+      fundsUserSearch.setAttribute('aria-expanded', 'false');
+      fundsUserSearch.removeAttribute('aria-activedescendant');
+      fundsActiveIndex = -1;
+    }
+
+    function chooseFundsUser(index) {
+      var user = fundsUsers[index];
+      if (!user) return;
+
+      fundsUserSearch.value = user.name + ' (' + user.email + ')';
+      fundsUserId.value = user.id;
+      fundsUserSearch.setCustomValidity('');
+      closeFundsUserSuggestions();
+    }
+
+    function renderFundsUserSuggestions(users) {
+      fundsUsers = users;
+      fundsActiveIndex = -1;
+      fundsUserSuggestions.replaceChildren();
+
+      if (!users.length) {
+        var emptyMessage = document.createElement('div');
+        emptyMessage.className = 'user-search-suggestions-empty';
+        emptyMessage.textContent = 'No matching users found.';
+        fundsUserSuggestions.appendChild(emptyMessage);
+        fundsUserSuggestions.classList.add('is-open');
+        fundsUserSearch.setAttribute('aria-expanded', 'true');
+        return;
+      }
+
+      users.forEach(function (user, index) {
+        var option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'user-search-suggestion';
+        option.id = 'send-funds-user-option-' + user.id;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.addEventListener('mousedown', function (event) {
+          event.preventDefault();
+          chooseFundsUser(index);
+        });
+
+        var name = document.createElement('span');
+        name.className = 'user-search-suggestion-name';
+        name.textContent = user.name || 'Unnamed user';
+
+        var email = document.createElement('span');
+        email.className = 'user-search-suggestion-meta';
+        email.textContent = user.email || '';
+
+        option.appendChild(name);
+        option.appendChild(email);
+        fundsUserSuggestions.appendChild(option);
+      });
+
+      fundsUserSuggestions.classList.add('is-open');
+      fundsUserSearch.setAttribute('aria-expanded', 'true');
+    }
+
+    if (fundsUserSearch && fundsUserId && fundsUserSuggestions && fundsForm) {
+      fundsUserSearch.addEventListener('input', function () {
+        fundsUserId.value = '';
+        fundsUserSearch.setCustomValidity('');
+        window.clearTimeout(fundsDebounceTimer);
+        var query = fundsUserSearch.value.trim();
+        var thisRequest = ++fundsRequestNumber;
+
+        if (query.length < 2) {
+          fundsUsers = [];
+          closeFundsUserSuggestions();
+          return;
+        }
+
+        fundsDebounceTimer = window.setTimeout(function () {
+          fetch(suggestionUrl + '?q=' + encodeURIComponent(query), {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+          }).then(function (response) {
+            if (!response.ok) throw new Error('User suggestions failed with status ' + response.status);
+            return response.json();
+          }).then(function (result) {
+            if (thisRequest !== fundsRequestNumber || query !== fundsUserSearch.value.trim()) return;
+            renderFundsUserSuggestions(result.users);
+          }).catch(function (error) {
+            if (thisRequest === fundsRequestNumber) {
+              fundsUsers = [];
+              renderFundsUserSuggestions([]);
+              fundsUserSuggestions.querySelector('.user-search-suggestions-empty').textContent = 'Unable to load users. Please try again.';
+              console.error(error);
+            }
+          });
+        }, 200);
+      });
+
+      fundsUserSearch.addEventListener('keydown', function (event) {
+        if (!fundsUserSuggestions.classList.contains('is-open') || !fundsUsers.length) {
+          if (event.key === 'Escape') closeFundsUserSuggestions();
+          return;
+        }
+
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          var direction = event.key === 'ArrowDown' ? 1 : -1;
+          fundsActiveIndex = fundsActiveIndex < 0
+            ? (direction === 1 ? 0 : fundsUsers.length - 1)
+            : (fundsActiveIndex + direction + fundsUsers.length) % fundsUsers.length;
+          fundsUserSuggestions.querySelectorAll('.user-search-suggestion').forEach(function (option, index) {
+            var isActive = index === fundsActiveIndex;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-selected', String(isActive));
+          });
+          fundsUserSearch.setAttribute('aria-activedescendant', 'send-funds-user-option-' + fundsUsers[fundsActiveIndex].id);
+        } else if (event.key === 'Enter' && fundsActiveIndex >= 0) {
+          event.preventDefault();
+          chooseFundsUser(fundsActiveIndex);
+        } else if (event.key === 'Escape') {
+          closeFundsUserSuggestions();
+        }
+      });
+
+      fundsUserSearch.addEventListener('blur', function () {
+        window.setTimeout(closeFundsUserSuggestions, 120);
+      });
+
+      fundsForm.addEventListener('submit', function (event) {
+        if (!fundsUserId.value) {
+          event.preventDefault();
+          fundsUserSearch.setCustomValidity('Choose a user from the matching results.');
+          fundsUserSearch.reportValidity();
         }
       });
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\BondPurchaseApprovedEmail;
 use App\Mail\PackageGiftedEmail;
 use App\Models\Investment;
 use App\Models\User;
@@ -117,6 +118,43 @@ class PackageGiftEmailTest extends TestCase
         Mail::assertSent(PackageGiftedEmail::class, function (PackageGiftedEmail $mail) use ($recipient): bool {
             return $mail->hasTo($recipient->email);
         });
+    }
+
+    public function test_admin_approval_sends_purchase_approval_email_with_usd_amount(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
+        $recipient = User::factory()->create(['email' => 'buyer@example.com']);
+        $investment = Investment::create([
+            'user_id' => $recipient->id,
+            'package_key' => 'loaded',
+            'package_name' => 'Gold',
+            'package_price' => 799,
+            'amount' => 799,
+            'payment_method' => 'bank_transfer',
+            'daily_interest_rate' => 0.8,
+            'duration_days' => 120,
+            'starts_at' => null,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->post(route('admin.investments.approve', $investment))
+            ->assertRedirect()
+            ->assertSessionHas('status', 'Investment approved successfully.');
+
+        Mail::assertSent(BondPurchaseApprovedEmail::class, function (BondPurchaseApprovedEmail $mail) use ($recipient): bool {
+            $content = $mail->render();
+
+            return $mail->hasTo($recipient->email)
+                && $mail->subject === 'Your bond purchase has been approved'
+                && str_contains($content, '$799.00')
+                && ! str_contains($content, '₱');
+        });
+
+        Mail::assertNotSent(PackageGiftedEmail::class);
     }
 
     public function test_admin_can_set_a_custom_amount_for_a_selected_package(): void

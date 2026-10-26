@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\PackageGiftedEmail;
+use App\Mail\BondPurchaseApprovedEmail;
 use App\Models\Investment;
 use App\Support\InvestmentPackages;
 use Illuminate\Http\RedirectResponse;
@@ -85,9 +85,9 @@ class InvestmentApprovalController extends Controller
             $investment->accrueDailyInterest();
 
             try {
-                Mail::to($investment->user->email)->send(new PackageGiftedEmail($investment));
+                Mail::to($investment->user->email)->send(new BondPurchaseApprovedEmail($investment));
             } catch (\Throwable $e) {
-                Log::warning('Failed to send package gift email during investment approval', [
+                Log::warning('Failed to send bond purchase approval email', [
                     'investment_id' => $investment->id,
                     'user_id' => $investment->user_id,
                     'error' => $e->getMessage(),

@@ -44,7 +44,7 @@
         <tr>
           <td style="border-top:1px solid #4a4a4a; padding:16px 0 0 0;">
             <p style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:20px; color:#b8b8b8;">
-              This automated email was sent to {{ $email }}. Please do not reply directly to this message. For assistance, contact Lulu Support at lotteriaphilippines@gmail.com.
+              This automated email was sent to {{ $email }}. Please do not reply directly to this message. For assistance, contact Lulu Support at official@luluphilippines.com.
             </p>
             <p style="margin:12px 0 0 0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:11px; line-height:18px; color:#9f9f9f;">
               © 2026 Lulu. All rights reserved.

@@ -4,6 +4,7 @@
   'send-page' => request()->routeIs('send'),
   'profile-edit-page' => request()->routeIs('profile.edit'),
   'profile-notifications-page' => request()->routeIs('profile.notifications'),
+  'password-recovery-page' => request()->routeIs('password.request'),
 ])>
 <head>
   <meta charset="utf-8">
@@ -77,7 +78,7 @@
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader-circle"></div>
   </div>
-  <div class="container{{ request()->routeIs('admin.dashboard') ? ' admin-page-container' : '' }}{{ request()->routeIs('send') ? ' send-page-container' : '' }}{{ request()->routeIs('profile.edit') ? ' profile-edit-container' : '' }}{{ request()->routeIs('profile.notifications') ? ' profile-notifications-container' : '' }}">
+  <div class="container{{ request()->routeIs('admin.dashboard') ? ' admin-page-container' : '' }}{{ request()->routeIs('send') ? ' send-page-container' : '' }}{{ request()->routeIs('profile.edit') ? ' profile-edit-container' : '' }}{{ request()->routeIs('profile.notifications') ? ' profile-notifications-container' : '' }}{{ request()->routeIs('password.request') ? ' password-recovery-container' : '' }}">
     @yield('content')
   </div>
   @auth

@@ -339,6 +339,11 @@
     line-height: 1.5;
   }
 
+  .send-info ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
   .send-info-icon {
     width: 30px;
     height: 30px;
@@ -395,33 +400,6 @@
     color: var(--send-muted);
     font-size: 12px;
     line-height: 1.45;
-  }
-
-  .send-toast {
-    position: fixed;
-    z-index: 200;
-    right: 20px;
-    bottom: 112px;
-    left: 20px;
-    max-width: 350px;
-    margin: auto;
-    padding: 12px 16px;
-    transform: translateY(12px);
-    border-radius: 16px;
-    background: #021a12;
-    box-shadow: 0 12px 24px rgba(2, 26, 18, .2);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    text-align: center;
-    transition: opacity .2s ease, transform .2s ease;
-  }
-
-  .send-toast.is-visible {
-    transform: translateY(0);
-    opacity: 1;
   }
 
   .send-page .bottom-nav {
@@ -724,13 +702,27 @@
 
     <section class="send-panel" aria-labelledby="sendTransferTitle">
       <h2 id="sendTransferTitle">Transfer details</h2>
-      <p class="send-panel-description">Enter a recipient and amount to prepare a transfer.</p>
+      <p class="send-panel-description">Send funds instantly using the recipient's full name or email address.</p>
 
-      <form id="sendMoneyForm">
+      @if (session('status'))
+        <p class="send-info" role="status">{{ session('status') }}</p>
+      @endif
+      @if ($errors->any())
+        <div class="send-info" role="alert">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      <form id="sendMoneyForm" action="{{ route('send.transfer') }}" method="POST">
+        @csrf
         <div class="send-field">
-          <label for="sendRecipient">Recipient Wallet ID</label>
+          <label for="sendRecipient">Recipient Wallet ID (full name or email)</label>
           <div class="send-control">
-            <input id="sendRecipient" type="text" autocomplete="off" placeholder="Enter wallet ID or mobile number">
+            <input id="sendRecipient" name="recipient" type="text" autocomplete="off" placeholder="Enter full name or email address" value="{{ old('recipient') }}" required>
           </div>
         </div>
 
@@ -738,7 +730,7 @@
           <label for="sendAmount">Amount to Send</label>
           <div class="send-control send-amount-control">
             <span class="send-currency" aria-hidden="true">$</span>
-            <input id="sendAmount" class="send-number" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00">
+            <input id="sendAmount" name="amount" class="send-number" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" value="{{ old('amount') }}" required>
           </div>
           <div class="send-quick-row" aria-label="Quick amount">
             <button type="button" class="send-quick" data-amount="10">$10</button>
@@ -751,7 +743,7 @@
         <div class="send-field">
           <label for="sendMessage">Message <span style="color:var(--send-subtle);font-weight:500">(optional)</span></label>
           <div class="send-control">
-            <input id="sendMessage" type="text" maxlength="120" placeholder="Add a short note">
+            <input id="sendMessage" name="message" type="text" maxlength="120" placeholder="Add a short note" value="{{ old('message') }}">
           </div>
         </div>
 
@@ -759,26 +751,32 @@
           <span class="send-info-icon" aria-hidden="true">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
           </span>
-          <p>Wallet transfers are not available yet. This form is a preview and will not move funds.</p>
+          <p>Funds are deducted from your available balance and credited to the recipient immediately.</p>
         </div>
 
         <button class="send-cta" type="submit">
-          Continue to Send
+          Send Funds
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </form>
     </section>
 
-    <section aria-labelledby="recentRecipientsTitle">
+    <section aria-labelledby="recentTransfersTitle">
       <div class="send-section-head">
-        <h2 id="recentRecipientsTitle">Recent recipients</h2>
+        <h2 id="recentTransfersTitle">Recent transfers</h2>
       </div>
-      <p class="send-recipient-empty">No recent recipients yet.</p>
+      @forelse ($recentTransfers as $transfer)
+        <article class="send-recipient-empty">
+          <strong>{{ $transfer->title }}</strong>
+          <div>{{ $transfer->description }}</div>
+          <small>{{ $transfer->occurred_at->format('M j, Y g:i A') }}</small>
+        </article>
+      @empty
+        <p class="send-recipient-empty">No transfers yet.</p>
+      @endforelse
     </section>
   </main>
 </div>
-
-<div class="send-toast" id="sendPreviewNotice" role="status" aria-live="polite">Wallet transfers are not available yet.</div>
 
 <div class="fab-scrim" id="fabScrim" aria-hidden="true"></div>
 <div class="fab-panel" id="fabPanel" aria-hidden="true">
@@ -851,11 +849,8 @@
       }).format(new Date());
     }
 
-    var form = document.getElementById('sendMoneyForm');
     var amount = document.getElementById('sendAmount');
-    var notice = document.getElementById('sendPreviewNotice');
     var quickButtons = document.querySelectorAll('.send-quick');
-    var noticeTimer;
 
     quickButtons.forEach(function (button) {
       button.addEventListener('click', function () {
@@ -871,17 +866,6 @@
         quickButtons.forEach(function (button) {
           button.classList.toggle('is-active', button.dataset.amount === amount.value);
         });
-      });
-    }
-
-    if (form && notice) {
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        notice.classList.add('is-visible');
-        window.clearTimeout(noticeTimer);
-        noticeTimer = window.setTimeout(function () {
-          notice.classList.remove('is-visible');
-        }, 2800);
       });
     }
 

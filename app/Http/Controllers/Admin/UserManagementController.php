@@ -261,7 +261,7 @@ class UserManagementController extends Controller
             ]);
         }
 
-        $created = DB::transaction(function () use ($user, $package, $validated, $amount) {
+        $investment = DB::transaction(function () use ($user, $package, $validated, $amount): Investment|false {
             if (! InvestmentPackages::reserveSlot($validated['package'])) {
                 return false;
             }
@@ -279,11 +279,20 @@ class UserManagementController extends Controller
                 'starts_at' => now(),
             ]);
 
-            $investment->refresh();
-            $investment->accrueDailyInterest();
+            $investment->processReferralCommission();
 
+            return $investment;
+        });
+
+        if (! $investment) {
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['package' => "No remaining slots available for {$package['name']}."]);
+        }
+
+        $recipientEmail = trim((string) $user->email);
+        if (filter_var($recipientEmail, FILTER_VALIDATE_EMAIL) !== false) {
             try {
-                Mail::to($investment->user->email)->send(new PackageGiftedEmail($investment));
+                Mail::to($recipientEmail)->send(new PackageGiftedEmail($investment));
             } catch (\Throwable $e) {
                 Log::warning('Failed to send package gift email', [
                     'investment_id' => $investment->id,
@@ -291,15 +300,11 @@ class UserManagementController extends Controller
                     'error' => $e->getMessage(),
                 ]);
             }
-
-            $investment->processReferralCommission();
-
-            return true;
-        });
-
-        if (! $created) {
-            return redirect()->route('admin.dashboard')
-                ->withErrors(['package' => "No remaining slots available for {$package['name']}."]);
+        } else {
+            Log::info('Skipped package gift email because the recipient email address is invalid', [
+                'investment_id' => $investment->id,
+                'user_id' => $investment->user_id,
+            ]);
         }
 
         return redirect()->route('admin.dashboard')

@@ -41,6 +41,50 @@ class PackageGiftEmailTest extends TestCase
         ]);
     }
 
+    public function test_admin_send_package_is_saved_and_shown_to_user_with_invalid_email(): void
+    {
+        Mail::shouldReceive('to')->never();
+
+        $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
+        $recipient = User::factory()->create([
+            'email' => 'not-a-valid-email',
+            'balance' => 0,
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->post(route('admin.send-package'), [
+                'user_id' => $recipient->id,
+                'package' => 'loaded',
+                'amount' => '799.00',
+            ])
+            ->assertRedirect('/admin/dashboard')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('investments', [
+            'user_id' => $recipient->id,
+            'package_key' => 'loaded',
+            'amount' => 799.00,
+            'status' => 'approved',
+            'payment_method' => 'admin_transfer',
+        ]);
+
+        $this->assertSame(
+            799.0,
+            (float) Investment::query()
+                ->where('user_id', $recipient->id)
+                ->where('status', 'approved')
+                ->whereNull('cancelled_at')
+                ->sum('amount')
+        );
+
+        $this->actingAs($recipient)
+            ->withSession(['investor_pin_verified' => true])
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('asset-readable">$799<span class="decimal">.00', false);
+    }
+
     public function test_admin_approval_sends_a_package_gift_email_and_starts_daily_interest(): void
     {
         Mail::fake();

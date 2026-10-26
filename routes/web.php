@@ -683,13 +683,124 @@ Route::get('/send', function () {
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user->refresh();
 
-    $investments = $user->investments()->latest()->get();
-    $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
+    $availableBalance = (float) $user->balance;
+    $recentTransfers = AccountActivity::query()
+        ->where('user_id', $user->id)
+        ->whereIn('type', ['funds_sent', 'funds_received'])
+        ->latest('occurred_at')
+        ->limit(5)
+        ->get();
 
     return view('send', [
         'availableBalance' => $availableBalance,
+        'recentTransfers' => $recentTransfers,
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('send');
+
+Route::post('/send', function (Request $request) {
+    $data = $request->validate([
+        'recipient' => ['required', 'string', 'max:255'],
+        'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:9999999999999.99'],
+        'message' => ['nullable', 'string', 'max:120'],
+    ]);
+
+    $recipientIdentifier = trim($data['recipient']);
+    $matchingEmails = User::query()
+        ->whereRaw('LOWER(email) = ?', [mb_strtolower($recipientIdentifier)])
+        ->limit(2)
+        ->get();
+
+    if ($matchingEmails->count() > 1) {
+        throw ValidationException::withMessages([
+            'recipient' => 'More than one user has that email address. Contact support before sending funds.',
+        ]);
+    }
+
+    $recipient = $matchingEmails->first();
+
+    if (! $recipient) {
+        $matchingRecipients = User::query()
+            ->whereRaw('LOWER(name) = ?', [mb_strtolower($recipientIdentifier)])
+            ->limit(2)
+            ->get();
+
+        if ($matchingRecipients->count() > 1) {
+            throw ValidationException::withMessages([
+                'recipient' => 'More than one user has that full name. Enter the recipient email address instead.',
+            ]);
+        }
+
+        $recipient = $matchingRecipients->first();
+    }
+
+    if (! $recipient) {
+        throw ValidationException::withMessages([
+            'recipient' => 'No user was found with that email address or full name.',
+        ]);
+    }
+
+    if ($recipient->is($request->user())) {
+        throw ValidationException::withMessages([
+            'recipient' => 'You cannot send funds to your own account.',
+        ]);
+    }
+
+    $amount = round((float) $data['amount'], 2);
+    DailyInterestAccrualService::accrueDueInterestForUser($request->user());
+
+    DB::transaction(function () use ($request, $recipient, $amount, $data): void {
+        $accounts = User::query()
+            ->whereIn('id', [$request->user()->id, $recipient->id])
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+
+        $sender = $accounts->get($request->user()->id);
+        $lockedRecipient = $accounts->get($recipient->id);
+
+        if (! $sender || ! $lockedRecipient) {
+            throw ValidationException::withMessages([
+                'recipient' => 'The recipient account is no longer available.',
+            ]);
+        }
+
+        if ((float) $sender->balance < $amount) {
+            throw ValidationException::withMessages([
+                'amount' => 'Insufficient available balance for this transfer.',
+            ]);
+        }
+
+        $sender->balance = round((float) $sender->balance - $amount, 2);
+        $lockedRecipient->balance = round((float) $lockedRecipient->balance + $amount, 2);
+        $sender->save();
+        $lockedRecipient->save();
+
+        $memo = trim((string) ($data['message'] ?? ''));
+        $memoSuffix = $memo === '' ? '' : ' Message: '.$memo;
+
+        AccountActivity::create([
+            'user_id' => $sender->id,
+            'type' => 'funds_sent',
+            'title' => 'Funds sent',
+            'description' => 'You sent $'.number_format($amount, 2).' to '.($lockedRecipient->name ?: $lockedRecipient->email).'.'.$memoSuffix,
+            'amount' => $amount,
+            'occurred_at' => now(),
+        ]);
+
+        AccountActivity::create([
+            'user_id' => $lockedRecipient->id,
+            'type' => 'funds_received',
+            'title' => 'Funds received',
+            'description' => 'You received $'.number_format($amount, 2).' from '.($sender->name ?: $sender->email).'.'.$memoSuffix,
+            'amount' => $amount,
+            'occurred_at' => now(),
+        ]);
+    });
+
+    return redirect()->route('send')
+        ->with('status', 'Sent $'.number_format($amount, 2).' to '.($recipient->name ?: $recipient->email).'.');
+})->middleware(['auth', RestrictUserAccess::class])->name('send.transfer');
 
 Route::get('/withdraw', function () {
     $user = Auth::user();

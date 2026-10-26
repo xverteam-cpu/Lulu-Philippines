@@ -1,7 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width:420px;margin:48px auto;padding:24px;background:#ffffff;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,0.08);">
+<style>
+  .password-recovery-card {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 420px;
+    margin: 48px auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .08);
+  }
+
+  .password-recovery-card *,
+  .password-recovery-card *::before,
+  .password-recovery-card *::after {
+    box-sizing: border-box;
+  }
+
+  .password-recovery-card form {
+    min-width: 0;
+  }
+
+  .password-recovery-card input[type="email"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+</style>
+
+<div class="password-recovery-card">
   <h1 style="margin:0 0 20px;font-size:28px;color:#166534;text-align:center;">Reset Password</h1>
 
   @if (session('status'))
@@ -19,8 +48,8 @@
   <form action="{{ route('password.email') }}" method="post" style="display:grid;gap:16px;">
     @csrf
 
-    <label style="font-weight:700;color:#1f1f1f;">Email address</label>
-    <input type="email" name="email" value="{{ old('email') }}" required style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:15px;">
+    <label for="password-reset-email" style="display:block;font-weight:700;color:#1f1f1f;">Email address</label>
+    <input id="password-reset-email" type="email" name="email" value="{{ old('email') }}" autocomplete="email" required style="padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:15px;">
 
     <button type="submit" style="width:100%;padding:12px 14px;border:none;border-radius:10px;background:#166534;color:#ffffff;font-weight:700;font-size:15px;">Send reset link</button>
 

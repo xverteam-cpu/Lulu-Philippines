@@ -38,9 +38,12 @@ class AccountInvitationTest extends TestCase
 
         Mail::assertSent(AccountSetupInvitation::class, function (AccountSetupInvitation $mail) use ($invitation): bool {
             $token = basename((string) parse_url($mail->setupLink, PHP_URL_PATH));
+            $html = $mail->render();
 
             return $mail->hasTo('client@example.com')
                 && $mail->recipientName === 'Client Name'
+                && str_contains($html, 'alt="Lulu Philippines"')
+                && str_contains($html, 'data:image/png;base64,')
                 && hash('sha256', $token) === $invitation->token_hash;
         });
     }

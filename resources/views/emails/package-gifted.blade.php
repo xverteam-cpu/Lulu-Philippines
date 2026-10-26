@@ -11,8 +11,12 @@
             <td align="center">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:640px; width:100%; background-color:#ffffff; border-collapse:collapse; border-radius:16px; overflow:hidden;">
                     <tr>
+                        <td align="center" bgcolor="#f8faf7" style="padding:22px 24px;background-color:#f8faf7;border-bottom:1px solid #e5ebe2;">
+                            <img src="{{ $message->embed(public_path('images/lulu-email-logo.png')) }}" width="320" alt="Lulu Philippines" style="display:block;width:320px;max-width:100%;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;">
+                        </td>
+                    </tr>
+                    <tr>
                         <td style="padding:32px 32px 12px 32px;">
-                            <p style="margin:0 0 8px 0; font-size:13px; line-height:20px; color:#166534; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Lulu</p>
                             <h1 style="margin:0; font-size:28px; line-height:36px; color:#1f1f1f; font-weight:700;">A special Lulu package has been gifted to you</h1>
                         </td>
                     </tr>

@@ -2,7 +2,7 @@
 
   <tr>
     <td align="center" style="background:linear-gradient(90deg,#ffffff 0%,#fff7f7 100%); padding:28px 24px 24px 24px; border-bottom:2px solid #f1d0d4;">
-      <img src="{{ url('icons/lulu-512.png') }}" width="180" alt="Lulu Philippines" style="display:block; border:0; outline:none; text-decoration:none; max-width:180px; height:auto;">
+      <img src="{{ $message->embed(public_path('images/lulu-email-logo.png')) }}" width="320" alt="Lulu Philippines" style="display:block;width:320px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
     </td>
   </tr>
 

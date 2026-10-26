@@ -150,7 +150,17 @@ class PackageGiftEmailTest extends TestCase
 
             return $mail->hasTo($recipient->email)
                 && $mail->subject === 'Your bond purchase has been approved'
+                && str_contains($content, 'Hello ' . $recipient->name . ',')
+                && str_contains($content, 'alt="Lulu Philippines"')
+                && str_contains($content, 'data:image/png;base64,')
+                && str_contains($content, 'LuLu Gold package')
                 && str_contains($content, '$799.00')
+                && str_contains($content, 'Daily interest rate')
+                && str_contains($content, '0.8% per day')
+                && str_contains($content, 'Approved')
+                && str_contains($content, url('/dashboard'))
+                && ! str_contains($content, 'example.com/dashboard')
+                && ! str_contains($content, 'Rodrigo M. Sanorjo')
                 && ! str_contains($content, '₱');
         });
 

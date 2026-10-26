@@ -29,6 +29,7 @@ class BondPurchaseApprovedEmail extends Mailable
                 'recipient_name' => $user->name ?: $user->username,
                 'package_name' => $this->investment->package_name,
                 'package_amount' => number_format((float) $this->investment->amount, 2),
+                'daily_interest_rate' => rtrim(rtrim((string) $this->investment->daily_interest_rate, '0'), '.'),
                 'dashboard_link' => url('/dashboard'),
             ]);
     }

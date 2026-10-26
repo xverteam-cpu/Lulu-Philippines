@@ -35,6 +35,8 @@ class WelcomeEmailTest extends TestCase
 
             $this->assertTrue($mail->hasTo($user->email));
             $this->assertStringContainsString('Welcome to Lulu, <strong>Jane Doe</strong>.', $html);
+            $this->assertStringContainsString('alt="Lulu Philippines"', $html);
+            $this->assertStringContainsString('data:image/png;base64,', $html);
             $this->assertStringContainsString('successfully registered', $html);
             $this->assertStringContainsString('What’s Next?', $html);
             $this->assertStringContainsString('Silver Package', $html);

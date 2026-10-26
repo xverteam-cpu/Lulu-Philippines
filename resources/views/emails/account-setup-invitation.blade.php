@@ -1,3 +1,5 @@
+@include('emails.partials.header')
+
 <p>Hello {{ $recipientName }},</p>
 
 <p>You have been invited to set up your Lulu account. Use the private link below to choose your password and 4-digit PIN:</p>

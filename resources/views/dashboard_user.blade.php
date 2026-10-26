@@ -2941,8 +2941,6 @@
     var continueAddFunds = document.getElementById('continueAddFunds');
     var selectedPaymentMethod = 'bank';
     var bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
-    var dashboardCardLinks = document.querySelectorAll('.dashboard-card-link');
-
     if (dashboardBalance && dashboardBalanceToggle) {
       dashboardBalanceToggle.addEventListener('click', function () {
         var hidden = dashboardBalance.classList.toggle('is-hidden');
@@ -2950,23 +2948,6 @@
         dashboardBalanceToggle.setAttribute('aria-label', hidden ? 'Show balance' : 'Hide balance');
       });
     }
-
-    dashboardCardLinks.forEach(function (link) {
-      link.addEventListener('click', function (event) {
-        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reducedMotion || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-          return;
-        }
-
-        event.preventDefault();
-        link.classList.remove('is-stomping');
-        void link.offsetWidth;
-        link.classList.add('is-stomping');
-        window.setTimeout(function () {
-          window.location.assign(link.href);
-        }, 460);
-      });
-    });
 
     bottomNavItems.forEach(function (item) {
       item.addEventListener('click', function () {

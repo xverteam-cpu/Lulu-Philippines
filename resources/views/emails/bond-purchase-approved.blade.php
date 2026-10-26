@@ -1,39 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your bond purchase has been approved</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Your bond purchase request has been approved</title>
+    <style>
+        @media only screen and (max-width:600px) {
+            .outer { padding:20px 12px!important; }
+            .content { padding:28px 24px!important; }
+            .headline { font-size:28px!important; line-height:35px!important; }
+            .brand { padding:24px!important; }
+            .button { display:block!important; text-align:center!important; }
+        }
+    </style>
 </head>
-<body style="margin:0;padding:0;background-color:#f2f5f3;font-family:Arial,Helvetica,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:#f2f5f3;padding:24px 0;">
+<body style="margin:0;padding:0;background-color:#f2f5f1;font-family:Arial,Helvetica,sans-serif;color:#20382c;">
+    <div style="display:none;font-size:1px;color:#f2f5f1;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
+        Your bond purchase request for the {{ $package_name }} package valued at ${{ $package_amount }} has been approved.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2f5f1;">
         <tr>
-            <td align="center">
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background-color:#ffffff;border-collapse:collapse;border-radius:16px;overflow:hidden;">
+            <td class="outer" align="center" style="padding:40px 16px;">
+                <!--[if mso]><table role="presentation" width="600" align="center"><tr><td><![endif]-->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border:1px solid #dde6dd;border-radius:16px;overflow:hidden;">
                     <tr>
-                        <td style="padding:32px 32px 12px;">
-                            <p style="margin:0 0 8px;font-size:13px;line-height:20px;color:#166534;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Lulu</p>
-                            <h1 style="margin:0;font-size:28px;line-height:36px;color:#1f1f1f;font-weight:700;">Your bond purchase has been approved</h1>
+                        <td class="brand" bgcolor="#f8faf7" style="padding:22px 24px;background-color:#f8faf7;border-bottom:1px solid #e5ebe2;border-radius:16px 16px 0 0;text-align:center;">
+                            <img src="{{ $message->embed(public_path('images/lulu-email-logo.png')) }}" width="320" alt="Lulu Philippines" style="display:block;width:320px;max-width:100%;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;">
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding:0 32px 18px;">
-                            <p style="margin:0;font-size:16px;line-height:26px;color:#5a5a5a;">Hello {{ $recipient_name }},</p>
-                            <p style="margin:12px 0 0;font-size:16px;line-height:26px;color:#5a5a5a;">Your purchase of the <strong>{{ $package_name }}</strong> bond for <strong>${{ $package_amount }}</strong> has been approved. The bond is now active and available in your Lulu account.</p>
+                        <td class="content" style="padding:36px;">
+                            <p style="margin:0 0 14px;color:#147344;font-size:11px;line-height:16px;font-weight:700;letter-spacing:2px;">BOND PURCHASE APPROVED</p>
+                            <h1 class="headline" style="margin:0 0 24px;font-size:32px;line-height:39px;letter-spacing:-0.7px;color:#153c28;font-weight:700;">Your bond purchase request has been approved.</h1>
+                            <p style="margin:0 0 15px;font-size:16px;line-height:25px;color:#4f5e55;">Hello {{ $recipient_name }},</p>
+                            <p style="margin:0 0 26px;font-size:16px;line-height:26px;color:#4f5e55;">Your bond purchase request for the <strong style="color:#20382c;">LuLu {{ $package_name }} package</strong> has been approved. Your package is now active, and you can review its details in your dashboard.</p>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f7f2" style="background-color:#f3f7f2;border:1px solid #e1e9df;border-radius:10px;">
+                                <tr>
+                                    <td style="padding:24px 24px 18px;">
+                                        <p style="margin:0 0 8px;font-size:11px;line-height:16px;letter-spacing:1.5px;font-weight:700;color:#637568;">BOND PURCHASE AMOUNT</p>
+                                        <p style="margin:0;font-size:40px;line-height:46px;letter-spacing:-1.5px;font-weight:700;color:#075d38;">${{ $package_amount }} <span style="font-size:12px;letter-spacing:1px;color:#637568;">USD</span></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 24px 24px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #dce5d9;">
+                                            <tr>
+                                                <td style="padding-top:16px;font-size:13px;line-height:20px;color:#637568;">Package</td>
+                                                <td align="right" style="padding-top:16px;font-size:13px;line-height:20px;font-weight:700;color:#20382c;">{{ $package_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-top:9px;font-size:13px;line-height:20px;color:#637568;">Status</td>
+                                                <td align="right" style="padding-top:9px;font-size:13px;line-height:20px;font-weight:700;color:#147344;">Approved</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-top:9px;font-size:13px;line-height:20px;color:#637568;">Daily interest rate</td>
+                                                <td align="right" style="padding-top:9px;font-size:13px;line-height:20px;font-weight:700;color:#20382c;">{{ $daily_interest_rate }}% per day</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td style="padding-top:28px;">
+                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ $dashboard_link }}" style="height:50px;v-text-anchor:middle;width:232px;" arcsize="12%" stroke="f" fillcolor="#075d38"><w:anchorlock/><center style="color:#ffffff;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">View Your Dashboard</center></v:roundrect><![endif]-->
+                                        <!--[if !mso]><!--><a class="button" href="{{ $dashboard_link }}" style="background-color:#075d38;border:1px solid #075d38;border-radius:6px;color:#ffffff;display:inline-block;font-size:15px;font-weight:700;line-height:22px;padding:14px 26px;text-decoration:none;mso-hide:all;">View Your Dashboard &rarr;</a><!--<![endif]-->
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin:20px 0 0;font-size:12px;line-height:19px;color:#7a867d;">Review the applicable package terms, interest details, and account activity in your dashboard.</p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding:0 32px 28px;">
-                            <a href="{{ $dashboard_link }}" style="display:inline-block;background-color:#166534;color:#ffffff;text-decoration:none;font-size:15px;line-height:20px;font-weight:700;padding:14px 24px;border-radius:6px;">View Your Dashboard</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:24px 32px 32px;background-color:#2f2f2f;">
-                            <p style="margin:0;font-size:13px;line-height:20px;color:#cfcfcf;">Thank you for being part of the Lulu community.</p>
-                            <p style="margin:12px 0 0;font-size:12px;line-height:20px;color:#b8b8b8;">For assistance, contact Lulu Support at official@luluphilippines.com.</p>
+                        <td class="content" style="padding:24px 36px;background-color:#f8faf7;border-top:1px solid #e5ebe2;border-radius:0 0 16px 16px;">
+                            <p style="margin:0;font-size:14px;line-height:22px;font-weight:700;color:#34533f;">Thank you for being part of the LuLu community.</p>
+                            <p style="margin:8px 0 0;font-size:12px;line-height:19px;color:#7a867d;">This notification relates to your LuLu account.</p>
                         </td>
                     </tr>
                 </table>
+                <!--[if mso]></td></tr></table><![endif]-->
             </td>
         </tr>
     </table>

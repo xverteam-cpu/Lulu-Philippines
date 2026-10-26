@@ -18,7 +18,8 @@
 }</style><!--<![endif]--><!--[if !mso]><!--><style>@media (max-width:200px){
 .l2-c0,.l2-c1{display:block!important;width:100%!important}
 .l2-s0{display:block!important;width:auto!important;height:16px;font-size:0}
-}</style><!--<![endif]--><style>@media(max-width:550px){.ers-fs-187{font-size:17.4px!important}.ers-fs-200{font-size:18px!important}.ers-fs-213{font-size:18.7px!important}.ers-fs-240{font-size:20px!important}}</style></head><body style="width:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;background-color:#f0f1f5;margin:0;padding:0"><table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f0f1f5" style="background-color:#f0f1f5"><tbody><tr><td style="background-color:#f0f1f5"><!--[if mso]><center>
+}</style><!--<![endif]--><style>@media(max-width:550px){.ers-fs-187{font-size:17.4px!important}.ers-fs-200{font-size:18px!important}.ers-fs-213{font-size:18.7px!important}.ers-fs-240{font-size:20px!important}}</style></head><body style="width:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;background-color:#f0f1f5;margin:0;padding:0">
+@include('emails.partials.header')<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f0f1f5" style="background-color:#f0f1f5"><tbody><tr><td style="background-color:#f0f1f5"><!--[if mso]><center>
                     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
                       <tbody>
                         <tr>

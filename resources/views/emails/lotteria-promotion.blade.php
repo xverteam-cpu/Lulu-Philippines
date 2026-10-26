@@ -18,6 +18,7 @@
     </style>
 </head>
 <body style="width:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;background-color:#f0f1f5;margin:0;padding:0">
+@include('emails.partials.header')
     <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f0f1f5" style="background-color:#f0f1f5">
         <tbody>
             <tr>

@@ -29,7 +29,9 @@ class InvestorPinTest extends TestCase
                 'class="pin-signout investors-pin-signout" type="submit" formaction="'.route('logout').'"',
             ], false)
             ->assertSee("document.querySelector('.investors-pin-lock-form[data-pin-lock=\"true\"]')", false)
-            ->assertSee('Forgot your PIN? Reset your password to set a new one.')
+            ->assertSee('Forgot your PIN? Reset it by email.')
+            ->assertSee(route('pin.request'))
+            ->assertSee(route('password.request'))
             ->assertSee('Secure investor access')
             ->assertSee('grid-template-columns: repeat(3, minmax(0, 1fr));', false)
             ->assertSee('justify-content: center;', false)
@@ -146,7 +148,7 @@ class InvestorPinTest extends TestCase
             ->assertSessionMissing('investor_pin_verified');
     }
 
-    public function test_six_digit_legacy_pin_is_rejected_and_password_reset_clears_it(): void
+    public function test_six_digit_legacy_pin_is_rejected_and_password_reset_keeps_the_current_pin(): void
     {
         $user = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
@@ -159,6 +161,7 @@ class InvestorPinTest extends TestCase
             ->assertSessionHasErrors('pin')
             ->assertSessionMissing('investor_pin_verified');
 
+        $existingPinHash = $user->pin_hash;
         $token = Password::broker()->createToken($user);
 
         $this->post(route('password.update'), [
@@ -168,8 +171,8 @@ class InvestorPinTest extends TestCase
             'password_confirmation' => 'NewPassword123',
         ])->assertRedirect(route('order'));
 
-        $this->assertNull($user->fresh()->pin_hash);
-        $this->assertNull($user->fresh()->pin_set_at);
+        $this->assertSame($existingPinHash, $user->fresh()->pin_hash);
+        $this->assertNotNull($user->fresh()->pin_set_at);
 
         $this->actingAs($user->fresh())
             ->get(route('investors'))

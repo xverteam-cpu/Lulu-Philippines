@@ -166,9 +166,13 @@ Route::post('/activity/heartbeat', function () {
 })->middleware(['auth', RestrictUserAccess::class])->name('activity.heartbeat');
 
 Route::get('/forgot-password', [PasswordResetController::class, 'requestForm'])->name('password.request');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');
-Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
+Route::get('/forgot-pin', [PasswordResetController::class, 'pinRequestForm'])->name('pin.request');
+Route::post('/forgot-pin', [PasswordResetController::class, 'sendPinResetLink'])->middleware('throttle:5,1')->name('pin.email');
+Route::get('/reset-pin/{token}', [PasswordResetController::class, 'pinResetForm'])->name('pin.reset');
+Route::post('/reset-pin', [PasswordResetController::class, 'resetPin'])->middleware('throttle:5,1')->name('pin.update');
 
 Route::get('/signup', function () {
     return view('signup', ['referral' => request('ref')]);

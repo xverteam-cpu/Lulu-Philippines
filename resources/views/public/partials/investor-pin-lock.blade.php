@@ -907,7 +907,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"></path></svg>
         </button>
         @unless ($pinSetupRequired)
-            <a class="pin-help-link" href="{{ route('password.request') }}">Forgot your PIN? Reset your password to set a new one.</a>
+            <a class="pin-help-link" href="{{ route('pin.request') }}">Forgot your PIN? Reset it by email.</a>
         @endunless
         <button class="pin-signout investors-pin-signout" type="submit" formaction="{{ route('logout') }}" formmethod="post">
             Sign out

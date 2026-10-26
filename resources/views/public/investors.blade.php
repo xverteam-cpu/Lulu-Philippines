@@ -53,6 +53,7 @@
                 <input name="password_confirmation" id="investor-password-confirmation" type="hidden">
                 <button class="investors-continue-button" type="submit">Continue</button>
             </form>
+            <a class="investors-mode-button" href="{{ route('password.request') }}">Forgot password?</a>
             @if ($errors->any())
                 <p class="investors-login-error" id="investor-login-error" role="alert">{{ $errors->first() }}</p>
             @endif

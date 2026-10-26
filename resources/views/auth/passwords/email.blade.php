@@ -24,7 +24,11 @@
 
     <button type="submit" style="width:100%;padding:12px 14px;border:none;border-radius:10px;background:#166534;color:#ffffff;font-weight:700;font-size:15px;">Send reset link</button>
 
-    <a href="{{ route('order') }}" style="display:block;text-align:center;color:#166534;font-size:14px;text-decoration:none;">Back to login</a>
+    <a href="{{ route('investors') }}" style="display:block;text-align:center;color:#166534;font-size:14px;text-decoration:none;">Back to login</a>
   </form>
+
+  <p style="margin:18px 0 0;text-align:center;font-size:14px;">
+    <a href="{{ route('pin.request') }}" style="color:#166534;text-decoration:none;">Forgot your investor PIN?</a>
+  </p>
 </div>
 @endsection

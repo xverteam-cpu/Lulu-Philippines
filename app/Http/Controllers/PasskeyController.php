@@ -239,7 +239,7 @@ class PasskeyController extends Controller
 
         $defaultDestination = $user->is_admin ? route('admin.dashboard') : route('dashboard');
         $destination = redirect()->intended($defaultDestination)->getTargetUrl();
-        if (! $user->phone_verified_at) {
+        if (blank($user->phone)) {
             $request->session()->put('phone_capture_redirect', $destination);
             $destination = route('phone.capture');
         }

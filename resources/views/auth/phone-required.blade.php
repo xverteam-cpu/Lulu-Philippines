@@ -27,9 +27,7 @@
       placeholder="+63 917 123 4567"
       style="padding:12px;border:1px solid #d1d5db;border-radius:10px;"
     >
-    @include('auth.partials.phone-verification')
-    <button type="submit" style="margin-top:8px;padding:13px;border:0;border-radius:10px;background:#166534;color:#fff;font-weight:700;cursor:pointer;">Save verified number</button>
+    <button type="submit" style="margin-top:8px;padding:13px;border:0;border-radius:10px;background:#166534;color:#fff;font-weight:700;cursor:pointer;">Save mobile number</button>
   </form>
 </main>
-@vite('resources/js/phone-verification.js')
 @endsection

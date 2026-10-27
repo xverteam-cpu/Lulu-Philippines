@@ -15,7 +15,6 @@
     @csrf
     <label for="phone">Mobile number</label>
     <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" inputmode="tel" maxlength="40" required placeholder="+63 917 123 4567" style="padding:12px;border:1px solid #d1d5db;border-radius:10px;">
-    @include('auth.partials.phone-verification')
     <label for="password">Password</label>
     <input id="password" type="password" name="password" autocomplete="new-password" minlength="8" required style="padding:12px;border:1px solid #d1d5db;border-radius:10px;">
     <label for="password_confirmation">Confirm password</label>
@@ -27,5 +26,4 @@
     <button type="submit" style="margin-top:8px;padding:13px;border:0;border-radius:10px;background:#166534;color:#fff;font-weight:700;">Create account</button>
   </form>
 </main>
-@vite('resources/js/phone-verification.js')
 @endsection

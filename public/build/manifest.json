@@ -13,11 +13,5 @@
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
-  },
-  "resources/js/phone-verification.js": {
-    "file": "assets/phone-verification-Dfoctd_8.js",
-    "name": "phone-verification",
-    "src": "resources/js/phone-verification.js",
-    "isEntry": true
   }
 }

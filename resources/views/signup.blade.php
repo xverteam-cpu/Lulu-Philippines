@@ -170,10 +170,6 @@
         <input class="signup-input" id="phone" name="phone" type="tel" value="{{ old('phone') }}" placeholder="+63 917 123 4567" autocomplete="tel" inputmode="tel" maxlength="40" required>
       </div>
 
-      <div class="signup-field full">
-        @include('auth.partials.phone-verification')
-      </div>
-
       <div class="signup-field">
         <label class="signup-label" for="referral">Referral code <span aria-hidden="true">*</span></label>
         <input class="signup-input" id="referral" name="referral" type="text" value="{{ old('referral', $referral ?? '') }}" placeholder="Enter referral code" autocomplete="off" required>
@@ -212,5 +208,4 @@ document.getElementById('signup-google-link')?.addEventListener('click', functio
   this.href = url.toString();
 });
 </script>
-@vite('resources/js/phone-verification.js')
 @endsection

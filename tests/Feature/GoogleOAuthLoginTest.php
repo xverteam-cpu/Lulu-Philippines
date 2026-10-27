@@ -74,7 +74,6 @@ class GoogleOAuthLoginTest extends TestCase
             'email' => 'invited.client@example.com',
             'pin_hash' => Hash::make('0427'),
             'phone' => '+639171234567',
-            'phone_verified_at' => now(),
         ]);
         $originalPinHash = $user->pin_hash;
 

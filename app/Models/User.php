@@ -31,7 +31,6 @@ class User extends Authenticatable
         'referral_code',
         'email',
         'phone',
-        'phone_verified_at',
         'address',
         'region',
         'message',

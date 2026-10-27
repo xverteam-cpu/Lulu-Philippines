@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountInvitation;
 use App\Models\User;
-use App\Services\FirebasePhoneVerificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AccountSetupController extends Controller
@@ -23,21 +21,13 @@ class AccountSetupController extends Controller
         return view('auth.account-setup', ['invitation' => $invitation, 'token' => $token]);
     }
 
-    public function store(Request $request, string $token, FirebasePhoneVerificationService $verification): RedirectResponse
+    public function store(Request $request, string $token): RedirectResponse
     {
         $data = $request->validate([
-            'phone' => ['required', 'string', 'regex:/^\+[1-9]\d{7,14}$/', 'max:16'],
-            'phone_verification_token' => ['required', 'string', 'max:5000'],
+            'phone' => ['required', 'string', 'max:40'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'pin' => ['required', 'digits:4', 'confirmed'],
         ]);
-
-        $verifiedPhone = $verification->verifiedPhone($data['phone_verification_token']);
-        if (! $verifiedPhone || ! hash_equals($data['phone'], $verifiedPhone)) {
-            throw ValidationException::withMessages([
-                'phone' => 'The verified number does not match the mobile number entered.',
-            ]);
-        }
 
         DB::transaction(function () use ($token, $data): void {
             $invitation = AccountInvitation::query()
@@ -58,8 +48,7 @@ class AccountSetupController extends Controller
                 'name' => $invitation->name,
                 'username' => $this->generateUniqueUsername($invitation->email),
                 'email' => $invitation->email,
-                'phone' => $data['phone'],
-                'phone_verified_at' => now(),
+                'phone' => trim($data['phone']),
                 'password' => $data['password'],
                 'is_admin' => false,
                 'referred_by' => $invitation->referrer_id,

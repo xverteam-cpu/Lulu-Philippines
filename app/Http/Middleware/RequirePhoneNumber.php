@@ -6,14 +6,14 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RequireVerifiedPhone
+class RequirePhoneNumber
 {
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
         if (
             ! $user
-            || $user->phone_verified_at
+            || filled($user->phone)
             || $request->routeIs('phone.capture', 'phone.store', 'logout', 'activity.heartbeat')
         ) {
             return $next($request);
@@ -21,7 +21,7 @@ class RequireVerifiedPhone
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Verify your mobile number to continue.',
+                'message' => 'Add your mobile number to continue.',
                 'redirect_url' => route('phone.capture'),
             ], 403);
         }

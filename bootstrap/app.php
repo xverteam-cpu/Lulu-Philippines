@@ -2,7 +2,7 @@
 
 use App\Http\Middleware\BlockBlockedIp;
 use App\Http\Middleware\PreventAuthenticatedPageCaching;
-use App\Http\Middleware\RequireVerifiedPhone;
+use App\Http\Middleware\RequirePhoneNumber;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Http\Middleware\TrackUserActivity;
 use Illuminate\Console\Scheduling\Schedule;
@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             BlockBlockedIp::class,
             TrackUserActivity::class,
             RestrictUserAccess::class,
-            RequireVerifiedPhone::class,
+            RequirePhoneNumber::class,
             PreventAuthenticatedPageCaching::class,
         ]);
 
@@ -34,6 +34,5 @@ return Application::configure(basePath: dirname(__DIR__))
             'current_password',
             'password',
             'password_confirmation',
-            'phone_verification_token',
         ]);
     })->create();

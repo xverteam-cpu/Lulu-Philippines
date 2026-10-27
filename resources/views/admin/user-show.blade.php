@@ -122,7 +122,7 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">Phone Verification</span>
-        <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'Not verified' }}</span>
+        <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'SMS verification temporarily disabled' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Region</span>

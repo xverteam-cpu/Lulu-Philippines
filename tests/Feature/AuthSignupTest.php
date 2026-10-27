@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Client\Request as ClientRequest;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -26,7 +24,6 @@ class AuthSignupTest extends TestCase
         $response->assertSee('name="email"', false);
         $response->assertSee('Mobile Number');
         $response->assertSee('name="phone"', false);
-        $response->assertSee('Send verification code');
         $response->assertSee('name="referral"', false)
             ->assertSee('name="referral" type="text"', false);
     }
@@ -72,14 +69,11 @@ class AuthSignupTest extends TestCase
     {
         Mail::fake();
         $referrer = User::factory()->create(['name' => 'Wilmer Pasco']);
-        $this->fakeVerifiedPhone('+639171234567');
-
         $response = $this->post('/register-partner', [
             'fullname' => 'Jane Doe',
             'username' => 'jane',
             'email' => '  Jane.Doe@Example.com ',
             'phone' => '+639171234567',
-            'phone_verification_token' => 'firebase-id-token',
             'referral' => $referrer->referral_code,
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -96,13 +90,8 @@ class AuthSignupTest extends TestCase
         $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
         $this->assertSame($referrer->id, $user->referred_by);
-        $this->assertNotNull($user->phone_verified_at);
+        $this->assertNull($user->phone_verified_at);
         $this->assertAuthenticatedAs($user);
-        Http::assertSent(fn (ClientRequest $request): bool =>
-            str_contains($request->url(), 'key=test-firebase-api-key')
-                && $request['idToken'] === 'firebase-id-token'
-                && ! array_key_exists('key', $request->data())
-        );
     }
 
     public function test_manual_signup_requires_a_valid_referral_code(): void
@@ -206,14 +195,11 @@ class AuthSignupTest extends TestCase
         Mail::fake();
 
         $referrer = User::factory()->create(['username' => 'janedoe']);
-        $this->fakeVerifiedPhone('+639171234567');
-
         $this->post(route('register.partner'), [
             'fullname' => 'Jane Doe',
             'username' => '',
             'email' => 'jane.doe@example.com',
             'phone' => '+639171234567',
-            'phone_verification_token' => 'firebase-id-token',
             'referral' => $referrer->referral_code,
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -238,7 +224,6 @@ class AuthSignupTest extends TestCase
                 'username' => 'jane-doe',
                 'email' => 'jane@example.com',
                 'phone' => '+639171234567',
-                'phone_verification_token' => 'firebase-id-token',
                 'referral' => $referrer->referral_code,
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
@@ -274,7 +259,7 @@ class AuthSignupTest extends TestCase
         $user = User::factory()->create([
             'email' => 'existing@example.com',
             'password' => 'password123',
-            'phone' => '09171234567',
+            'phone' => null,
             'phone_verified_at' => null,
         ]);
 
@@ -286,30 +271,24 @@ class AuthSignupTest extends TestCase
         $this->get(route('phone.capture'))
             ->assertOk()
             ->assertSee('Add your mobile number')
-            ->assertSee('name="phone"', false)
-            ->assertSee('Send verification code');
+            ->assertSee('name="phone"', false);
 
-        $this->fakeVerifiedPhone('+639171234567');
         $this->post(route('phone.store'), [
-            'phone' => '+639171234567',
-            'phone_verification_token' => 'firebase-id-token',
+            'phone' => '09171234567',
         ])
             ->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'phone' => '+639171234567',
+            'phone' => '09171234567',
         ]);
-        $this->assertNotNull($user->fresh()->phone_verified_at);
+        $this->assertNull($user->fresh()->phone_verified_at);
     }
 
     public function test_admin_user_detail_displays_the_saved_mobile_number(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
-        $user = User::factory()->create([
-            'phone' => '+639171234567',
-            'phone_verified_at' => now(),
-        ]);
+        $user = User::factory()->create(['phone' => '+639171234567']);
 
         $this->actingAs($admin)
             ->get(route('admin.users.show', $user))
@@ -317,29 +296,27 @@ class AuthSignupTest extends TestCase
             ->assertSee('Mobile Number')
             ->assertSee('+639171234567')
             ->assertSee('Phone Verification')
-            ->assertSee($user->phone_verified_at->format('M d, Y h:i A'));
+            ->assertSee('SMS verification temporarily disabled');
     }
 
-    public function test_phone_number_is_not_saved_when_firebase_verifies_a_different_number(): void
+    public function test_existing_phone_can_be_saved_without_sms_verification(): void
     {
         $user = User::factory()->create([
             'phone' => null,
             'phone_verified_at' => null,
         ]);
-        $this->fakeVerifiedPhone('+639171234568');
 
         $this->actingAs($user)
             ->post(route('phone.store'), [
-                'phone' => '+639171234567',
-                'phone_verification_token' => 'firebase-id-token',
+                'phone' => '09171234567',
             ])
-            ->assertSessionHasErrors('phone');
+            ->assertRedirect(route('dashboard'));
 
-        $this->assertNull($user->fresh()->phone);
+        $this->assertSame('09171234567', $user->fresh()->phone);
         $this->assertNull($user->fresh()->phone_verified_at);
     }
 
-    public function test_authenticated_users_cannot_bypass_phone_verification_by_opening_another_page(): void
+    public function test_authenticated_users_cannot_bypass_required_phone_entry_by_opening_another_page(): void
     {
         $user = User::factory()->create([
             'phone' => null,
@@ -354,15 +331,5 @@ class AuthSignupTest extends TestCase
             ->getJson(route('profile.edit'))
             ->assertForbidden()
             ->assertJsonPath('redirect_url', route('phone.capture'));
-    }
-
-    private function fakeVerifiedPhone(string $phone): void
-    {
-        config(['services.firebase.api_key' => 'test-firebase-api-key']);
-        Http::fake([
-            'identitytoolkit.googleapis.com/v1/accounts:lookup*' => Http::response([
-                'users' => [['phoneNumber' => $phone]],
-            ]),
-        ]);
     }
 }

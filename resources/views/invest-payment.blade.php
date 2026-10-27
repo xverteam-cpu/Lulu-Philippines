@@ -74,6 +74,8 @@
   .payment-actions { display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px; margin-top: 14px; }
   .payment-action { display: flex; min-height: 50px; align-items: center; justify-content: center; padding: 0 10px; border-radius: 16px; color: var(--pay-muted); background: #fff; box-shadow: inset 0 0 0 1px var(--pay-line), var(--pay-shadow-sm); text-decoration: none; font: 650 12px/1 var(--pay-ui); }
   .payment-action-primary { color: #fff; background: linear-gradient(180deg, color-mix(in srgb, var(--provider-color) 84%, white), color-mix(in srgb, var(--provider-color) 90%, black)); box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--provider-color) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, .22); }
+  .payment-actions form { display: contents; }
+  button.payment-action { width: 100%; border: 0; cursor: pointer; }
   .payment-trust { margin: 14px 0 0; color: var(--pay-subtle); text-align: center; font: 500 10.5px/1.4 var(--pay-ui); }
   @media (max-width: 360px) {
     .method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -198,15 +200,17 @@
       </div>
       <div class="payment-actions">
         <a class="payment-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}">Back</a>
-        <a class="payment-action payment-action-primary" href="{{ route('invest.agreement.sign', [
-          'package' => $packageKey,
-          'amount' => $amount,
-          'currency' => $currency,
-          'payment_method' => $provider['payment_method'] ?? 'bank_transfer',
-        ]) }}">Payment completed</a>
+        <form method="post" action="{{ route('invest.payment.complete') }}">
+          @csrf
+          <input type="hidden" name="package" value="{{ $packageKey }}">
+          <input type="hidden" name="amount" value="{{ $amount }}">
+          <input type="hidden" name="currency" value="{{ $currency }}">
+          <input type="hidden" name="payment_method" value="{{ $provider['payment_method'] ?? 'bank_transfer' }}">
+          <button class="payment-action payment-action-primary" type="submit">I completed payment</button>
+        </form>
       </div>
     </section>
-    <p class="payment-trust">Use only the payment details shown for your selected provider. Keep your payment receipt for verification.</p>
+    <p class="payment-trust">After paying, submit your payment claim below. It will remain pending until an administrator reviews it; this page does not automatically verify bank or e-wallet transfers.</p>
   </main>
 </div>
 @endsection

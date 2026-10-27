@@ -86,6 +86,7 @@ class AuthSignupTest extends TestCase
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
             'phone' => '+639171234567',
+            'region' => null,
         ]);
         $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
@@ -288,15 +289,24 @@ class AuthSignupTest extends TestCase
     public function test_admin_user_detail_displays_the_saved_mobile_number(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
-        $user = User::factory()->create(['phone' => '+639171234567']);
+        $user = User::factory()->create([
+            'phone' => '+639171234567',
+            'region' => 'Central Visayas',
+            'ip_location' => 'Cebu City, Central Visayas, Philippines',
+            'ip_location_updated_at' => now(),
+        ]);
 
         $this->actingAs($admin)
             ->get(route('admin.users.show', $user))
             ->assertOk()
-            ->assertSee('Mobile Number')
+            ->assertSee('Phone')
             ->assertSee('+639171234567')
             ->assertSee('Phone Verification')
-            ->assertSee('SMS verification temporarily disabled');
+            ->assertSee('SMS verification temporarily disabled')
+            ->assertSee('Profile Region (self-reported)')
+            ->assertSee('Central Visayas')
+            ->assertSee('IP Location (approximate)')
+            ->assertSee('Cebu City, Central Visayas, Philippines');
     }
 
     public function test_existing_phone_can_be_saved_without_sms_verification(): void

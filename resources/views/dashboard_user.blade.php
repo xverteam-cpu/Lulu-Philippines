@@ -1485,6 +1485,12 @@
     box-shadow: 0 1px 4px rgba(80, 24, 18, .24);
   }
 
+  .dashboard-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .dashboard-profile svg {
     width: 17px;
     height: 17px;
@@ -1639,6 +1645,43 @@
     display: grid;
     gap: 14px;
     margin-top: 20px;
+  }
+
+  .dashboard-contract-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border: 1px solid #b9e8d0;
+    border-radius: 18px;
+    background: #e8f8ef;
+    color: #0a3927;
+    box-shadow: 0 6px 16px rgba(14, 110, 66, .08);
+  }
+
+  .dashboard-contract-alert strong {
+    display: block;
+    font-size: 13px;
+  }
+
+  .dashboard-contract-alert p {
+    margin: 4px 0 0;
+    color: #426453;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .dashboard-contract-alert a {
+    flex: none;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: #0e8a5a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
   }
 
   .dashboard-promo {
@@ -2652,6 +2695,8 @@
       ->map(fn($packageInvestments) => $packageInvestments->sum(fn($investment) => $investment->creditedInterest()));
   $notificationsRead = $notificationsRead ?? [];
   $unreadCount = $unreadCount ?? 0;
+  $pendingContracts = $pendingContracts ?? collect();
+  $pendingContractCount = $pendingContracts->count();
 @endphp
 
 <main class="wallet-shell dashboard-shell">
@@ -2671,20 +2716,54 @@
           <span class="dashboard-profile-alert" aria-hidden="true">1</span>
         @endif
       </a>
-      <a class="dashboard-notification-link" href="{{ route('notifications.index') }}"
-         aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
-          <path d="M10 21h4"/>
-        </svg>
-        @if ($unreadCount > 0)
-          <span class="dashboard-notification-badge" aria-hidden="true">{{ min($unreadCount, 99) }}</span>
+      <div class="dashboard-header-actions">
+        @if ($pendingContractCount > 0)
+          <a class="dashboard-notification-link" href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}"
+             aria-label="Sign pending bond agreements, {{ $pendingContractCount }} unsigned">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 3.75h7l4 4v12.5a.75.75 0 0 1-.75.75h-10.5a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 .75-.75Z"/>
+            <path d="M14 4v4h4M9 14l4.8-4.8a1.4 1.4 0 0 1 2 2L11 16l-2.5.5Z"/>
+            </svg>
+            <span class="dashboard-notification-badge" aria-hidden="true">{{ min($pendingContractCount, 99) }}</span>
+          </a>
         @endif
-      </a>
+        <a class="dashboard-notification-link" href="{{ route('notifications.index') }}"
+           aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+            <path d="M10 21h4"/>
+          </svg>
+          @if ($unreadCount > 0)
+            <span class="dashboard-notification-badge" aria-hidden="true">{{ min($unreadCount, 99) }}</span>
+          @endif
+        </a>
+      </div>
     </nav>
   </header>
 
   <div class="dashboard-content">
+    @if (session('status'))
+      <div class="dashboard-contract-alert" role="status">
+        <div>
+          <strong>{{ session('status') }}</strong>
+          @if ($pendingContractCount > 0)
+            <p>Your payment submission is awaiting admin review. The agreement can be signed separately.</p>
+          @endif
+        </div>
+        @if ($pendingContractCount > 0)
+          <a href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}">Sign agreement</a>
+        @endif
+      </div>
+    @elseif ($pendingContractCount > 0)
+      <div class="dashboard-contract-alert">
+        <div>
+          <strong>{{ $pendingContractCount }} bond {{ \Illuminate\Support\Str::plural('agreement', $pendingContractCount) }} need{{ $pendingContractCount === 1 ? 's' : '' }} your signature</strong>
+          <p>Payment submissions remain pending admin approval. Sign each agreement to complete your paperwork.</p>
+        </div>
+        <a href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}">Sign agreement</a>
+      </div>
+    @endif
+
     <section class="dashboard-hero hero--balance" id="dashboardBalance" aria-label="Account balance">
       <svg class="hero__waves" viewBox="0 0 300 200" fill="none" aria-hidden="true">
         <defs>

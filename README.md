@@ -41,3 +41,5 @@ Notes
 ## Phone numbers
 
 Signup and invited account setup require a mobile number. Existing accounts without a number are prompted to add one after login. SMS verification is temporarily disabled, so no Firebase or SMS-provider environment variables are needed. Phone numbers are collected but are not confirmed as belonging to the user.
+
+Authenticated web activity records the latest public IP address. The admin view can show an approximate city, region, and country using a locally installed MaxMind GeoLite2 City database; user IPs are not sent to an external geolocation service. Download the database from [MaxMind GeoLite2](https://www.maxmind.com/en/geolite2/signup), place the `.mmdb` file outside the public web directory, and set `GEOIP_DATABASE_PATH` to its absolute path. The lookup refreshes when the IP changes or once per day. This approximate location is separate from the profile region entered by the user, and is not GPS location. It remains unavailable until the database is configured and may not precisely match a user's actual location.

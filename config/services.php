@@ -41,4 +41,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'geoip' => [
+        'database_path' => env('GEOIP_DATABASE_PATH'),
+    ],
+
 ];

@@ -301,7 +301,7 @@
       </div>
     @else
       <div class="detail-item">
-        <span class="detail-value">No signed agreement is available for this investment.</span>
+        <span class="detail-value">Awaiting the client's contract signature. The payment submission is not independently verified and requires admin review.</span>
       </div>
     @endif
 

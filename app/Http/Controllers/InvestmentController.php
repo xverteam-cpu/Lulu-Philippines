@@ -18,6 +18,7 @@ class InvestmentController extends Controller
     {
         $data = $request->validate([
             'package' => ['required', 'string'],
+            'investment_id' => ['nullable', 'integer', 'exists:investments,id'],
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
             'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,crypto'],
@@ -80,6 +81,33 @@ class InvestmentController extends Controller
         $isPending = in_array($data['payment_method'], ['bank_transfer', 'e_wallet'], true);
 
         $investment = DB::transaction(function () use ($request, $data, $package, $isPending, $amountInUsd) {
+            if (! empty($data['investment_id'])) {
+                $investment = $request->user()->investments()
+                    ->whereKey($data['investment_id'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                abort_unless(
+                    ! $investment->agreement_signed_at
+                        && in_array($investment->status, ['pending', 'approved'], true)
+                        && $investment->package_key === $data['package']
+                        && $investment->payment_method === $data['payment_method']
+                        && (float) $investment->amount === $amountInUsd,
+                    422
+                );
+
+                $investment->update([
+                    'agreement_version' => '2026-09-20',
+                    'agreement_signature_name' => $data['agreement_details']['full_name']
+                        ?? ($request->user()->name ?: $request->user()->email),
+                    'agreement_signature_data' => $data['agreement_signature_data'],
+                    'agreement_details' => $data['agreement_details'] ?? null,
+                    'agreement_signed_at' => now(),
+                ]);
+
+                return $investment;
+            }
+
             if (! $isPending && ! InvestmentPackages::reserveSlot($data['package'])) {
                 throw ValidationException::withMessages([
                     'package' => 'This package is currently sold out.',
@@ -114,24 +142,30 @@ class InvestmentController extends Controller
         });
 
         // If investment is immediately approved, process referral commission
-        if ($investment->status === 'approved') {
+        if ($investment->status === 'approved' && empty($data['investment_id'])) {
             $investment->processReferralCommission();
         }
 
-        try {
-            Mail::to($investment->user->email)
-                ->send(new PackagePurchaseNotification($investment));
-        } catch (\Throwable $e) {
-            Log::warning('Failed to send package purchase notification', [
-                'investment_id' => $investment->id,
-                'user_id' => $investment->user_id,
-                'error' => $e->getMessage(),
-            ]);
+        if (empty($data['investment_id'])) {
+            try {
+                Mail::to($investment->user->email)
+                    ->send(new PackagePurchaseNotification($investment));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to send package purchase notification', [
+                    'investment_id' => $investment->id,
+                    'user_id' => $investment->user_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
-        $message = $isPending
-            ? $package['name'].' investment has been submitted and is pending admin approval.'
-            : $package['name'].' investment has been activated successfully.';
+        $message = ! empty($data['investment_id'])
+            ? ($investment->status === 'pending'
+                ? 'Your signed agreement was submitted. The bond is pending admin approval.'
+                : 'Your signed agreement was saved.')
+            : ($isPending
+                ? $package['name'].' investment has been submitted and is pending admin approval.'
+                : $package['name'].' investment has been activated successfully.');
 
         if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
@@ -168,6 +202,60 @@ class InvestmentController extends Controller
         return redirect()
             ->route('dashboard')
             ->with('status', $message);
+    }
+
+    public function confirmPayment(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'package' => ['required', 'string'],
+            'amount' => ['required', 'numeric', 'min:1'],
+            'currency' => ['required', 'string', 'in:USD,PHP'],
+            'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet'],
+        ]);
+
+        $package = InvestmentPackages::find($data['package']);
+        if (! $package) {
+            throw ValidationException::withMessages([
+                'package' => 'Please select a valid package.',
+            ]);
+        }
+
+        $amountInUsd = round($data['currency'] === 'PHP'
+            ? (float) $data['amount'] / CurrencyRateService::latestUsdToPhp()
+            : (float) $data['amount'], 2);
+
+        if ($amountInUsd < $package['min_amount'] || $amountInUsd > $package['max_amount']) {
+            throw ValidationException::withMessages([
+                'amount' => 'Enter an amount within the selected package limits.',
+            ]);
+        }
+
+        $investment = DB::transaction(fn () => $request->user()->investments()->create([
+            'package_key' => $data['package'],
+            'package_name' => $package['name'],
+            'package_price' => $package['price'],
+            'amount' => $amountInUsd,
+            'payment_method' => $data['payment_method'],
+            'daily_interest_rate' => $package['daily_interest_rate'],
+            'duration_days' => $package['duration_days'],
+            'starts_at' => null,
+            'status' => 'pending',
+        ]));
+
+        try {
+            Mail::to($investment->user->email)
+                ->send(new PackagePurchaseNotification($investment));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to send package purchase notification', [
+                'investment_id' => $investment->id,
+                'user_id' => $investment->user_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()
+            ->route('dashboard')
+            ->with('status', $package['name'].' bond payment was submitted for admin approval. Your agreement is ready to sign from the dashboard notification.');
     }
 
     private function isValidSignatureData(string $signatureData): bool

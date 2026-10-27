@@ -112,22 +112,15 @@ class InvestmentPurchaseTest extends TestCase
                 'amount' => 129,
                 'currency' => 'USD',
             ]))
-            ->assertSee(route('invest.agreement.sign', [
-                'package' => 'crunch',
-                'amount' => 129,
-                'currency' => 'USD',
-                'payment_method' => 'bank_transfer',
-            ]));
+            ->assertSee(route('invest.payment.complete'))
+            ->assertSee('I completed payment')
+            ->assertSee('not automatically verify bank or e-wallet transfers');
 
         $this->get('/invest/payment/palawanpay?package=crunch&amount=129&currency=USD')
             ->assertOk()
             ->assertSee('Palawan Pay')
-            ->assertSee(route('invest.agreement.sign', [
-                'package' => 'crunch',
-                'amount' => 129,
-                'currency' => 'USD',
-                'payment_method' => 'e_wallet',
-            ]));
+            ->assertSee(route('invest.payment.complete'))
+            ->assertSee('name="payment_method" value="e_wallet"', false);
 
         $providerThemes = [
             'landbank' => ['#006b3f', '#f5c542'],
@@ -156,6 +149,97 @@ class InvestmentPurchaseTest extends TestCase
         $this->assertFileExists(public_path('LandBank.png'));
         $this->assertFileExists(public_path('PalawanPay.png'));
         $this->get('/invest/payment/gcash?package=crunch&amount=129&currency=USD')
+            ->assertNotFound();
+    }
+
+    public function test_payment_confirmation_creates_pending_purchase_and_dashboard_signing_shortcut(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('invest.payment.complete'), [
+                'package' => 'crunch',
+                'amount' => 129,
+                'currency' => 'USD',
+                'payment_method' => 'bank_transfer',
+            ])
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('status');
+
+        $investment = $user->investments()->firstOrFail();
+        $this->assertSame('pending', $investment->status);
+        $this->assertNull($investment->agreement_signed_at);
+        $this->assertNull($investment->agreement_signature_data);
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Your payment submission is awaiting admin review')
+            ->assertSee('Sign pending bond agreements, 1 unsigned')
+            ->assertSee(route('invest.agreement.sign', ['investment_id' => $investment->id]))
+            ->assertSee('class="dashboard-notification-badge" aria-hidden="true">1', false);
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $this->actingAs($admin)
+            ->get(route('admin.investments'))
+            ->assertOk()
+            ->assertSee($user->email)
+            ->assertSee('Silver')
+            ->assertSee(route('admin.investments.show', $investment));
+
+        $this->get(route('admin.investments.show', $investment))
+            ->assertOk()
+            ->assertSee("Awaiting the client's contract signature", false)
+            ->assertSee('not independently verified');
+
+        $this->actingAs($user);
+        $this->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
+            ->assertOk()
+            ->assertSee('"investment_id":'.$investment->id, false)
+            ->assertSee('"amount":129', false);
+    }
+
+    public function test_signing_payment_submission_updates_existing_purchase(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->post(route('invest.payment.complete'), [
+            'package' => 'crunch',
+            'amount' => 129,
+            'currency' => 'USD',
+            'payment_method' => 'bank_transfer',
+        ])->assertRedirect(route('dashboard'));
+
+        $investment = $user->investments()->firstOrFail();
+        $this->post(route('investments.store'), [
+            'investment_id' => $investment->id,
+            'package' => 'crunch',
+            'amount' => 129,
+            'currency' => 'USD',
+            'payment_method' => 'bank_transfer',
+            'agreement_signature_data' => 'data:image/png;base64,YWJj',
+            'agreement_accepted' => '1',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertSame(1, $user->investments()->count());
+        $this->assertNotNull($investment->fresh()->agreement_signed_at);
+        $this->assertSame('pending', $investment->fresh()->status);
+    }
+
+    public function test_users_cannot_open_another_users_unsigned_agreement(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $this->actingAs($owner)->post(route('invest.payment.complete'), [
+            'package' => 'crunch',
+            'amount' => 129,
+            'currency' => 'USD',
+            'payment_method' => 'bank_transfer',
+        ])->assertRedirect(route('dashboard'));
+
+        $investment = $owner->investments()->firstOrFail();
+        $this->actingAs($otherUser)
+            ->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
             ->assertNotFound();
     }
 

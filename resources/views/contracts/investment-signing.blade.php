@@ -90,6 +90,7 @@
           const fields = {
             _token: csrfToken,
             package: purchase.package,
+            investment_id: purchase.investment_id || '',
             amount: String(purchase.amount),
             currency: purchase.currency,
             payment_method: purchase.payment_method,

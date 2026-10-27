@@ -235,6 +235,12 @@ Route::get('/dashboard', function () {
         ->where('status', 'approved')
         ->whereNull('cancelled_at')
         ->get();
+    $pendingContracts = $user->investments()
+        ->whereIn('status', ['pending', 'approved'])
+        ->whereIn('payment_method', ['bank_transfer', 'e_wallet'])
+        ->whereNull('agreement_signed_at')
+        ->latest()
+        ->get();
     $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->dailyInterestAmount());
 
     if (! is_numeric($dailyInterest)) {
@@ -297,6 +303,7 @@ Route::get('/dashboard', function () {
         'notifications' => $notifications,
         'notificationsRead' => $notificationsRead,
         'unreadCount' => $unreadCount,
+        'pendingContracts' => $pendingContracts,
     ]);
 })->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])->name('dashboard');
 
@@ -604,15 +611,33 @@ Route::get('/invest/agreement/preview', function (Request $request) {
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.preview');
 
 Route::get('/invest/agreement/sign', function (Request $request) {
-    $packageKey = (string) $request->query('package');
+    $investment = null;
+    if ($request->filled('investment_id')) {
+        $investment = $request->user()->investments()
+            ->whereKey($request->integer('investment_id'))
+            ->firstOrFail();
+        abort_unless(
+            ! $investment->agreement_signed_at
+                && in_array($investment->status, ['pending', 'approved'], true)
+                && in_array($investment->payment_method, ['bank_transfer', 'e_wallet'], true),
+            404
+        );
+
+        $packageKey = $investment->package_key;
+        $currency = 'USD';
+        $amount = (float) $investment->amount;
+        $paymentMethod = $investment->payment_method;
+    } else {
+        $packageKey = (string) $request->query('package');
+        $currency = $request->query('currency', 'USD');
+        $amount = (float) $request->query('amount', 0);
+        $paymentMethod = (string) $request->query('payment_method', 'bank_transfer');
+        abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
+        abort_unless(in_array($paymentMethod, ['bank_transfer', 'e_wallet', 'account_balance', 'crypto'], true), 422);
+    }
+
     $package = InvestmentPackages::find($packageKey);
     abort_unless($package, 404);
-
-    $currency = $request->query('currency', 'USD');
-    abort_unless(in_array($currency, ['USD', 'PHP'], true), 422);
-    $amount = (float) $request->query('amount', $package['price']);
-    $paymentMethod = (string) $request->query('payment_method', 'bank_transfer');
-    abort_unless(in_array($paymentMethod, ['bank_transfer', 'e_wallet', 'account_balance', 'crypto'], true), 422);
 
     $contractPath = base_path('LuLu-Contract-Form.html');
     abort_unless(is_file($contractPath), 500, 'The bond agreement form is unavailable.');
@@ -627,6 +652,7 @@ Route::get('/invest/agreement/sign', function (Request $request) {
             'amount' => $amount,
             'currency' => $currency,
             'payment_method' => $paymentMethod,
+            'investment_id' => $investment?->id,
         ],
         'bondholder' => $request->user()->name ?: $request->user()->email,
     ])->render();
@@ -637,6 +663,10 @@ Route::get('/invest/agreement/sign', function (Request $request) {
         'Content-Type' => 'text/html; charset=UTF-8',
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sign');
+
+Route::post('/invest/payment/complete', [InvestmentController::class, 'confirmPayment'])
+    ->middleware(['auth', RestrictUserAccess::class, 'throttle:10,1'])
+    ->name('invest.payment.complete');
 
 Route::get('/invest/payment/{provider}', function (string $provider) {
     $providers = [

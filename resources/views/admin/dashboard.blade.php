@@ -827,7 +827,7 @@
         </div>
         <div class="modal-field">
           <span class="modal-label">Phone</span>
-          <div class="modal-value">{{ $user->phone ?: '—' }}</div>
+          <div class="modal-value">{{ $user->phone ?: 'Not provided' }}</div>
         </div>
         <div class="modal-field">
           <span class="modal-label">Referred By</span>
@@ -853,7 +853,7 @@
           <div class="modal-value">Base: ${{ number_format($displayBalance - $totalCreditedInterest, 2) }} | Credited Interest: ${{ number_format($totalCreditedInterest, 2) }}</div>
         </div>
         <div class="modal-field">
-          <span class="modal-label">Region</span>
+          <span class="modal-label">Profile Region (self-reported)</span>
           <div class="modal-value">{{ $user->region ?: '—' }}</div>
         </div>
         <div class="modal-field">
@@ -876,8 +876,13 @@
           @endif
         </div>
         <div class="modal-field">
-          <span class="modal-label">IP Location</span>
-          <div class="modal-value">{{ $user->region ?: $user->address ?: 'Not available' }}</div>
+          <span class="modal-label">IP Location (approximate)</span>
+          <div class="modal-value">
+            {{ $user->ip_location ?: 'Not available' }}
+            @if ($user->ip_location_updated_at)
+              <br><small>Checked {{ $user->ip_location_updated_at->format('M d, Y h:i A') }}</small>
+            @endif
+          </div>
         </div>
         <div class="modal-field modal-full-width">
           <span class="modal-label">Last Seen</span>

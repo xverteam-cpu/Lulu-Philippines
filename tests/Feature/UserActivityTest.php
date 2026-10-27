@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Support\IpLocationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,6 +25,51 @@ class UserActivityTest extends TestCase
 
         $this->assertTrue($user->isOnline());
         $this->assertTrue($user->last_seen_at->greaterThanOrEqualTo(now()->subSeconds(5)));
+    }
+
+    public function test_public_ip_location_is_saved_and_refreshed_at_most_daily(): void
+    {
+        $user = User::factory()->create();
+        $this->mock(IpLocationService::class)
+            ->shouldReceive('lookup')
+            ->twice()
+            ->with('8.8.8.8', (int) $user->id)
+            ->andReturn('Manila, National Capital Region, Philippines');
+
+        $this->actingAs($user)
+            ->withServerVariables(['REMOTE_ADDR' => '8.8.8.8'])
+            ->post(route('activity.heartbeat'))
+            ->assertNoContent();
+
+        $user->refresh();
+        $this->assertSame('Manila, National Capital Region, Philippines', $user->ip_location);
+        $this->assertNotNull($user->ip_location_updated_at);
+        $this->assertSame('8.8.8.8', $user->last_ip_address);
+        $this->post(route('activity.heartbeat'))->assertNoContent();
+        $this->post(route('activity.heartbeat'))->assertNoContent();
+
+        $this->travel(1)->days();
+        $this->post(route('activity.heartbeat'))->assertNoContent();
+    }
+
+    public function test_private_ip_addresses_are_not_looked_up(): void
+    {
+        $user = User::factory()->create();
+        $this->assertNull(app(IpLocationService::class)->lookup('127.0.0.1', (int) $user->id));
+
+        $this->actingAs($user)
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->post(route('activity.heartbeat'))
+            ->assertNoContent();
+
+        $this->assertNull($user->fresh()->ip_location);
+    }
+
+    public function test_location_is_unavailable_until_a_local_database_is_configured(): void
+    {
+        config(['services.geoip.database_path' => null]);
+
+        $this->assertNull(app(IpLocationService::class)->lookup('8.8.8.8', 1));
     }
 
     public function test_admin_activity_endpoint_returns_only_users_with_recent_activity(): void

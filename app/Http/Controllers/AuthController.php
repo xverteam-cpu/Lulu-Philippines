@@ -89,7 +89,7 @@ class AuthController extends Controller
             'email' => $data['email'],
             'phone' => trim($data['phone']),
             'address' => '',
-            'region' => 'ncr',
+            'region' => null,
             'message' => null,
             'password' => $data['password'],
             'is_admin' => false,

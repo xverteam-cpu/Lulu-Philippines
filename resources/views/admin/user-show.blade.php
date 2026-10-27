@@ -117,16 +117,25 @@
         <span class="detail-value">{{ $managedUser->email }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Mobile Number</span>
-        <span class="detail-value">{{ $managedUser->phone ?: '-' }}</span>
+        <span class="detail-label">Phone</span>
+        <span class="detail-value">{{ $managedUser->phone ?: 'Not provided' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Phone Verification</span>
         <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'SMS verification temporarily disabled' }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Region</span>
+        <span class="detail-label">Profile Region (self-reported)</span>
         <span class="detail-value">{{ $managedUser->region ?: '-' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">IP Location (approximate)</span>
+        <span class="detail-value">
+          {{ $managedUser->ip_location ?: 'Not available' }}
+          @if ($managedUser->ip_location_updated_at)
+            <small>Checked {{ $managedUser->ip_location_updated_at->format('M d, Y h:i A') }}</small>
+          @endif
+        </span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Address</span>

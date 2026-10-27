@@ -46,6 +46,8 @@ class User extends Authenticatable
         'restricted_ip_address',
         'last_seen_at',
         'last_ip_address',
+        'ip_location',
+        'ip_location_updated_at',
     ];
 
     /**
@@ -72,6 +74,7 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'is_restricted' => 'boolean',
             'last_seen_at' => 'datetime',
+            'ip_location_updated_at' => 'datetime',
             'notifications_read' => 'array',
             'notification_preferences' => 'array',
         ];

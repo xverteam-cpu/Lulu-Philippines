@@ -7,6 +7,7 @@ use App\Models\AccountInvitation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -82,6 +83,12 @@ class AccountInvitationTest extends TestCase
 
     public function test_invited_client_can_set_password_and_pin_once(): void
     {
+        config(['services.firebase.api_key' => 'test-firebase-api-key']);
+        Http::fake([
+            'identitytoolkit.googleapis.com/v1/accounts:lookup*' => Http::response([
+                'users' => [['phoneNumber' => '+639171234567']],
+            ]),
+        ]);
         $token = 'one-time-private-token';
         $invitation = AccountInvitation::create([
             'name' => 'Client Name',
@@ -98,6 +105,8 @@ class AccountInvitationTest extends TestCase
             ->assertSee('4-digit PIN');
 
         $this->post(route('account-setup.store', ['token' => $token]), [
+            'phone' => '+639171234567',
+            'phone_verification_token' => 'firebase-id-token',
             'password' => 'A-secure-password-123',
             'password_confirmation' => 'A-secure-password-123',
             'pin' => '0427',
@@ -109,6 +118,8 @@ class AccountInvitationTest extends TestCase
         $this->assertTrue(Hash::check('0427', $user->pin_hash));
         $this->assertNotNull($user->email_verified_at);
         $this->assertNotNull($user->pin_set_at);
+        $this->assertSame('+639171234567', $user->phone);
+        $this->assertNotNull($user->phone_verified_at);
         $this->assertSame($invitation->referrer_id, $user->referred_by);
         $this->assertNotNull($invitation->fresh()->accepted_at);
 
@@ -117,6 +128,12 @@ class AccountInvitationTest extends TestCase
 
     public function test_expired_invitation_cannot_be_used(): void
     {
+        config(['services.firebase.api_key' => 'test-firebase-api-key']);
+        Http::fake([
+            'identitytoolkit.googleapis.com/v1/accounts:lookup*' => Http::response([
+                'users' => [['phoneNumber' => '+639171234567']],
+            ]),
+        ]);
         $token = 'expired-private-token';
         AccountInvitation::create([
             'name' => 'Client Name',
@@ -128,6 +145,8 @@ class AccountInvitationTest extends TestCase
 
         $this->get(route('account-setup.show', ['token' => $token]))->assertNotFound();
         $this->post(route('account-setup.store', ['token' => $token]), [
+            'phone' => '+639171234567',
+            'phone_verification_token' => 'firebase-id-token',
             'password' => 'A-secure-password-123',
             'password_confirmation' => 'A-secure-password-123',
             'pin' => '0427',

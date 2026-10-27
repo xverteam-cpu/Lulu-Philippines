@@ -237,8 +237,15 @@ class PasskeyController extends Controller
         $request->session()->regenerate();
         $request->session()->forget('investor_pin_verified');
 
+        $defaultDestination = $user->is_admin ? route('admin.dashboard') : route('dashboard');
+        $destination = redirect()->intended($defaultDestination)->getTargetUrl();
+        if (! $user->phone_verified_at) {
+            $request->session()->put('phone_capture_redirect', $destination);
+            $destination = route('phone.capture');
+        }
+
         return response()->json([
-            'redirect_url' => $user->is_admin ? route('admin.dashboard') : route('dashboard'),
+            'redirect_url' => $destination,
         ]);
     }
 

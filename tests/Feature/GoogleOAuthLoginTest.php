@@ -63,7 +63,7 @@ class GoogleOAuthLoginTest extends TestCase
         $this->assertFalse($user->is_admin);
         $this->assertNotEmpty($user->remember_token);
         $this->assertSame($referrer->id, $user->referred_by);
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('phone.capture'));
         Mail::assertSent(WelcomeEmail::class, fn (WelcomeEmail $mail): bool => $mail->hasTo($user->email));
     }
 
@@ -73,6 +73,8 @@ class GoogleOAuthLoginTest extends TestCase
         $user = User::factory()->create([
             'email' => 'invited.client@example.com',
             'pin_hash' => Hash::make('0427'),
+            'phone' => '+639171234567',
+            'phone_verified_at' => now(),
         ]);
         $originalPinHash = $user->pin_hash;
 
@@ -130,7 +132,7 @@ class GoogleOAuthLoginTest extends TestCase
             ->assertRedirect('https://accounts.google.com/o/oauth2/auth');
 
         $this->get(route('login.google.callback'))
-            ->assertRedirect(route('dashboard'));
+            ->assertRedirect(route('phone.capture'));
 
         $referredUser = User::where('email', 'referred.google@example.com')->firstOrFail();
 

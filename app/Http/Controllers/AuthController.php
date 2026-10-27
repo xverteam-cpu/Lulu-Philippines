@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Mail\WelcomeEmail;
 use App\Models\User;
+use App\Services\FirebasePhoneVerificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
@@ -36,12 +38,10 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
-        return redirect()->intended(
-            Auth::user()->is_admin ? route('admin.dashboard') : route('dashboard')
-        );
+        return $this->redirectAfterAuthentication($request, $user);
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(Request $request, FirebasePhoneVerificationService $verification): RedirectResponse
     {
         $email = $request->input('email');
         $request->merge([
@@ -65,6 +65,8 @@ class AuthController extends Controller
                     }
                 },
             ],
+            'phone' => ['required', 'string', 'regex:/^\+[1-9]\d{7,14}$/', 'max:16'],
+            'phone_verification_token' => ['required', 'string', 'max:5000'],
             'referral' => [
                 'required',
                 'string',
@@ -78,6 +80,13 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
+        $verifiedPhone = $verification->verifiedPhone($data['phone_verification_token']);
+        if (! $verifiedPhone || ! hash_equals($data['phone'], $verifiedPhone)) {
+            throw ValidationException::withMessages([
+                'phone' => 'The verified number does not match the mobile number entered.',
+            ]);
+        }
+
         $referrer = User::findByReferralIdentifier($data['referral']);
         if (! $referrer) {
             return back()->withErrors(['referral' => 'Enter a valid referral code to create an account.'])->withInput();
@@ -87,7 +96,8 @@ class AuthController extends Controller
             'name' => $data['fullname'],
             'username' => $data['username'] ?: $this->generateUniqueUsername($data['email']),
             'email' => $data['email'],
-            'phone' => null,
+            'phone' => $data['phone'],
+            'phone_verified_at' => now(),
             'address' => '',
             'region' => 'ncr',
             'message' => null,
@@ -166,9 +176,7 @@ class AuthController extends Controller
         Auth::login($user, true);
         $request->session()->regenerate();
 
-        return redirect()->intended(
-            $user->is_admin ? route('admin.dashboard') : route('dashboard')
-        );
+        return $this->redirectAfterAuthentication($request, $user);
     }
 
     public function logout(Request $request): RedirectResponse
@@ -208,5 +216,19 @@ class AuthController extends Controller
         }
 
         return $username;
+    }
+
+    private function redirectAfterAuthentication(Request $request, User $user): RedirectResponse
+    {
+        $defaultDestination = $user->is_admin ? route('admin.dashboard') : route('dashboard');
+        $destination = redirect()->intended($defaultDestination)->getTargetUrl();
+
+        if (! $user->phone_verified_at) {
+            $request->session()->put('phone_capture_redirect', $destination);
+
+            return redirect()->route('phone.capture');
+        }
+
+        return redirect()->to($destination);
     }
 }

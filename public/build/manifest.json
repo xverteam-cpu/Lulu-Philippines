@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-C1H5A37s.css",
+    "file": "assets/app-HfJ7bmzi.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -9,9 +9,15 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-UyRVujZY.js",
+    "file": "assets/app-Buj5iI_6.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/phone-verification.js": {
+    "file": "assets/phone-verification-Dfoctd_8.js",
+    "name": "phone-verification",
+    "src": "resources/js/phone-verification.js",
     "isEntry": true
   }
 }

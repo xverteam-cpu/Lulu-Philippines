@@ -29,6 +29,8 @@ class UserFactory extends Factory
             'username' => Str::random(12),
             'email' => Str::random(10) . '@example.com',
             'email_verified_at' => now(),
+            'phone' => '+639171234567',
+            'phone_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];

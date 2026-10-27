@@ -117,8 +117,12 @@
         <span class="detail-value">{{ $managedUser->email }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Phone</span>
+        <span class="detail-label">Mobile Number</span>
         <span class="detail-value">{{ $managedUser->phone ?: '-' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Phone Verification</span>
+        <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'Not verified' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Region</span>

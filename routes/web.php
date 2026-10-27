@@ -15,6 +15,7 @@ use App\Http\Controllers\IdentityVerificationController;
 use App\Http\Controllers\InvestorMarketQuoteController;
 use App\Http\Controllers\InvestorPinController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\PhoneNumberController;
 use App\Http\Middleware\RequireInvestorPin;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Mail\WithdrawalConfirmation;
@@ -147,7 +148,9 @@ Route::get('/debug/test-email', function (Request $request) {
 })->name('debug.test-email');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/register-partner', [AuthController::class, 'register'])->name('register.partner');
+Route::post('/register-partner', [AuthController::class, 'register'])
+    ->middleware('throttle:5,1')
+    ->name('register.partner');
 Route::get('/account/setup/{token}', [AccountSetupController::class, 'show'])
     ->middleware('throttle:10,1')
     ->name('account-setup.show');
@@ -155,6 +158,12 @@ Route::post('/account/setup/{token}', [AccountSetupController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('account-setup.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/account/phone', [PhoneNumberController::class, 'show'])
+    ->middleware('auth')
+    ->name('phone.capture');
+Route::post('/account/phone', [PhoneNumberController::class, 'store'])
+    ->middleware(['auth', 'throttle:5,1'])
+    ->name('phone.store');
 Route::post('/investor/pin/verify', [InvestorPinController::class, 'verify'])
     ->middleware(['auth', 'throttle:5,1'])
     ->name('investor.pin.verify');

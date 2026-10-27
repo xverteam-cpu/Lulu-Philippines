@@ -31,6 +31,7 @@ class User extends Authenticatable
         'referral_code',
         'email',
         'phone',
+        'phone_verified_at',
         'address',
         'region',
         'message',
@@ -67,6 +68,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_restricted' => 'boolean',

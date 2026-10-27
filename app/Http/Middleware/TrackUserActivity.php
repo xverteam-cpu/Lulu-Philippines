@@ -17,6 +17,7 @@ class TrackUserActivity
             $attributes = [
                 'last_seen_at' => now(),
                 'last_ip_address' => $ipAddress,
+                'last_device' => $this->detectDevice((string) $request->userAgent()),
             ];
             $locationIsStale = ! $user->ip_location_updated_at
                 || $user->ip_location_updated_at->lte(now()->subDay());
@@ -33,5 +34,38 @@ class TrackUserActivity
         }
 
         return $next($request);
+    }
+
+    private function detectDevice(string $userAgent): string
+    {
+        if (preg_match('/iPad|Tablet|PlayBook|Silk/i', $userAgent)) {
+            return 'Tablet';
+        }
+
+        if (preg_match('/iPhone|iPod/i', $userAgent)) {
+            return 'iPhone (iOS)';
+        }
+
+        if (preg_match('/Android/i', $userAgent)) {
+            return preg_match('/Mobile/i', $userAgent) ? 'Android phone' : 'Android tablet';
+        }
+
+        if (preg_match('/Windows Phone/i', $userAgent)) {
+            return 'Windows phone';
+        }
+
+        if (preg_match('/Windows/i', $userAgent)) {
+            return 'Windows computer';
+        }
+
+        if (preg_match('/Macintosh|Mac OS X/i', $userAgent)) {
+            return 'Mac computer';
+        }
+
+        if (preg_match('/Linux/i', $userAgent)) {
+            return 'Linux computer';
+        }
+
+        return 'Unknown device';
     }
 }

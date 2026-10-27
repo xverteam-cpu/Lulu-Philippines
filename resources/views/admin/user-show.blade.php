@@ -121,6 +121,10 @@
         <span class="detail-value">{{ $managedUser->phone ?: 'Not provided' }}</span>
       </div>
       <div class="detail-item">
+        <span class="detail-label">Phone/device type (detected)</span>
+        <span class="detail-value">{{ $managedUser->last_device ?: 'Not recorded yet' }}</span>
+      </div>
+      <div class="detail-item">
         <span class="detail-label">Phone Verification</span>
         <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'SMS verification temporarily disabled' }}</span>
       </div>
@@ -146,8 +150,12 @@
         <span class="detail-value">{{ $managedUser->isOnline() ? 'Online' : 'Offline' }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Last Seen</span>
-        <span class="detail-value">{{ $managedUser->last_seen_at?->format('M d, Y h:i A') ?: '-' }}</span>
+        <span class="detail-label">Last Seen (Manila time)</span>
+        <span
+          class="detail-value"
+          data-last-seen-user-id="{{ $managedUser->id }}"
+          data-time="{{ $managedUser->last_seen_at?->toIso8601String() }}"
+        >{{ $managedUser->last_seen_at?->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') ?: '-' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Last IP Address</span>
@@ -207,5 +215,45 @@ document.getElementById('copy-user-referral-link')?.addEventListener('click', as
     window.setTimeout(() => { button.textContent = 'Copy referral link'; }, 2500);
   }
 });
+</script>
+<script>
+  (function () {
+    var lastSeen = document.querySelector('[data-last-seen-user-id]');
+    if (!lastSeen) return;
+
+    var activityUrl = @json(route('admin.user-activity'));
+    var userId = lastSeen.dataset.lastSeenUserId;
+
+    function refreshLastSeen() {
+      var url = new URL(activityUrl, window.location.origin);
+      url.searchParams.append('user_ids[]', userId);
+
+      fetch(url, {
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      }).then(function (response) {
+        if (!response.ok) throw new Error('Last-seen refresh failed with status ' + response.status);
+        return response.json();
+      }).then(function (activity) {
+        var timestamp = activity.last_seen_at[userId];
+        if (!timestamp) return;
+        lastSeen.dataset.time = timestamp;
+        lastSeen.textContent = new Intl.DateTimeFormat('en-PH', {
+          timeZone: 'Asia/Manila',
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        }).format(new Date(timestamp));
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
+
+    refreshLastSeen();
+    window.setInterval(refreshLastSeen, 15000);
+  })();
 </script>
 @endsection

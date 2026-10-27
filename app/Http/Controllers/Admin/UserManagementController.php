@@ -71,15 +71,36 @@ class UserManagementController extends Controller
         ]);
     }
 
-    public function activity(): JsonResponse
+    public function activity(Request $request): JsonResponse
     {
-        $onlineUserIds = User::query()
-            ->where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES))
-            ->pluck('id');
+        $validated = $request->validate([
+            'user_ids' => ['sometimes', 'array', 'max:50'],
+            'user_ids.*' => ['integer', 'distinct'],
+        ]);
+
+        $usersQuery = User::query();
+        if (isset($validated['user_ids'])) {
+            $usersQuery->whereIn('id', $validated['user_ids']);
+        } else {
+            $usersQuery->where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES));
+        }
+
+        $users = $usersQuery
+            ->whereNotNull('last_seen_at')
+            ->get(['id', 'last_seen_at']);
+        $onlineUserIds = $users
+            ->filter(fn (User $user) => $user->isOnline())
+            ->pluck('id')
+            ->values();
 
         return response()->json([
             'online_user_ids' => $onlineUserIds,
-            'online_users_count' => $onlineUserIds->count(),
+            'online_users_count' => User::query()
+                ->where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES))
+                ->count(),
+            'last_seen_at' => $users->mapWithKeys(fn (User $user) => [
+                (string) $user->id => $user->last_seen_at?->toIso8601String(),
+            ]),
         ]);
     }
 

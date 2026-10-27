@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -294,6 +295,8 @@ class AuthSignupTest extends TestCase
             'region' => 'Central Visayas',
             'ip_location' => 'Cebu City, Central Visayas, Philippines',
             'ip_location_updated_at' => now(),
+            'last_device' => 'iPhone (iOS)',
+            'last_seen_at' => Carbon::parse('2026-10-27 19:37:00', 'UTC'),
         ]);
 
         $this->actingAs($admin)
@@ -301,12 +304,16 @@ class AuthSignupTest extends TestCase
             ->assertOk()
             ->assertSee('Phone')
             ->assertSee('+639171234567')
+            ->assertSee('Phone/device type (detected)')
+            ->assertSee('iPhone (iOS)')
             ->assertSee('Phone Verification')
             ->assertSee('SMS verification temporarily disabled')
             ->assertSee('Profile Region (self-reported)')
             ->assertSee('Central Visayas')
             ->assertSee('IP Location (approximate)')
-            ->assertSee('Cebu City, Central Visayas, Philippines');
+            ->assertSee('Cebu City, Central Visayas, Philippines')
+            ->assertSee('Last Seen (Manila time)')
+            ->assertSee('Oct 28, 2026 03:37 AM', false);
     }
 
     public function test_existing_phone_can_be_saved_without_sms_verification(): void

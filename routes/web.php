@@ -1174,10 +1174,10 @@ Route::get('/admin/franchises/{franchiseApplication}', [AdminFranchiseApplicatio
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.franchises.show');
 
-Route::get('/admin/user-activity', function () {
+Route::get('/admin/user-activity', function (Request $request) {
     abort_unless(Auth::user()?->is_admin, 403);
 
-    return app(UserManagementController::class)->activity();
+    return app(UserManagementController::class)->activity($request);
 })->middleware(['auth', RestrictUserAccess::class])->name('admin.user-activity');
 
 Route::get('/admin/user-search-suggestions', [UserManagementController::class, 'searchSuggestions'])

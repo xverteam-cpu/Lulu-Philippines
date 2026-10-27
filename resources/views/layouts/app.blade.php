@@ -116,7 +116,7 @@
         window.location.reload();
       });
 
-      window.setInterval(sendHeartbeat, 60000);
+      window.setInterval(sendHeartbeat, 30000);
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') sendHeartbeat();
       });

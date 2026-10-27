@@ -46,6 +46,7 @@ class User extends Authenticatable
         'restricted_ip_address',
         'last_seen_at',
         'last_ip_address',
+        'last_device',
         'ip_location',
         'ip_location_updated_at',
     ];

@@ -830,6 +830,10 @@
           <div class="modal-value">{{ $user->phone ?: 'Not provided' }}</div>
         </div>
         <div class="modal-field">
+          <span class="modal-label">Phone/device type (detected)</span>
+          <div class="modal-value">{{ $user->last_device ?: 'Not recorded yet' }}</div>
+        </div>
+        <div class="modal-field">
           <span class="modal-label">Referred By</span>
           <div class="modal-value">
             @php $referrer = $user->referrer; @endphp
@@ -885,8 +889,12 @@
           </div>
         </div>
         <div class="modal-field modal-full-width">
-          <span class="modal-label">Last Seen</span>
-          <div class="modal-value">{{ $user->last_seen_at?->format('M d, Y h:i A') ?: '—' }}</div>
+          <span class="modal-label">Last Seen (Manila time)</span>
+          <div
+            class="modal-value"
+            data-last-seen-user-id="{{ $user->id }}"
+            data-time="{{ $user->last_seen_at?->toIso8601String() }}"
+          >{{ $user->last_seen_at?->copy()->timezone('Asia/Manila')->format('M d, Y h:i A') ?: '—' }}</div>
         </div>
       </div>
 
@@ -1452,7 +1460,17 @@
     var countElement = document.querySelector('[data-online-users-count]');
 
     function refreshOnlineStatus() {
-      fetch(activityUrl, {
+      var url = new URL(activityUrl, window.location.origin);
+      var userIds = [];
+      document.querySelectorAll('template[id^="userModal-"]').forEach(function (template) {
+        var lastSeen = template.content.querySelector('[data-last-seen-user-id]');
+        if (lastSeen) userIds.push(lastSeen.dataset.lastSeenUserId);
+      });
+      userIds.forEach(function (userId) {
+        url.searchParams.append('user_ids[]', userId);
+      });
+
+      fetch(url, {
         credentials: 'same-origin',
         headers: { 'Accept': 'application/json' }
       }).then(function (response) {
@@ -1467,6 +1485,21 @@
             badge.textContent = online ? 'Online' : 'Offline';
             badge.classList.toggle('online', online);
             badge.classList.toggle('offline', !online);
+          });
+
+          root.querySelectorAll('[data-last-seen-user-id]').forEach(function (lastSeen) {
+            var timestamp = activity.last_seen_at[lastSeen.dataset.lastSeenUserId];
+            if (!timestamp) return;
+            lastSeen.dataset.time = timestamp;
+            lastSeen.textContent = new Intl.DateTimeFormat('en-PH', {
+              timeZone: 'Asia/Manila',
+              month: 'short',
+              day: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            }).format(new Date(timestamp));
           });
         }
 

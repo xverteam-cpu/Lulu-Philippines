@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -41,5 +42,24 @@ class Withdrawal extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function isSignupBonus(): bool
+    {
+        return $this->bank_name === 'Welcome Bonus'
+            || $this->account_number === 'signup-bonus';
+    }
+
+    public function scopeNotSignupBonus(Builder $query): Builder
+    {
+        return $query
+            ->where(function (Builder $query): void {
+                $query->whereNull('bank_name')
+                    ->orWhere('bank_name', '!=', 'Welcome Bonus');
+            })
+            ->where(function (Builder $query): void {
+                $query->whereNull('account_number')
+                    ->orWhere('account_number', '!=', 'signup-bonus');
+            });
     }
 }

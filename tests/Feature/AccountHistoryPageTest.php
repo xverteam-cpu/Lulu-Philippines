@@ -52,7 +52,7 @@ class AccountHistoryPageTest extends TestCase
             'status' => 'approved',
         ]);
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->get(route('history'))
             ->assertOk()
             ->assertSee('class="history-phone"', false)
@@ -64,13 +64,22 @@ class AccountHistoryPageTest extends TestCase
             ->assertSee('Withdrawal History')
             ->assertSee('Daily Interest History')
             ->assertSee('Rewards History')
-            ->assertSee('$5 Sign Up Bonus')
-            ->assertSee('Welcome reward')
+            ->assertSee('Signup Bonus')
             ->assertSee('Pending')
             ->assertDontSee('class="statusbar"', false)
             ->assertDontSee('id="clock"', false)
             ->assertDontSee('11:23 PM')
             ->assertDontSee('Wi-Fi');
+
+        $html = $response->getContent();
+        $withdrawalsStart = strpos($html, 'id="history-withdrawals"');
+        $interestStart = strpos($html, 'id="history-interest"');
+
+        $this->assertNotFalse($withdrawalsStart);
+        $this->assertNotFalse($interestStart);
+        $withdrawalHistory = substr($html, $withdrawalsStart, $interestStart - $withdrawalsStart);
+        $this->assertStringNotContainsString('Sign Up Bonus', $withdrawalHistory);
+        $this->assertStringNotContainsString('Welcome reward', $withdrawalHistory);
     }
 
     public function test_guest_is_redirected_to_login_from_account_history(): void

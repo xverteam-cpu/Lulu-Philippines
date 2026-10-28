@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\WithdrawalConfirmation;
+use App\Models\Investment;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,6 +52,46 @@ class WithdrawalRequestTest extends TestCase
             ->assertSee('safe-area-inset-top', false)
             ->assertSee('name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"', false)
             ->assertDontSee('1234567890</span>');
+    }
+
+    public function test_withdrawal_balance_does_not_add_already_credited_interest_again(): void
+    {
+        $user = User::factory()->create([
+            'balance' => 26.03,
+            'pin_hash' => Hash::make('1234'),
+        ]);
+
+        Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 1000,
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'starts_at' => now()->subDays(2),
+            'status' => 'approved',
+            'interest_days_credited' => 2,
+            'last_interest_accrued_at' => now()->startOfDay(),
+        ]);
+
+        $this->actingAs($user)->withSession(['pin_verified' => true]);
+
+        $this->get(route('withdraw'))
+            ->assertOk()
+            ->assertSee('$26.03')
+            ->assertDontSee('$46.03');
+
+        $response = $this->from(route('withdraw'))->post(route('withdrawals.store'), [
+            'amount' => 30,
+            'bank_name' => 'Test Bank',
+            'account_number' => '1234567890',
+            'account_holder' => 'Test User',
+        ]);
+
+        $response->assertSessionHasErrors('amount');
+        $this->assertDatabaseCount('withdrawals', 0);
+        $this->assertEquals(26.03, (float) $user->fresh()->balance);
     }
 
     public function test_admin_withdrawal_details_does_not_render_detached_css_as_page_text(): void

@@ -128,7 +128,6 @@
 
 @php
   $user = Auth::user();
-  $rewards = $withdrawals->filter(fn ($withdrawal) => ($withdrawal->bank_name ?? '') === 'Welcome Bonus' || ($withdrawal->account_number ?? '') === 'signup-bonus');
   $signupBonusClaimed = ! empty($user->signup_bonus_claimed_at);
 
   $historyTagClass = static function ($status): string {
@@ -228,14 +227,11 @@
           <div class="history-body" id="history-withdrawals"><div class="history-inner"><div class="history-entries">
             @forelse ($withdrawals as $withdrawal)
               @php
-                $isWelcomeBonus = $withdrawal->bank_name === 'Welcome Bonus' || $withdrawal->account_number === 'signup-bonus';
-                $withdrawalName = $isWelcomeBonus
-                    ? '$5 Sign Up Bonus'
-                    : ucwords(str_replace('_', ' ', (string) $withdrawal->payment_method)).' withdrawal';
+                $withdrawalName = ucwords(str_replace('_', ' ', (string) $withdrawal->payment_method)).' withdrawal';
                 $withdrawalStatus = ucfirst(str_replace('_', ' ', (string) $withdrawal->status));
               @endphp
               <div class="history-entry">
-                <div><div class="history-entry-name">{{ $withdrawalName }}</div>@if ($isWelcomeBonus)<div class="history-entry-date">Welcome reward</div>@else<div class="history-entry-date">{{ $withdrawal->created_at->format('F j, Y') }}</div>@endif</div>
+                <div><div class="history-entry-name">{{ $withdrawalName }}</div><div class="history-entry-date">{{ $withdrawal->created_at->format('F j, Y') }}</div></div>
                 <div class="history-entry-right"><div class="history-entry-amount">${{ number_format((float) $withdrawal->amount, 2) }}</div><span class="history-tag {{ $historyTagClass($withdrawal->status) }}">{{ $withdrawalStatus }}</span></div>
               </div>
             @empty

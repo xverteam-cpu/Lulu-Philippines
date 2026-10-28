@@ -47,7 +47,15 @@ class SignupBonusTest extends TestCase
         $response = $this->get(route('history'));
 
         $response->assertOk();
-        $response->assertSee('$5 Sign Up Bonus');
-        $response->assertSee('Welcome reward');
+        $response->assertSee('Signup Bonus');
+
+        $html = $response->getContent();
+        $withdrawalsStart = strpos($html, 'id="history-withdrawals"');
+        $interestStart = strpos($html, 'id="history-interest"');
+
+        $this->assertNotFalse($withdrawalsStart);
+        $this->assertNotFalse($interestStart);
+        $withdrawalHistory = substr($html, $withdrawalsStart, $interestStart - $withdrawalsStart);
+        $this->assertStringNotContainsString('Signup Bonus', $withdrawalHistory);
     }
 }

@@ -232,6 +232,7 @@ Route::get('/dashboard', function () {
         ->get();
 
     $recentWithdrawals = Withdrawal::where('user_id', $user->id)
+        ->notSignupBonus()
         ->orderByDesc('created_at')
         ->limit(5)
         ->get();
@@ -524,7 +525,7 @@ Route::get('/invest', function () {
         $packageEarnings = $approvedInvestments
             ->groupBy('package_key')
             ->map(fn ($packageInvestments) => $packageInvestments->sum(fn ($investment) => $investment->creditedInterest()));
-        $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
+        $availableBalance = (float) $user->balance;
     }
 
     return view('invest', [
@@ -855,11 +856,10 @@ Route::get('/withdraw', function () {
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user->refresh();
 
-    $investments = $user->investments()->latest()->get();
-    $earnedIncome = $investments->sum(fn ($investment) => $investment->earnedInterest());
-    $availableBalance = (float) $user->balance + $earnedIncome;
+    $availableBalance = (float) $user->balance;
 
     $recentWithdrawals = Withdrawal::where('user_id', $user->id)
+        ->notSignupBonus()
         ->orderByDesc('created_at')
         ->limit(5)
         ->get();
@@ -928,8 +928,7 @@ Route::post('/withdrawals', function (Request $request) {
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user->refresh();
 
-    $investments = $user->investments()->latest()->get();
-    $availableBalance = (float) $user->balance + $investments->sum(fn ($investment) => $investment->earnedInterest());
+    $availableBalance = (float) $user->balance;
 
     if ($availableBalance < (float) $data['amount']) {
         throw ValidationException::withMessages([
@@ -1042,9 +1041,15 @@ Route::get('/history', function () {
         ->orderByDesc('created_at')
         ->get();
 
-    $withdrawals = Withdrawal::where('user_id', $user->id)
+    $accountWithdrawals = Withdrawal::where('user_id', $user->id)
         ->orderByDesc('created_at')
         ->get();
+    $rewards = $accountWithdrawals
+        ->filter(fn (Withdrawal $withdrawal) => $withdrawal->isSignupBonus())
+        ->values();
+    $withdrawals = $accountWithdrawals
+        ->reject(fn (Withdrawal $withdrawal) => $withdrawal->isSignupBonus())
+        ->values();
 
     $approvedInvestments = $investments->where('status', 'approved');
     $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->creditedInterest());
@@ -1073,6 +1078,7 @@ Route::get('/history', function () {
     return view('history', [
         'investments' => $investments,
         'withdrawals' => $withdrawals,
+        'rewards' => $rewards,
         'dailyInterest' => $dailyInterest,
         'dailyInterestEntries' => $dailyInterestEntries,
     ]);

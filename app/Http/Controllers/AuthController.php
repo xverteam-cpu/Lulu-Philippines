@@ -7,10 +7,13 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
@@ -30,14 +33,95 @@ class AuthController extends Controller
             ->orWhereRaw('LOWER(email) = ?', [Str::lower($loginField)])
             ->first();
 
-        if (! $user || ! Auth::attempt(['email' => $user->email, 'password' => $password], true)) {
+        if ($user && Auth::attempt(['email' => $user->email, 'password' => $password], true)) {
+            $request->session()->regenerate();
+
+            return $this->redirectAfterAuthentication($request, $user);
+        }
+
+        if (! $user || ! $user->temporary_password_hash) {
             return back()
                 ->withErrors(['email' => 'The provided login details are incorrect.'])
                 ->onlyInput('email');
         }
 
+        $claimedUser = DB::transaction(function () use ($user, $password): ?User {
+            $lockedUser = User::query()->lockForUpdate()->find($user->getKey());
+
+            if (! $lockedUser?->temporary_password_hash || ! Hash::check($password, $lockedUser->temporary_password_hash)) {
+                return null;
+            }
+
+            $lockedUser->forceFill(['temporary_password_hash' => null])->save();
+
+            return $lockedUser;
+        });
+
+        if (! $claimedUser) {
+            return back()
+                ->withErrors(['email' => 'The provided login details are incorrect.'])
+                ->onlyInput('email');
+        }
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        $request->session()->put([
+            'temporary_password_user_id' => $claimedUser->getKey(),
+            'temporary_password_challenge_expires_at' => now()->addMinutes(15)->timestamp,
+        ]);
+
+        return redirect()->route('temporary-password.change');
+    }
+
+    public function showTemporaryPasswordChange(Request $request): View|RedirectResponse
+    {
+        if (! $this->temporaryPasswordChallengeUser($request)) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'This temporary password session has expired. Ask an admin to create a new one.']);
+        }
+
+        return view('auth.temporary-password-change');
+    }
+
+    public function changeTemporaryPassword(Request $request): RedirectResponse
+    {
+        $user = $this->temporaryPasswordChallengeUser($request);
+        if (! $user) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'This temporary password session has expired. Ask an admin to create a new one.']);
+        }
+
+        $data = $request->validate([
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        $user->forceFill(['password' => $data['password']])->save();
+        $request->session()->forget([
+            'temporary_password_user_id',
+            'temporary_password_challenge_expires_at',
+        ]);
+        Auth::login($user, true);
         $request->session()->regenerate();
+
         return $this->redirectAfterAuthentication($request, $user);
+    }
+
+    private function temporaryPasswordChallengeUser(Request $request): ?User
+    {
+        $userId = $request->session()->get('temporary_password_user_id');
+        $expiresAt = $request->session()->get('temporary_password_challenge_expires_at');
+
+        if (! is_numeric($userId) || ! is_numeric($expiresAt) || now()->timestamp >= (int) $expiresAt) {
+            $request->session()->forget([
+                'temporary_password_user_id',
+                'temporary_password_challenge_expires_at',
+            ]);
+
+            return null;
+        }
+
+        return User::find($userId);
     }
 
     public function register(Request $request): RedirectResponse

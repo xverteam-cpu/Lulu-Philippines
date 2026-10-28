@@ -466,6 +466,14 @@
     <div class="alert alert-success">{{ session('status') }}</div>
   @endif
 
+  @if ($temporaryPassword)
+    <div class="alert alert-success" role="status">
+      <strong>Temporary password for {{ $temporaryPasswordUser }} — shown once:</strong>
+      <code id="temporary-password-value" style="margin-left:8px;font-size:16px;user-select:all;">{{ $temporaryPassword }}</code>
+      <span style="display:block;margin-top:6px;">Share it directly with the user. It can be used once, and they must set a new password immediately.</span>
+    </div>
+  @endif
+
   @if ($errors->any())
     <div class="alert alert-danger">
       <ul class="error-list">
@@ -912,6 +920,20 @@
       @else
         <p class="empty-message" style="margin:20px 0;">An IP address must be recorded before it can be blocked.</p>
       @endif
+
+      @unless ($user->is_admin)
+        <form action="{{ route('admin.users.temporary-password', $user) }}" method="POST" style="margin:20px 0;">
+          @csrf
+          <button type="submit" class="admin-nav-btn" style="border-color:#166534;color:#166534;" onclick="return confirm('Create a single-use temporary password for this account? Any previous temporary password will stop working.')">Create Temporary Password</button>
+          <p class="empty-message" style="margin-top:8px;">The generated password is shown once. The user must replace it when they sign in.</p>
+        </form>
+
+        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" style="margin:20px 0;">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="admin-nav-btn" style="border-color:#b91c1c;color:#b91c1c;" onclick="return confirm('Delete this user account? This action cannot be undone.')">Delete Account</button>
+        </form>
+      @endunless
 
       <details class="user-history-section">
         <summary class="user-history-title">Deposit / Investment History</summary>

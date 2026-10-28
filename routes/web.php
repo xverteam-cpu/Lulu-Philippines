@@ -148,6 +148,11 @@ Route::get('/debug/test-email', function (Request $request) {
 })->name('debug.test-email');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::get('/temporary-password/change', [AuthController::class, 'showTemporaryPasswordChange'])
+    ->name('temporary-password.change');
+Route::post('/temporary-password/change', [AuthController::class, 'changeTemporaryPassword'])
+    ->middleware('throttle:5,1')
+    ->name('temporary-password.update');
 Route::post('/register-partner', [AuthController::class, 'register'])
     ->middleware('throttle:5,1')
     ->name('register.partner');
@@ -1218,6 +1223,10 @@ Route::post('/admin/users/{user}/restrict', [UserManagementController::class, 'r
 Route::post('/admin/users/{user}/block-ip', [UserManagementController::class, 'blockIp'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.users.block-ip');
+
+Route::post('/admin/users/{user}/temporary-password', [UserManagementController::class, 'createTemporaryPassword'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('admin.users.temporary-password');
 
 Route::post('/admin/account-invitations', [AccountInvitationController::class, 'store'])
     ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])

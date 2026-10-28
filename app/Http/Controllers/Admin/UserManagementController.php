@@ -18,8 +18,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -37,6 +39,8 @@ class UserManagementController extends Controller
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
+        $temporaryPassword = $request->session()->pull('temporary_password');
+        $temporaryPasswordUser = $request->session()->pull('temporary_password_user');
 
         $users = User::query()
             ->when($search !== '', function ($query) use ($search) {
@@ -57,6 +61,8 @@ class UserManagementController extends Controller
 
         return view('admin.dashboard', [
             'users' => $users,
+            'temporaryPassword' => $temporaryPassword,
+            'temporaryPasswordUser' => $temporaryPasswordUser,
             'referrers' => User::query()->orderBy('name')->get(['id', 'name', 'email', 'referral_code']),
             'blockedIps' => $blockedIps,
             'totalUsers' => User::count(),
@@ -251,6 +257,25 @@ class UserManagementController extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('status', "IP address {$ipAddress} blocked successfully.");
+    }
+
+    public function createTemporaryPassword(User $user): RedirectResponse
+    {
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['user' => 'Temporary passwords cannot be created for admin accounts.']);
+        }
+
+        $temporaryPassword = Str::random(20);
+
+        $user->forceFill([
+            'temporary_password_hash' => Hash::make($temporaryPassword),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        return redirect()->route('admin.dashboard')
+            ->with('temporary_password', $temporaryPassword)
+            ->with('temporary_password_user', $user->name ?: $user->email);
     }
 
     public function unblockIp(BlockedIp $blockedIp): RedirectResponse

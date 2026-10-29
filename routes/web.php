@@ -1137,6 +1137,9 @@ Route::post('/profile/edit', function (Request $request) {
 Route::get('/profile/password', function () {
     return view('change-password');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.password');
+Route::post('/profile/password', [AuthController::class, 'changePassword'])
+    ->middleware(['auth', RestrictUserAccess::class, 'throttle:5,1'])
+    ->name('profile.password.update');
 
 Route::get('/profile/notifications', function () {
     $preferences = array_merge([

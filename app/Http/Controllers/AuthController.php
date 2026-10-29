@@ -107,6 +107,21 @@ class AuthController extends Controller
         return $this->redirectAfterAuthentication($request, $user);
     }
 
+    public function changePassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', 'different:current_password', Password::min(8)],
+        ]);
+
+        $request->user()->forceFill([
+            'password' => $data['password'],
+            'temporary_password_hash' => null,
+        ])->save();
+
+        return redirect()->route('profile.password')->with('status', 'Your password has been updated.');
+    }
+
     private function temporaryPasswordChallengeUser(Request $request): ?User
     {
         $userId = $request->session()->get('temporary_password_user_id');

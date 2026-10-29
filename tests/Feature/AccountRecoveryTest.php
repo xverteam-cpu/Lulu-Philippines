@@ -65,6 +65,72 @@ class AccountRecoveryTest extends TestCase
             ->assertSessionHasNoErrors();
     }
 
+    public function test_password_reset_works_for_email_addresses_with_different_casing(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'recover@example.com',
+            'password' => 'OldPassword123',
+        ]);
+        $user->forceFill(['email' => 'Recover@Example.com'])->save();
+        Notification::fake();
+
+        $this->from(route('password.request'))
+            ->post(route('password.email'), ['email' => ' recover@example.com '])
+            ->assertRedirect(route('password.request'))
+            ->assertSessionHas('status', 'If an account matches that email address, a password reset link will be sent.')
+            ->assertSessionHasNoErrors();
+
+        $notification = null;
+        Notification::assertSentTo($user, ResetPasswordNotification::class, function (ResetPasswordNotification $sent) use (&$notification): bool {
+            $notification = $sent;
+
+            return true;
+        });
+
+        $this->post(route('password.update'), [
+            'token' => $notification->token,
+            'email' => 'recover@example.com',
+            'password' => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
+        ])->assertRedirect(route('order'));
+
+        $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
+    }
+
+    public function test_authenticated_user_can_change_password_only_with_their_current_password(): void
+    {
+        $user = User::factory()->create(['password' => 'OldPassword123']);
+
+        $this->actingAs($user)
+            ->get(route('profile.password'))
+            ->assertOk()
+            ->assertSee(route('profile.password.update'), false);
+
+        $this->actingAs($user)
+            ->from(route('profile.password'))
+            ->post(route('profile.password.update'), [
+                'current_password' => 'WrongPassword123',
+                'password' => 'NewPassword123',
+                'password_confirmation' => 'NewPassword123',
+            ])
+            ->assertRedirect(route('profile.password'))
+            ->assertSessionHasErrors('current_password');
+
+        $this->assertTrue(Hash::check('OldPassword123', $user->fresh()->password));
+
+        $this->actingAs($user)
+            ->from(route('profile.password'))
+            ->post(route('profile.password.update'), [
+                'current_password' => 'OldPassword123',
+                'password' => 'NewPassword123',
+                'password_confirmation' => 'NewPassword123',
+            ])
+            ->assertRedirect(route('profile.password'))
+            ->assertSessionHas('status', 'Your password has been updated.');
+
+        $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
+    }
+
     public function test_forgot_pin_sends_a_one_time_link_and_changes_only_the_pin(): void
     {
         $user = User::factory()->create([

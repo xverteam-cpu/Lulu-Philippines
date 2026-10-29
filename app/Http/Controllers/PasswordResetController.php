@@ -31,10 +31,12 @@ class PasswordResetController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $status = Password::sendResetLink($request->only('email'));
+        $user = User::query()
+            ->whereRaw('LOWER(email) = ?', [$request->input('email')])
+            ->first();
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+        if ($user) {
+            Password::sendResetLink(['email' => $user->email]);
         }
 
         return back()->with('status', 'If an account matches that email address, a password reset link will be sent.');
@@ -55,14 +57,25 @@ class PasswordResetController extends Controller
             'email' => is_string($email) ? Str::lower(trim($email)) : $email,
         ]);
 
-        $request->validate([
+        $data = $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', PasswordRule::min(8)],
         ]);
 
+        $user = User::query()
+            ->whereRaw('LOWER(email) = ?', [$data['email']])
+            ->first();
+
+        if (! $user) {
+            return back()->withErrors(['email' => 'This password reset link is invalid or has expired.']);
+        }
+
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            [
+                ...$data,
+                'email' => $user->email,
+            ],
             function (User $user, string $password) {
                 $user->password = $password;
                 $user->temporary_password_hash = null;

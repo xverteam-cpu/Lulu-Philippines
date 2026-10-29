@@ -30,21 +30,33 @@
     <div class="action-title">Change Password</div>
     <div class="action-sub">Protect your account by updating your password regularly.</div>
 
-    <form action="#" method="post">
+    @if (session('status'))
+      <div role="status" style="margin-bottom:18px;padding:12px 14px;background:#eaf5ee;color:#17613b;border-radius:12px;">
+        {{ session('status') }}
+      </div>
+    @endif
+
+    @if ($errors->any())
+      <div role="alert" style="margin-bottom:18px;padding:12px 14px;background:#fff0f0;color:#8a2727;border-radius:12px;">
+        {{ $errors->first() }}
+      </div>
+    @endif
+
+    <form action="{{ route('profile.password.update') }}" method="post">
       @csrf
       <div class="input-group">
         <label class="input-label" for="current_password">Current password</label>
-        <input class="input-field" id="current_password" name="current_password" type="password">
+        <input class="input-field" id="current_password" name="current_password" type="password" autocomplete="current-password" required>
       </div>
 
       <div class="input-group">
         <label class="input-label" for="password">New password</label>
-        <input class="input-field" id="password" name="password" type="password">
+        <input class="input-field" id="password" name="password" type="password" autocomplete="new-password" required>
       </div>
 
       <div class="input-group">
         <label class="input-label" for="password_confirmation">Confirm new password</label>
-        <input class="input-field" id="password_confirmation" name="password_confirmation" type="password">
+        <input class="input-field" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required>
       </div>
 
       <button class="primary-btn" type="submit">Update password</button>

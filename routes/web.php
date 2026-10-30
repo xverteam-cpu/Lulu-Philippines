@@ -555,22 +555,14 @@ Route::get('/invest/purchase/{package}', function (string $package) {
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
 
 Route::get('/invest/agreement/sample', function () {
-    return view('bond-agreement', [
-        'agreement' => [
-            'package_name' => '________________________________________',
-            'amount' => '________________________________________',
-            'daily_interest_rate' => '________________________________________',
-            'daily_interest_income' => '________________________________________',
-            'duration_days' => '________________________________________',
-            'commencement_date' => '______________________________',
-            'maturity_date' => '________________________________________',
-            'bondholder' => '________________________________________',
-            'civil_status' => '__________________',
-            'residence' => '________________________________________________________________________________________',
-            'reference' => '________________________________________',
-            'contract_number' => '________________________________________',
-        ],
-        'isSample' => true,
+    $path = base_path('lulu-bond-contract-preserved-pages.html');
+    abort_unless(is_file($path), 500, 'The sample bond agreement is unavailable.');
+
+    $contractHtml = file_get_contents($path);
+    abort_if($contractHtml === false, 500, 'The sample bond agreement could not be read.');
+
+    return response($contractHtml, 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.agreement.sample');
 

@@ -204,9 +204,12 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('title="Complete identity verification"', false);
     }
 
-    public function test_dashboard_sample_agreement_button_opens_a_personalized_silver_contract_preview(): void
+    public function test_dashboard_sample_agreement_button_opens_the_preserved_bond_agreement(): void
     {
         Carbon::setTestNow('2026-10-31 01:45:00');
+        Http::fake([
+            'api.frankfurter.dev/*' => Http::response(['rates' => ['PHP' => 62.5]], 200),
+        ]);
         $user = User::factory()->create([
             'name' => 'Patricia Sample Account',
             'address' => '12 Sample Street, Taguig City',
@@ -242,20 +245,16 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('See sample bond agreement')
             ->assertDontSee('id="openAgreementSample"', false);
 
-        $this->get(route('invest.agreement.sample'))
+        $sampleAgreement = $this->get(route('invest.agreement.sample'))
             ->assertOk()
-            ->assertSee('ILLUSTRATIVE SAMPLE ONLY — NOT A SIGNED OR ACTIVE INVESTMENT.')
-            ->assertSee('Patricia Sample Account')
-            ->assertSee('12 Sample Street, Taguig City')
-            ->assertSee('Silver Package')
-            ->assertSee('150 days')
-            ->assertSee('₱8,000.00')
-            ->assertSee('0.70%')
-            ->assertSee('₱56.00')
-            ->assertSee('October 31, 2026')
-            ->assertSee('March 30, 2027')
-            ->assertSee('Signature lines are shown for illustration only.')
-            ->assertDontSee('name="agreement_accepted"', false);
+            ->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+
+        $preservedAgreement = file_get_contents(base_path('lulu-bond-contract-preserved-pages.html'));
+        $this->assertNotFalse($preservedAgreement);
+        $this->assertSame($preservedAgreement, $sampleAgreement->getContent());
+        $this->assertStringContainsString('Lulu Holding Corp. · Bond Purchase Agreement', $sampleAgreement->getContent());
+        $this->assertStringContainsString('Page 1 of 5', $sampleAgreement->getContent());
+        $this->assertStringNotContainsString('Lotte Corporation', $sampleAgreement->getContent());
 
         Carbon::setTestNow();
     }

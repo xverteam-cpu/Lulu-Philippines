@@ -3136,7 +3136,7 @@
     <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
     <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
   </header>
-  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Personalized sample bond agreement preview" src="{{ route('invest.agreement.sample') }}"></iframe>
+  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Sample bond agreement preview" src="{{ route('invest.agreement.sample') }}"></iframe>
 </div>
 
 <button class="support-chat-launcher" id="supportChatLauncher" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="supportChatPanel">

@@ -29,7 +29,7 @@
   <link rel="shortcut icon" type="image/png" href="{{ asset('icons/lulu-192.png') }}">
   <link rel="apple-touch-icon" href="{{ asset('icons/lulu-192.png') }}">
   <link rel="manifest" href="{{ asset('manifest.json') }}">
-  <title>{{ request()->routeIs('profile.edit') ? 'Edit Profile | Lulu' : (request()->routeIs('profile.notifications') ? 'Notification Settings | Lulu' : (request()->routeIs('send') ? 'Send Money | Lulu' : 'Lulu')) }}</title>
+  <title>{{ request()->routeIs('invest.agreement.sample') ? 'Sample Bond Agreement | Lulu' : (request()->routeIs('profile.edit') ? 'Edit Profile | Lulu' : (request()->routeIs('profile.notifications') ? 'Notification Settings | Lulu' : (request()->routeIs('send') ? 'Send Money | Lulu' : 'Lulu'))) }}</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- Open Graph Meta Tags for Social Sharing -->

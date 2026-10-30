@@ -204,24 +204,26 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('title="Complete identity verification"', false);
     }
 
-    public function test_dashboard_sample_agreement_button_opens_the_preserved_contract_viewer(): void
+    public function test_dashboard_sample_agreement_button_opens_a_personalized_silver_contract_preview(): void
     {
-        $user = User::factory()->create();
-        $viewerPath = public_path('lulu-bond-contract-preserved-pages.html');
+        Carbon::setTestNow('2026-10-31 01:45:00');
+        $user = User::factory()->create([
+            'name' => 'Patricia Sample Account',
+            'address' => '12 Sample Street, Taguig City',
+        ]);
 
         $response = $this->actingAs($user)
             ->withSession(['investor_pin_verified' => true])
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('See sample bond agreement')
-            ->assertSee('Review the terms before you invest')
-            ->assertSee('BOND DOCUMENT')
-            ->assertSee('OPEN AGREEMENT')
-            ->assertSee('min-height: 132px;', false)
+            ->assertSee('Review before you invest')
+            ->assertSee('>OPEN', false)
+            ->assertSee('min-height: 82px;', false)
             ->assertSee('linear-gradient(135deg, #087d52 0%, #056443 55%, #034a33 100%)', false)
             ->assertSee('id="openAgreementSample"', false)
             ->assertSee('id="agreementSampleModal"', false)
-            ->assertSee('src="'.asset('lulu-bond-contract-preserved-pages.html').'"', false)
+            ->assertSee('src="'.route('invest.agreement.sample').'"', false)
             ->assertSee("window.matchMedia('(max-width: 640px)').matches", false)
             ->assertSee('window.location.assign(sampleFrame.src)', false);
 
@@ -240,18 +242,22 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('See sample bond agreement')
             ->assertDontSee('id="openAgreementSample"', false);
 
-        $this->assertFileExists($viewerPath);
-        $viewer = file_get_contents($viewerPath);
-        $this->assertIsString($viewer);
-        $this->assertStringNotContainsString('The contract is displayed page by page', $viewer);
-        $this->assertStringNotContainsString('Page breaks preserved', $viewer);
-        $this->assertStringContainsString('Bond Purchase Agreement · 5 preserved pages', $viewer);
-        $this->assertStringContainsString('aria-label="Back to bonds"', $viewer);
-        $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);
-        $this->assertStringContainsString('Bond Purchase Agreement, page 5', $viewer);
-        $this->assertStringContainsString('id="printContract"', $viewer);
-        $this->assertStringContainsString("window.location.assign('/invest/agreement/sample/download')", $viewer);
-        $this->assertStringContainsString('window.print();', $viewer);
+        $this->get(route('invest.agreement.sample'))
+            ->assertOk()
+            ->assertSee('ILLUSTRATIVE SAMPLE ONLY — NOT A SIGNED OR ACTIVE INVESTMENT.')
+            ->assertSee('Patricia Sample Account')
+            ->assertSee('12 Sample Street, Taguig City')
+            ->assertSee('Silver Package')
+            ->assertSee('150 days')
+            ->assertSee('₱8,000.00')
+            ->assertSee('0.70%')
+            ->assertSee('₱56.00')
+            ->assertSee('October 31, 2026')
+            ->assertSee('March 30, 2027')
+            ->assertSee('Signature lines are shown for illustration only.')
+            ->assertDontSee('name="agreement_accepted"', false);
+
+        Carbon::setTestNow();
     }
 
     public function test_mobile_sample_agreement_print_fallback_downloads_the_document(): void

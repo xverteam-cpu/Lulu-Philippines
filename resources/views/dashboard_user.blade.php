@@ -2204,13 +2204,13 @@
     overflow: hidden;
     display: flex;
     width: 100%;
-    min-height: 132px;
+    min-height: 82px;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     margin: 0;
-    padding: 18px;
+    padding: 10px 12px;
     border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 26px;
+    border-radius: 20px;
     background: radial-gradient(ellipse at 100% 0%, rgba(62, 224, 161, .28), transparent 48%), linear-gradient(135deg, #087d52 0%, #056443 55%, #034a33 100%);
     box-shadow: 0 12px 26px rgba(5, 68, 43, .2), inset 0 1px 0 rgba(255, 255, 255, .2);
     color: #fff;
@@ -2231,17 +2231,17 @@
   }
 
   .agreement-sample-link::before {
-    width: 230px;
-    height: 230px;
-    top: -150px;
-    right: -42px;
+    width: 180px;
+    height: 180px;
+    top: -118px;
+    right: -35px;
   }
 
   .agreement-sample-link::after {
-    width: 165px;
-    height: 165px;
+    width: 130px;
+    height: 130px;
     right: 2px;
-    bottom: -132px;
+    bottom: -105px;
     background: rgba(3, 54, 37, .16);
   }
 
@@ -2257,21 +2257,21 @@
 
   .agreement-sample-link .summary-action-icon {
     display: inline-flex;
-    width: 54px;
-    height: 54px;
+    width: 44px;
+    height: 44px;
     flex: none;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(255, 255, 255, .35);
-    border-radius: 17px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, .14);
     color: #a9f3d0;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 6px 16px rgba(0, 0, 0, .12);
   }
 
   .agreement-sample-link .summary-action-icon svg {
-    width: 27px;
-    height: 27px;
+    width: 23px;
+    height: 23px;
   }
 
   .agreement-sample-copy {
@@ -2281,56 +2281,34 @@
     flex: 1;
   }
 
-  .agreement-sample-kicker {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-    color: #a9f3d0;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .12em;
-    line-height: 1.2;
-  }
-
-  .agreement-sample-kicker::before {
-    width: 7px;
-    height: 7px;
-    flex: none;
-    border-radius: 50%;
-    background: #69efb4;
-    box-shadow: 0 0 10px rgba(105, 239, 180, .75);
-    content: "";
-  }
-
   .agreement-sample-link .txt {
     display: block;
     color: #fff;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 800;
     line-height: 1.25;
   }
 
   .agreement-sample-link .hint {
     display: block;
-    margin-top: 5px;
+    margin-top: 3px;
     color: #d1eadc;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     line-height: 1.25;
   }
 
   .agreement-sample-link .agreement-sample-open-label {
     display: inline-flex;
-    min-height: 40px;
+    min-height: 34px;
     flex: none;
     align-items: center;
-    gap: 6px;
-    padding: 0 13px;
+    gap: 4px;
+    padding: 0 10px;
     border-radius: 999px;
     background: #e8fff3;
     color: #075c39;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: .02em;
     box-shadow: 0 5px 13px rgba(0, 0, 0, .12), inset 0 1px 0 #fff;
@@ -2342,28 +2320,24 @@
 
   @media (max-width: 380px) {
     .agreement-sample-link {
-      gap: 11px;
-      padding-right: 12px;
-      padding-left: 12px;
+      gap: 8px;
+      padding-right: 9px;
+      padding-left: 9px;
     }
 
     .agreement-sample-link .summary-action-icon {
-      width: 46px;
-      height: 46px;
+      width: 40px;
+      height: 40px;
     }
 
     .agreement-sample-link .txt {
       font-size: 14px;
     }
 
-    .agreement-sample-link .hint {
-      font-size: 11px;
-    }
-
     .agreement-sample-link .agreement-sample-open-label {
-      min-height: 36px;
+      min-height: 32px;
       gap: 4px;
-      padding: 0 9px;
+      padding: 0 8px;
       font-size: 10px;
     }
   }
@@ -3069,11 +3043,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
         </span>
         <span class="agreement-sample-copy">
-          <span class="agreement-sample-kicker">BOND DOCUMENT</span>
           <span class="txt">See sample bond agreement</span>
-          <span class="hint">Review the terms before you invest</span>
+          <span class="hint">Review before you invest</span>
         </span>
-        <span class="agreement-sample-open-label">OPEN AGREEMENT
+        <span class="agreement-sample-open-label">OPEN
           <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </button>
@@ -3163,7 +3136,7 @@
     <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
     <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
   </header>
-  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Lulu Bond Agreement and Certificate sample" src="{{ asset('lulu-bond-contract-preserved-pages.html') }}"></iframe>
+  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Personalized sample bond agreement preview" src="{{ route('invest.agreement.sample') }}"></iframe>
 </div>
 
 <button class="support-chat-launcher" id="supportChatLauncher" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="supportChatPanel">

@@ -217,7 +217,7 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('Review before you invest')
             ->assertSee('>OPEN', false)
             ->assertSee('min-height: 82px;', false)
-            ->assertSee('background: #fff2c2;', false)
+            ->assertSee('background: #e6f7ef;', false)
             ->assertSee('id="openAgreementSample"', false)
             ->assertSee('id="agreementSampleModal"', false)
             ->assertSee('src="'.asset('lulu-bond-contract-preserved-pages.html').'"', false)

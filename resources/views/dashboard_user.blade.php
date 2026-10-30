@@ -2206,10 +2206,10 @@
     gap: 14px;
     margin: 2px 0;
     padding: 12px 16px;
-    border: 2px solid #9a5700;
+    border: 2px solid #0b6744;
     border-radius: 20px;
-    background: #fff2c2;
-    box-shadow: 0 4px 12px rgba(75, 48, 0, .16), inset 0 1px 0 rgba(255, 255, 255, .9);
+    background: #e6f7ef;
+    box-shadow: 0 4px 12px rgba(6, 73, 45, .16), inset 0 1px 0 rgba(255, 255, 255, .9);
     color: #143e2b;
     font: inherit;
     text-align: left;
@@ -2218,8 +2218,8 @@
   }
 
   .agreement-sample-link:hover {
-    background: #ffe79a;
-    box-shadow: 0 7px 16px rgba(75, 48, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .9);
+    background: #d3f0e0;
+    box-shadow: 0 7px 16px rgba(6, 73, 45, .2), inset 0 1px 0 rgba(255, 255, 255, .9);
     transform: translateY(-1px);
   }
 

@@ -2198,6 +2198,122 @@
     pointer-events: none;
   }
 
+  .agreement-sample-link {
+    display: flex;
+    width: 100%;
+    min-height: 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px 0 12px;
+    border: 0;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), inset 0 0 0 1px #e2e9e5;
+    color: #0a1f17;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .agreement-sample-link:focus-visible {
+    outline: 3px solid #13814d;
+    outline-offset: 3px;
+  }
+
+  .agreement-sample-link .summary-action-icon {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #e6f7ef;
+    color: #0e8a5a;
+  }
+
+  .agreement-sample-link .txt {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .agreement-sample-link .chev {
+    flex: none;
+    color: #8a9892;
+  }
+
+  .agreement-sample-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10010;
+    display: none;
+    flex-direction: column;
+    background: #f4f6f9;
+  }
+
+  .agreement-sample-modal.is-open {
+    display: flex;
+  }
+
+  .agreement-sample-modal-bar {
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 18px;
+    border-bottom: 1px solid #d9dee5;
+    background: #fff;
+    color: #17202a;
+  }
+
+  .agreement-sample-modal-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .agreement-sample-close {
+    display: inline-flex;
+    width: 42px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #d9dee5;
+    border-radius: 10px;
+    background: #fff;
+    color: #17202a;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .agreement-sample-frame {
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    border: 0;
+    background: #fff;
+  }
+
+  @media (max-width: 520px) {
+    .agreement-sample-modal-bar {
+      min-height: 58px;
+      gap: 8px;
+      padding: 8px 10px;
+    }
+
+    .agreement-sample-modal-title {
+      font-size: 14px;
+    }
+
+    .agreement-sample-close {
+      width: 38px;
+      min-height: 38px;
+    }
+  }
+
   .dashboard-tabbar-wrap {
     position: sticky;
     bottom: 0;
@@ -2817,6 +2933,13 @@
           </div>
         </div>
       </a>
+      <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">
+        <span class="summary-action-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+        </span>
+        <span class="txt">See sample bond agreement</span>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
       <a class="dashboard-promo dashboard-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
         <img src="{{ asset('banner-franchise.jpg') }}" alt="LuLu Daily storefront">
         <span class="dashboard-promo-scrim"></span>
@@ -2897,6 +3020,14 @@
   </div>
 
 </main>
+
+<div class="agreement-sample-modal" id="agreementSampleModal" role="dialog" aria-modal="true" aria-labelledby="agreementSampleTitle" aria-hidden="true">
+  <header class="agreement-sample-modal-bar">
+    <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
+    <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
+  </header>
+  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Lulu Bond Agreement and Certificate sample" src="{{ asset('lulu-bond-contract-preserved-pages.html') }}"></iframe>
+</div>
 
 <button class="support-chat-launcher" id="supportChatLauncher" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="supportChatPanel">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-6.5A7.5 7.5 0 0 1 10.5 7h2A7.5 7.5 0 0 1 20 14.5z"/><path d="M8 12h8M8 15h5"/></svg>
@@ -3283,6 +3414,43 @@
     });
   })();
 
+</script>
+<script>
+  (function () {
+    var modal = document.getElementById('agreementSampleModal');
+    var openButton = document.getElementById('openAgreementSample');
+    var closeButton = document.getElementById('closeAgreementSample');
+    var sampleFrame = document.getElementById('agreementSampleFrame');
+    if (!modal || !openButton || !closeButton || !sampleFrame) return;
+
+    var previousFocus = null;
+    function closeSample() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (previousFocus) previousFocus.focus();
+    }
+
+    openButton.addEventListener('click', function () {
+      if (window.matchMedia('(max-width: 640px)').matches) {
+        window.location.assign(sampleFrame.src);
+        return;
+      }
+
+      previousFocus = document.activeElement;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      closeButton.focus();
+    });
+    closeButton.addEventListener('click', closeSample);
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeSample();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeSample();
+    });
+  })();
 </script>
 <script>
   (function () {

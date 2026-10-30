@@ -178,7 +178,7 @@ class DashboardBondEarningsTest extends TestCase
                 'submitted_at' => now(),
             ]);
 
-            $this->actingAs($user)
+            $response = $this->actingAs($user)
                 ->withSession(['investor_pin_verified' => true])
                 ->get(route('dashboard'))
                 ->assertOk()
@@ -204,27 +204,44 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('title="Complete identity verification"', false);
     }
 
-    public function test_invest_page_sample_agreement_uses_the_preserved_six_page_contract_viewer(): void
+    public function test_dashboard_sample_agreement_button_opens_the_preserved_contract_viewer(): void
     {
         $user = User::factory()->create();
         $viewerPath = public_path('lulu-bond-contract-preserved-pages.html');
 
-        $this->actingAs($user)
-            ->get(route('invest'))
+        $response = $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('See sample bond agreement')
+            ->assertSee('id="openAgreementSample"', false)
+            ->assertSee('id="agreementSampleModal"', false)
             ->assertSee('src="'.asset('lulu-bond-contract-preserved-pages.html').'"', false)
             ->assertSee("window.matchMedia('(max-width: 640px)').matches", false)
-            ->assertSee('window.location.assign(sampleFrame.src)', false)
-            ->assertDontSee('src="'.route('invest.agreement.sample').'"', false);
+            ->assertSee('window.location.assign(sampleFrame.src)', false);
+
+        $dashboardHtml = $response->getContent();
+        $purchasePosition = strpos($dashboardHtml, '<h2>Purchase Bonds</h2>');
+        $sampleButtonPosition = strpos($dashboardHtml, 'id="openAgreementSample"');
+        $franchisePosition = strpos($dashboardHtml, '<h2>Apply for Franchise</h2>');
+        $this->assertNotFalse($purchasePosition);
+        $this->assertNotFalse($sampleButtonPosition);
+        $this->assertNotFalse($franchisePosition);
+        $this->assertLessThan($sampleButtonPosition, $purchasePosition);
+        $this->assertLessThan($franchisePosition, $sampleButtonPosition);
+
+        $this->get(route('invest'))
+            ->assertOk()
+            ->assertDontSee('See sample bond agreement')
+            ->assertDontSee('id="openAgreementSample"', false);
 
         $this->assertFileExists($viewerPath);
         $viewer = file_get_contents($viewerPath);
         $this->assertIsString($viewer);
-        $this->assertStringContainsString('Agreement + Certificate · 6 preserved pages', $viewer);
+        $this->assertStringContainsString('Bond Purchase Agreement · 5 preserved pages', $viewer);
         $this->assertStringContainsString('aria-label="Back to bonds"', $viewer);
         $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);
-        $this->assertStringContainsString('Bond Certificate, page 6', $viewer);
+        $this->assertStringContainsString('Bond Purchase Agreement, page 5', $viewer);
         $this->assertStringContainsString('id="printContract"', $viewer);
         $this->assertStringContainsString("window.location.assign('/invest/agreement/sample/download')", $viewer);
         $this->assertStringContainsString('window.print();', $viewer);

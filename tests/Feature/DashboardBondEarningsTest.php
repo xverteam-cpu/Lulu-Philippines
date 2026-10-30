@@ -242,6 +242,8 @@ class DashboardBondEarningsTest extends TestCase
         $this->assertFileExists($viewerPath);
         $viewer = file_get_contents($viewerPath);
         $this->assertIsString($viewer);
+        $this->assertStringNotContainsString('The contract is displayed page by page', $viewer);
+        $this->assertStringNotContainsString('Page breaks preserved', $viewer);
         $this->assertStringContainsString('Bond Purchase Agreement · 5 preserved pages', $viewer);
         $this->assertStringContainsString('aria-label="Back to bonds"', $viewer);
         $this->assertStringContainsString('Bond Purchase Agreement, page 1', $viewer);

@@ -554,29 +554,21 @@ Route::get('/invest/purchase/{package}', function (string $package) {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('invest.purchase');
 
-Route::get('/invest/agreement/sample', function (Request $request) {
-    $package = InvestmentPackages::find('crunch');
-    abort_unless($package, 500, 'The sample bond package is unavailable.');
-
-    $principalAmount = 8000.00;
-    $commencementDate = now()->startOfDay();
-    $maturityDate = $commencementDate->copy()->addDays($package['duration_days']);
-    $bondholder = $request->user()->name ?: $request->user()->email;
-
+Route::get('/invest/agreement/sample', function () {
     return view('bond-agreement', [
         'agreement' => [
-            'package_name' => $package['name'].' Package',
-            'amount' => '₱'.number_format($principalAmount, 2),
-            'daily_interest_rate' => number_format($package['daily_interest_rate'], 2).'%',
-            'daily_interest_income' => '₱'.number_format($principalAmount * ((float) $package['daily_interest_rate'] / 100), 2),
-            'duration_days' => $package['duration_days'].' days',
-            'commencement_date' => $commencementDate->format('F j, Y'),
-            'maturity_date' => $maturityDate->format('F j, Y'),
-            'bondholder' => $bondholder,
-            'civil_status' => 'Not provided',
-            'residence' => $request->user()->address ?: 'Not provided',
-            'reference' => 'SAMPLE PREVIEW',
-            'contract_number' => 'SAMPLE PREVIEW',
+            'package_name' => '________________________________________',
+            'amount' => '________________________________________',
+            'daily_interest_rate' => '________________________________________',
+            'daily_interest_income' => '________________________________________',
+            'duration_days' => '________________________________________',
+            'commencement_date' => '______________________________',
+            'maturity_date' => '________________________________________',
+            'bondholder' => '________________________________________',
+            'civil_status' => '__________________',
+            'residence' => '________________________________________________________________________________________',
+            'reference' => '________________________________________',
+            'contract_number' => '________________________________________',
         ],
         'isSample' => true,
     ]);

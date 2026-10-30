@@ -2199,56 +2199,113 @@
   }
 
   .agreement-sample-link {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: flex;
     width: 100%;
-    min-height: 82px;
+    min-height: 132px;
     align-items: center;
-    gap: 14px;
-    margin: 2px 0;
-    padding: 12px 16px;
-    border: 2px solid #0b6744;
-    border-radius: 20px;
-    background: #e6f7ef;
-    box-shadow: 0 4px 12px rgba(6, 73, 45, .16), inset 0 1px 0 rgba(255, 255, 255, .9);
-    color: #143e2b;
+    gap: 15px;
+    margin: 0;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 26px;
+    background: radial-gradient(ellipse at 100% 0%, rgba(62, 224, 161, .28), transparent 48%), linear-gradient(135deg, #087d52 0%, #056443 55%, #034a33 100%);
+    box-shadow: 0 12px 26px rgba(5, 68, 43, .2), inset 0 1px 0 rgba(255, 255, 255, .2);
+    color: #fff;
     font: inherit;
     text-align: left;
     cursor: pointer;
-    transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    transition: box-shadow .2s ease, transform .2s ease;
+  }
+
+  .agreement-sample-link::before,
+  .agreement-sample-link::after {
+    position: absolute;
+    z-index: -1;
+    border: 1px solid rgba(172, 255, 216, .15);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+  }
+
+  .agreement-sample-link::before {
+    width: 230px;
+    height: 230px;
+    top: -150px;
+    right: -42px;
+  }
+
+  .agreement-sample-link::after {
+    width: 165px;
+    height: 165px;
+    right: 2px;
+    bottom: -132px;
+    background: rgba(3, 54, 37, .16);
   }
 
   .agreement-sample-link:hover {
-    background: #d3f0e0;
-    box-shadow: 0 7px 16px rgba(6, 73, 45, .2), inset 0 1px 0 rgba(255, 255, 255, .9);
+    box-shadow: 0 17px 32px rgba(5, 68, 43, .27), inset 0 1px 0 rgba(255, 255, 255, .25);
     transform: translateY(-1px);
   }
 
   .agreement-sample-link:focus-visible {
-    outline: 4px solid #075c39;
+    outline: 4px solid #9af4c7;
     outline-offset: 4px;
   }
 
   .agreement-sample-link .summary-action-icon {
     display: inline-flex;
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     flex: none;
     align-items: center;
     justify-content: center;
-    border: 1px solid #0b6744;
-    border-radius: 14px;
-    background: #d7f3e3;
-    color: #075c39;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 17px;
+    background: rgba(255, 255, 255, .14);
+    color: #a9f3d0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 6px 16px rgba(0, 0, 0, .12);
   }
 
   .agreement-sample-link .summary-action-icon svg {
-    width: 23px;
-    height: 23px;
+    width: 27px;
+    height: 27px;
+  }
+
+  .agreement-sample-copy {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .agreement-sample-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    color: #a9f3d0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    line-height: 1.2;
+  }
+
+  .agreement-sample-kicker::before {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: #69efb4;
+    box-shadow: 0 0 10px rgba(105, 239, 180, .75);
+    content: "";
   }
 
   .agreement-sample-link .txt {
-    flex: 1;
-    color: #143e2b;
+    display: block;
+    color: #fff;
     font-size: 17px;
     font-weight: 800;
     line-height: 1.25;
@@ -2256,48 +2313,58 @@
 
   .agreement-sample-link .hint {
     display: block;
-    margin-top: 4px;
-    color: #355b46;
-    font-size: 13px;
-    font-weight: 600;
+    margin-top: 5px;
+    color: #d1eadc;
+    font-size: 12px;
+    font-weight: 500;
     line-height: 1.25;
   }
 
   .agreement-sample-link .agreement-sample-open-label {
     display: inline-flex;
-    min-height: 38px;
+    min-height: 40px;
     flex: none;
     align-items: center;
-    gap: 5px;
-    padding: 0 11px;
+    gap: 6px;
+    padding: 0 13px;
     border-radius: 999px;
-    background: #075c39;
-    color: #fff;
+    background: #e8fff3;
+    color: #075c39;
     font-size: 12px;
     font-weight: 800;
-    letter-spacing: .04em;
+    letter-spacing: .02em;
+    box-shadow: 0 5px 13px rgba(0, 0, 0, .12), inset 0 1px 0 #fff;
   }
 
   .agreement-sample-link .chev {
-    color: #fff;
+    color: #075c39;
   }
 
   @media (max-width: 380px) {
     .agreement-sample-link {
-      gap: 10px;
-      padding-right: 10px;
-      padding-left: 10px;
+      gap: 11px;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .agreement-sample-link .summary-action-icon {
+      width: 46px;
+      height: 46px;
     }
 
     .agreement-sample-link .txt {
-      font-size: 15px;
+      font-size: 14px;
+    }
+
+    .agreement-sample-link .hint {
+      font-size: 11px;
     }
 
     .agreement-sample-link .agreement-sample-open-label {
       min-height: 36px;
-      gap: 3px;
-      padding: 0 8px;
-      font-size: 11px;
+      gap: 4px;
+      padding: 0 9px;
+      font-size: 10px;
     }
   }
 
@@ -3001,8 +3068,12 @@
         <span class="summary-action-icon" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
         </span>
-        <span class="txt">See sample bond agreement<span class="hint">Review before you invest</span></span>
-        <span class="agreement-sample-open-label">OPEN
+        <span class="agreement-sample-copy">
+          <span class="agreement-sample-kicker">BOND DOCUMENT</span>
+          <span class="txt">See sample bond agreement</span>
+          <span class="hint">Review the terms before you invest</span>
+        </span>
+        <span class="agreement-sample-open-label">OPEN AGREEMENT
           <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </button>

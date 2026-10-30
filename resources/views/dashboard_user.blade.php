@@ -2201,46 +2201,110 @@
   .agreement-sample-link {
     display: flex;
     width: 100%;
-    min-height: 60px;
+    min-height: 82px;
     align-items: center;
-    gap: 12px;
-    padding: 0 14px 0 12px;
-    border: 0;
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(6, 40, 28, .06), inset 0 0 0 1px #e2e9e5;
-    color: #0a1f17;
+    gap: 14px;
+    margin: 2px 0;
+    padding: 12px 16px;
+    border: 2px solid #9a5700;
+    border-radius: 20px;
+    background: #fff2c2;
+    box-shadow: 0 4px 12px rgba(75, 48, 0, .16), inset 0 1px 0 rgba(255, 255, 255, .9);
+    color: #143e2b;
     font: inherit;
     text-align: left;
     cursor: pointer;
+    transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+
+  .agreement-sample-link:hover {
+    background: #ffe79a;
+    box-shadow: 0 7px 16px rgba(75, 48, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .9);
+    transform: translateY(-1px);
   }
 
   .agreement-sample-link:focus-visible {
-    outline: 3px solid #13814d;
-    outline-offset: 3px;
+    outline: 4px solid #075c39;
+    outline-offset: 4px;
   }
 
   .agreement-sample-link .summary-action-icon {
     display: inline-flex;
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
     flex: none;
     align-items: center;
     justify-content: center;
-    border-radius: 11px;
-    background: #e6f7ef;
-    color: #0e8a5a;
+    border: 1px solid #0b6744;
+    border-radius: 14px;
+    background: #d7f3e3;
+    color: #075c39;
+  }
+
+  .agreement-sample-link .summary-action-icon svg {
+    width: 23px;
+    height: 23px;
   }
 
   .agreement-sample-link .txt {
     flex: 1;
-    font-size: 15px;
+    color: #143e2b;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .agreement-sample-link .hint {
+    display: block;
+    margin-top: 4px;
+    color: #355b46;
+    font-size: 13px;
     font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .agreement-sample-link .agreement-sample-open-label {
+    display: inline-flex;
+    min-height: 38px;
+    flex: none;
+    align-items: center;
+    gap: 5px;
+    padding: 0 11px;
+    border-radius: 999px;
+    background: #075c39;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
   }
 
   .agreement-sample-link .chev {
-    flex: none;
-    color: #8a9892;
+    color: #fff;
+  }
+
+  @media (max-width: 380px) {
+    .agreement-sample-link {
+      gap: 10px;
+      padding-right: 10px;
+      padding-left: 10px;
+    }
+
+    .agreement-sample-link .txt {
+      font-size: 15px;
+    }
+
+    .agreement-sample-link .agreement-sample-open-label {
+      min-height: 36px;
+      gap: 3px;
+      padding: 0 8px;
+      font-size: 11px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agreement-sample-link {
+      transition: none;
+    }
   }
 
   .agreement-sample-modal {
@@ -2937,8 +3001,10 @@
         <span class="summary-action-icon" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
         </span>
-        <span class="txt">See sample bond agreement</span>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        <span class="txt">See sample bond agreement<span class="hint">Review before you invest</span></span>
+        <span class="agreement-sample-open-label">OPEN
+          <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
       </button>
       <a class="dashboard-promo dashboard-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
         <img src="{{ asset('banner-franchise.jpg') }}" alt="LuLu Daily storefront">

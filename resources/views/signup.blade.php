@@ -2,135 +2,268 @@
 
 @section('content')
 <style>
-  .signup-shell {
-    min-height: calc(100vh - 36px);
+  body.signup-page {
+    min-height: 100vh;
+    background: #f6f1df url('/investor-desktop-background.png') center center / cover fixed no-repeat;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .signup-page .container {
     display: flex;
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
     align-items: center;
     justify-content: center;
-    padding: 28px 16px;
-    background: linear-gradient(135deg, #f4fbf7 0%, #ffe8e8 100%);
+    box-sizing: border-box;
+    margin: 0;
+    padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
   }
+
+  .signup-shell {
+    width: min(390px, 100%);
+  }
+
   .signup-card {
+    position: relative;
+    isolation: isolate;
     width: 100%;
-    max-width: 620px;
-    padding: 28px 24px 24px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+    box-sizing: border-box;
+    padding: 28px 22px 22px;
+    border: 1px solid #ffffffad;
+    border-radius: 28px;
+    background: radial-gradient(ellipse at 0% 0%, #279a6b66, transparent 68%), linear-gradient(145deg, #0b8959, #06794b);
+    box-shadow: 0 34px 56px -22px #103e2d80, 0 15px 25px -12px #173e2b55, 0 3px 8px #173e2b1c, inset 0 1px 0 #ffffff55;
+    color: #fff;
   }
-  .signup-title {
-    margin: 0 0 8px;
-    color: #166534;
-    font-size: 28px;
+
+  .signup-card::before {
+    position: absolute;
+    z-index: -1;
+    inset: 16px 12px -20px;
+    border-radius: inherit;
+    background: #153e2b66;
+    content: "";
+    filter: blur(22px);
+    pointer-events: none;
+  }
+
+  .signup-eyebrow {
+    display: block;
+    margin: 0 8px 8px;
+    color: #c1e4ce;
+    font-size: 10px;
     font-weight: 700;
-    text-align: center;
+    letter-spacing: 2px;
   }
+
+  .signup-title {
+    margin: 0 8px 10px;
+    color: #fff;
+    font-size: clamp(29px, 7.6vw, 36px);
+    font-weight: 700;
+    letter-spacing: -1.1px;
+    line-height: 1.05;
+  }
+
   .signup-subtitle {
-    margin: 0 0 20px;
-    color: #667085;
-    font-size: 15px;
-    text-align: center;
+    margin: 0 8px 20px;
+    color: #cce7d8;
+    font-size: 13px;
+    line-height: 1.5;
   }
+
   .signup-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
+
   .signup-field {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
+
   .signup-field.full {
     grid-column: 1 / -1;
   }
+
   .signup-label {
-    color: #001a33;
-    font-size: 15px;
+    padding-left: 14px;
+    color: #e0eee6;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: .03em;
   }
+
   .signup-input,
   .signup-select,
   .signup-textarea {
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid #ff4f62;
-    border-radius: 6px;
-    padding: 10px 12px;
-    color: #001a33;
-    font-size: 15px;
+    min-height: 48px;
+    padding: 0 18px;
+    border: 1px solid #ffffff75;
+    border-radius: 100px;
+    background: #ffffff20;
+    color: #fff;
+    font: 14px Arial, Helvetica, sans-serif;
+    box-shadow: inset 0 1px 0 #ffffff0a;
     outline: none;
   }
+
+  .signup-input::placeholder,
+  .signup-textarea::placeholder {
+    color: #e0eee6;
+    font-size: 12px;
+  }
+
+  .signup-input:focus,
+  .signup-select:focus,
+  .signup-textarea:focus {
+    border-color: #fff;
+    background: #ffffff28;
+    box-shadow: 0 0 0 3px #ffffff16;
+  }
+
   .signup-textarea {
     min-height: 96px;
     resize: vertical;
   }
+
+  .signup-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 14px 0;
+    color: #cce7d8;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .signup-divider::before,
+  .signup-divider::after {
+    height: 1px;
+    flex: 1;
+    background: #ffffff40;
+    content: "";
+  }
+
   .signup-actions {
     grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 8px;
+    display: grid;
+    gap: 6px;
+    margin-top: 4px;
   }
+
   .signup-button,
   .login-link,
   .signup-google-button {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 160px;
-    height: 44px;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: 700;
+    width: 100%;
+    min-height: 50px;
+    box-sizing: border-box;
+    border-radius: 100px;
+    font: 600 13px Arial, Helvetica, sans-serif;
     text-decoration: none;
   }
+
   .signup-google-button {
-    grid-column: 1 / -1;
-    gap: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #d0d5dd;
-    background: #ffffff;
-    color: #344054;
+    gap: 9px;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    background: #fff;
+    color: #3c4043;
+    font-size: 11px;
+    letter-spacing: 1px;
   }
+
   .signup-google-button:hover {
     background: #f9fafb;
   }
+
   .signup-google-button svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    flex: none;
   }
+
   .signup-button {
-    border: 0;
-    background: #166534;
-    color: #ffffff;
+    margin-top: 4px;
+    padding: 12px 18px;
+    border: 1px solid #d9e5dd;
+    background: #fff;
+    color: #08794b;
     cursor: pointer;
   }
-  .login-link {
-    border: 1px solid #166534;
-    color: #166534;
-    background: #ffffff;
+
+  .signup-button:hover {
+    background: #e7f4ed;
   }
-  @media (max-width: 640px) {
-    .signup-form {
-      grid-template-columns: 1fr;
+
+  .login-link {
+    min-height: 38px;
+    color: #fff;
+    font-size: 11px;
+    text-shadow: 0 1px 2px #075b39;
+  }
+
+  .signup-error {
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid #ffffff55;
+    border-radius: 16px;
+    background: #153e2b55;
+    color: #fff0c7;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .signup-terms {
+    margin: 12px 10px 0;
+    color: #e0eee6;
+    font-size: 8px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .signup-terms a {
+    color: inherit;
+  }
+
+  @media (max-width: 780px) {
+    body.signup-page {
+      background-image: url('/investor-mobile-background.png');
     }
-    .signup-actions {
-      flex-direction: column;
+  }
+
+  @media (max-height: 760px) {
+    .signup-page .container {
+      align-items: flex-start;
     }
-    .signup-button,
-    .login-link,
-    .signup-google-button {
-      width: 100%;
+
+    .signup-card {
+      padding-top: 20px;
+      padding-bottom: 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signup-button {
+      transition: none;
     }
   }
 </style>
 
 <div class="signup-shell">
   <div class="signup-card">
-    <h1 class="signup-title">Sign Up</h1>
-    <p class="signup-subtitle">Create your partner account to get started.</p>
+    <span class="signup-eyebrow">CREATE ACCOUNT</span>
+    <h1 class="signup-title">Your everyday.<br>A little easier.</h1>
+    <p class="signup-subtitle">Create your LuLu partner account to get started.</p>
 
     <a class="signup-google-button" href="{{ route('login.google', ! empty($referral) ? ['ref' => $referral] : []) }}" id="signup-google-link">
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -141,13 +274,14 @@
       </svg>
       Continue with Google
     </a>
+    <div class="signup-divider" aria-hidden="true">OR</div>
 
     <form class="signup-form" action="{{ route('register.partner') }}" method="post">
       @csrf
       @if ($errors->any())
-        <div class="signup-field full" style="padding:10px 12px;border-radius:6px;background:#fff0f2;color:#0f3d2e;font-size:14px;line-height:20px;">
+        <p class="signup-error" role="alert">
           {{ $errors->first() }}
-        </div>
+        </p>
       @endif
 
       <div class="signup-field">
@@ -180,16 +314,17 @@
         <input class="signup-input" id="password" name="password" type="password" placeholder="Create password" autocomplete="new-password" minlength="8" required>
       </div>
 
-      <div class="signup-field">
-        <label class="signup-label" for="password_confirmation">Confirm Password</label>
+      <div class="signup-field full">
+        <label class="signup-label" for="password_confirmation">Confirm password</label>
         <input class="signup-input" id="password_confirmation" name="password_confirmation" type="password" placeholder="Confirm password" autocomplete="new-password" minlength="8" required>
       </div>
 
       <div class="signup-actions">
         <button class="signup-button" type="submit">Create Account</button>
-        <a class="login-link" href="{{ route('login') }}">Back to Login</a>
       </div>
     </form>
+    <a class="login-link" href="{{ route('login') }}">Already have an account? Sign in</a>
+    <p class="signup-terms">By continuing, you agree to our <a href="{{ route('terms-of-service') }}">Terms of Service</a>, <a href="{{ route('privacy-policy') }}">Privacy Policy</a> and Cookie Use.</p>
   </div>
 </div>
 <script>

@@ -13,6 +13,12 @@ class LogoutTest extends TestCase
     public function test_logout_invalidates_the_authenticated_session_and_redirects_to_investors(): void
     {
         $user = User::factory()->create();
+        $secondUser = User::factory()->create([
+            'username' => 'second-login',
+            'password' => 'password123',
+            'phone' => null,
+            'phone_verified_at' => null,
+        ]);
 
         $this->actingAs($user)
             ->post(route('logout'))
@@ -25,6 +31,18 @@ class LogoutTest extends TestCase
 
         $this->get(route('dashboard'))
             ->assertRedirect(route('login'));
+
+        $this->get(route('investors'))
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private')
+            ->assertSee('name="_token"', false);
+
+        $this->post(route('login.submit'), [
+            'email' => $secondUser->username,
+            'password' => 'password123',
+        ])->assertRedirect(route('phone.capture'));
+
+        $this->assertAuthenticatedAs($secondUser);
     }
 
     public function test_authenticated_pages_are_not_cached_and_reload_when_restored_from_browser_history(): void

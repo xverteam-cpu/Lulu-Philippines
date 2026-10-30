@@ -73,6 +73,13 @@
 @guest
 <script>
 (function () {
+    window.addEventListener('pageshow', function (event) {
+        if (!event.persisted) return;
+
+        document.documentElement.style.visibility = 'hidden';
+        window.location.reload();
+    });
+
     const card = document.querySelector('.investors-login-card');
     const form = card?.querySelector('form');
     const modeButton = document.querySelector('#investor-mode');

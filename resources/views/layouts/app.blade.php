@@ -5,17 +5,18 @@
   'profile-edit-page' => request()->routeIs('profile.edit'),
   'profile-notifications-page' => request()->routeIs('profile.notifications'),
   'password-recovery-page' => request()->routeIs('password.request'),
+  'signup-page' => request()->routeIs('signup'),
 ])>
 <head>
   <meta charset="utf-8">
   @if (request()->routeIs('dashboard'))
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  @elseif (request()->routeIs('withdraw', 'send', 'profile.edit', 'profile.notifications'))
+  @elseif (request()->routeIs('withdraw', 'send', 'profile.edit', 'profile.notifications', 'signup'))
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   @else
     <meta name="viewport" content="width=device-width, initial-scale=1">
   @endif
-  <meta name="theme-color" content="{{ request()->routeIs('send', 'profile.edit', 'profile.notifications') ? '#F2F5F3' : '#166534' }}">
+  <meta name="theme-color" content="{{ request()->routeIs('signup') ? '#087e50' : (request()->routeIs('send', 'profile.edit', 'profile.notifications') ? '#F2F5F3' : '#166534') }}">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -74,7 +75,7 @@
     }
   </style>
 </head>
-<body>
+<body @class(['signup-page' => request()->routeIs('signup')])>
   <div class="page-loader" aria-hidden="true">
     <div class="page-loader-circle"></div>
   </div>

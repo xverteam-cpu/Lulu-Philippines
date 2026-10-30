@@ -16,7 +16,8 @@ class AuthSignupTest extends TestCase
         $response = $this->get('/signup');
 
         $response->assertOk();
-        $response->assertSee('Sign Up');
+        $response->assertSee('CREATE ACCOUNT')
+            ->assertSee('Your everyday.');
         $response->assertSee('Fullname');
         $response->assertSee('Username');
         $response->assertSee('Referral');
@@ -35,8 +36,56 @@ class AuthSignupTest extends TestCase
 
         $this->get(route('signup', ['ref' => $referrer->referral_code]))
             ->assertOk()
+            ->assertSee('class="signup-page"', false)
+            ->assertSee('CREATE ACCOUNT')
+            ->assertSee('class="signup-card"', false)
+            ->assertSee('class="signup-divider"', false)
+            ->assertSee('value="'.$referrer->referral_code.'"', false)
             ->assertSee('Continue with Google')
             ->assertSee(route('login.google', ['ref' => $referrer->referral_code]), false);
+    }
+
+    public function test_login_page_is_not_cached_or_restored_with_a_stale_csrf_token(): void
+    {
+        $this->get(route('investors'))
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private')
+            ->assertHeader('Pragma', 'no-cache')
+            ->assertHeader('Expires', '0')
+            ->assertSee("window.addEventListener('pageshow'", false)
+            ->assertSee('if (!event.persisted) return;', false)
+            ->assertSee('window.location.reload();', false);
+    }
+
+    public function test_login_can_be_retried_after_a_password_is_entered_incorrectly(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'jane-login',
+            'email' => 'jane-login@example.com',
+            'password' => 'password123',
+            'phone' => null,
+            'phone_verified_at' => null,
+        ]);
+
+        $this->from(route('investors'))
+            ->post(route('login.submit'), [
+                'email' => $user->username,
+                'password' => 'incorrect-password',
+            ])
+            ->assertRedirect(route('investors'))
+            ->assertSessionHasErrors('email');
+
+        $this->get(route('investors'))
+            ->assertOk()
+            ->assertSee('The provided login details are incorrect.')
+            ->assertSee('name="_token"', false);
+
+        $this->post(route('login.submit'), [
+            'email' => $user->username,
+            'password' => 'password123',
+        ])->assertRedirect(route('phone.capture'));
+
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_authenticated_user_sees_a_continue_link_to_their_dashboard_on_investor_page(): void

@@ -40,7 +40,7 @@ class AuthController extends Controller
         }
 
         if (! $user || ! $user->temporary_password_hash) {
-            return back()
+            return redirect()->route('investors')
                 ->withErrors(['email' => 'The provided login details are incorrect.'])
                 ->onlyInput('email');
         }
@@ -58,7 +58,7 @@ class AuthController extends Controller
         });
 
         if (! $claimedUser) {
-            return back()
+            return redirect()->route('investors')
                 ->withErrors(['email' => 'The provided login details are incorrect.'])
                 ->onlyInput('email');
         }

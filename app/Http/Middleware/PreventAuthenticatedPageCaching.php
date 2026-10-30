@@ -13,7 +13,7 @@ class PreventAuthenticatedPageCaching
         $wasAuthenticated = $request->user() !== null;
         $response = $next($request);
 
-        if ($wasAuthenticated) {
+        if ($wasAuthenticated || $request->routeIs('investors', 'login')) {
             $response->headers->addCacheControlDirective('private');
             $response->headers->addCacheControlDirective('no-store');
             $response->headers->addCacheControlDirective('no-cache');

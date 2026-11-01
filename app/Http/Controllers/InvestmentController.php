@@ -21,24 +21,24 @@ class InvestmentController extends Controller
             'investment_id' => ['nullable', 'integer', 'exists:investments,id'],
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
-            'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,crypto'],
+            'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,admin_transfer,crypto'],
             'agreement_signature_name' => ['nullable', 'string', 'max:150'],
             'agreement_signature_data' => ['required', 'string', 'max:500000'],
             'agreement_accepted' => ['required', 'accepted'],
             'agreement_details' => [
-                'sometimes',
+                'required',
                 'array:full_name,civil_status,civil_status_other,address,sign_date,id_type,id_type_other,id_number,issue_date,no_issue_date',
             ],
-            'agreement_details.full_name' => ['required_with:agreement_details', 'string', 'max:100'],
-            'agreement_details.civil_status' => ['required_with:agreement_details', 'string', 'max:30'],
-            'agreement_details.civil_status_other' => ['nullable', 'string', 'max:30'],
-            'agreement_details.address' => ['required_with:agreement_details', 'string', 'max:220'],
-            'agreement_details.sign_date' => ['required_with:agreement_details', 'date'],
-            'agreement_details.id_type' => ['required_with:agreement_details', 'string', 'max:60'],
-            'agreement_details.id_type_other' => ['nullable', 'string', 'max:60'],
-            'agreement_details.id_number' => ['required_with:agreement_details', 'string', 'max:60'],
-            'agreement_details.issue_date' => ['nullable', 'date'],
-            'agreement_details.no_issue_date' => ['required_with:agreement_details', 'boolean'],
+            'agreement_details.full_name' => ['required', 'string', 'max:100'],
+            'agreement_details.civil_status' => ['required', 'string', 'max:30'],
+            'agreement_details.civil_status_other' => ['nullable', 'required_if:agreement_details.civil_status,Other', 'string', 'max:30'],
+            'agreement_details.address' => ['required', 'string', 'max:220'],
+            'agreement_details.sign_date' => ['required', 'date'],
+            'agreement_details.id_type' => ['required', 'string', 'max:60'],
+            'agreement_details.id_type_other' => ['nullable', 'required_if:agreement_details.id_type,Other', 'string', 'max:60'],
+            'agreement_details.id_number' => ['required', 'string', 'max:60'],
+            'agreement_details.issue_date' => ['nullable', 'required_if:agreement_details.no_issue_date,0', 'date'],
+            'agreement_details.no_issue_date' => ['required', 'boolean'],
         ]);
 
         $package = InvestmentPackages::find($data['package']);
@@ -79,6 +79,12 @@ class InvestmentController extends Controller
         }
 
         $isPending = in_array($data['payment_method'], ['bank_transfer', 'e_wallet'], true);
+
+        if ($data['payment_method'] === 'admin_transfer' && empty($data['investment_id'])) {
+            throw ValidationException::withMessages([
+                'payment_method' => 'Admin package gifts can only be signed for an existing investment.',
+            ]);
+        }
 
         $investment = DB::transaction(function () use ($request, $data, $package, $isPending, $amountInUsd) {
             if (! empty($data['investment_id'])) {

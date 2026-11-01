@@ -175,7 +175,8 @@ class InvestmentPurchaseTest extends TestCase
             ->withSession(['investor_pin_verified' => true])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Your payment submission is awaiting admin review')
+            ->assertSee('Sign Bond Agreement')
+            ->assertSee('Complete your bond paperwork')
             ->assertSee('Sign pending bond agreements, 1 unsigned')
             ->assertSee(route('invest.agreement.sign', ['investment_id' => $investment->id]))
             ->assertSee('class="dashboard-notification-badge" aria-hidden="true">1', false);
@@ -219,6 +220,7 @@ class InvestmentPurchaseTest extends TestCase
             'payment_method' => 'bank_transfer',
             'agreement_signature_data' => 'data:image/png;base64,YWJj',
             'agreement_accepted' => '1',
+            'agreement_details' => $this->agreementDetails(),
         ])->assertRedirect(route('dashboard'));
 
         $this->assertSame(1, $user->investments()->count());
@@ -246,6 +248,17 @@ class InvestmentPurchaseTest extends TestCase
     public function test_direct_payment_methods_continue_to_the_replacement_agreement_signing_page(): void
     {
         $user = User::factory()->create();
+        $unsignedBalancePurchase = $user->investments()->create([
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 129,
+            'payment_method' => 'account_balance',
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'starts_at' => now(),
+            'status' => 'approved',
+        ]);
 
         $this->actingAs($user)
             ->get('/invest/agreement/sign?package=loaded&amount=799&currency=USD&payment_method=account_balance')
@@ -256,6 +269,11 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('"package_name":"Gold"', false)
             ->assertSee('agreement_signature_data')
             ->assertSee('agreement_accepted');
+
+        $this->get(route('invest.agreement.sign', ['investment_id' => $unsignedBalancePurchase->id]))
+            ->assertOk()
+            ->assertSee('"payment_method":"account_balance"', false)
+            ->assertSee('"investment_id":'.$unsignedBalancePurchase->id, false);
     }
 
     public function test_submitted_client_contract_is_saved_and_available_to_admin(): void
@@ -334,6 +352,7 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'bank_transfer',
                 'agreement_signature_data' => $signatureData,
                 'agreement_accepted' => '1',
+                'agreement_details' => $this->agreementDetails(),
             ])
             ->assertRedirect('/dashboard');
 
@@ -357,6 +376,7 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'bank_transfer',
                 'agreement_signature_data' => 'data:image/png;base64,YWJj',
                 'agreement_accepted' => '1',
+                'agreement_details' => $this->agreementDetails(),
             ], [
                 'Accept' => 'application/json',
                 'X-Requested-With' => 'XMLHttpRequest',
@@ -393,6 +413,7 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'account_balance',
                 'agreement_signature_data' => 'data:image/png;base64,YWJj',
                 'agreement_accepted' => '1',
+                'agreement_details' => $this->agreementDetails(),
             ]);
 
         $response->assertRedirect('/dashboard');
@@ -423,6 +444,7 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'account_balance',
                 'agreement_signature_data' => 'data:image/png;base64,YWJj',
                 'agreement_accepted' => '1',
+                'agreement_details' => $this->agreementDetails(),
             ]);
 
         $response->assertRedirect('/dashboard');
@@ -432,6 +454,10 @@ class InvestmentPurchaseTest extends TestCase
             'status' => 'approved',
             'payment_method' => 'account_balance',
         ]);
+        $investment = $user->investments()->firstOrFail();
+        $this->assertNotNull($investment->agreement_signed_at);
+        $this->assertSame('Test Client', $investment->agreement_details['full_name']);
+        $this->assertSame('P1234567', $investment->agreement_details['id_number']);
 
         $this->assertDatabaseHas('package_slots', [
             'package_key' => 'loaded',
@@ -520,5 +546,21 @@ class InvestmentPurchaseTest extends TestCase
                 'rates' => ['PHP' => 61.31],
             ]),
         ]);
+    }
+
+    private function agreementDetails(): array
+    {
+        return [
+            'full_name' => 'Test Client',
+            'civil_status' => 'Single',
+            'civil_status_other' => '',
+            'address' => '12 Test Street, Manila',
+            'sign_date' => now()->toDateString(),
+            'id_type' => 'Passport',
+            'id_type_other' => '',
+            'id_number' => 'P1234567',
+            'issue_date' => '2024-01-15',
+            'no_issue_date' => '0',
+        ];
     }
 }

@@ -38,6 +38,18 @@ class LiveCurrencyConversionTest extends TestCase
                 'payment_method' => 'bank_transfer',
                 'agreement_signature_data' => 'data:image/png;base64,YWJj',
                 'agreement_accepted' => '1',
+                'agreement_details' => [
+                    'full_name' => 'Test Client',
+                    'civil_status' => 'Single',
+                    'civil_status_other' => '',
+                    'address' => '12 Test Street, Manila',
+                    'sign_date' => '2026-10-01',
+                    'id_type' => 'Passport',
+                    'id_type_other' => '',
+                    'id_number' => 'P1234567',
+                    'issue_date' => '2024-01-15',
+                    'no_issue_date' => '0',
+                ],
             ])
             ->assertRedirect(route('dashboard'));
 

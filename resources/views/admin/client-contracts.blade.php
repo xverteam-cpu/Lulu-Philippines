@@ -27,7 +27,7 @@
 
 <main class="client-contracts">
   <h1>Client Contracts</h1>
-  <p class="client-contracts-intro">Signed bond purchase agreements submitted by clients.</p>
+  <p class="client-contracts-intro">Signed agreements submitted by clients for purchased or admin-gifted bonds.</p>
 
   <section class="client-contract-list" aria-label="Submitted client contracts">
     @forelse ($contracts as $investment)

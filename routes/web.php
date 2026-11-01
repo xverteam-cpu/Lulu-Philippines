@@ -243,7 +243,8 @@ Route::get('/dashboard', function () {
         ->get();
     $pendingContracts = $user->investments()
         ->whereIn('status', ['pending', 'approved'])
-        ->whereIn('payment_method', ['bank_transfer', 'e_wallet'])
+        ->whereIn('payment_method', ['bank_transfer', 'e_wallet', 'account_balance', 'admin_transfer'])
+        ->whereNull('cancelled_at')
         ->whereNull('agreement_signed_at')
         ->latest()
         ->get();
@@ -615,9 +616,10 @@ Route::get('/invest/agreement/sign', function (Request $request) {
             ->whereKey($request->integer('investment_id'))
             ->firstOrFail();
         abort_unless(
-            ! $investment->agreement_signed_at
+            ! $investment->cancelled_at
+                && ! $investment->agreement_signed_at
                 && in_array($investment->status, ['pending', 'approved'], true)
-                && in_array($investment->payment_method, ['bank_transfer', 'e_wallet'], true),
+                && in_array($investment->payment_method, ['bank_transfer', 'e_wallet', 'account_balance', 'admin_transfer'], true),
             404
         );
 

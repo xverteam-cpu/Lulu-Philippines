@@ -1666,24 +1666,6 @@
     font-size: 13px;
   }
 
-  .dashboard-contract-alert p {
-    margin: 4px 0 0;
-    color: #426453;
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  .dashboard-contract-alert a {
-    flex: none;
-    padding: 9px 12px;
-    border-radius: 999px;
-    background: #0e8a5a;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
   .dashboard-promo {
     position: relative;
     display: block;
@@ -2216,6 +2198,7 @@
     color: #fff;
     font: inherit;
     text-align: left;
+    text-decoration: none;
     cursor: pointer;
     transition: box-shadow .2s ease, transform .2s ease;
   }
@@ -2965,23 +2948,7 @@
   <div class="dashboard-content">
     @if (session('status'))
       <div class="dashboard-contract-alert" role="status">
-        <div>
-          <strong>{{ session('status') }}</strong>
-          @if ($pendingContractCount > 0)
-            <p>Your payment submission is awaiting admin review. The agreement can be signed separately.</p>
-          @endif
-        </div>
-        @if ($pendingContractCount > 0)
-          <a href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}">Sign agreement</a>
-        @endif
-      </div>
-    @elseif ($pendingContractCount > 0)
-      <div class="dashboard-contract-alert">
-        <div>
-          <strong>{{ $pendingContractCount }} bond {{ \Illuminate\Support\Str::plural('agreement', $pendingContractCount) }} need{{ $pendingContractCount === 1 ? 's' : '' }} your signature</strong>
-          <p>Payment submissions remain pending admin approval. Sign each agreement to complete your paperwork.</p>
-        </div>
-        <a href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}">Sign agreement</a>
+        <strong>{{ session('status') }}</strong>
       </div>
     @endif
 
@@ -3038,18 +3005,38 @@
           </div>
         </div>
       </a>
-      <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">
-        <span class="summary-action-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
-        </span>
-        <span class="agreement-sample-copy">
-          <span class="txt">See sample bond agreement</span>
-          <span class="hint">Review before you invest</span>
-        </span>
-        <span class="agreement-sample-open-label">OPEN
-          <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </span>
-      </button>
+      @if ($pendingContractCount > 0)
+        <a
+          class="agreement-sample-link"
+          id="signBondAgreement"
+          href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}"
+          aria-label="Sign your bond agreement"
+        >
+          <span class="summary-action-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+          </span>
+          <span class="agreement-sample-copy">
+            <span class="txt">Sign Bond Agreement</span>
+            <span class="hint">Complete your bond paperwork</span>
+          </span>
+          <span class="agreement-sample-open-label">OPEN
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      @else
+        <button class="agreement-sample-link" type="button" id="openAgreementSample" aria-haspopup="dialog" aria-controls="agreementSampleModal">
+          <span class="summary-action-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+          </span>
+          <span class="agreement-sample-copy">
+            <span class="txt">See sample bond agreement</span>
+            <span class="hint">Review before you invest</span>
+          </span>
+          <span class="agreement-sample-open-label">OPEN
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </button>
+      @endif
       <a class="dashboard-promo dashboard-card-link" href="{{ route('franchising') }}" aria-label="View franchise opportunities">
         <img src="{{ asset('banner-franchise.jpg') }}" alt="LuLu Daily storefront">
         <span class="dashboard-promo-scrim"></span>
@@ -3131,13 +3118,15 @@
 
 </main>
 
-<div class="agreement-sample-modal" id="agreementSampleModal" role="dialog" aria-modal="true" aria-labelledby="agreementSampleTitle" aria-hidden="true">
-  <header class="agreement-sample-modal-bar">
-    <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
-    <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
-  </header>
-  <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Sample bond agreement preview" src="{{ route('invest.agreement.sample') }}"></iframe>
-</div>
+@if ($pendingContractCount === 0)
+  <div class="agreement-sample-modal" id="agreementSampleModal" role="dialog" aria-modal="true" aria-labelledby="agreementSampleTitle" aria-hidden="true">
+    <header class="agreement-sample-modal-bar">
+      <h2 class="agreement-sample-modal-title" id="agreementSampleTitle">Sample Bond Agreement</h2>
+      <button class="agreement-sample-close" type="button" id="closeAgreementSample" aria-label="Close sample agreement">&times;</button>
+    </header>
+    <iframe class="agreement-sample-frame" id="agreementSampleFrame" title="Sample bond agreement preview" src="{{ route('invest.agreement.sample') }}"></iframe>
+  </div>
+@endif
 
 <button class="support-chat-launcher" id="supportChatLauncher" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="supportChatPanel">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-6.5A7.5 7.5 0 0 1 10.5 7h2A7.5 7.5 0 0 1 20 14.5z"/><path d="M8 12h8M8 15h5"/></svg>
@@ -3525,43 +3514,45 @@
   })();
 
 </script>
-<script>
-  (function () {
-    var modal = document.getElementById('agreementSampleModal');
-    var openButton = document.getElementById('openAgreementSample');
-    var closeButton = document.getElementById('closeAgreementSample');
-    var sampleFrame = document.getElementById('agreementSampleFrame');
-    if (!modal || !openButton || !closeButton || !sampleFrame) return;
+@if ($pendingContractCount === 0)
+  <script>
+    (function () {
+      var modal = document.getElementById('agreementSampleModal');
+      var openButton = document.getElementById('openAgreementSample');
+      var closeButton = document.getElementById('closeAgreementSample');
+      var sampleFrame = document.getElementById('agreementSampleFrame');
+      if (!modal || !openButton || !closeButton || !sampleFrame) return;
 
-    var previousFocus = null;
-    function closeSample() {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-      if (previousFocus) previousFocus.focus();
-    }
-
-    openButton.addEventListener('click', function () {
-      if (window.matchMedia('(max-width: 640px)').matches) {
-        window.location.assign(sampleFrame.src);
-        return;
+      var previousFocus = null;
+      function closeSample() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (previousFocus) previousFocus.focus();
       }
 
-      previousFocus = document.activeElement;
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-      closeButton.focus();
-    });
-    closeButton.addEventListener('click', closeSample);
-    modal.addEventListener('click', function (event) {
-      if (event.target === modal) closeSample();
-    });
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeSample();
-    });
-  })();
-</script>
+      openButton.addEventListener('click', function () {
+        if (window.matchMedia('(max-width: 640px)').matches) {
+          window.location.assign(sampleFrame.src);
+          return;
+        }
+
+        previousFocus = document.activeElement;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+      });
+      closeButton.addEventListener('click', closeSample);
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) closeSample();
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) closeSample();
+      });
+    })();
+  </script>
+@endif
 <script>
   (function () {
     var launcher = document.getElementById('supportChatLauncher');

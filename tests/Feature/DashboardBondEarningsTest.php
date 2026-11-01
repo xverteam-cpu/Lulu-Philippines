@@ -204,59 +204,95 @@ class DashboardBondEarningsTest extends TestCase
             ->assertDontSee('title="Complete identity verification"', false);
     }
 
-    public function test_dashboard_sample_agreement_button_opens_the_preserved_bond_agreement(): void
+    public function test_dashboard_agreement_card_opens_the_signing_form_for_an_unsigned_approved_bond(): void
     {
         Carbon::setTestNow('2026-10-31 01:45:00');
         Http::fake([
             'api.frankfurter.dev/*' => Http::response(['rates' => ['PHP' => 62.5]], 200),
         ]);
+        $admin = User::factory()->create(['is_admin' => true]);
         $user = User::factory()->create([
             'name' => 'Patricia Sample Account',
             'address' => '12 Sample Street, Taguig City',
+        ]);
+        $investment = Investment::create([
+            'user_id' => $user->id,
+            'package_key' => 'crunch',
+            'package_name' => 'Silver',
+            'package_price' => 129,
+            'amount' => 100,
+            'payment_method' => 'bank_transfer',
+            'daily_interest_rate' => 1,
+            'duration_days' => 30,
+            'starts_at' => now(),
+            'status' => 'approved',
+            'approved_by' => $admin->id,
+            'approved_at' => now(),
         ]);
 
         $response = $this->actingAs($user)
             ->withSession(['investor_pin_verified' => true])
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('See sample bond agreement')
-            ->assertSee('Review before you invest')
+            ->assertSee('Sign Bond Agreement')
+            ->assertSee('Complete your bond paperwork')
             ->assertSee('>OPEN', false)
             ->assertSee('min-height: 82px;', false)
             ->assertSee('linear-gradient(135deg, #087d52 0%, #056443 55%, #034a33 100%)', false)
-            ->assertSee('id="openAgreementSample"', false)
-            ->assertSee('id="agreementSampleModal"', false)
-            ->assertSee('src="'.route('invest.agreement.sample').'"', false)
-            ->assertSee("window.matchMedia('(max-width: 640px)').matches", false)
-            ->assertSee('window.location.assign(sampleFrame.src)', false);
+            ->assertSee('id="signBondAgreement"', false)
+            ->assertSee('href="'.route('invest.agreement.sign', ['investment_id' => $investment->id]).'"', false)
+            ->assertDontSee('agreementSampleModal')
+            ->assertDontSee('Sign agreement</a>')
+            ->assertDontSee('need your signature');
 
         $dashboardHtml = $response->getContent();
         $purchasePosition = strpos($dashboardHtml, '<h2>Purchase Bonds</h2>');
-        $sampleButtonPosition = strpos($dashboardHtml, 'id="openAgreementSample"');
+        $signAgreementPosition = strpos($dashboardHtml, 'id="signBondAgreement"');
         $franchisePosition = strpos($dashboardHtml, '<h2>Apply for Franchise</h2>');
         $this->assertNotFalse($purchasePosition);
-        $this->assertNotFalse($sampleButtonPosition);
+        $this->assertNotFalse($signAgreementPosition);
         $this->assertNotFalse($franchisePosition);
-        $this->assertLessThan($sampleButtonPosition, $purchasePosition);
-        $this->assertLessThan($franchisePosition, $sampleButtonPosition);
+        $this->assertLessThan($signAgreementPosition, $purchasePosition);
+        $this->assertLessThan($franchisePosition, $signAgreementPosition);
 
         $this->get(route('invest'))
             ->assertOk()
-            ->assertDontSee('See sample bond agreement')
-            ->assertDontSee('id="openAgreementSample"', false);
+            ->assertDontSee('Sign Bond Agreement')
+            ->assertDontSee('id="signBondAgreement"', false);
+
+        $this->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
+            ->assertOk()
+            ->assertSee('Complete your agreement')
+            ->assertSee('"investment_id":'.$investment->id, false);
 
         $sampleAgreement = $this->get(route('invest.agreement.sample'))
             ->assertOk()
             ->assertHeader('Content-Type', 'text/html; charset=UTF-8');
-
         $preservedAgreement = file_get_contents(base_path('lulu-bond-contract-preserved-pages.html'));
         $this->assertNotFalse($preservedAgreement);
         $this->assertSame($preservedAgreement, $sampleAgreement->getContent());
-        $this->assertStringContainsString('Lulu Holding Corp. · Bond Purchase Agreement', $sampleAgreement->getContent());
-        $this->assertStringContainsString('Page 1 of 5', $sampleAgreement->getContent());
-        $this->assertStringNotContainsString('Lotte Corporation', $sampleAgreement->getContent());
 
         Carbon::setTestNow();
+    }
+
+    public function test_dashboard_agreement_card_shows_sample_agreement_when_there_is_nothing_to_sign(): void
+    {
+        Http::fake([
+            'api.frankfurter.dev/*' => Http::response(['rates' => ['PHP' => 62.5]], 200),
+        ]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('See sample bond agreement')
+            ->assertSee('Review before you invest')
+            ->assertSee('id="openAgreementSample"', false)
+            ->assertSee('id="agreementSampleModal"', false)
+            ->assertSee('src="'.route('invest.agreement.sample').'"', false)
+            ->assertSee('min-height: 82px;', false)
+            ->assertDontSee('id="signBondAgreement"', false);
     }
 
     public function test_mobile_sample_agreement_print_fallback_downloads_the_document(): void

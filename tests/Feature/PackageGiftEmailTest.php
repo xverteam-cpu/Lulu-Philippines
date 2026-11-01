@@ -86,6 +86,89 @@ class PackageGiftEmailTest extends TestCase
             ->assertSee('asset-readable">$799<span class="decimal">.00', false);
     }
 
+    public function test_admin_gift_requires_a_full_client_signature_and_is_listed_as_a_contract(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
+        $recipient = User::factory()->create([
+            'name' => 'Gifted Client',
+            'email' => 'gifted@example.com',
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['pin_verified' => true])
+            ->post(route('admin.send-package'), [
+                'user_id' => $recipient->id,
+                'package' => 'loaded',
+                'amount' => '799.00',
+            ])
+            ->assertRedirect('/admin/dashboard');
+
+        $investment = Investment::query()->where('user_id', $recipient->id)->firstOrFail();
+        $this->assertSame('admin_transfer', $investment->payment_method);
+        $this->assertNull($investment->agreement_signed_at);
+        $this->assertNull($investment->agreement_details);
+
+        $this->actingAs($recipient)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Sign Bond Agreement')
+            ->assertSee(route('invest.agreement.sign', ['investment_id' => $investment->id]));
+
+        $this->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
+            ->assertOk()
+            ->assertSee('Complete your agreement')
+            ->assertSee('"payment_method":"admin_transfer"', false)
+            ->assertSee('"investment_id":'.$investment->id, false);
+
+        $signature = 'data:image/png;base64,YWJj';
+        $this->post(route('investments.store'), [
+            'investment_id' => $investment->id,
+            'package' => 'loaded',
+            'amount' => 799,
+            'currency' => 'USD',
+            'payment_method' => 'admin_transfer',
+            'agreement_signature_data' => $signature,
+            'agreement_accepted' => '1',
+            'agreement_details' => [
+                'full_name' => 'Gifted Client',
+                'civil_status' => 'Single',
+                'civil_status_other' => '',
+                'address' => '12 Gift Street, Manila',
+                'sign_date' => '2026-11-01',
+                'id_type' => 'Passport',
+                'id_type_other' => '',
+                'id_number' => 'P7654321',
+                'issue_date' => '2024-01-15',
+                'no_issue_date' => '0',
+            ],
+        ])->assertRedirect('/dashboard');
+
+        $investment->refresh();
+        $this->assertNotNull($investment->agreement_signed_at);
+        $this->assertSame('12 Gift Street, Manila', $investment->agreement_details['address']);
+        $this->assertSame('P7654321', $investment->agreement_details['id_number']);
+        $this->assertSame($signature, $investment->agreement_signature_data);
+
+        $this->actingAs($admin)
+            ->get(route('admin.contracts'))
+            ->assertOk()
+            ->assertSee('purchased or admin-gifted bonds')
+            ->assertSee('Gifted Client')
+            ->assertSee(route('admin.contracts.show', $investment));
+
+        $this->get(route('admin.contracts.show', $investment))
+            ->assertOk()
+            ->assertSee('Client-submitted details')
+            ->assertSee('12 Gift Street, Manila')
+            ->assertSee('P7654321')
+            ->assertSee('YWJj')
+            ->assertSee('"address":"12 Gift Street, Manila"', false)
+            ->assertSee('"idNumber":"P7654321"', false);
+    }
+
     public function test_admin_approval_sends_a_package_gift_email_and_starts_daily_interest(): void
     {
         Mail::fake();
@@ -206,6 +289,23 @@ class PackageGiftEmailTest extends TestCase
                 'amount' => '125.50',
             ])
             ->assertSessionHasErrors('amount');
+
+        $this->assertDatabaseCount('investments', 0);
+    }
+
+    public function test_signature_cannot_be_submitted_without_complete_agreement_details(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('investments.store'), [
+                'package' => 'crunch',
+                'amount' => 129,
+                'payment_method' => 'account_balance',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
+            ])
+            ->assertSessionHasErrors('agreement_details');
 
         $this->assertDatabaseCount('investments', 0);
     }

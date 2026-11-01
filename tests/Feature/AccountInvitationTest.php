@@ -65,7 +65,7 @@ class AccountInvitationTest extends TestCase
         Mail::assertNothingSent();
     }
 
-    public function test_admin_dashboard_exposes_the_invitation_form(): void
+    public function test_admin_dashboard_does_not_show_the_removed_setup_link_form(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
 
@@ -73,11 +73,9 @@ class AccountInvitationTest extends TestCase
             ->withSession(['investor_pin_verified' => true])
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertSee('Send setup link')
-            ->assertSee('id="account-invitation-panel"', false)
-            ->assertSee('aria-expanded="false"', false)
-            ->assertSee(route('admin.account-invitations.store'), false)
-            ->assertSee('Referrer');
+            ->assertDontSee('Send setup link')
+            ->assertDontSee('id="account-invitation-panel"', false)
+            ->assertDontSee('toggleAccountInvitation', false);
     }
 
     public function test_invited_client_can_set_password_and_pin_once(): void

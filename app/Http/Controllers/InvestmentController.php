@@ -17,30 +17,39 @@ class InvestmentController extends Controller
 {
     public function store(Request $request): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
-        $data = $request->validate([
+        $isNewAccountBalancePurchase = $request->input('payment_method') === 'account_balance'
+            && ! $request->filled('investment_id');
+        $rules = [
             'package' => ['required', 'string'],
             'investment_id' => ['nullable', 'integer', 'exists:investments,id'],
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['nullable', 'string', 'in:USD,PHP'],
             'payment_method' => ['required', 'string', 'in:bank_transfer,e_wallet,account_balance,admin_transfer,crypto'],
-            'agreement_signature_name' => ['nullable', 'string', 'max:150'],
-            'agreement_signature_data' => ['required', 'string', 'max:500000'],
-            'agreement_accepted' => ['required', 'accepted'],
-            'agreement_details' => [
-                'required',
-                'array:full_name,civil_status,civil_status_other,address,sign_date,id_type,id_type_other,id_number,issue_date,no_issue_date',
-            ],
-            'agreement_details.full_name' => ['required', 'string', 'max:100'],
-            'agreement_details.civil_status' => ['required', 'string', 'max:30'],
-            'agreement_details.civil_status_other' => ['nullable', 'required_if:agreement_details.civil_status,Other', 'string', 'max:30'],
-            'agreement_details.address' => ['required', 'string', 'max:220'],
-            'agreement_details.sign_date' => ['required', 'date'],
-            'agreement_details.id_type' => ['required', 'string', 'max:60'],
-            'agreement_details.id_type_other' => ['nullable', 'required_if:agreement_details.id_type,Other', 'string', 'max:60'],
-            'agreement_details.id_number' => ['required', 'string', 'max:60'],
-            'agreement_details.issue_date' => ['nullable', 'required_if:agreement_details.no_issue_date,0', 'date'],
-            'agreement_details.no_issue_date' => ['required', 'boolean'],
-        ]);
+        ];
+
+        if (! $isNewAccountBalancePurchase) {
+            $rules = array_merge($rules, [
+                'agreement_signature_name' => ['nullable', 'string', 'max:150'],
+                'agreement_signature_data' => ['required', 'string', 'max:500000'],
+                'agreement_accepted' => ['required', 'accepted'],
+                'agreement_details' => [
+                    'required',
+                    'array:full_name,civil_status,civil_status_other,address,sign_date,id_type,id_type_other,id_number,issue_date,no_issue_date',
+                ],
+                'agreement_details.full_name' => ['required', 'string', 'max:100'],
+                'agreement_details.civil_status' => ['required', 'string', 'max:30'],
+                'agreement_details.civil_status_other' => ['nullable', 'required_if:agreement_details.civil_status,Other', 'string', 'max:30'],
+                'agreement_details.address' => ['required', 'string', 'max:220'],
+                'agreement_details.sign_date' => ['required', 'date'],
+                'agreement_details.id_type' => ['required', 'string', 'max:60'],
+                'agreement_details.id_type_other' => ['nullable', 'required_if:agreement_details.id_type,Other', 'string', 'max:60'],
+                'agreement_details.id_number' => ['required', 'string', 'max:60'],
+                'agreement_details.issue_date' => ['nullable', 'required_if:agreement_details.no_issue_date,0', 'date'],
+                'agreement_details.no_issue_date' => ['required', 'boolean'],
+            ]);
+        }
+
+        $data = $request->validate($rules);
 
         $package = InvestmentPackages::find($data['package']);
 
@@ -50,11 +59,12 @@ class InvestmentController extends Controller
             ]);
         }
 
-        if (! $this->isValidSignatureData($data['agreement_signature_data'])) {
+        if (! $isNewAccountBalancePurchase && ! $this->isValidSignatureData($data['agreement_signature_data'])) {
             throw ValidationException::withMessages([
                 'agreement_signature_data' => 'Please draw your signature before submitting this purchase.',
             ]);
         }
+        $data['agreement_details'] ??= null;
 
         $currency = $data['currency'] ?? 'USD';
         $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
@@ -86,7 +96,7 @@ class InvestmentController extends Controller
             ]);
         }
 
-        $investment = DB::transaction(function () use ($request, $data, $package, $isPending, $amountInUsd) {
+        $investment = DB::transaction(function () use ($request, $data, $package, $isPending, $amountInUsd, $isNewAccountBalancePurchase) {
             if (! empty($data['investment_id'])) {
                 $investment = $request->user()->investments()
                     ->whereKey($data['investment_id'])
@@ -130,12 +140,13 @@ class InvestmentController extends Controller
                 'duration_days' => $package['duration_days'],
                 'starts_at' => $isPending ? null : now(),
                 'status' => $isPending ? 'pending' : 'approved',
-                'agreement_version' => '2026-09-20',
-                'agreement_signature_name' => $data['agreement_details']['full_name']
-                    ?? ($request->user()->name ?: $request->user()->email),
-                'agreement_signature_data' => $data['agreement_signature_data'],
-                'agreement_details' => $data['agreement_details'] ?? null,
-                'agreement_signed_at' => now(),
+                'agreement_version' => $isNewAccountBalancePurchase ? null : '2026-09-20',
+                'agreement_signature_name' => $isNewAccountBalancePurchase
+                    ? null
+                    : ($data['agreement_details']['full_name'] ?? ($request->user()->name ?: $request->user()->email)),
+                'agreement_signature_data' => $isNewAccountBalancePurchase ? null : $data['agreement_signature_data'],
+                'agreement_details' => $isNewAccountBalancePurchase ? null : $data['agreement_details'],
+                'agreement_signed_at' => $isNewAccountBalancePurchase ? null : now(),
             ]);
 
             if ($data['payment_method'] === 'account_balance') {
@@ -171,7 +182,9 @@ class InvestmentController extends Controller
                 : 'Your signed agreement was saved.')
             : ($isPending
                 ? $package['name'].' investment has been submitted and is pending admin approval.'
-                : $package['name'].' investment has been activated successfully.');
+                : ($isNewAccountBalancePurchase
+                    ? $package['name'].' bond purchase was successful. Sign your agreement from the dashboard.'
+                    : $package['name'].' investment has been activated successfully.'));
 
         if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([

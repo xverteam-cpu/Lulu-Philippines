@@ -2191,6 +2191,8 @@
     overflow: hidden;
     display: flex;
     width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
     min-height: 82px;
     align-items: center;
     gap: 10px;
@@ -2244,6 +2246,7 @@
   }
 
   .agreement-sample-link .summary-action-icon {
+    position: relative;
     display: inline-flex;
     width: 44px;
     height: 44px;
@@ -2255,6 +2258,25 @@
     background: rgba(255, 255, 255, .14);
     color: #a9f3d0;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 6px 16px rgba(0, 0, 0, .12);
+  }
+
+  .agreement-notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: grid;
+    min-width: 19px;
+    height: 19px;
+    place-items: center;
+    padding: 0 4px;
+    border: 2px solid #087d52;
+    border-radius: 999px;
+    background: #c94335;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(80, 24, 18, .24);
   }
 
   .agreement-sample-link .summary-action-icon svg {
@@ -2906,6 +2928,16 @@
   $unreadCount = $unreadCount ?? 0;
   $pendingContracts = $pendingContracts ?? collect();
   $pendingContractCount = $pendingContracts->count();
+  $pendingContract = $pendingContracts->first();
+  $pendingContractUrl = $pendingContractCount > 0
+      ? route('invest.agreement.sign', [
+          'package' => $pendingContract->package_key,
+          'amount' => number_format((float) $pendingContract->amount, 2, '.', ''),
+          'currency' => 'USD',
+          'payment_method' => $pendingContract->payment_method,
+          'investment_id' => $pendingContract->id,
+      ])
+      : null;
 @endphp
 
 <main class="wallet-shell dashboard-shell">
@@ -2926,16 +2958,6 @@
         @endif
       </a>
       <div class="dashboard-header-actions">
-        @if ($pendingContractCount > 0)
-          <a class="dashboard-notification-link" href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}"
-             aria-label="Sign pending bond agreements, {{ $pendingContractCount }} unsigned">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M7 3.75h7l4 4v12.5a.75.75 0 0 1-.75.75h-10.5a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 .75-.75Z"/>
-            <path d="M14 4v4h4M9 14l4.8-4.8a1.4 1.4 0 0 1 2 2L11 16l-2.5.5Z"/>
-            </svg>
-            <span class="dashboard-notification-badge" aria-hidden="true">{{ min($pendingContractCount, 99) }}</span>
-          </a>
-        @endif
         <a class="dashboard-notification-link" href="{{ route('notifications.index') }}"
            aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -3018,11 +3040,12 @@
         <a
           class="agreement-sample-link"
           id="signBondAgreement"
-          href="{{ route('invest.agreement.sign', ['investment_id' => $pendingContracts->first()->id]) }}"
-          aria-label="Sign your bond agreement"
+          href="{{ $pendingContractUrl }}"
+          aria-label="Sign your bond agreement, {{ $pendingContractCount }} unsigned"
         >
           <span class="summary-action-icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+            <span class="agreement-notification-badge" aria-hidden="true">{{ min($pendingContractCount, 99) }}</span>
           </span>
           <span class="agreement-sample-copy">
             <span class="txt">Sign Bond Agreement</span>

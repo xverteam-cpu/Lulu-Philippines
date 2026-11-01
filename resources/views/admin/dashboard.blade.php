@@ -587,6 +587,7 @@
     }
 
     .funds-notification-panel {
+      left: auto;
       right: 12px;
     }
 

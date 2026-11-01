@@ -743,6 +743,12 @@
       paymentModal.classList.remove('is-open');
       paymentModal.setAttribute('aria-hidden', 'true');
       document.documentElement.classList.remove('scroll-locked');
+      if (paymentInput.value === 'account_balance') {
+        amount.value = currentAmount().toFixed(2);
+        currencyInput.value = currency;
+        purchaseForm.submit();
+        return;
+      }
       continueToAgreement();
     });
     document.addEventListener('keydown', function (event) {

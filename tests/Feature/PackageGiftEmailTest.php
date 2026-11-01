@@ -115,7 +115,14 @@ class PackageGiftEmailTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Sign Bond Agreement')
-            ->assertSee(route('invest.agreement.sign', ['investment_id' => $investment->id]));
+            ->assertSee('class="agreement-notification-badge" aria-hidden="true">1</span>', false)
+            ->assertSee(route('invest.agreement.sign', [
+                'package' => 'loaded',
+                'amount' => '799.00',
+                'currency' => 'USD',
+                'payment_method' => 'admin_transfer',
+                'investment_id' => $investment->id,
+            ]));
 
         $this->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
             ->assertOk()
@@ -301,7 +308,7 @@ class PackageGiftEmailTest extends TestCase
             ->post(route('investments.store'), [
                 'package' => 'crunch',
                 'amount' => 129,
-                'payment_method' => 'account_balance',
+                'payment_method' => 'bank_transfer',
                 'agreement_signature_data' => 'data:image/png;base64,YWJj',
                 'agreement_accepted' => '1',
             ])

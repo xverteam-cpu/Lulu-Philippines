@@ -106,7 +106,7 @@ class AdminPurchaseNotificationsTest extends TestCase
             'user_id' => $recipient->id,
             'type' => 'funds_received',
             'title' => 'Funds received',
-            'description' => 'You received $40.00 from Transfer Sender.',
+            'description' => 'You received funds from Transfer Sender.',
             'amount' => 40,
             'occurred_at' => now()->subHours(3),
         ]);
@@ -143,7 +143,9 @@ class AdminPurchaseNotificationsTest extends TestCase
             ->assertSee('Funds sent by admin')
             ->assertSee('User-to-user funds transfer')
             ->assertSee('Recipient: Fund Recipient')
-            ->assertSee('You received $40.00 from Transfer Sender.')
+            ->assertSee('You received funds from Transfer Sender.')
+            ->assertSee('left: auto;', false)
+            ->assertSee('right: 12px;', false)
             ->assertSee('data-notification-id="'.$adminCredit->id.'"', false)
             ->assertSee('data-notification-id="'.$transferReceived->id.'"', false)
             ->assertSee('id="funds-notification-panel"', false);

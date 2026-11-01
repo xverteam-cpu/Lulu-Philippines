@@ -103,6 +103,7 @@ class UserManagementController extends Controller
             ->where('occurred_at', '>=', $cutoff)
             ->where(function ($query) {
                 $query->where('description', 'Funds were added to your account by the LuLu team.')
+                    ->orWhere('description', 'like', 'You received funds from %')
                     ->orWhere('description', 'like', 'You received $% from %');
             })
             ->orderByDesc('occurred_at')

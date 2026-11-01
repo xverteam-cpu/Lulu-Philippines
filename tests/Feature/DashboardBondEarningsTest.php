@@ -238,9 +238,18 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('Complete your bond paperwork')
             ->assertSee('>OPEN', false)
             ->assertSee('min-height: 82px;', false)
+            ->assertSee('box-sizing: border-box;', false)
             ->assertSee('linear-gradient(135deg, #087d52 0%, #056443 55%, #034a33 100%)', false)
             ->assertSee('id="signBondAgreement"', false)
-            ->assertSee('href="'.route('invest.agreement.sign', ['investment_id' => $investment->id]).'"', false)
+            ->assertSee('class="agreement-notification-badge" aria-hidden="true">1</span>', false)
+            ->assertDontSee('Sign pending bond agreements')
+            ->assertSee('href="'.e(route('invest.agreement.sign', [
+                'package' => 'crunch',
+                'amount' => '100.00',
+                'currency' => 'USD',
+                'payment_method' => $investment->payment_method,
+                'investment_id' => $investment->id,
+            ])).'"', false)
             ->assertDontSee('agreementSampleModal')
             ->assertDontSee('Sign agreement</a>')
             ->assertDontSee('need your signature');

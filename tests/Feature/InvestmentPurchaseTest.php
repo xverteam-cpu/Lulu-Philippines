@@ -39,6 +39,8 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Choose payment method')
             ->assertSee('id="paymentModalAmount"', false)
             ->assertSee('data-payment="bank_or_wallet"', false)
+            ->assertSee("if (paymentInput.value === 'account_balance')", false)
+            ->assertSee('purchaseForm.submit();', false)
             ->assertSee('Bank transfer / E-wallet')
             ->assertDontSee('data-payment="bank_transfer"', false)
             ->assertDontSee('data-payment="e_wallet"', false)
@@ -177,9 +179,16 @@ class InvestmentPurchaseTest extends TestCase
             ->assertOk()
             ->assertSee('Sign Bond Agreement')
             ->assertSee('Complete your bond paperwork')
-            ->assertSee('Sign pending bond agreements, 1 unsigned')
-            ->assertSee(route('invest.agreement.sign', ['investment_id' => $investment->id]))
-            ->assertSee('class="dashboard-notification-badge" aria-hidden="true">1', false);
+            ->assertSee('aria-label="Sign your bond agreement, 1 unsigned"', false)
+            ->assertSee(route('invest.agreement.sign', [
+                'package' => 'crunch',
+                'amount' => '129.00',
+                'currency' => 'USD',
+                'payment_method' => 'bank_transfer',
+                'investment_id' => $investment->id,
+            ]))
+            ->assertSee('class="agreement-notification-badge" aria-hidden="true">1</span>', false)
+            ->assertDontSee('Sign pending bond agreements');
 
         $admin = User::factory()->create(['is_admin' => true]);
         $this->actingAs($admin)
@@ -411,12 +420,10 @@ class InvestmentPurchaseTest extends TestCase
                 'amount' => 8000,
                 'currency' => 'PHP',
                 'payment_method' => 'account_balance',
-                'agreement_signature_data' => 'data:image/png;base64,YWJj',
-                'agreement_accepted' => '1',
-                'agreement_details' => $this->agreementDetails(),
             ]);
 
         $response->assertRedirect('/dashboard');
+        $response->assertSessionHas('status', 'Silver bond purchase was successful. Sign your agreement from the dashboard.');
 
         $this->assertDatabaseHas('investments', [
             'user_id' => $user->id,
@@ -426,6 +433,9 @@ class InvestmentPurchaseTest extends TestCase
             'payment_method' => 'account_balance',
         ]);
         $investment = $user->investments()->firstOrFail();
+        $this->assertNull($investment->agreement_signed_at);
+        $this->assertNull($investment->agreement_signature_data);
+        $this->assertNull($investment->agreement_details);
         $this->assertEquals(5000 - (float) $investment->amount, (float) $user->fresh()->balance);
     }
 
@@ -442,9 +452,6 @@ class InvestmentPurchaseTest extends TestCase
                 'package' => 'loaded',
                 'amount' => 800,
                 'payment_method' => 'account_balance',
-                'agreement_signature_data' => 'data:image/png;base64,YWJj',
-                'agreement_accepted' => '1',
-                'agreement_details' => $this->agreementDetails(),
             ]);
 
         $response->assertRedirect('/dashboard');
@@ -455,9 +462,37 @@ class InvestmentPurchaseTest extends TestCase
             'payment_method' => 'account_balance',
         ]);
         $investment = $user->investments()->firstOrFail();
-        $this->assertNotNull($investment->agreement_signed_at);
-        $this->assertSame('Test Client', $investment->agreement_details['full_name']);
-        $this->assertSame('P1234567', $investment->agreement_details['id_number']);
+        $this->assertNull($investment->agreement_signed_at);
+        $this->assertNull($investment->agreement_signature_data);
+        $this->assertNull($investment->agreement_details);
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(route('invest.agreement.sign', [
+                'package' => 'loaded',
+                'amount' => '800.00',
+                'currency' => 'USD',
+                'payment_method' => 'account_balance',
+                'investment_id' => $investment->id,
+            ]));
+
+        $this->actingAs($user)
+            ->post(route('investments.store'), [
+                'investment_id' => $investment->id,
+                'package' => 'loaded',
+                'amount' => 800,
+                'currency' => 'USD',
+                'payment_method' => 'account_balance',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
+                'agreement_details' => $this->agreementDetails(),
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSame(1, $user->investments()->count());
+        $this->assertNotNull($investment->fresh()->agreement_signed_at);
 
         $this->assertDatabaseHas('package_slots', [
             'package_key' => 'loaded',

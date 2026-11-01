@@ -104,6 +104,112 @@
     font-weight: 550;
   }
 
+  .purchase-notification-panel {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0;
+  }
+
+  .purchase-notification-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #dce9e1;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 8px 22px rgba(6, 40, 28, .08);
+  }
+
+  .purchase-notification-heading h2 {
+    color: #0a1f17;
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .purchase-notification-heading p {
+    margin-top: 3px;
+    color: #687a70;
+    font-size: 11px;
+  }
+
+  .purchase-notification-count {
+    display: grid;
+    min-width: 24px;
+    height: 24px;
+    place-items: center;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #e6f7ef;
+    color: #075a3b;
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .purchase-notification-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .purchase-notification {
+    padding: 12px 14px;
+    border: 1px solid #e2e9e5;
+    border-left: 3px solid #0e8a5a;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 5px 16px rgba(6, 40, 28, .08);
+  }
+
+  .purchase-notification[data-type="deposit"] {
+    border-left-color: #b26b00;
+  }
+
+  .purchase-notification-title {
+    color: #0a1f17;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+
+  .purchase-notification-user,
+  .purchase-notification-detail {
+    margin-top: 5px;
+    color: #687a70;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .purchase-notification-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .purchase-notification-meta strong {
+    color: #075a3b;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .purchase-notification-meta time {
+    color: #8a9892;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .purchase-notification-empty {
+    padding: 14px;
+    border: 1px solid #e2e9e5;
+    border-radius: 13px;
+    background: #fff;
+    color: #687a70;
+    font-size: 12px;
+  }
+
   .users-page {
     margin-top: 28px;
   }
@@ -457,10 +563,61 @@
       padding: 12px 14px;
     }
   }
+
+  @media (min-width: 1440px) {
+    .purchase-notification-panel {
+      position: fixed;
+      top: 24px;
+      left: 12px;
+      z-index: 90;
+      width: 220px;
+      max-height: calc(100vh - 48px);
+      margin: 0;
+      padding: 0 2px 2px 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .purchase-notification-heading {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
 </style>
 
 <div class="admin-shell">
   @include('partials.admin-nav', ['activeAdminPage' => 'users'])
+
+  <section
+    class="purchase-notification-panel"
+    id="purchase-notification-panel"
+    data-refresh-url="{{ route('admin.dashboard.purchase-notifications') }}"
+    aria-label="Recent bond activity"
+  >
+    <header class="purchase-notification-heading">
+      <div>
+        <h2>Recent bond activity</h2>
+        <p>Visible for 24 hours</p>
+      </div>
+      <span class="purchase-notification-count" id="purchase-notification-count">{{ $recentPurchaseNotifications->count() }}</span>
+    </header>
+    <div class="purchase-notification-list" id="purchase-notification-list" aria-live="polite">
+      @forelse ($recentPurchaseNotifications as $notification)
+        <article class="purchase-notification" data-notification-id="{{ $notification['id'] }}" data-type="{{ $notification['type'] }}">
+          <h3 class="purchase-notification-title">{{ $notification['title'] }}</h3>
+          <p class="purchase-notification-user">{{ $notification['user_name'] }} · {{ $notification['package_name'] }}</p>
+          <div class="purchase-notification-meta">
+            <strong>${{ number_format($notification['amount'], 2) }}</strong>
+            <time datetime="{{ $notification['occurred_at'] }}">{{ $notification['timestamp'] }}</time>
+          </div>
+          <p class="purchase-notification-detail">{{ $notification['detail'] }}</p>
+        </article>
+      @empty
+        <p class="purchase-notification-empty">No bond or deposit activity in the last 24 hours.</p>
+      @endforelse
+    </div>
+  </section>
 
   @if (session('status'))
     <div class="alert alert-success">{{ session('status') }}</div>
@@ -1634,5 +1791,90 @@
       toggleModal(actionModal, true);
     }
   }
+</script>
+
+<script>
+  (function () {
+    var panel = document.getElementById('purchase-notification-panel');
+    var list = document.getElementById('purchase-notification-list');
+    var count = document.getElementById('purchase-notification-count');
+
+    if (!panel || !list || !count) {
+      return;
+    }
+
+    function appendText(parent, tagName, className, value) {
+      var element = document.createElement(tagName);
+      element.className = className;
+      element.textContent = value;
+      parent.appendChild(element);
+      return element;
+    }
+
+    function renderNotifications(notifications) {
+      var currentIds = Array.from(list.querySelectorAll('[data-notification-id]'))
+        .map(function (item) { return item.dataset.notificationId; })
+        .join('|');
+      var nextIds = notifications.map(function (item) { return String(item.id); }).join('|');
+
+      count.textContent = String(notifications.length);
+
+      if (currentIds === nextIds) {
+        return;
+      }
+
+      list.replaceChildren();
+
+      if (notifications.length === 0) {
+        appendText(list, 'p', 'purchase-notification-empty', 'No bond or deposit activity in the last 24 hours.');
+        return;
+      }
+
+      notifications.forEach(function (notification) {
+        var card = document.createElement('article');
+        card.className = 'purchase-notification';
+        card.dataset.notificationId = String(notification.id);
+        card.dataset.type = notification.type;
+
+        appendText(card, 'h3', 'purchase-notification-title', notification.title);
+        appendText(card, 'p', 'purchase-notification-user', notification.user_name + ' · ' + notification.package_name);
+
+        var meta = document.createElement('div');
+        meta.className = 'purchase-notification-meta';
+        appendText(meta, 'strong', '', '$' + Number(notification.amount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }));
+        var time = appendText(meta, 'time', '', notification.timestamp);
+        time.dateTime = notification.occurred_at || '';
+        card.appendChild(meta);
+
+        appendText(card, 'p', 'purchase-notification-detail', notification.detail);
+        list.appendChild(card);
+      });
+    }
+
+    function refreshNotifications() {
+      fetch(panel.dataset.refreshUrl, {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Admin purchase notifications returned HTTP ' + response.status);
+          }
+
+          return response.json();
+        })
+        .then(function (data) {
+          renderNotifications(data.notifications);
+        })
+        .catch(function (error) {
+          console.error('Unable to refresh admin purchase notifications.', error);
+        });
+    }
+
+    window.setInterval(refreshNotifications, 60000);
+  })();
 </script>
 @endsection

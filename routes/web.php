@@ -1172,6 +1172,10 @@ Route::get('/admin/dashboard', function () {
     return app(UserManagementController::class)->index(request());
 })->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])->name('admin.dashboard');
 
+Route::get('/admin/dashboard/purchase-notifications', [UserManagementController::class, 'purchaseNotifications'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.dashboard.purchase-notifications');
+
 Route::get('/admin/franchises', [AdminFranchiseApplicationController::class, 'index'])
     ->middleware(['auth', RestrictUserAccess::class])
     ->name('admin.franchises');

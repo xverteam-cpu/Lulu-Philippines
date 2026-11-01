@@ -71,10 +71,81 @@ class UserManagementController extends Controller
             'onlineUsersCount' => User::where('last_seen_at', '>=', now()->subMinutes(User::ONLINE_WINDOW_MINUTES))->count(),
             'approvedDepositTotal' => Investment::where('status', 'approved')->sum('amount'),
             'pendingWithdrawalsCount' => Withdrawal::where('status', 'pending')->count(),
+            'recentPurchaseNotifications' => $this->recentPurchaseNotifications(),
             'search' => $search,
             'packages' => InvestmentPackages::all(),
             'packageSlots' => InvestmentPackages::currentSlots(),
         ]);
+    }
+
+    public function purchaseNotifications(): JsonResponse
+    {
+        return response()->json([
+            'notifications' => $this->recentPurchaseNotifications(),
+        ]);
+    }
+
+    private function recentPurchaseNotifications(): \Illuminate\Support\Collection
+    {
+        $cutoff = now()->subDay();
+
+        return Investment::query()
+            ->with(['user', 'approver'])
+            ->whereNull('cancelled_at')
+            ->where(function ($query) use ($cutoff) {
+                $query->where(function ($query) use ($cutoff) {
+                    $query->where('status', 'approved')
+                        ->whereNotNull('approved_by')
+                        ->where('approved_at', '>=', $cutoff);
+                })->orWhere(function ($query) use ($cutoff) {
+                    $query->where('status', 'approved')
+                        ->where('payment_method', 'account_balance')
+                        ->where('created_at', '>=', $cutoff);
+                })->orWhere(function ($query) use ($cutoff) {
+                    $query->where('status', 'approved')
+                        ->where('payment_method', 'admin_transfer')
+                        ->where('created_at', '>=', $cutoff);
+                })->orWhere(function ($query) use ($cutoff) {
+                    $query->where('status', 'pending')
+                        ->where('created_at', '>=', $cutoff);
+                });
+            })
+            ->get()
+            ->map(function (Investment $investment) {
+                $type = match (true) {
+                    $investment->payment_method === 'admin_transfer' => 'admin_package',
+                    $investment->status === 'approved' && $investment->approved_by !== null => 'approved',
+                    $investment->payment_method === 'account_balance' => 'balance_purchase',
+                    default => 'deposit',
+                };
+                $occurredAt = $type === 'approved'
+                    ? $investment->approved_at
+                    : $investment->created_at;
+
+                return [
+                    'id' => $investment->id.'-'.$type,
+                    'type' => $type,
+                    'title' => match ($type) {
+                        'approved' => 'Bond purchase approved',
+                        'admin_package' => 'Package sent by admin',
+                        'balance_purchase' => 'Bond purchased using account balance',
+                        default => 'New deposit submitted',
+                    },
+                    'user_name' => $investment->user?->name ?: $investment->user?->email ?: 'Unknown user',
+                    'package_name' => $investment->package_name ?: 'Bond',
+                    'amount' => (float) $investment->amount,
+                    'detail' => match ($type) {
+                        'approved' => 'Approved by '.($investment->approver?->name ?: 'admin'),
+                        'admin_package' => 'Sent by admin',
+                        'balance_purchase' => 'Paid using account balance',
+                        default => 'Payment submission awaiting admin review',
+                    },
+                    'occurred_at' => $occurredAt?->toIso8601String(),
+                    'timestamp' => $occurredAt?->format('M j, g:i A') ?: '',
+                ];
+            })
+            ->sortByDesc('occurred_at')
+            ->values();
     }
 
     public function activity(Request $request): JsonResponse

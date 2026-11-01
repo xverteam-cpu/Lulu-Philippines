@@ -42,7 +42,7 @@ class WithdrawalRequestTest extends TestCase
             ->assertOk()
             ->assertSee('Withdraw Funds')
             ->assertSee('$284.77')
-            ->assertSee('data-withdrawal-amount="20"', false)
+            ->assertSee('data-withdrawal-amount="20.00"', false)
             ->assertSee('Saved bank account')
             ->assertSee('BPI · ••••7890')
             ->assertSee('$25.00 · BPI')

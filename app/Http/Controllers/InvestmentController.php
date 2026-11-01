@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\PackagePurchaseNotification;
 use App\Support\CurrencyRateService;
+use App\Support\CurrencyDisplay;
 use App\Support\InvestmentPackages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,19 +57,18 @@ class InvestmentController extends Controller
         }
 
         $currency = $data['currency'] ?? 'USD';
-        $amountInUsd = round($currency === 'PHP'
-            ? (float) $data['amount'] / CurrencyRateService::latestUsdToPhp()
-            : (float) $data['amount'], 2);
+        $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
+        $amountInUsd = CurrencyDisplay::toUsd((float) $data['amount'], $currency, $rate);
 
         if ($amountInUsd < $package['min_amount']) {
             throw ValidationException::withMessages([
-                'amount' => 'Minimum investment for '.$package['name'].' is $'.number_format($package['min_amount'], 2).'.',
+                'amount' => 'Minimum investment for '.$package['name'].' is '.CurrencyDisplay::formatUsd($package['min_amount'], $currency, $rate).'.',
             ]);
         }
 
         if ($amountInUsd > $package['max_amount']) {
             throw ValidationException::withMessages([
-                'amount' => 'Maximum investment for '.$package['name'].' is $'.number_format($package['max_amount'], 2).'.',
+                'amount' => 'Maximum investment for '.$package['name'].' is '.CurrencyDisplay::formatUsd($package['max_amount'], $currency, $rate).'.',
             ]);
         }
 

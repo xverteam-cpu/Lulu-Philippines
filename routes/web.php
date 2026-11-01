@@ -24,6 +24,7 @@ use App\Models\AccountActivity;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\CurrencyRateService;
+use App\Support\CurrencyDisplay;
 use App\Support\DailyInterestAccrualService;
 use App\Support\InvestmentPackages;
 use Illuminate\Http\Request;
@@ -222,6 +223,8 @@ Route::get('/dashboard', function () {
     }
 
     $user = Auth::user();
+    $displayCurrency = CurrencyDisplay::preferredFor($user);
+    $displayRate = $displayCurrency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user = $user->fresh();  // Refresh from database to get updated balance
     $identityVerification = $user->identityVerification;
@@ -265,7 +268,7 @@ Route::get('/dashboard', function () {
             $notifications->push([
                 'id' => 'interest-'.$investment->id.'-'.$interestDate->toDateString(),
                 'title' => 'Daily interest credited',
-                'description' => '$'.number_format($investment->dailyInterestAmount(), 2).' added to available balance.',
+                'description' => CurrencyDisplay::formatUsd($investment->dailyInterestAmount(), $displayCurrency, $displayRate).' added to available balance.',
                 'time' => $interestDate,
             ]);
         }
@@ -291,7 +294,7 @@ Route::get('/dashboard', function () {
         $notifications->push([
             'id' => 'withdrawal-'.$withdrawal->id.'-'.$withdrawal->status,
             'title' => 'Withdrawal request',
-            'description' => '₱'.number_format($withdrawal->amount, 2).' '.$withdrawal->status.'.',
+            'description' => CurrencyDisplay::formatUsd($withdrawal->amount, $displayCurrency, $displayRate).' '.$withdrawal->status.'.',
             'time' => $withdrawal->created_at,
         ]);
     }
@@ -314,6 +317,17 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])->name('dashboard');
 
+Route::post('/currency-preference', function (Request $request) {
+    $data = $request->validate([
+        'preferred_currency' => ['required', 'in:USD,PHP'],
+    ]);
+
+    abort_if($request->user()->is_admin, 403);
+    $request->user()->update(['preferred_currency' => $data['preferred_currency']]);
+
+    return redirect()->route('dashboard')->with('status', 'Currency preference updated.');
+})->middleware(['auth', RestrictUserAccess::class])->name('currency.preference');
+
 Route::post('/notifications/read-all', function (Request $request) {
     $data = $request->validate([
         'ids' => ['required', 'array'],
@@ -333,13 +347,20 @@ Route::post('/notifications/read-all', function (Request $request) {
 
 Route::get('/notifications', function (Request $request) {
     $user = $request->user();
+    $displayCurrency = CurrencyDisplay::preferredFor($user);
+    $rate = $displayCurrency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
     $activities = collect();
 
     foreach (AccountActivity::query()->where('user_id', $user->id)->latest('occurred_at')->limit(50)->get() as $activity) {
+        $description = str_replace(
+            '$'.number_format((float) $activity->amount, 2),
+            CurrencyDisplay::formatUsd((float) $activity->amount, $displayCurrency, $rate),
+            $activity->description
+        );
         $activities->push([
             'id' => 'activity-'.$activity->id,
             'title' => $activity->title,
-            'description' => $activity->description,
+            'description' => $description,
             'amount' => $activity->amount,
             'amount_prefix' => '$',
             'href' => route('history'),
@@ -473,9 +494,12 @@ Route::get('/rewards', function () {
 
 Route::post('/rewards/claim-signup-bonus', function (Request $request) {
     $user = $request->user();
+    $currency = CurrencyDisplay::preferredFor($user);
+    $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
+    $bonusDisplay = CurrencyDisplay::formatUsd(5, $currency, $rate);
 
     if (! empty($user->signup_bonus_claimed_at)) {
-        return redirect()->route('rewards')->with('status', 'You already claimed your $5 sign up bonus.');
+        return redirect()->route('rewards')->with('status', 'You already claimed your '.$bonusDisplay.' sign up bonus.');
     }
 
     DB::transaction(function () use ($user): void {
@@ -495,7 +519,7 @@ Route::post('/rewards/claim-signup-bonus', function (Request $request) {
         ]);
     });
 
-    return redirect()->route('rewards')->with('status', 'Your $5 sign up bonus has been added to your available balance.');
+    return redirect()->route('rewards')->with('status', 'Your '.$bonusDisplay.' sign up bonus has been added to your available balance.');
 })->middleware(['auth', RestrictUserAccess::class])->name('rewards.claim-signup-bonus');
 
 // Deposit page for buying shares
@@ -732,7 +756,16 @@ Route::get('/send', function () {
         ->whereIn('type', ['funds_sent', 'funds_received'])
         ->latest('occurred_at')
         ->limit(5)
-        ->get();
+        ->get()
+        ->each(function (AccountActivity $activity) use ($user): void {
+            $currency = CurrencyDisplay::preferredFor($user);
+            $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
+            $activity->description = str_replace(
+                '$'.number_format((float) $activity->amount, 2),
+                CurrencyDisplay::formatUsd((float) $activity->amount, $currency, $rate),
+                $activity->description
+            );
+        });
 
     return view('send', [
         'availableBalance' => $availableBalance,
@@ -788,7 +821,14 @@ Route::post('/send', function (Request $request) {
         ]);
     }
 
-    $amount = round((float) $data['amount'], 2);
+    $currency = CurrencyDisplay::preferredFor($request->user());
+    $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
+    $amount = CurrencyDisplay::toUsd((float) $data['amount'], $currency, $rate);
+    if ($amount < 0.01) {
+        throw ValidationException::withMessages([
+            'amount' => 'Enter an amount of at least '.CurrencyDisplay::formatUsd(0.01, $currency, $rate).'.',
+        ]);
+    }
     DailyInterestAccrualService::accrueDueInterestForUser($request->user());
 
     DB::transaction(function () use ($request, $recipient, $amount, $data): void {
@@ -826,7 +866,7 @@ Route::post('/send', function (Request $request) {
             'user_id' => $sender->id,
             'type' => 'funds_sent',
             'title' => 'Funds sent',
-            'description' => 'You sent $'.number_format($amount, 2).' to '.($lockedRecipient->name ?: $lockedRecipient->email).'.'.$memoSuffix,
+            'description' => 'You sent funds to '.($lockedRecipient->name ?: $lockedRecipient->email).'.'.$memoSuffix,
             'amount' => $amount,
             'occurred_at' => now(),
         ]);
@@ -835,14 +875,14 @@ Route::post('/send', function (Request $request) {
             'user_id' => $lockedRecipient->id,
             'type' => 'funds_received',
             'title' => 'Funds received',
-            'description' => 'You received $'.number_format($amount, 2).' from '.($sender->name ?: $sender->email).'.'.$memoSuffix,
+            'description' => 'You received funds from '.($sender->name ?: $sender->email).'.'.$memoSuffix,
             'amount' => $amount,
             'occurred_at' => now(),
         ]);
     });
 
     return redirect()->route('send')
-        ->with('status', 'Sent $'.number_format($amount, 2).' to '.($recipient->name ?: $recipient->email).'.');
+        ->with('status', 'Sent '.CurrencyDisplay::formatUsd($amount, $currency, $rate).' to '.($recipient->name ?: $recipient->email).'.');
 })->middleware(['auth', RestrictUserAccess::class])->name('send.transfer');
 
 Route::get('/withdraw', function () {
@@ -887,7 +927,7 @@ Route::post('/withdrawals', function (Request $request) {
     ];
 
     $data = $request->validate([
-        'amount' => ['required', 'numeric', 'min:20', 'max:500'],
+        'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01', 'max:9999999999999.99'],
         // account_type is optional for backwards compatibility with older clients.
         'account_type' => ['nullable', 'in:bank,e_wallet'],
         'bank_name' => [
@@ -918,19 +958,30 @@ Route::post('/withdrawals', function (Request $request) {
     ]);
 
     $user = $request->user();
+    $currency = CurrencyDisplay::preferredFor($user);
+    $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
+    $withdrawalAmount = CurrencyDisplay::toUsd((float) $data['amount'], $currency, $rate);
+
+    if ($withdrawalAmount < 20 || $withdrawalAmount > 500) {
+        $minimum = CurrencyDisplay::formatUsd(20, $currency, $rate);
+        $maximum = CurrencyDisplay::formatUsd(500, $currency, $rate);
+        throw ValidationException::withMessages([
+            'amount' => "Withdrawal amount must be between {$minimum} and {$maximum}.",
+        ]);
+    }
 
     DailyInterestAccrualService::accrueDueInterestForUser($user);
     $user->refresh();
 
     $availableBalance = (float) $user->balance;
 
-    if ($availableBalance < (float) $data['amount']) {
+    if ($availableBalance < $withdrawalAmount) {
         throw ValidationException::withMessages([
             'amount' => 'Insufficient balance for this withdrawal request.',
         ]);
     }
 
-    $withdrawal = DB::transaction(function () use ($user, $data) {
+    $withdrawal = DB::transaction(function () use ($user, $data, $withdrawalAmount) {
         $user->update([
             'bank_name' => $data['bank_name'],
             'bank_account_number' => $data['account_number'],
@@ -938,7 +989,6 @@ Route::post('/withdrawals', function (Request $request) {
             'withdrawal_account_type' => $data['account_type'] ?? ($user->withdrawal_account_type ?: 'bank'),
         ]);
 
-        $withdrawalAmount = round((float) $data['amount'], 2);
         $processingFee = round($withdrawalAmount * 0.05, 2);
         $withdrawal = Withdrawal::create([
             'user_id' => $user->id,
@@ -976,6 +1026,7 @@ Route::post('/withdrawals', function (Request $request) {
         ->with('receipt', [
             'reference' => $withdrawal->transaction_reference,
             'amount' => number_format((float) $withdrawal->amount, 2),
+            'display_amount' => CurrencyDisplay::formatUsd((float) $withdrawal->amount, $currency, $rate),
             'total_withdrawn' => number_format((float) $withdrawal->total_withdrawn, 2),
             'bank_name' => $withdrawal->bank_name,
             'account_number' => $withdrawal->account_number,

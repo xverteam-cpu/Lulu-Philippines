@@ -537,11 +537,11 @@
         <path d="M40 210C110 206 160 182 210 150S280 108 310 104" stroke="url(#investWaveTwo)" stroke-width=".9" opacity=".7"/>
       </svg>
       <div class="investment-balance-label">Total investment</div>
-      <div class="investment-balance-value">${{ number_format($totalInvestment ?? 0, 2) }}</div>
+      <div class="investment-balance-value">{{ \App\Support\CurrencyDisplay::formatUsd($totalInvestment ?? 0, $displayCurrency, $usdToPhpRate) }}</div>
       <div class="account-package-hero-stats">
         <div class="account-package-hero-stat">
           <div class="account-package-hero-label">Total earnings</div>
-          <div class="account-package-hero-value">${{ number_format($totalPackageEarnings, 2) }}</div>
+          <div class="account-package-hero-value">{{ \App\Support\CurrencyDisplay::formatUsd($totalPackageEarnings, $displayCurrency, $usdToPhpRate) }}</div>
         </div>
         <div class="account-package-hero-stat">
           <div class="account-package-hero-label">Active packages</div>
@@ -584,7 +584,7 @@
               class="account-package-card account-package-card--active active-package-card {{ $packageKey }}"
               data-active-package-card
               data-package-name="{{ $package['name'] }}"
-              aria-label="{{ $package['name'] }} account package, active, earnings ${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}"
+              aria-label="{{ $package['name'] }} account package, active, earnings {{ \App\Support\CurrencyDisplay::formatUsd((float) $packageEarnings->get($packageKey, 0), $displayCurrency, $usdToPhpRate) }}"
               style="position:absolute!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;width:100%!important;transform:translateY(-{{ $loop->index * 12 }}px) scale({{ 1 - $loop->index * 0.02 }});z-index:{{ $activeAccountPackages->count() - $loop->index }};"
               @if ($loop->index > 0) aria-hidden="true" inert @endif
             >
@@ -599,7 +599,7 @@
               <div class="account-package-chip" aria-hidden="true"></div>
               <div class="account-package-earnings">
                 <div class="account-package-label">EARNINGS</div>
-                <div class="account-package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
+                <div class="account-package-value">{{ \App\Support\CurrencyDisplay::formatUsd((float) $packageEarnings->get($packageKey, 0), $displayCurrency, $usdToPhpRate) }}</div>
               </div>
             </article>
           @endforeach
@@ -662,7 +662,7 @@
           <div class="package-card-features">
             <div class="package-feature">
               <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$129</span>
+              <span class="package-feature-value">{{ \App\Support\CurrencyDisplay::formatUsd(129, $displayCurrency, $usdToPhpRate) }}</span>
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Rate</span>
@@ -689,7 +689,7 @@
           <div class="package-card-features">
             <div class="package-feature">
               <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$799</span>
+              <span class="package-feature-value">{{ \App\Support\CurrencyDisplay::formatUsd(799, $displayCurrency, $usdToPhpRate) }}</span>
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Rate</span>
@@ -716,7 +716,7 @@
           <div class="package-card-features">
             <div class="package-feature">
               <span class="package-feature-label">Capital</span>
-              <span class="package-feature-value">$7,999</span>
+              <span class="package-feature-value">{{ \App\Support\CurrencyDisplay::formatUsd(7999, $displayCurrency, $usdToPhpRate) }}</span>
             </div>
             <div class="package-feature">
               <span class="package-feature-label">Rate</span>
@@ -826,8 +826,8 @@
     <h2 class="amount-title" id="amountPackageTitle">Investment amount</h2>
     <p class="amount-copy" id="amountPackageCopy">Enter the amount you want to invest.</p>
     <label class="amount-field">
-      <span id="amountFieldLabel">Amount in USD</span>
-      <input type="hidden" name="currency" id="amountCurrencyInput" value="USD">
+      <span id="amountFieldLabel">Amount in {{ $displayCurrency }}</span>
+      <input type="hidden" name="currency" id="amountCurrencyInput" value="{{ $displayCurrency }}">
       <input type="number" name="amount" id="amountInput" min="1" step="0.01" value="{{ old('amount') }}" placeholder="Enter amount">
       <div style="margin-top: 8px; color: #666; font-size: 12px; display: flex; justify-content: space-between;">
         <span id="amountMinDisplay">Min: $120</span>
@@ -835,8 +835,8 @@
       </div>
     </label>
     <div class="currency-toggle" aria-label="Sample computation currency">
-      <button class="currency-button is-active" type="button" data-currency="USD">USD</button>
-      <button class="currency-button" type="button" data-currency="PHP">PHP</button>
+      <button class="currency-button {{ $displayCurrency === 'USD' ? 'is-active' : '' }}" type="button" data-currency="USD">USD</button>
+      <button class="currency-button {{ $displayCurrency === 'PHP' ? 'is-active' : '' }}" type="button" data-currency="PHP">PHP</button>
     </div>
     <div class="estimate-grid" aria-label="Investment estimate">
       <div class="estimate-card">
@@ -1169,7 +1169,7 @@
     var pointerStartY = 0;
     var selectedPackage = null;
     var lastPackageCard = null;
-    var selectedCurrency = 'USD';
+    var selectedCurrency = @json($displayCurrency);
     var phpRate = @json($phpRate);
     var phpRateUpdatedAt = @json($phpRateUpdatedAt ?? null);
     if (!track) return;

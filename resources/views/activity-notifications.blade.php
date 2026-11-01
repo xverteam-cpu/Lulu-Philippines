@@ -81,7 +81,7 @@
           <span class="activity-meta">
             <time datetime="{{ $activity['occurred_at']?->toIso8601String() }}">{{ $activity['occurred_at']?->format('M j, Y · g:i A') }}</time>
             @if ($activity['amount'] !== null)
-              <span class="activity-amount">{{ $activity['amount_prefix'] }}{{ number_format((float) $activity['amount'], 2) }}</span>
+              <span class="activity-amount">{{ \App\Support\CurrencyDisplay::formatUsd((float) $activity['amount'], $displayCurrency, $usdToPhpRate) }}</span>
             @endif
           </span>
         </span>

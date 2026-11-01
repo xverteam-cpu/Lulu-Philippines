@@ -69,7 +69,8 @@ class SendPageTest extends TestCase
             ->get(route('send'))
             ->assertOk()
             ->assertSee('Funds sent')
-            ->assertSee('You sent $25.50 to Recipient User. Message: Lunch');
+            ->assertSee('You sent funds to Recipient User. Message: Lunch')
+            ->assertSee('$25.50');
     }
 
     public function test_user_can_send_funds_to_another_user_by_full_name(): void

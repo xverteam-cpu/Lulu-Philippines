@@ -434,7 +434,7 @@
 
   <section class="balance-card">
     <div class="balance-label">Available balance</div>
-    <div class="balance-amount">${{ number_format($availableBalance ?? 0, 2) }}</div>
+    <div class="balance-amount">{{ \App\Support\CurrencyDisplay::formatUsd($availableBalance ?? 0, $displayCurrency, $usdToPhpRate) }}</div>
   </section>
 
   <section class="form-card">
@@ -455,17 +455,19 @@
     <form method="POST" action="{{ route('withdrawals.store') }}">
       @csrf
 
-      <label class="label" for="withdrawalAmount">Amount to Withdraw</label>
+      <label class="label" for="withdrawalAmount">Amount to Withdraw ({{ $displayCurrency }})</label>
       <div class="input-row">
-        <span class="currency">$</span>
-        <input class="input-box amount-input" id="withdrawalAmount" type="number" name="amount" min="20" max="500" step="0.01" value="{{ old('amount') }}" inputmode="decimal" placeholder="0.00" aria-describedby="withdrawalAmountError" required />
+        <span class="currency">{{ $displayCurrency === 'PHP' ? '₱' : '$' }}</span>
+        <input class="input-box amount-input" id="withdrawalAmount" type="number" name="amount" min="{{ number_format(\App\Support\CurrencyDisplay::fromUsd(20, $displayCurrency, $usdToPhpRate), 2, '.', '') }}" max="{{ number_format(\App\Support\CurrencyDisplay::fromUsd(500, $displayCurrency, $usdToPhpRate), 2, '.', '') }}" step="0.01" value="{{ old('amount') }}" inputmode="decimal" placeholder="0.00" aria-describedby="withdrawalAmountError" required />
       </div>
 
       <div class="quick-row">
-        <button type="button" data-withdrawal-amount="20">$20</button>
-        <button type="button" data-withdrawal-amount="50">$50</button>
-        <button type="button" data-withdrawal-amount="100">$100</button>
-        <button type="button" data-withdrawal-amount="200">$200</button>
+        @foreach ([20, 50, 100, 200] as $quickAmountUsd)
+          @php
+            $quickAmount = \App\Support\CurrencyDisplay::fromUsd($quickAmountUsd, $displayCurrency, $usdToPhpRate);
+          @endphp
+          <button type="button" data-withdrawal-amount="{{ number_format($quickAmount, 2, '.', '') }}">{{ $displayCurrency === 'PHP' ? '₱' : '$' }}{{ number_format($quickAmount, 2) }}</button>
+        @endforeach
       </div>
       <div class="error" id="withdrawalAmountError" aria-live="polite">
         @error('amount'){{ $message }}@enderror
@@ -516,7 +518,7 @@
           <button class="save-account-button" type="submit" formnovalidate formaction="{{ route('withdrawal-account.store') }}">Save Account</button>
       </div>
 
-      <div class="note">Minimum withdrawal is $20 and maximum withdrawal is $500. Your available balance will be reduced immediately after the request is submitted.</div>
+      <div class="note">Minimum withdrawal is {{ \App\Support\CurrencyDisplay::formatUsd(20, $displayCurrency, $usdToPhpRate) }} and maximum withdrawal is {{ \App\Support\CurrencyDisplay::formatUsd(500, $displayCurrency, $usdToPhpRate) }}. Your available balance will be reduced immediately after the request is submitted.</div>
 
       <button class="send-btn" type="submit">Request Withdrawal</button>
     </form>
@@ -532,7 +534,7 @@
       @forelse ($recentWithdrawals as $withdrawal)
         <div class="history-item">
           <div class="history-left">
-            <div>${{ number_format($withdrawal->amount, 2) }} · {{ $withdrawal->bank_name ?: ucfirst(str_replace('_', ' ', $withdrawal->payment_method)) }}</div>
+            <div>{{ \App\Support\CurrencyDisplay::formatUsd($withdrawal->amount, $displayCurrency, $usdToPhpRate) }} · {{ $withdrawal->bank_name ?: ucfirst(str_replace('_', ' ', $withdrawal->payment_method)) }}</div>
             <small style="display:block; margin-top:4px; color:#8a9892; font:500 11px/1.2 Inter,system-ui,sans-serif;">{{ $withdrawal->created_at?->format('M d, Y') ?: '—' }} · {{ $withdrawal->account_number ? '••••'.substr($withdrawal->account_number, -4) : 'Withdrawal request' }}</small>
           </div>
           <div class="history-right {{ strtolower($withdrawal->status) }}">{{ ucfirst($withdrawal->status) }}</div>
@@ -704,7 +706,7 @@
     function openWithdrawalReceiptModal(receiptData) {
       if (!withdrawalReceiptModal) return;
       if (withdrawalReceiptReference) withdrawalReceiptReference.textContent = receiptData.reference || '';
-      if (withdrawalReceiptAmount) withdrawalReceiptAmount.textContent = '$' + (receiptData.amount || '0.00');
+      if (withdrawalReceiptAmount) withdrawalReceiptAmount.textContent = receiptData.display_amount || '$' + (receiptData.amount || '0.00');
       if (withdrawalReceiptBank) withdrawalReceiptBank.textContent = receiptData.bank_name || '';
       if (withdrawalReceiptAccount) withdrawalReceiptAccount.textContent = receiptData.account_number || '';
       if (withdrawalReceiptHolder) withdrawalReceiptHolder.textContent = receiptData.account_holder || '';

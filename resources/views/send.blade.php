@@ -695,7 +695,7 @@
         </span>
       </div>
       <div class="send-balance">
-        <span class="send-balance-currency">$</span>{{ number_format((float) $availableBalance, 2, '.', '') }}
+        <span class="send-balance-currency">{{ $displayCurrency === 'PHP' ? '₱' : '$' }}</span>{{ number_format(\App\Support\CurrencyDisplay::fromUsd((float) $availableBalance, $displayCurrency, $usdToPhpRate), 2, '.', '') }}
       </div>
       <p class="send-hero-sub">Your available Lulu balance.</p>
     </section>
@@ -727,16 +727,16 @@
         </div>
 
         <div class="send-field">
-          <label for="sendAmount">Amount to Send</label>
+          <label for="sendAmount">Amount to Send ({{ $displayCurrency }})</label>
           <div class="send-control send-amount-control">
-            <span class="send-currency" aria-hidden="true">$</span>
+            <span class="send-currency" aria-hidden="true">{{ $displayCurrency === 'PHP' ? '₱' : '$' }}</span>
             <input id="sendAmount" name="amount" class="send-number" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" value="{{ old('amount') }}" required>
           </div>
           <div class="send-quick-row" aria-label="Quick amount">
-            <button type="button" class="send-quick" data-amount="10">$10</button>
-            <button type="button" class="send-quick" data-amount="25">$25</button>
-            <button type="button" class="send-quick" data-amount="50">$50</button>
-            <button type="button" class="send-quick" data-amount="100">$100</button>
+            @foreach ([10, 25, 50, 100] as $quickAmountUsd)
+              @php($quickAmount = \App\Support\CurrencyDisplay::fromUsd($quickAmountUsd, $displayCurrency, $usdToPhpRate))
+              <button type="button" class="send-quick" data-amount="{{ number_format($quickAmount, 2, '.', '') }}">{{ $displayCurrency === 'PHP' ? '₱' : '$' }}{{ number_format($quickAmount, 2) }}</button>
+            @endforeach
           </div>
         </div>
 
@@ -769,6 +769,7 @@
         <article class="send-recipient-empty">
           <strong>{{ $transfer->title }}</strong>
           <div>{{ $transfer->description }}</div>
+          <div>{{ \App\Support\CurrencyDisplay::formatUsd((float) $transfer->amount, $displayCurrency, $usdToPhpRate) }}</div>
           <small>{{ $transfer->occurred_at->format('M j, Y g:i A') }}</small>
         </article>
       @empty

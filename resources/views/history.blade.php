@@ -166,7 +166,7 @@
 
       <section class="history-overview" aria-label="Interest earned to date">
         <div class="history-overview-label">Interest earned to date</div>
-        <div class="history-overview-value">${{ number_format($dailyInterest, 2) }}</div>
+        <div class="history-overview-value">{{ \App\Support\CurrencyDisplay::formatUsd($dailyInterest, $displayCurrency, $usdToPhpRate) }}</div>
         <div class="history-overview-copy">Total interest credited from approved investments.</div>
       </section>
 
@@ -210,7 +210,7 @@
               @endphp
               <div class="history-entry">
                 <div><div class="history-entry-name">{{ $investment->package_name }}</div><div class="history-entry-date">{{ $investment->created_at->format('F j, Y') }}</div></div>
-                <div class="history-entry-right"><div class="history-entry-amount">${{ number_format((float) $investment->amount, 2) }}</div><span class="history-tag {{ $statusClass }}">{{ $statusLabel }}</span></div>
+                <div class="history-entry-right"><div class="history-entry-amount">{{ \App\Support\CurrencyDisplay::formatUsd((float) $investment->amount, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag {{ $statusClass }}">{{ $statusLabel }}</span></div>
               </div>
             @empty
               <div class="history-empty"><strong>No investment transactions yet.</strong>Invest in a package to begin earning daily interest and see it listed here.</div>
@@ -232,7 +232,7 @@
               @endphp
               <div class="history-entry">
                 <div><div class="history-entry-name">{{ $withdrawalName }}</div><div class="history-entry-date">{{ $withdrawal->created_at->format('F j, Y') }}</div></div>
-                <div class="history-entry-right"><div class="history-entry-amount">${{ number_format((float) $withdrawal->amount, 2) }}</div><span class="history-tag {{ $historyTagClass($withdrawal->status) }}">{{ $withdrawalStatus }}</span></div>
+                <div class="history-entry-right"><div class="history-entry-amount">{{ \App\Support\CurrencyDisplay::formatUsd((float) $withdrawal->amount, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag {{ $historyTagClass($withdrawal->status) }}">{{ $withdrawalStatus }}</span></div>
               </div>
             @empty
               <div class="history-empty"><strong>No withdrawals yet.</strong>Request a withdrawal and the transaction will appear here once submitted.</div>
@@ -250,7 +250,7 @@
             @forelse ($dailyInterestEntries as $entry)
               <div class="history-entry">
                 <div><div class="history-entry-name">{{ $entry['investment']->package_name }} interest credit</div><div class="history-entry-date">{{ $entry['date']->format('F j, Y') }}</div></div>
-                <div class="history-entry-right"><div class="history-entry-amount">+${{ number_format((float) $entry['amount'], 2) }}</div><span class="history-tag ok">Credited</span></div>
+                <div class="history-entry-right"><div class="history-entry-amount">+{{ \App\Support\CurrencyDisplay::formatUsd((float) $entry['amount'], $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag ok">Credited</span></div>
               </div>
             @empty
               <div class="history-empty"><strong>No daily interest records yet.</strong>Interest starts accruing the day after an investment is approved.</div>
@@ -266,12 +266,12 @@
           </button>
           <div class="history-body" id="history-rewards"><div class="history-inner"><div class="history-entries">
             @if (! $signupBonusClaimed)
-              <button id="claim-signup-bonus" class="history-claim" type="button">Claim $5 Sign Up Bonus</button>
+              <button id="claim-signup-bonus" class="history-claim" type="button">Claim {{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }} Sign Up Bonus</button>
             @endif
             @forelse ($rewards as $reward)
               <div class="history-entry">
                 <div><div class="history-entry-name">{{ $reward->bank_name === 'Welcome Bonus' ? 'Signup Bonus' : ($reward->account_holder ?: 'Account reward') }}</div><div class="history-entry-date">{{ $reward->created_at->format('F j, Y') }}</div></div>
-                <div class="history-entry-right"><div class="history-entry-amount">+${{ number_format((float) $reward->amount, 2) }}</div><span class="history-tag {{ $historyTagClass($reward->status) }}">{{ ucfirst(str_replace('_', ' ', (string) $reward->status)) }}</span></div>
+                <div class="history-entry-right"><div class="history-entry-amount">+{{ \App\Support\CurrencyDisplay::formatUsd((float) $reward->amount, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag {{ $historyTagClass($reward->status) }}">{{ ucfirst(str_replace('_', ' ', (string) $reward->status)) }}</span></div>
               </div>
             @empty
               <div class="history-empty" id="rewards-empty"><strong>No rewards yet.</strong>Any signup bonus or rewards will appear here.</div>
@@ -287,7 +287,7 @@
 <template id="reward-entry-template">
   <div class="history-entry">
     <div><div class="history-entry-name">Signup Bonus</div><div class="history-entry-date" data-reward-date></div></div>
-    <div class="history-entry-right"><div class="history-entry-amount">+$5.00</div><span class="history-tag ok">Approved</span></div>
+    <div class="history-entry-right"><div class="history-entry-amount">+{{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag ok">Approved</span></div>
   </div>
 </template>
 
@@ -315,7 +315,7 @@
     if (!claimButton) return;
 
     claimButton.addEventListener('click', function () {
-      if (!window.confirm('Claim the $5 signup bonus?')) return;
+      if (!window.confirm('Claim the ' + @json(\App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate)) + ' signup bonus?')) return;
       claimButton.disabled = true;
       claimButton.textContent = 'Claiming...';
 
@@ -349,7 +349,7 @@
       }).catch(function (error) {
         console.error(error);
         claimButton.disabled = false;
-        claimButton.textContent = 'Claim $5 Sign Up Bonus';
+        claimButton.textContent = 'Claim ' + @json(\App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate)) + ' Sign Up Bonus';
         window.alert('Unable to claim signup bonus right now.');
       });
     });

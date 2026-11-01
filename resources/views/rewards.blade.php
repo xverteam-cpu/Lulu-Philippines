@@ -134,7 +134,7 @@
     <div class="card">
       <img src="{{ asset('signup.png') }}" alt="Sign up bonus" loading="lazy" decoding="async">
       <div class="eyebrow">Welcome reward</div>
-      <div class="title">$5 Sign Up Bonus</div>
+      <div class="title">{{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }} Sign Up Bonus</div>
       <div class="reward-pill">One-time reward • Instant credit</div>
       <p class="subtitle">Claim your one-time welcome reward and add it instantly to your available balance.</p>
 
@@ -148,7 +148,7 @@
         @else
           <form method="POST" action="{{ route('rewards.claim-signup-bonus') }}">
             @csrf
-            <button class="claim-btn" type="submit">Claim $5 Bonus</button>
+            <button class="claim-btn" type="submit">Claim {{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }} Bonus</button>
           </form>
         @endif
       </div>

@@ -165,7 +165,7 @@
         <div class="referral-overview-top">
           <div>
             <div class="referral-overview-label">Total earnings</div>
-            <div class="referral-overview-value">${{ number_format($totalEarned, 2) }}</div>
+            <div class="referral-overview-value">{{ \App\Support\CurrencyDisplay::formatUsd($totalEarned, $displayCurrency, $usdToPhpRate) }}</div>
             <div class="referral-overview-copy">Referral rewards credited to your account.</div>
           </div>
           <div class="referral-overview-icon" aria-hidden="true">
@@ -219,7 +219,7 @@
 
       <div class="referral-section-head">
         <h2>Referred Partners</h2>
-        <div class="referral-section-amount">${{ number_format($totalEarned, 2) }}</div>
+        <div class="referral-section-amount">{{ \App\Support\CurrencyDisplay::formatUsd($totalEarned, $displayCurrency, $usdToPhpRate) }}</div>
       </div>
       <section class="referral-partner-list" aria-label="Referred partners">
         @forelse ($referrals as $referral)
@@ -242,7 +242,7 @@
               @endif
             </div>
             <div class="referral-partner-meta">
-              <strong>Invested: ${{ number_format((float) ($referral->referred_invested_amount ?? 0), 2) }}</strong>
+              <strong>Invested: {{ \App\Support\CurrencyDisplay::formatUsd((float) ($referral->referred_invested_amount ?? 0), $displayCurrency, $usdToPhpRate) }}</strong>
               <span>Joined {{ $referral->created_at->diffForHumans() }}</span>
             </div>
           </article>

@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\IdentityVerification;
 use App\Models\Investment;
 use App\Models\Withdrawal;
+use App\Support\CurrencyDisplay;
+use App\Support\CurrencyRateService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
@@ -24,6 +26,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        View::composer('*', function ($view): void {
+            $user = Auth::user();
+            $displayCurrency = $user ? CurrencyDisplay::preferredFor($user) : 'USD';
+
+            $view->with([
+                'displayCurrency' => $displayCurrency,
+                'usdToPhpRate' => $displayCurrency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0,
+            ]);
+        });
+
         View::composer('partials.admin-nav', function ($view): void {
             $pendingRequests = ['verifications' => 0, 'withdrawals' => 0, 'deposits' => 0];
 

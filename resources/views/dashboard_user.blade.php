@@ -1562,7 +1562,7 @@
 
   .dashboard-balance-toggle {
     display: grid;
-    width: 36px;
+    width: auto;
     height: 36px;
     place-items: center;
     border: 1px solid rgba(255, 255, 255, .22);
@@ -1570,6 +1570,10 @@
     background: rgba(255, 255, 255, .1);
     color: #fff;
     cursor: pointer;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
   }
 
   .dashboard-balance-toggle svg {
@@ -1964,7 +1968,7 @@
   }
 
   .dashboard-balance-toggle {
-    width: 36px;
+    width: auto;
     height: 36px;
     border: 0;
     border-radius: 12px;
@@ -1972,6 +1976,7 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 1px rgba(255, 255, 255, .1);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    padding: 0 10px;
   }
 
   .dashboard-balance-toggle .off {
@@ -2964,17 +2969,21 @@
       </svg>
       <div class="dashboard-hero-top">
         <span class="dashboard-hero-label">Available balance</span>
-        <button class="dashboard-balance-toggle eye" id="dashboardBalanceToggle" type="button" aria-label="Hide balance" aria-pressed="false">
-          <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.5M6.5 6.6C3.8 8.3 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>
-        </button>
+        <form method="POST" action="{{ route('currency.preference') }}">
+          @csrf
+          <input type="hidden" name="preferred_currency" value="{{ $displayCurrency === 'PHP' ? 'USD' : 'PHP' }}">
+          <button class="dashboard-balance-toggle" id="currencyPreferenceToggle" type="submit" aria-label="Switch currency to {{ $displayCurrency === 'PHP' ? 'USD' : 'PHP' }}">
+            {{ $displayCurrency }} <span aria-hidden="true">↔</span>
+          </button>
+        </form>
       </div>
       @php
-        $balanceParts = explode('.', number_format($availableBalance, 2));
-        $assetParts = explode('.', number_format($totalInvestment, 2));
+        $currencySymbol = $displayCurrency === 'PHP' ? '₱' : '$';
+        $balanceParts = explode('.', number_format($displayCurrency === 'PHP' ? $availableBalance * $usdToPhpRate : $availableBalance, 2));
+        $assetParts = explode('.', number_format($displayCurrency === 'PHP' ? $totalInvestment * $usdToPhpRate : $totalInvestment, 2));
       @endphp
       <div class="dashboard-balance num" aria-live="polite">
-        <span class="balance-readable"><span class="currency">$</span>{{ $balanceParts[0] }}<span class="decimal">.{{ $balanceParts[1] }}</span></span>
+        <span class="balance-readable"><span class="currency">{{ $currencySymbol }}</span>{{ $balanceParts[0] }}<span class="decimal">.{{ $balanceParts[1] }}</span></span>
         <span class="balance-mask" aria-hidden="true">••••••</span>
       </div>
       <div class="dashboard-assets sub">
@@ -2984,8 +2993,8 @@
         <div>
           <div class="dashboard-assets-label">Assets</div>
           <div class="dashboard-assets-value sub-val num">
-            <span class="asset-readable">${{ $assetParts[0] }}<span class="decimal">.{{ $assetParts[1] }}</span></span>
-            <span class="balance-mask asset-mask" aria-hidden="true">$••••</span>
+            <span class="asset-readable">{{ $currencySymbol }}{{ $assetParts[0] }}<span class="decimal">.{{ $assetParts[1] }}</span></span>
+            <span class="balance-mask asset-mask" aria-hidden="true">{{ $currencySymbol }}••••</span>
           </div>
         </div>
       </div>
@@ -3074,7 +3083,7 @@
             </div>
             <div class="package-balance">
               <div class="package-label">EARNINGS</div>
-              <div class="package-value">${{ number_format((float) $packageEarnings->get($packageKey, 0), 2) }}</div>
+              <div class="package-value">{{ \App\Support\CurrencyDisplay::formatUsd((float) $packageEarnings->get($packageKey, 0), $displayCurrency, $usdToPhpRate) }}</div>
             </div>
           </article>
         @else
@@ -3238,8 +3247,6 @@
 
 <script>
   (function () {
-    var dashboardBalance = document.getElementById('dashboardBalance');
-    var dashboardBalanceToggle = document.getElementById('dashboardBalanceToggle');
     var fabToggle = document.getElementById('fabToggle');
     var moreToggle = document.getElementById('moreToggle');
     var fabScrim = document.getElementById('fabScrim');
@@ -3250,14 +3257,6 @@
     var continueAddFunds = document.getElementById('continueAddFunds');
     var selectedPaymentMethod = 'bank';
     var bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
-    if (dashboardBalance && dashboardBalanceToggle) {
-      dashboardBalanceToggle.addEventListener('click', function () {
-        var hidden = dashboardBalance.classList.toggle('is-hidden');
-        dashboardBalanceToggle.setAttribute('aria-pressed', String(hidden));
-        dashboardBalanceToggle.setAttribute('aria-label', hidden ? 'Show balance' : 'Hide balance');
-      });
-    }
-
     bottomNavItems.forEach(function (item) {
       item.addEventListener('click', function () {
         item.classList.remove('is-stomping');

@@ -215,8 +215,8 @@
 </style>
 
 @php
-  $initialCurrency = old('currency') === 'PHP' ? 'PHP' : 'USD';
-  $initialAmount = old('amount', $package['price']);
+  $initialCurrency = in_array(old('currency', $displayCurrency), ['USD', 'PHP'], true) ? old('currency', $displayCurrency) : 'USD';
+  $initialAmount = old('amount', number_format(\App\Support\CurrencyDisplay::fromUsd($package['price'], $initialCurrency, $phpRate), 2, '.', ''));
   $midpointAmount = round(($package['min_amount'] + $package['max_amount']) / 2, 2);
 @endphp
 
@@ -251,7 +251,7 @@
       </div>
     </article>
 
-    <p class="bp-lede">Choose an amount from <strong>${{ number_format($package['min_amount'], 2) }}</strong> to <strong>${{ number_format($package['max_amount'], 2) }}</strong>. The estimates below use this package's <strong>{{ number_format($package['daily_interest_rate'], 2) }}% daily rate</strong> and {{ $package['duration_days'] }}-day duration.</p>
+    <p class="bp-lede">Choose an amount from <strong>{{ \App\Support\CurrencyDisplay::formatUsd($package['min_amount'], $initialCurrency, $phpRate) }}</strong> to <strong>{{ \App\Support\CurrencyDisplay::formatUsd($package['max_amount'], $initialCurrency, $phpRate) }}</strong>. The estimates below use this package's <strong>{{ number_format($package['daily_interest_rate'], 2) }}% daily rate</strong> and {{ $package['duration_days'] }}-day duration.</p>
 
     <form method="post" action="{{ route('investments.store') }}" id="purchaseForm">
       @csrf
@@ -275,8 +275,8 @@
           <input class="bp-amount" id="purchaseAmount" type="text" name="amount" inputmode="decimal" autocomplete="off" value="{{ $initialAmount }}" aria-labelledby="amountLabel" aria-describedby="purchaseLimits purchaseAmountError" required>
         </label>
         <div class="bp-limits" id="purchaseLimits">
-          <span>Min <strong id="purchaseMin">${{ number_format($package['min_amount'], 2) }}</strong></span>
-          <span>Max <strong id="purchaseMax">${{ number_format($package['max_amount'], 2) }}</strong></span>
+          <span>Min <strong id="purchaseMin">{{ \App\Support\CurrencyDisplay::formatUsd($package['min_amount'], $initialCurrency, $phpRate) }}</strong></span>
+          <span>Max <strong id="purchaseMax">{{ \App\Support\CurrencyDisplay::formatUsd($package['max_amount'], $initialCurrency, $phpRate) }}</strong></span>
         </div>
         <p class="bp-error" id="purchaseAmountError" role="alert"></p>
         <div class="bp-chips" role="group" aria-label="Suggested investment amounts">
@@ -285,7 +285,7 @@
           <button class="bp-chip" type="button" data-amount="{{ $package['max_amount'] }}">Maximum</button>
         </div>
         <input class="bp-range" id="purchaseRange" type="range" min="{{ $package['min_amount'] }}" max="{{ $package['max_amount'] }}" step="0.01" value="{{ $package['price'] }}" aria-label="Adjust investment amount in US dollars">
-        <div class="bp-range-scale"><span>${{ number_format($package['min_amount'], 2) }}</span><span>${{ number_format($package['max_amount'], 2) }}</span></div>
+        <div class="bp-range-scale"><span id="purchaseRangeMin">{{ \App\Support\CurrencyDisplay::formatUsd($package['min_amount'], $initialCurrency, $phpRate) }}</span><span id="purchaseRangeMax">{{ \App\Support\CurrencyDisplay::formatUsd($package['max_amount'], $initialCurrency, $phpRate) }}</span></div>
         <div class="bp-fx" id="purchaseFx" hidden>
           <span aria-hidden="true">i</span>
           <span>Converted using the live rate of <strong>US$1 = ₱{{ number_format($phpRate, 4) }}</strong> (updated {{ $phpRateUpdatedAt }}). The selected currency and amount will be validated at checkout.</span>
@@ -622,6 +622,8 @@
       var currentLimits = limits();
       minLabel.textContent = formatMoney(currentLimits.min);
       maxLabel.textContent = formatMoney(currentLimits.max);
+      document.getElementById('purchaseRangeMin').textContent = formatMoney(currentLimits.min);
+      document.getElementById('purchaseRangeMax').textContent = formatMoney(currentLimits.max);
       fxNote.hidden = currency !== 'PHP';
       range.value = Math.min(maxUsd, Math.max(minUsd, Number.isFinite(base) ? base : minUsd));
       presets.forEach(function (preset) {

@@ -119,7 +119,7 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('Open transactions')
             ->assertSee(route('invest.purchase', ['package' => 'crunch']), false)
             ->assertSee(route('history'), false)
-            ->assertSee('id="dashboardBalanceToggle"', false)
+            ->assertSee('id="currencyPreferenceToggle"', false)
             ->assertDontSee('9:41')
             ->assertDontSee('dashboard-statusbar')
             ->assertDontSee('dashboard-status-icons')

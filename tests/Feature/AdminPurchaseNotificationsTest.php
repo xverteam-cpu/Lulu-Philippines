@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Investment;
+use App\Models\AccountActivity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -82,6 +83,85 @@ class AdminPurchaseNotificationsTest extends TestCase
         $this->actingAs($user)
             ->withSession(['investor_pin_verified' => true])
             ->get(route('admin.dashboard.purchase-notifications'))
+            ->assertForbidden();
+    }
+
+    public function test_admin_dashboard_shows_admin_credits_and_user_transfers_from_the_last_24_hours(): void
+    {
+        Carbon::setTestNow('2026-11-01 10:00:00');
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $recipient = User::factory()->create(['name' => 'Fund Recipient']);
+        $sender = User::factory()->create(['name' => 'Transfer Sender']);
+
+        $adminCredit = AccountActivity::create([
+            'user_id' => $recipient->id,
+            'type' => 'funds_received',
+            'title' => 'Funds received',
+            'description' => 'Funds were added to your account by the LuLu team.',
+            'amount' => 75,
+            'occurred_at' => now()->subHours(2),
+        ]);
+        $transferReceived = AccountActivity::create([
+            'user_id' => $recipient->id,
+            'type' => 'funds_received',
+            'title' => 'Funds received',
+            'description' => 'You received $40.00 from Transfer Sender.',
+            'amount' => 40,
+            'occurred_at' => now()->subHours(3),
+        ]);
+        AccountActivity::create([
+            'user_id' => $sender->id,
+            'type' => 'funds_sent',
+            'title' => 'Funds sent',
+            'description' => 'You sent $40.00 to Fund Recipient.',
+            'amount' => 40,
+            'occurred_at' => now()->subHours(3),
+        ]);
+        AccountActivity::create([
+            'user_id' => $recipient->id,
+            'type' => 'funds_received',
+            'title' => 'Funds received',
+            'description' => 'You received $20.00 from Transfer Sender.',
+            'amount' => 20,
+            'occurred_at' => now()->subHours(25),
+        ]);
+        AccountActivity::create([
+            'user_id' => $recipient->id,
+            'type' => 'funds_received',
+            'title' => 'Withdrawal funds returned',
+            'description' => 'Your rejected withdrawal request was returned to your account.',
+            'amount' => 15,
+            'occurred_at' => now()->subHour(),
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Recent funds activity')
+            ->assertSee('Funds sent by admin')
+            ->assertSee('User-to-user funds transfer')
+            ->assertSee('Recipient: Fund Recipient')
+            ->assertSee('You received $40.00 from Transfer Sender.')
+            ->assertSee('data-notification-id="'.$adminCredit->id.'"', false)
+            ->assertSee('data-notification-id="'.$transferReceived->id.'"', false)
+            ->assertSee('id="funds-notification-panel"', false);
+
+        $this->get(route('admin.dashboard.funds-notifications'))
+            ->assertOk()
+            ->assertJsonCount(2, 'notifications')
+            ->assertJsonPath('notifications.0.type', 'admin_funds')
+            ->assertJsonPath('notifications.1.type', 'user_transfer');
+    }
+
+    public function test_non_admin_cannot_read_funds_notifications(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard.funds-notifications'))
             ->assertForbidden();
     }
 

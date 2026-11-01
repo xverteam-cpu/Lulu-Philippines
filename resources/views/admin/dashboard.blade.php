@@ -165,6 +165,10 @@
     border-left-color: #b26b00;
   }
 
+  .purchase-notification[data-type="user_transfer"] {
+    border-left-color: #2764a5;
+  }
+
   .purchase-notification-title {
     color: #0a1f17;
     font-size: 12px;
@@ -565,10 +569,10 @@
   }
 
   @media (min-width: 1440px) {
-    .purchase-notification-panel {
+    .purchase-notification-panel,
+    .funds-notification-panel {
       position: fixed;
       top: 24px;
-      left: 12px;
       z-index: 90;
       width: 220px;
       max-height: calc(100vh - 48px);
@@ -576,6 +580,14 @@
       padding: 0 2px 2px 0;
       overflow-y: auto;
       scrollbar-width: thin;
+    }
+
+    .purchase-notification-panel {
+      left: 12px;
+    }
+
+    .funds-notification-panel {
+      right: 12px;
     }
 
     .purchase-notification-heading {
@@ -593,6 +605,7 @@
     class="purchase-notification-panel"
     id="purchase-notification-panel"
     data-refresh-url="{{ route('admin.dashboard.purchase-notifications') }}"
+    data-empty-message="No bond or deposit activity in the last 24 hours."
     aria-label="Recent bond activity"
   >
     <header class="purchase-notification-heading">
@@ -615,6 +628,37 @@
         </article>
       @empty
         <p class="purchase-notification-empty">No bond or deposit activity in the last 24 hours.</p>
+      @endforelse
+    </div>
+  </section>
+
+  <section
+    class="purchase-notification-panel funds-notification-panel"
+    id="funds-notification-panel"
+    data-refresh-url="{{ route('admin.dashboard.funds-notifications') }}"
+    data-empty-message="No admin funds or user transfers in the last 24 hours."
+    aria-label="Recent funds activity"
+  >
+    <header class="purchase-notification-heading">
+      <div>
+        <h2>Recent funds activity</h2>
+        <p>Visible for 24 hours</p>
+      </div>
+      <span class="purchase-notification-count" id="funds-notification-count">{{ $recentFundsNotifications->count() }}</span>
+    </header>
+    <div class="purchase-notification-list" id="funds-notification-list" aria-live="polite">
+      @forelse ($recentFundsNotifications as $notification)
+        <article class="purchase-notification" data-notification-id="{{ $notification['id'] }}" data-type="{{ $notification['type'] }}">
+          <h3 class="purchase-notification-title">{{ $notification['title'] }}</h3>
+          <p class="purchase-notification-user">Recipient: {{ $notification['user_name'] }}</p>
+          <div class="purchase-notification-meta">
+            <strong>${{ number_format($notification['amount'], 2) }}</strong>
+            <time datetime="{{ $notification['occurred_at'] }}">{{ $notification['timestamp'] }}</time>
+          </div>
+          <p class="purchase-notification-detail">{{ $notification['detail'] }}</p>
+        </article>
+      @empty
+        <p class="purchase-notification-empty">No admin funds or user transfers in the last 24 hours.</p>
       @endforelse
     </div>
   </section>
@@ -1795,14 +1839,6 @@
 
 <script>
   (function () {
-    var panel = document.getElementById('purchase-notification-panel');
-    var list = document.getElementById('purchase-notification-list');
-    var count = document.getElementById('purchase-notification-count');
-
-    if (!panel || !list || !count) {
-      return;
-    }
-
     function appendText(parent, tagName, className, value) {
       var element = document.createElement(tagName);
       element.className = className;
@@ -1811,7 +1847,7 @@
       return element;
     }
 
-    function renderNotifications(notifications) {
+    function renderNotifications(panel, list, count, notifications) {
       var currentIds = Array.from(list.querySelectorAll('[data-notification-id]'))
         .map(function (item) { return item.dataset.notificationId; })
         .join('|');
@@ -1826,7 +1862,7 @@
       list.replaceChildren();
 
       if (notifications.length === 0) {
-        appendText(list, 'p', 'purchase-notification-empty', 'No bond or deposit activity in the last 24 hours.');
+        appendText(list, 'p', 'purchase-notification-empty', panel.dataset.emptyMessage);
         return;
       }
 
@@ -1837,7 +1873,8 @@
         card.dataset.type = notification.type;
 
         appendText(card, 'h3', 'purchase-notification-title', notification.title);
-        appendText(card, 'p', 'purchase-notification-user', notification.user_name + ' · ' + notification.package_name);
+        var userLabel = panel.id === 'funds-notification-panel' ? 'Recipient: ' : '';
+        appendText(card, 'p', 'purchase-notification-user', userLabel + notification.user_name + (notification.package_name ? ' · ' + notification.package_name : ''));
 
         var meta = document.createElement('div');
         meta.className = 'purchase-notification-meta';
@@ -1854,27 +1891,34 @@
       });
     }
 
-    function refreshNotifications() {
-      fetch(panel.dataset.refreshUrl, {
-        headers: { Accept: 'application/json' },
-        credentials: 'same-origin'
-      })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error('Admin purchase notifications returned HTTP ' + response.status);
-          }
+    document.querySelectorAll('[data-refresh-url][data-empty-message]').forEach(function (panel) {
+      var list = panel.querySelector('.purchase-notification-list');
+      var count = panel.querySelector('.purchase-notification-count');
+      if (!list || !count) return;
 
-          return response.json();
+      function refreshNotifications() {
+        fetch(panel.dataset.refreshUrl, {
+          headers: { Accept: 'application/json' },
+          credentials: 'same-origin'
         })
-        .then(function (data) {
-          renderNotifications(data.notifications);
-        })
-        .catch(function (error) {
-          console.error('Unable to refresh admin purchase notifications.', error);
-        });
-    }
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error('Admin activity notifications returned HTTP ' + response.status);
+            }
 
-    window.setInterval(refreshNotifications, 60000);
+            return response.json();
+          })
+          .then(function (data) {
+            renderNotifications(panel, list, count, data.notifications);
+          })
+          .catch(function (error) {
+            console.error('Unable to refresh admin activity notifications.', error);
+          });
+      }
+
+      window.setInterval(refreshNotifications, 60000);
+      refreshNotifications();
+    });
   })();
 </script>
 @endsection

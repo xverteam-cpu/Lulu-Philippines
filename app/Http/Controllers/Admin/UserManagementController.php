@@ -72,6 +72,7 @@ class UserManagementController extends Controller
             'approvedDepositTotal' => Investment::where('status', 'approved')->sum('amount'),
             'pendingWithdrawalsCount' => Withdrawal::where('status', 'pending')->count(),
             'recentPurchaseNotifications' => $this->recentPurchaseNotifications(),
+            'recentFundsNotifications' => $this->recentFundsNotifications(),
             'search' => $search,
             'packages' => InvestmentPackages::all(),
             'packageSlots' => InvestmentPackages::currentSlots(),
@@ -83,6 +84,44 @@ class UserManagementController extends Controller
         return response()->json([
             'notifications' => $this->recentPurchaseNotifications(),
         ]);
+    }
+
+    public function fundsNotifications(): JsonResponse
+    {
+        return response()->json([
+            'notifications' => $this->recentFundsNotifications(),
+        ]);
+    }
+
+    private function recentFundsNotifications(): \Illuminate\Support\Collection
+    {
+        $cutoff = now()->subDay();
+
+        return AccountActivity::query()
+            ->with('user')
+            ->where('type', 'funds_received')
+            ->where('occurred_at', '>=', $cutoff)
+            ->where(function ($query) {
+                $query->where('description', 'Funds were added to your account by the LuLu team.')
+                    ->orWhere('description', 'like', 'You received $% from %');
+            })
+            ->orderByDesc('occurred_at')
+            ->get()
+            ->map(function (AccountActivity $activity) {
+                $isAdminCredit = $activity->description === 'Funds were added to your account by the LuLu team.';
+
+                return [
+                    'id' => $activity->id,
+                    'type' => $isAdminCredit ? 'admin_funds' : 'user_transfer',
+                    'title' => $isAdminCredit ? 'Funds sent by admin' : 'User-to-user funds transfer',
+                    'user_name' => $activity->user?->name ?: $activity->user?->email ?: 'Unknown user',
+                    'amount' => (float) $activity->amount,
+                    'detail' => $activity->description,
+                    'occurred_at' => $activity->occurred_at?->toIso8601String(),
+                    'timestamp' => $activity->occurred_at?->format('M j, g:i A') ?: '',
+                ];
+            })
+            ->values();
     }
 
     private function recentPurchaseNotifications(): \Illuminate\Support\Collection

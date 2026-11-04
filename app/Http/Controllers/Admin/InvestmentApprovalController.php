@@ -103,9 +103,6 @@ class InvestmentApprovalController extends Controller
                 ->withErrors(['error' => 'No remaining slots available for this package.']);
         }
 
-        // After approving, credit referral commission where applicable
-        $investment->refresh()->processReferralCommission();
-
         return redirect()
             ->back()
             ->with('status', 'Investment approved successfully.');

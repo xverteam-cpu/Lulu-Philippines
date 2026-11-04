@@ -71,9 +71,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Make the referred user buy shares so Bello has a referral earning for demo
+        // Make the referred user buy shares for the referral demo
         if (isset($referred)) {
-            $inv = Investment::create([
+            Investment::create([
                 'user_id' => $referred->id,
                 'package_key' => 'starter',
                 'package_name' => 'Starter Pack',
@@ -84,9 +84,6 @@ class DatabaseSeeder extends Seeder
                 'starts_at' => now(),
                 'status' => 'approved',
             ]);
-
-            // credit commission to referrer for seeded investment
-            $inv->processReferralCommission();
         }
     }
 

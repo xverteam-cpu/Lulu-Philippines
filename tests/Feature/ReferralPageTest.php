@@ -65,25 +65,19 @@ class ReferralPageTest extends TestCase
             'starts_at' => now(),
         ]);
 
-        $referrer->referralEarnings()->create([
-            'referred_user_id' => $partner->id,
-            'investment_id' => null,
-            'amount' => 12.5,
-        ]);
-
         $this->actingAs($referrer)
             ->get(route('referrals'))
             ->assertOk()
             ->assertSee('class="referral-phone"', false)
             ->assertSee(route('signup', ['ref' => $referrer->referral_code]), false)
-            ->assertSee('$12.50')
             ->assertSee('Invited partners')
             ->assertSee('>1</div>', false)
             ->assertSee('Referred Partner')
             ->assertSee('partner-one')
             ->assertSee('partner@example.com')
             ->assertSee('Invested: $250.00')
-            ->assertSee('5%')
+            ->assertDontSee('5% of qualifying referred investment capital')
+            ->assertDontSee('Referral rewards credited to your account.')
             ->assertSee("shareData.files = [new File([imageBlob], 'Lulus.png'", false)
             ->assertSee("title: 'Lulu'", false)
             ->assertSee("text: 'Franchise and Bond Purchase. Join using my referral link:'", false)

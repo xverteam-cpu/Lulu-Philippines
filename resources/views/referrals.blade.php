@@ -131,7 +131,6 @@
 @php
   $user = auth()->user();
   $link = route('signup', ['ref' => $user->referral_code]);
-  $totalEarned = (float) $user->referralEarnings()->sum('amount');
   $referrals = $user->referrals()
       ->withSum('investments as referred_invested_amount', 'amount')
       ->orderByDesc('created_at')
@@ -158,20 +157,7 @@
       <section class="referral-hero" aria-labelledby="referralTitle">
         <div class="referral-eyebrow">Referral program</div>
         <h1 class="referral-title" id="referralTitle">Referrals</h1>
-        <p class="referral-subtitle">Invite partners and earn rewards. Receive <strong>5% of qualifying referred investment capital</strong> when they invest.</p>
-      </section>
-
-      <section class="referral-overview" aria-label="Total referral earnings">
-        <div class="referral-overview-top">
-          <div>
-            <div class="referral-overview-label">Total earnings</div>
-            <div class="referral-overview-value">{{ \App\Support\CurrencyDisplay::formatUsd($totalEarned, $displayCurrency, $usdToPhpRate) }}</div>
-            <div class="referral-overview-copy">Referral rewards credited to your account.</div>
-          </div>
-          <div class="referral-overview-icon" aria-hidden="true">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a7 7 0 0 1 14 0v2"/><path d="M16 3.5a4 4 0 0 1 0 7M19 14a7 7 0 0 1 3 5.7V21"/></svg>
-          </div>
-        </div>
+        <p class="referral-subtitle">Invite partners to join LuLu and keep track of the people in your referral network.</p>
       </section>
 
       <section class="referral-stats" aria-label="Referral summary">
@@ -180,12 +166,6 @@
           <div class="referral-stat-label">Invited partners</div>
           <div class="referral-stat-value">{{ number_format($invitedCount) }}</div>
           <div class="referral-stat-copy">Partners in your referral network</div>
-        </article>
-        <article class="referral-stat">
-          <div class="referral-stat-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
-          <div class="referral-stat-label">Reward rate</div>
-          <div class="referral-stat-value">5%</div>
-          <div class="referral-stat-copy">Of qualifying referred capital</div>
         </article>
       </section>
 
@@ -211,15 +191,10 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></svg>
           </button>
         </div>
-        <div class="referral-tip">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
-          <span>Rewards are reflected here after a referred partner makes a qualifying investment.</span>
-        </div>
       </section>
 
       <div class="referral-section-head">
         <h2>Referred Partners</h2>
-        <div class="referral-section-amount">{{ \App\Support\CurrencyDisplay::formatUsd($totalEarned, $displayCurrency, $usdToPhpRate) }}</div>
       </div>
       <section class="referral-partner-list" aria-label="Referred partners">
         @forelse ($referrals as $referral)

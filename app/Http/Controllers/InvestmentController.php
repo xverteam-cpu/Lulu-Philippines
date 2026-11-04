@@ -158,11 +158,6 @@ class InvestmentController extends Controller
             return $investment;
         });
 
-        // If investment is immediately approved, process referral commission
-        if ($investment->status === 'approved' && empty($data['investment_id'])) {
-            $investment->processReferralCommission();
-        }
-
         if (empty($data['investment_id'])) {
             try {
                 Mail::to($investment->user->email)

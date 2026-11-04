@@ -212,10 +212,10 @@
     </div>
     <div class="summary-card">
       <div>
-        <div class="summary-label">Referral</div>
-        <div class="summary-value">$0.00</div>
+        <div class="summary-label">Partners</div>
+        <div class="summary-value">{{ number_format(auth()->user()->referrals()->count()) }}</div>
       </div>
-      <div class="summary-help">Referral rewards.</div>
+      <div class="summary-help">People in your referral network.</div>
     </div>
     <div class="summary-card">
       <div>

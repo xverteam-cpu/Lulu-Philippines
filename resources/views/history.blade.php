@@ -127,9 +127,6 @@
 </style>
 
 @php
-  $user = Auth::user();
-  $signupBonusClaimed = ! empty($user->signup_bonus_claimed_at);
-
   $historyTagClass = static function ($status): string {
       return match (strtolower((string) $status)) {
           'approved', 'completed', 'credited' => 'ok',
@@ -258,38 +255,11 @@
           </div></div></div>
         </article>
 
-        <article class="history-card">
-          <button class="history-head" type="button" aria-expanded="false" aria-controls="history-rewards">
-            <span class="history-section-icon" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 7v13M12 7H7.5A2.5 2.5 0 1 1 10 4.5C10 7 12 7 12 7Zm0 0h4.5A2.5 2.5 0 1 0 14 4.5C14 7 12 7 12 7Z"/></svg></span>
-            <span class="history-section-copy"><strong>Rewards History</strong><span>Signup bonuses and other rewards.</span></span>
-            <span class="history-plus" aria-hidden="true">+</span>
-          </button>
-          <div class="history-body" id="history-rewards"><div class="history-inner"><div class="history-entries">
-            @if (! $signupBonusClaimed)
-              <button id="claim-signup-bonus" class="history-claim" type="button">Claim {{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }} Sign Up Bonus</button>
-            @endif
-            @forelse ($rewards as $reward)
-              <div class="history-entry">
-                <div><div class="history-entry-name">{{ $reward->bank_name === 'Welcome Bonus' ? 'Signup Bonus' : ($reward->account_holder ?: 'Account reward') }}</div><div class="history-entry-date">{{ $reward->created_at->format('F j, Y') }}</div></div>
-                <div class="history-entry-right"><div class="history-entry-amount">+{{ \App\Support\CurrencyDisplay::formatUsd((float) $reward->amount, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag {{ $historyTagClass($reward->status) }}">{{ ucfirst(str_replace('_', ' ', (string) $reward->status)) }}</span></div>
-              </div>
-            @empty
-              <div class="history-empty" id="rewards-empty"><strong>No rewards yet.</strong>Any signup bonus or rewards will appear here.</div>
-            @endforelse
-          </div></div></div>
-        </article>
       </section>
       <p class="history-footer">Your account activity is shown here from your transaction records.</p>
     </main>
   </div>
 </div>
-
-<template id="reward-entry-template">
-  <div class="history-entry">
-    <div><div class="history-entry-name">Signup Bonus</div><div class="history-entry-date" data-reward-date></div></div>
-    <div class="history-entry-right"><div class="history-entry-amount">+{{ \App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate) }}</div><span class="history-tag ok">Approved</span></div>
-  </div>
-</template>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -311,48 +281,6 @@
       });
     });
 
-    var claimButton = document.getElementById('claim-signup-bonus');
-    if (!claimButton) return;
-
-    claimButton.addEventListener('click', function () {
-      if (!window.confirm('Claim the ' + @json(\App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate)) + ' signup bonus?')) return;
-      claimButton.disabled = true;
-      claimButton.textContent = 'Claiming...';
-
-      fetch(@json(route('rewards.claim-signup-bonus')), {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Accept': 'text/html',
-          'X-CSRF-TOKEN': @json(csrf_token()),
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: new URLSearchParams()
-      }).then(function (response) {
-        if (!response.ok) throw new Error('Signup reward claim failed with status ' + response.status);
-        return response.text();
-      }).then(function () {
-        var template = document.getElementById('reward-entry-template');
-        var entries = document.querySelector('#history-rewards .history-entries');
-        var empty = document.getElementById('rewards-empty');
-        if (!template || !entries) throw new Error('Reward history could not be updated.');
-
-        var reward = template.content.cloneNode(true);
-        reward.querySelector('[data-reward-date]').textContent = new Date().toLocaleDateString(undefined, {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric'
-        });
-        entries.appendChild(reward);
-        if (empty) empty.remove();
-        claimButton.remove();
-      }).catch(function (error) {
-        console.error(error);
-        claimButton.disabled = false;
-        claimButton.textContent = 'Claim ' + @json(\App\Support\CurrencyDisplay::formatUsd(5, $displayCurrency, $usdToPhpRate)) + ' Sign Up Bonus';
-        window.alert('Unable to claim signup bonus right now.');
-      });
-    });
   });
 </script>
 @endsection

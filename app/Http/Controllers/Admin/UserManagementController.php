@@ -119,7 +119,7 @@ class UserManagementController extends Controller
                     'amount' => (float) $activity->amount,
                     'detail' => $activity->description,
                     'occurred_at' => $activity->occurred_at?->toIso8601String(),
-                    'timestamp' => $activity->occurred_at?->format('M j, g:i A') ?: '',
+                    'timestamp' => $activity->occurred_at?->copy()->timezone('Asia/Manila')->format('M j, g:i A') ?: '',
                 ];
             })
             ->values();
@@ -181,7 +181,7 @@ class UserManagementController extends Controller
                         default => 'Payment submission awaiting admin review',
                     },
                     'occurred_at' => $occurredAt?->toIso8601String(),
-                    'timestamp' => $occurredAt?->format('M j, g:i A') ?: '',
+                    'timestamp' => $occurredAt?->copy()->timezone('Asia/Manila')->format('M j, g:i A') ?: '',
                 ];
             })
             ->sortByDesc('occurred_at')
@@ -435,8 +435,6 @@ class UserManagementController extends Controller
                 'status' => 'approved',
                 'starts_at' => now(),
             ]);
-
-            $investment->processReferralCommission();
 
             return $investment;
         });

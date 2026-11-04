@@ -157,6 +157,43 @@ class AdminPurchaseNotificationsTest extends TestCase
             ->assertJsonPath('notifications.1.type', 'user_transfer');
     }
 
+    public function test_admin_activity_notification_times_are_displayed_in_manila_time(): void
+    {
+        Carbon::setTestNow('2026-11-04 06:00:00');
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create(['name' => 'Time Zone User']);
+        $activity = AccountActivity::create([
+            'user_id' => $user->id,
+            'type' => 'funds_received',
+            'title' => 'Funds received',
+            'description' => 'You received funds from Transfer Sender.',
+            'amount' => 40,
+            'occurred_at' => now(),
+        ]);
+        $investment = $this->createInvestment($user, [
+            'status' => 'approved',
+            'approved_by' => $admin->id,
+            'approved_at' => now(),
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Nov 4, 2:00 PM');
+
+        $this->get(route('admin.dashboard.funds-notifications'))
+            ->assertOk()
+            ->assertJsonPath('notifications.0.id', $activity->id)
+            ->assertJsonPath('notifications.0.timestamp', 'Nov 4, 2:00 PM');
+
+        $this->get(route('admin.dashboard.purchase-notifications'))
+            ->assertOk()
+            ->assertJsonPath('notifications.0.id', $investment->id.'-approved')
+            ->assertJsonPath('notifications.0.timestamp', 'Nov 4, 2:00 PM');
+    }
+
     public function test_non_admin_cannot_read_funds_notifications(): void
     {
         $user = User::factory()->create();

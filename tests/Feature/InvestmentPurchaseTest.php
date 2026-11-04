@@ -559,7 +559,7 @@ class InvestmentPurchaseTest extends TestCase
         ]);
     }
 
-    public function test_admin_send_package_triggers_referral_commission_and_starts_immediately(): void
+    public function test_admin_send_package_does_not_credit_referrer_with_a_commission(): void
     {
         $referrer = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
@@ -592,9 +592,10 @@ class InvestmentPurchaseTest extends TestCase
             'payment_method' => 'admin_transfer',
         ]);
 
-        $this->assertDatabaseHas('users', [
-            'id' => $referrer->id,
-            'balance' => 6.45,
+        $this->assertSame(0.0, (float) $referrer->fresh()->balance);
+        $this->assertDatabaseMissing('referral_earnings', [
+            'user_id' => $referrer->id,
+            'referred_user_id' => $user->id,
         ]);
     }
 

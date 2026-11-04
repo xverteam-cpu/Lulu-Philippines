@@ -141,6 +141,7 @@ class AuthSignupTest extends TestCase
         $this->assertNotEmpty($user->fresh()->remember_token);
         $this->assertTrue(User::where('username', 'jane')->exists());
         $this->assertSame($referrer->id, $user->referred_by);
+        $this->assertSame(0.0, (float) $user->balance);
         $this->assertNull($user->phone_verified_at);
         $this->assertAuthenticatedAs($user);
     }

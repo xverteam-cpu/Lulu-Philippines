@@ -14,9 +14,7 @@ class AccountHistoryPageTest extends TestCase
 
     public function test_account_history_displays_live_transactions_and_omits_decorative_status_bar(): void
     {
-        $user = User::factory()->create([
-            'signup_bonus_claimed_at' => now(),
-        ]);
+        $user = User::factory()->create();
 
         Investment::create([
             'user_id' => $user->id,
@@ -63,8 +61,8 @@ class AccountHistoryPageTest extends TestCase
             ->assertSee('Investment History')
             ->assertSee('Withdrawal History')
             ->assertSee('Daily Interest History')
-            ->assertSee('Rewards History')
-            ->assertSee('Signup Bonus')
+            ->assertDontSee('Rewards History')
+            ->assertDontSee('Signup Bonus')
             ->assertSee('Pending')
             ->assertDontSee('class="statusbar"', false)
             ->assertDontSee('id="clock"', false)

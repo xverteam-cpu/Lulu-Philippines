@@ -368,18 +368,6 @@ Route::get('/notifications', function (Request $request) {
         ]);
     }
 
-    foreach ($user->referralEarnings()->latest()->limit(20)->get() as $earning) {
-        $activities->push([
-            'id' => 'referral-'.$earning->id,
-            'title' => 'Referral funds received',
-            'description' => 'Referral commission credited to your account.',
-            'amount' => $earning->amount,
-            'amount_prefix' => '$',
-            'href' => route('referrals'),
-            'occurred_at' => $earning->created_at,
-        ]);
-    }
-
     $investments = $user->investments()->latest()->limit(50)->get();
 
     foreach ($investments as $investment) {
@@ -481,46 +469,6 @@ Route::get('/notifications', function (Request $request) {
         'unreadCount' => $unreadCount,
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('notifications.index');
-
-Route::get('/rewards', function () {
-    $user = Auth::user();
-
-    return view('rewards', [
-        'user' => $user,
-        'signupBonusClaimed' => ! empty($user->signup_bonus_claimed_at),
-        'signupBonusAmount' => 5,
-    ]);
-})->middleware(['auth', RestrictUserAccess::class])->name('rewards');
-
-Route::post('/rewards/claim-signup-bonus', function (Request $request) {
-    $user = $request->user();
-    $currency = CurrencyDisplay::preferredFor($user);
-    $rate = $currency === 'PHP' ? CurrencyRateService::latestUsdToPhp() : 1.0;
-    $bonusDisplay = CurrencyDisplay::formatUsd(5, $currency, $rate);
-
-    if (! empty($user->signup_bonus_claimed_at)) {
-        return redirect()->route('rewards')->with('status', 'You already claimed your '.$bonusDisplay.' sign up bonus.');
-    }
-
-    DB::transaction(function () use ($user): void {
-        $user->forceFill([
-            'balance' => (float) ($user->balance ?? 0) + 5,
-            'signup_bonus_claimed_at' => now(),
-        ])->save();
-
-        Withdrawal::create([
-            'user_id' => $user->id,
-            'amount' => 5,
-            'payment_method' => 'account_balance',
-            'bank_name' => 'Welcome Bonus',
-            'account_number' => 'signup-bonus',
-            'account_holder' => 'Sign Up Bonus',
-            'status' => 'approved',
-        ]);
-    });
-
-    return redirect()->route('rewards')->with('status', 'Your '.$bonusDisplay.' sign up bonus has been added to your available balance.');
-})->middleware(['auth', RestrictUserAccess::class])->name('rewards.claim-signup-bonus');
 
 // Deposit page for buying shares
 Route::get('/deposit', function () {
@@ -1086,15 +1034,10 @@ Route::get('/history', function () {
         ->orderByDesc('created_at')
         ->get();
 
-    $accountWithdrawals = Withdrawal::where('user_id', $user->id)
+    $withdrawals = Withdrawal::where('user_id', $user->id)
+        ->notSignupBonus()
         ->orderByDesc('created_at')
         ->get();
-    $rewards = $accountWithdrawals
-        ->filter(fn (Withdrawal $withdrawal) => $withdrawal->isSignupBonus())
-        ->values();
-    $withdrawals = $accountWithdrawals
-        ->reject(fn (Withdrawal $withdrawal) => $withdrawal->isSignupBonus())
-        ->values();
 
     $approvedInvestments = $investments->where('status', 'approved');
     $dailyInterest = $approvedInvestments->sum(fn ($investment) => $investment->creditedInterest());
@@ -1123,7 +1066,6 @@ Route::get('/history', function () {
     return view('history', [
         'investments' => $investments,
         'withdrawals' => $withdrawals,
-        'rewards' => $rewards,
         'dailyInterest' => $dailyInterest,
         'dailyInterestEntries' => $dailyInterestEntries,
     ]);

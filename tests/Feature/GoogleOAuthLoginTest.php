@@ -166,6 +166,7 @@ class GoogleOAuthLoginTest extends TestCase
         $referredUser = User::where('email', 'referred.google@example.com')->firstOrFail();
 
         $this->assertSame($referrer->id, $referredUser->referred_by);
+        $this->assertSame(0.0, (float) $referredUser->balance);
 
         $admin = User::factory()->create(['is_admin' => true]);
         $this->actingAs($admin)

@@ -44,12 +44,6 @@ class Withdrawal extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function isSignupBonus(): bool
-    {
-        return $this->bank_name === 'Welcome Bonus'
-            || $this->account_number === 'signup-bonus';
-    }
-
     public function scopeNotSignupBonus(Builder $query): Builder
     {
         return $query

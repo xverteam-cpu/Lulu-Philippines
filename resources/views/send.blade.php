@@ -830,9 +830,9 @@
   <a class="nav-item" href="#" id="fabToggle" aria-label="Open quick actions">
     <div class="nav-scan"><img src="{{ asset('menu.png') }}" alt="" loading="eager" decoding="async"></div>
   </a>
-  <a class="nav-item" href="{{ route('rewards') }}">
-    <img src="{{ asset('reward.png') }}" alt="" loading="eager" decoding="async">
-    <div>Rewards</div>
+  <a class="nav-item" href="{{ route('referrals') }}">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3A5 5 0 0 0 13 2.93l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3A5 5 0 0 0 11 21.07l1.71-1.71"/></svg>
+    <div>Referrals</div>
   </a>
   <a class="nav-item" href="{{ route('profile') }}">
     <img src="{{ asset('profile.png') }}" alt="" loading="eager" decoding="async">

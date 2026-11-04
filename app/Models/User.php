@@ -41,7 +41,6 @@ class User extends Authenticatable
         'withdrawal_account_type',
         'password',
         'referred_by',
-        'signup_bonus_claimed_at',
         'is_admin',
         'is_restricted',
         'restricted_ip_address',
@@ -86,6 +85,8 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::creating(function (User $user): void {
+            $user->balance ??= 0;
+
             if (! $user->referral_code) {
                 $user->referral_code = static::makeUniqueReferralCode((string) $user->name);
             }

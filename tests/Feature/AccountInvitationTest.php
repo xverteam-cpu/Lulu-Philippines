@@ -109,6 +109,7 @@ class AccountInvitationTest extends TestCase
         $this->assertNotNull($user->email_verified_at);
         $this->assertNotNull($user->pin_set_at);
         $this->assertSame('+639171234567', $user->phone);
+        $this->assertSame(0.0, (float) $user->balance);
         $this->assertNull($user->phone_verified_at);
         $this->assertSame($invitation->referrer_id, $user->referred_by);
         $this->assertNotNull($invitation->fresh()->accepted_at);

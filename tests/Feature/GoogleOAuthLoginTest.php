@@ -132,7 +132,10 @@ class GoogleOAuthLoginTest extends TestCase
         $this->get(route('signup', ['ref' => $referrer->referral_code]))
             ->assertOk()
             ->assertSee('Continue with Google')
-            ->assertSee(route('login.google', ['ref' => $referrer->referral_code]), false);
+            ->assertSee(route('login.google', [
+                'intent' => 'register',
+                'ref' => $referrer->referral_code,
+            ]));
 
         $googleUser = SocialiteUser::fake([
             'id' => 'google-referred-user',
@@ -151,7 +154,10 @@ class GoogleOAuthLoginTest extends TestCase
             ->with('google')
             ->andReturn($provider);
 
-        $this->get(route('login.google', ['ref' => $referrer->referral_code]))
+        $this->get(route('login.google', [
+            'intent' => 'register',
+            'ref' => $referrer->referral_code,
+        ]))
             ->assertRedirect('https://accounts.google.com/o/oauth2/auth');
 
         $this->get(route('login.google.callback'))
@@ -193,7 +199,7 @@ class GoogleOAuthLoginTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'unverified@example.com']);
     }
 
-    public function test_google_cannot_create_a_new_account_without_a_valid_referral(): void
+    public function test_google_login_does_not_send_unknown_accounts_to_signup(): void
     {
         $this->withoutMiddleware(BlockBlockedIp::class);
         $googleUser = SocialiteUser::fake([
@@ -207,6 +213,32 @@ class GoogleOAuthLoginTest extends TestCase
         $provider->shouldReceive('user')->once()->andReturn($googleUser);
         Socialite::shouldReceive('driver')->once()->with('google')->andReturn($provider);
 
+        $this->get('/auth/google/callback')
+            ->assertRedirect(route('investors'))
+            ->assertSessionHasErrors('google');
+
+        $this->assertDatabaseMissing('users', ['email' => 'no.referral@example.com']);
+    }
+
+    public function test_google_registration_without_a_valid_referral_returns_to_signup(): void
+    {
+        $this->withoutMiddleware(BlockBlockedIp::class);
+        $googleUser = SocialiteUser::fake([
+            'id' => 'google-user-no-referral',
+            'name' => 'No Referral',
+            'email' => 'no.referral@example.com',
+            'verified_email' => true,
+        ]);
+
+        $provider = Mockery::mock(Provider::class);
+        $provider->shouldReceive('redirect')
+            ->once()
+            ->andReturn(redirect()->away('https://accounts.google.com/o/oauth2/auth'));
+        $provider->shouldReceive('user')->once()->andReturn($googleUser);
+        Socialite::shouldReceive('driver')->twice()->with('google')->andReturn($provider);
+
+        $this->get('/login/google?intent=register')
+            ->assertRedirect('https://accounts.google.com/o/oauth2/auth');
         $this->get('/auth/google/callback')
             ->assertRedirect(route('signup'))
             ->assertSessionHasErrors('referral');

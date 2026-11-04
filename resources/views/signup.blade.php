@@ -265,7 +265,7 @@
     <h1 class="signup-title">Your everyday.<br>A little easier.</h1>
     <p class="signup-subtitle">Create your LuLu partner account to get started.</p>
 
-    <a class="signup-google-button" href="{{ route('login.google', ! empty($referral) ? ['ref' => $referral] : []) }}" id="signup-google-link">
+    <a class="signup-google-button" href="{{ route('login.google', array_merge(['intent' => 'register'], ! empty($referral) ? ['ref' => $referral] : [])) }}" id="signup-google-link">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -339,6 +339,7 @@ document.getElementById('signup-google-link')?.addEventListener('click', functio
   }
 
   const url = new URL(this.href, window.location.origin);
+  url.searchParams.set('intent', 'register');
   url.searchParams.set('ref', code);
   this.href = url.toString();
 });

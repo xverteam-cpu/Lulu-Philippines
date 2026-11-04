@@ -145,6 +145,7 @@
         }
         const url = new URL(googleButton.href, window.location.origin);
         url.searchParams.set('ref', code);
+        url.searchParams.set('intent', 'register');
         googleButton.href = url.toString();
     });
 

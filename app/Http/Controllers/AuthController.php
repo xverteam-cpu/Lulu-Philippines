@@ -209,11 +209,17 @@ class AuthController extends Controller
 
     public function redirectToGoogle(Request $request): RedirectResponse
     {
-        $request->session()->forget('google_referrer_id');
+        $request->session()->forget([
+            'google_referrer_id',
+            'google_registration_requested',
+        ]);
 
         $referral = trim((string) $request->query('ref', ''));
         if ($referral !== '' && ($referrer = User::findByReferralIdentifier($referral))) {
             $request->session()->put('google_referrer_id', $referrer->id);
+            $request->session()->put('google_registration_requested', true);
+        } elseif ($request->query('intent') === 'register') {
+            $request->session()->put('google_registration_requested', true);
         }
 
         return Socialite::driver('google')->redirect();
@@ -225,7 +231,10 @@ class AuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $exception) {
             report($exception);
-            $request->session()->forget('google_referrer_id');
+            $request->session()->forget([
+                'google_referrer_id',
+                'google_registration_requested',
+            ]);
 
             return redirect()->route('investors')
                 ->withErrors(['google' => 'Google sign-in could not be completed. Please try again.']);
@@ -233,7 +242,10 @@ class AuthController extends Controller
 
         $email = $googleUser->getEmail();
         if (! is_string($email) || $email === '' || ($googleUser->getRaw()['verified_email'] ?? false) !== true) {
-            $request->session()->forget('google_referrer_id');
+            $request->session()->forget([
+                'google_referrer_id',
+                'google_registration_requested',
+            ]);
 
             return redirect()->route('investors')
                 ->withErrors(['google' => 'A verified Google email address is required.']);
@@ -241,9 +253,15 @@ class AuthController extends Controller
 
         $email = Str::lower(trim($email));
         $referrerId = $request->session()->pull('google_referrer_id');
+        $registrationRequested = $request->session()->pull('google_registration_requested', false);
         $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$email])->first();
 
         if (! $user) {
+            if (! $registrationRequested) {
+                return redirect()->route('investors')
+                    ->withErrors(['google' => 'No Lulu account is linked to this Google email. Sign in with the Google account used for your Lulu account, or create an account with a referral code.']);
+            }
+
             if (! $referrerId || ! User::whereKey($referrerId)->exists()) {
                 return redirect()->route('signup')
                     ->withErrors(['referral' => 'A valid referral link is required to create an account.']);

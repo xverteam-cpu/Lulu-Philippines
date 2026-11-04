@@ -346,7 +346,8 @@ class DashboardBondEarningsTest extends TestCase
             ->assertSee('$1.80')
             ->assertSee('<div class="account-package-value">$1.80</div>', false)
             ->assertSee('aria-label="Add to Silver package"', false)
-            ->assertSee('aria-label="Activate Gold package"', false);
+            ->assertSee('<a class="account-package-card account-package-card--empty loaded" href="'.route('invest.purchase', ['package' => 'loaded']).'" aria-label="Activate Gold package">', false)
+            ->assertSee('class="account-package-empty-action" aria-hidden="true"', false);
 
         $html = $response->getContent();
         $this->assertStringContainsString(

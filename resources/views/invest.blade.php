@@ -438,7 +438,9 @@
   .invest-layout-redesign .account-package-card.loaded { color:#3a2706; background:radial-gradient(110% 90% at 0% 0%,rgba(255,247,214,.95),transparent 50%),linear-gradient(140deg,#fcebb9 0%,#e6c26a 26%,#b98a33 52%,#f1d48a 74%,#a57426 100%); }
   .invest-layout-redesign .account-package-card.supreme { color:#ecf0f4; background:radial-gradient(120% 80% at 100% 0%,rgba(160,175,190,.35),transparent 55%),linear-gradient(155deg,#474e57 0%,#23282e 36%,#121518 70%,#2e343b 100%); }
   .invest-layout-redesign .account-package-card--active { grid-column:1/-1; aspect-ratio:1.62/1; }
-  .invest-layout-redesign .account-package-card--empty { display:flex; flex-direction:column; align-items:stretch; justify-content:space-between; border:0; background:inherit; backdrop-filter:none; }
+  .invest-layout-redesign .account-package-card--empty { display:flex; flex-direction:column; align-items:stretch; justify-content:space-between; border:0; background:inherit; backdrop-filter:none; color:inherit; text-decoration:none; cursor:pointer; transition:transform .16s ease,box-shadow .16s ease; }
+  .invest-layout-redesign .account-package-card--empty:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(2,26,18,.18); }
+  .invest-layout-redesign .account-package-card--empty:focus-visible { outline:3px solid #087e50; outline-offset:3px; }
   .invest-layout-redesign .account-package-card--empty.supreme { background:radial-gradient(120% 80% at 100% 0%,rgba(160,175,190,.35),transparent 55%),linear-gradient(155deg,#474e57 0%,#23282e 36%,#121518 70%,#2e343b 100%); }
   .invest-layout-redesign .account-package-card--empty.crunch { background:radial-gradient(120% 140% at 0% 0%,rgba(255,255,255,.9),transparent 45%),linear-gradient(128deg,#f4f6f8 0%,#c8ced5 24%,#eef1f4 46%,#a9b1ba 72%,#dde2e7 100%); }
   .invest-layout-redesign .account-package-card--empty.loaded { background:radial-gradient(110% 90% at 0% 0%,rgba(255,247,214,.95),transparent 50%),linear-gradient(140deg,#fcebb9 0%,#e6c26a 26%,#b98a33 52%,#f1d48a 74%,#a57426 100%); }
@@ -626,7 +628,7 @@
 
       <div class="account-package-grid active-package-grid" @if ($inactiveAccountPackages->isEmpty()) hidden @endif>
         @foreach ($inactiveAccountPackages as $packageKey => $package)
-          <article class="account-package-card account-package-card--empty {{ $packageKey }}" aria-label="{{ $package['name'] }} account package, inactive">
+          <a class="account-package-card account-package-card--empty {{ $packageKey }}" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Activate {{ $package['name'] }} package">
             <div class="account-package-locked-header">
               <div>
                 <div class="account-package-name">{{ $package['name'] }}</div>
@@ -639,12 +641,12 @@
             <div class="account-package-chip" aria-hidden="true"></div>
             <div>
               <div class="account-package-empty-caption">Inactive</div>
-              <a class="account-package-empty-action" href="{{ route('invest.purchase', ['package' => $packageKey]) }}" aria-label="Activate {{ $package['name'] }} package">
+              <span class="account-package-empty-action" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
                 Activate
-              </a>
+              </span>
             </div>
-          </article>
+          </a>
         @endforeach
       </div>
     </section>

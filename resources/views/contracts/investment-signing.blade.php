@@ -4,6 +4,7 @@
     const bondholder = @json($bondholder);
     const csrfToken = @json(csrf_token());
     const submitUrl = @json(route('investments.store'));
+    const submissionErrors = @json($errors->all());
 
     document.addEventListener('DOMContentLoaded', () => {
       const contract = document.getElementById('contractForm');
@@ -49,6 +50,7 @@
       error.setAttribute('role', 'alert');
       error.style.cssText = 'flex-basis:100%;margin:8px 0 0;color:#a1342e;font:13px/1.5 Arial,Helvetica,sans-serif';
       finalStep.appendChild(error);
+      error.textContent = submissionErrors.join(' ');
 
       submitButton.addEventListener('click', async () => {
         error.textContent = '';
@@ -149,8 +151,12 @@
         }
 
         const render = (image) => {
-          context.drawImage(image, 0, 0, output.width, output.height);
-          resolve(output.toDataURL('image/png'));
+          try {
+            context.drawImage(image, 0, 0, output.width, output.height);
+            resolve(output.toDataURL('image/png'));
+          } catch (error) {
+            reject(error);
+          }
         };
 
         if (source instanceof HTMLCanvasElement) {
@@ -158,8 +164,12 @@
           return;
         }
 
-        if (source.complete && source.naturalWidth) {
-          render(source);
+        if (source.complete) {
+          if (source.naturalWidth) {
+            render(source);
+          } else {
+            reject(new Error('Signature image could not be loaded.'));
+          }
           return;
         }
 

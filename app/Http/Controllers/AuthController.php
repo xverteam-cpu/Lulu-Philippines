@@ -241,7 +241,7 @@ class AuthController extends Controller
 
         $email = Str::lower(trim($email));
         $referrerId = $request->session()->pull('google_referrer_id');
-        $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
+        $user = User::whereRaw('LOWER(TRIM(email)) = ?', [$email])->first();
 
         if (! $user) {
             if (! $referrerId || ! User::whereKey($referrerId)->exists()) {

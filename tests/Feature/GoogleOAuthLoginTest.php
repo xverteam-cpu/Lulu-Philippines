@@ -96,6 +96,30 @@ class GoogleOAuthLoginTest extends TestCase
         $this->get(route('dashboard'))->assertRedirect(route('investors'));
     }
 
+    public function test_google_sign_in_matches_legacy_account_emails_with_surrounding_whitespace(): void
+    {
+        $this->withoutMiddleware(BlockBlockedIp::class);
+        $user = User::factory()->create([
+            'email' => ' Existing.Client@Example.com ',
+            'phone' => '+639171234567',
+        ]);
+        $googleUser = SocialiteUser::fake([
+            'id' => 'existing-google-user',
+            'name' => $user->name,
+            'email' => 'existing.client@example.com',
+            'verified_email' => true,
+        ]);
+
+        $provider = Mockery::mock(Provider::class);
+        $provider->shouldReceive('user')->once()->andReturn($googleUser);
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($provider);
+
+        $this->get(route('login.google.callback'))->assertRedirect(route('dashboard'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseCount('users', 1);
+    }
+
     public function test_google_signup_preserves_referral_attribution_for_the_new_account(): void
     {
         $this->withoutMiddleware(BlockBlockedIp::class);

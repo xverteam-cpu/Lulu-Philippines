@@ -285,6 +285,32 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('"investment_id":'.$unsignedBalancePurchase->id, false);
     }
 
+    public function test_contract_submission_validation_errors_are_shown_again_on_the_signing_page(): void
+    {
+        $user = User::factory()->create();
+        $signingPage = route('invest.agreement.sign', [
+            'package' => 'crunch',
+            'amount' => 129,
+            'currency' => 'USD',
+            'payment_method' => 'bank_transfer',
+        ]);
+
+        $this->actingAs($user)
+            ->from($signingPage)
+            ->post(route('investments.store'), [
+                'package' => 'crunch',
+                'amount' => 129,
+                'payment_method' => 'bank_transfer',
+                'agreement_signature_data' => 'data:image/png;base64,YWJj',
+                'agreement_accepted' => '1',
+            ])
+            ->assertRedirect($signingPage);
+
+        $this->get($signingPage)
+            ->assertOk()
+            ->assertSee('The agreement details field is required.');
+    }
+
     public function test_submitted_client_contract_is_saved_and_available_to_admin(): void
     {
         $user = User::factory()->create();
@@ -352,7 +378,7 @@ class InvestmentPurchaseTest extends TestCase
     public function test_large_mobile_signature_is_saved_without_truncation(): void
     {
         $user = User::factory()->create();
-        $signatureData = 'data:image/png;base64,'.str_repeat('A', 100_000);
+        $signatureData = 'data:image/png;base64,'.str_repeat('A', 700_000);
 
         $this->actingAs($user)
             ->post('/investments', [

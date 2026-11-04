@@ -30,7 +30,7 @@ class InvestmentController extends Controller
         if (! $isNewAccountBalancePurchase) {
             $rules = array_merge($rules, [
                 'agreement_signature_name' => ['nullable', 'string', 'max:150'],
-                'agreement_signature_data' => ['required', 'string', 'max:500000'],
+                'agreement_signature_data' => ['required', 'string', 'max:2000000'],
                 'agreement_accepted' => ['required', 'accepted'],
                 'agreement_details' => [
                     'required',

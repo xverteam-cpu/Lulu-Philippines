@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AccountActivity;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -54,12 +55,17 @@ class CurrencyPreferenceTest extends TestCase
         $sender = User::factory()->create(['balance' => 100, 'preferred_currency' => 'PHP']);
         $recipient = User::factory()->create(['balance' => 5]);
 
-        $this->actingAs($sender)
+        $response = $this->actingAs($sender)
             ->post(route('send.transfer'), [
                 'recipient' => $recipient->email,
                 'amount' => '600.00',
-            ])
-            ->assertRedirect(route('send'))
+            ]);
+
+        $sentActivity = AccountActivity::query()
+            ->where('user_id', $sender->id)
+            ->where('type', 'funds_sent')
+            ->firstOrFail();
+        $response->assertRedirect(route('transfers.receipt', $sentActivity))
             ->assertSessionHas('status', 'Sent ₱600.00 to '.$recipient->name.'.');
 
         $this->assertSame(90.0, (float) $sender->fresh()->balance);

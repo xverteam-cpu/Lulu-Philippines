@@ -37,6 +37,7 @@ Notes
 - App will be available at http://localhost:8000 when using Docker (nginx) or `php artisan serve`.
 - Edit `.env` to match your DB credentials. Example in `.env.example`.
 - The public app URL is https://www.luluph.com. For local HTTP development, set `APP_URL=http://localhost:8000`, clear `SESSION_DOMAIN`, and set `SESSION_SECURE_COOKIE=false` in `.env`.
+- Web sessions remain active for eight hours of inactivity by default (`SESSION_LIFETIME=480`). If a form is submitted with an expired CSRF token, the user is returned to the login page to refresh the session.
 
 ## Phone numbers
 

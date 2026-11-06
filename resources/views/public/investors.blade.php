@@ -33,6 +33,9 @@
                 <h2>Your everyday.<br>A little easier.</h2>
                 <p>Sign in to your LuLu account.</p>
             </div>
+            @if (request()->boolean('session_expired'))
+                <p class="investors-login-error" id="investor-session-expired" role="alert">Your session expired. Please sign in again.</p>
+            @endif
             <form class="investors-login-form" method="post" action="{{ route('login.submit') }}" autocomplete="on" data-login-action="{{ route('login.submit') }}" data-register-action="{{ route('register.partner') }}">
                 @csrf
                 <div class="investor-identity-step">

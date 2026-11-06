@@ -42,17 +42,44 @@ class SendPageTest extends TestCase
             'balance' => 5,
         ]);
 
-        $this->actingAs($sender)
+        $response = $this->actingAs($sender)
             ->post(route('send.transfer'), [
                 'recipient' => ' RECIPIENT@example.com ',
                 'amount' => '25.50',
                 'message' => 'Lunch',
-            ])
-            ->assertRedirect(route('send'))
-            ->assertSessionHas('status', 'Sent $25.50 to Recipient User.');
+            ]);
 
         $this->assertSame(74.5, (float) $sender->fresh()->balance);
         $this->assertSame(30.5, (float) $recipient->fresh()->balance);
+        $sentActivity = AccountActivity::query()->where('user_id', $sender->id)->where('type', 'funds_sent')->firstOrFail();
+        $receivedActivity = AccountActivity::query()->where('user_id', $recipient->id)->where('type', 'funds_received')->firstOrFail();
+        $response->assertRedirect(route('transfers.receipt', $sentActivity))
+            ->assertSessionHas('status', 'Sent $25.50 to Recipient User.');
+        $this->assertNotNull($sentActivity->transfer_reference);
+        $this->assertSame($sentActivity->transfer_reference, $receivedActivity->transfer_reference);
+
+        $this->actingAs($sender)
+            ->get(route('transfers.receipt', $sentActivity))
+            ->assertOk()
+            ->assertSee('Transfer receipt')
+            ->assertSee('$25.50')
+            ->assertSee('Recipient User')
+            ->assertSee($sender->name)
+            ->assertSee('Share receipt')
+            ->assertSee('Download receipt image')
+            ->assertSee(asset('receipt-image.js').'?v='.filemtime(public_path('receipt-image.js')), false);
+
+        $this->actingAs($recipient)
+            ->get(route('transfers.receipt', $receivedActivity))
+            ->assertOk()
+            ->assertSee('Amount received')
+            ->assertSee($sender->name);
+
+        $otherUser = User::factory()->create();
+        $this->actingAs($otherUser)
+            ->get(route('transfers.receipt', $sentActivity))
+            ->assertNotFound();
+
         $this->assertDatabaseHas('account_activities', [
             'user_id' => $sender->id,
             'type' => 'funds_sent',
@@ -70,7 +97,8 @@ class SendPageTest extends TestCase
             ->assertOk()
             ->assertSee('Funds sent')
             ->assertSee('You sent funds to Recipient User. Message: Lunch')
-            ->assertSee('$25.50');
+            ->assertSee('$25.50')
+            ->assertSee('View receipt');
     }
 
     public function test_user_can_send_funds_to_another_user_by_full_name(): void
@@ -81,12 +109,14 @@ class SendPageTest extends TestCase
             'balance' => 0,
         ]);
 
-        $this->actingAs($sender)
+        $response = $this->actingAs($sender)
             ->post(route('send.transfer'), [
                 'recipient' => '  recipient user  ',
                 'amount' => '10.00',
-            ])
-            ->assertRedirect(route('send'))
+            ]);
+
+        $sentActivity = AccountActivity::query()->where('user_id', $sender->id)->where('type', 'funds_sent')->firstOrFail();
+        $response->assertRedirect(route('transfers.receipt', $sentActivity))
             ->assertSessionHas('status');
 
         $this->assertSame(30.0, (float) $sender->fresh()->balance);

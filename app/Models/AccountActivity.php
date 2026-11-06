@@ -14,6 +14,7 @@ class AccountActivity extends Model
         'description',
         'amount',
         'occurred_at',
+        'transfer_reference',
     ];
 
     protected function casts(): array

@@ -724,6 +724,39 @@ Route::get('/send', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('send');
 
+Route::get('/transfers/{accountActivity}/receipt', function (Request $request, AccountActivity $accountActivity) {
+    abort_unless(
+        $accountActivity->user_id === $request->user()->id
+            && in_array($accountActivity->type, ['funds_sent', 'funds_received'], true)
+            && $accountActivity->transfer_reference,
+        404
+    );
+
+    $otherActivity = AccountActivity::query()
+        ->with('user')
+        ->where('transfer_reference', $accountActivity->transfer_reference)
+        ->where('id', '!=', $accountActivity->id)
+        ->whereIn('type', ['funds_sent', 'funds_received'])
+        ->firstOrFail();
+
+    abort_unless(
+        $otherActivity->user
+            && $otherActivity->type !== $accountActivity->type
+            && (float) $otherActivity->amount === (float) $accountActivity->amount,
+        404
+    );
+
+    $senderActivity = $accountActivity->type === 'funds_sent' ? $accountActivity : $otherActivity;
+    $recipientActivity = $accountActivity->type === 'funds_received' ? $accountActivity : $otherActivity;
+
+    return view('transfer-receipt', [
+        'activity' => $accountActivity,
+        'sender' => $senderActivity->user,
+        'recipient' => $recipientActivity->user,
+        'isSender' => $accountActivity->type === 'funds_sent',
+    ]);
+})->middleware(['auth', RestrictUserAccess::class])->name('transfers.receipt');
+
 Route::post('/send', function (Request $request) {
     $data = $request->validate([
         'recipient' => ['required', 'string', 'max:255'],
@@ -782,7 +815,8 @@ Route::post('/send', function (Request $request) {
     }
     DailyInterestAccrualService::accrueDueInterestForUser($request->user());
 
-    DB::transaction(function () use ($request, $recipient, $amount, $data): void {
+    $transferReference = (string) Str::uuid();
+    $senderActivity = DB::transaction(function () use ($request, $recipient, $amount, $data, $transferReference): AccountActivity {
         $accounts = User::query()
             ->whereIn('id', [$request->user()->id, $recipient->id])
             ->orderBy('id')
@@ -812,14 +846,16 @@ Route::post('/send', function (Request $request) {
 
         $memo = trim((string) ($data['message'] ?? ''));
         $memoSuffix = $memo === '' ? '' : ' Message: '.$memo;
+        $occurredAt = now();
 
-        AccountActivity::create([
+        $senderActivity = AccountActivity::create([
             'user_id' => $sender->id,
             'type' => 'funds_sent',
             'title' => 'Funds sent',
             'description' => 'You sent funds to '.($lockedRecipient->name ?: $lockedRecipient->email).'.'.$memoSuffix,
             'amount' => $amount,
-            'occurred_at' => now(),
+            'occurred_at' => $occurredAt,
+            'transfer_reference' => $transferReference,
         ]);
 
         AccountActivity::create([
@@ -828,11 +864,14 @@ Route::post('/send', function (Request $request) {
             'title' => 'Funds received',
             'description' => 'You received funds from '.($sender->name ?: $sender->email).'.'.$memoSuffix,
             'amount' => $amount,
-            'occurred_at' => now(),
+            'occurred_at' => $occurredAt,
+            'transfer_reference' => $transferReference,
         ]);
+
+        return $senderActivity;
     });
 
-    return redirect()->route('send')
+    return redirect()->route('transfers.receipt', $senderActivity)
         ->with('status', 'Sent '.CurrencyDisplay::formatUsd($amount, $currency, $rate).' to '.($recipient->name ?: $recipient->email).'.');
 })->middleware(['auth', RestrictUserAccess::class])->name('send.transfer');
 

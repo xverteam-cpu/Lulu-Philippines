@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class AuthSignupTest extends TestCase
@@ -109,10 +111,31 @@ class AuthSignupTest extends TestCase
             ->assertSee('class="investors-dashboard-continue" href="'.route('admin.dashboard').'"', false);
     }
 
-    public function test_user_session_expires_after_thirty_minutes_of_inactivity(): void
+    public function test_user_session_expires_after_eight_hours_of_inactivity(): void
     {
-        $this->assertSame(30, config('session.lifetime'));
+        $this->assertSame(480, config('session.lifetime'));
         $this->assertFalse((bool) config('session.expire_on_close'));
+    }
+
+    public function test_expired_csrf_submission_returns_user_to_a_fresh_login_page(): void
+    {
+        Route::get('/test/session-expired', function () {
+            throw new TokenMismatchException;
+        });
+
+        $this->get('/test/session-expired')
+            ->assertRedirect(route('investors', ['session_expired' => 1]));
+
+        $this->get(route('investors', ['session_expired' => 1]))
+            ->assertOk()
+            ->assertSee('Your session expired. Please sign in again.')
+            ->assertSee('name="_token"', false);
+
+        $this->get('/test/session-expired', ['Accept' => 'application/json'])
+            ->assertStatus(419)
+            ->assertJson([
+                'message' => 'Your session expired. Refresh the page and try again.',
+            ]);
     }
 
     public function test_manual_signup_creates_and_authenticates_a_user_with_a_normalized_email(): void

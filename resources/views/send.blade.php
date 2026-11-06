@@ -771,6 +771,9 @@
           <div>{{ $transfer->description }}</div>
           <div>{{ \App\Support\CurrencyDisplay::formatUsd((float) $transfer->amount, $displayCurrency, $usdToPhpRate) }}</div>
           <small>{{ $transfer->occurred_at->format('M j, Y g:i A') }}</small>
+          @if ($transfer->transfer_reference)
+            <a href="{{ route('transfers.receipt', $transfer) }}">View receipt</a>
+          @endif
         </article>
       @empty
         <p class="send-recipient-empty">No transfers yet.</p>

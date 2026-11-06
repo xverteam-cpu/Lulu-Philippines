@@ -639,6 +639,9 @@ Route::get('/invest/agreement/sign', function (Request $request) {
 Route::post('/invest/payment/complete', [InvestmentController::class, 'confirmPayment'])
     ->middleware(['auth', RestrictUserAccess::class, 'throttle:10,1'])
     ->name('invest.payment.complete');
+Route::get('/investments/{investment}/receipt', [InvestmentController::class, 'receipt'])
+    ->middleware(['auth', RestrictUserAccess::class])
+    ->name('investments.receipt');
 
 Route::get('/invest/payment/{provider}', function (string $provider) {
     $providers = [
@@ -856,6 +859,12 @@ Route::get('/withdraw', function () {
     ]);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdraw');
 
+Route::get('/withdrawals/{withdrawal}/receipt', function (Request $request, Withdrawal $withdrawal) {
+    abort_unless($withdrawal->user_id === $request->user()->id, 404);
+
+    return view('withdrawal-receipt', ['withdrawal' => $withdrawal]);
+})->middleware(['auth', RestrictUserAccess::class])->name('withdrawals.receipt');
+
 Route::post('/withdrawals', function (Request $request) {
     $providers = [
         'e_wallet' => ['GCash', 'Maya', 'GrabPay', 'ShopeePay', 'Coins.ph'],
@@ -969,19 +978,7 @@ Route::post('/withdrawals', function (Request $request) {
         ]);
     }
 
-    return redirect()->route('withdraw')
-        ->with('status', 'Withdrawal request submitted successfully.')
-        ->with('receipt', [
-            'reference' => $withdrawal->transaction_reference,
-            'amount' => number_format((float) $withdrawal->amount, 2),
-            'display_amount' => CurrencyDisplay::formatUsd((float) $withdrawal->amount, $currency, $rate),
-            'total_withdrawn' => number_format((float) $withdrawal->total_withdrawn, 2),
-            'bank_name' => $withdrawal->bank_name,
-            'account_number' => $withdrawal->account_number,
-            'account_holder' => $withdrawal->account_holder,
-            'status' => ucfirst($withdrawal->status),
-            'submitted_at' => $withdrawal->created_at?->format('M d, Y H:i') ?? now()->format('M d, Y H:i'),
-        ]);
+    return redirect()->route('withdrawals.receipt', $withdrawal);
 })->middleware(['auth', RestrictUserAccess::class])->name('withdrawals.store');
 
 Route::post('/withdrawal-account', function (Request $request) {

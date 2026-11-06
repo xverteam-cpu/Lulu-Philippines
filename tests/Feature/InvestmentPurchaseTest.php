@@ -158,20 +158,29 @@ class InvestmentPurchaseTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)
+        $response = $this->actingAs($user)
             ->post(route('invest.payment.complete'), [
                 'package' => 'crunch',
                 'amount' => 129,
                 'currency' => 'USD',
                 'payment_method' => 'bank_transfer',
-            ])
-            ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('status');
+            ]);
 
         $investment = $user->investments()->firstOrFail();
+        $response->assertRedirect(route('investments.receipt', $investment));
         $this->assertSame('pending', $investment->status);
         $this->assertNull($investment->agreement_signed_at);
         $this->assertNull($investment->agreement_signature_data);
+
+        $this->get(route('investments.receipt', $investment))
+            ->assertOk()
+            ->assertSee('Payment receipt')
+            ->assertSee('Pending admin review')
+            ->assertSee('Your payment claim has been submitted for admin review')
+            ->assertSee('Receipt reference')
+            ->assertSee('Share')
+            ->assertDontSee('Confirm purchase')
+            ->assertDontSee('>Edit<', false);
 
         $this->actingAs($user)
             ->withSession(['investor_pin_verified' => true])
@@ -213,14 +222,15 @@ class InvestmentPurchaseTest extends TestCase
     public function test_signing_payment_submission_updates_existing_purchase(): void
     {
         $user = User::factory()->create();
-        $this->actingAs($user)->post(route('invest.payment.complete'), [
+        $response = $this->actingAs($user)->post(route('invest.payment.complete'), [
             'package' => 'crunch',
             'amount' => 129,
             'currency' => 'USD',
             'payment_method' => 'bank_transfer',
-        ])->assertRedirect(route('dashboard'));
+        ]);
 
         $investment = $user->investments()->firstOrFail();
+        $response->assertRedirect(route('investments.receipt', $investment));
         $this->post(route('investments.store'), [
             'investment_id' => $investment->id,
             'package' => 'crunch',
@@ -241,16 +251,19 @@ class InvestmentPurchaseTest extends TestCase
     {
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
-        $this->actingAs($owner)->post(route('invest.payment.complete'), [
+        $response = $this->actingAs($owner)->post(route('invest.payment.complete'), [
             'package' => 'crunch',
             'amount' => 129,
             'currency' => 'USD',
             'payment_method' => 'bank_transfer',
-        ])->assertRedirect(route('dashboard'));
+        ]);
 
         $investment = $owner->investments()->firstOrFail();
+        $response->assertRedirect(route('investments.receipt', $investment));
         $this->actingAs($otherUser)
             ->get(route('invest.agreement.sign', ['investment_id' => $investment->id]))
+            ->assertNotFound();
+        $this->get(route('investments.receipt', $investment))
             ->assertNotFound();
     }
 
@@ -448,8 +461,8 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'account_balance',
             ]);
 
-        $response->assertRedirect('/dashboard');
-        $response->assertSessionHas('status', 'Silver bond purchase was successful. Sign your agreement from the dashboard.');
+        $investment = $user->investments()->firstOrFail();
+        $response->assertRedirect(route('investments.receipt', $investment));
 
         $this->assertDatabaseHas('investments', [
             'user_id' => $user->id,
@@ -458,7 +471,6 @@ class InvestmentPurchaseTest extends TestCase
             'status' => 'approved',
             'payment_method' => 'account_balance',
         ]);
-        $investment = $user->investments()->firstOrFail();
         $this->assertNull($investment->agreement_signed_at);
         $this->assertNull($investment->agreement_signature_data);
         $this->assertNull($investment->agreement_details);
@@ -480,14 +492,18 @@ class InvestmentPurchaseTest extends TestCase
                 'payment_method' => 'account_balance',
             ]);
 
-        $response->assertRedirect('/dashboard');
+        $investment = $user->investments()->firstOrFail();
+        $response->assertRedirect(route('investments.receipt', $investment));
+        $this->get(route('investments.receipt', $investment))
+            ->assertOk()
+            ->assertSee('Confirmed')
+            ->assertSee('Amount invested (USD)');
         $this->assertDatabaseHas('investments', [
             'user_id' => $user->id,
             'package_key' => 'loaded',
             'status' => 'approved',
             'payment_method' => 'account_balance',
         ]);
-        $investment = $user->investments()->firstOrFail();
         $this->assertNull($investment->agreement_signed_at);
         $this->assertNull($investment->agreement_signature_data);
         $this->assertNull($investment->agreement_details);

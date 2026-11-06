@@ -155,10 +155,26 @@ class WithdrawalRequestTest extends TestCase
             'account_holder' => 'Test User',
         ]);
 
-        $response->assertRedirect(route('withdraw'));
-        $response->assertSessionHas('status', 'Withdrawal request submitted successfully.');
-        $response->assertSessionHas('receipt.reference');
-        $response->assertSessionHas('receipt.amount');
+        $withdrawal = Withdrawal::query()->where('user_id', $user->id)->firstOrFail();
+        $response->assertRedirect(route('withdrawals.receipt', $withdrawal));
+        $this->get(route('withdrawals.receipt', $withdrawal))
+            ->assertOk()
+            ->assertSee('Withdrawal receipt')
+            ->assertSee('Pending review')
+            ->assertSee('$50.00')
+            ->assertSee('Processing fee (5%)')
+            ->assertSee('$47.50')
+            ->assertSee('••••7890')
+            ->assertSee($withdrawal->transaction_reference)
+            ->assertSee('Share')
+            ->assertDontSee('1234567890');
+
+        $otherUser = User::factory()->create(['pin_hash' => Hash::make('1234')]);
+        $this->actingAs($otherUser)
+            ->withSession(['pin_verified' => true])
+            ->get(route('withdrawals.receipt', $withdrawal))
+            ->assertNotFound();
+
         $this->assertDatabaseHas('withdrawals', [
             'user_id' => $user->id,
             'amount' => 50.00,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PackagePurchaseNotification;
+use App\Models\Investment;
 use App\Support\CurrencyRateService;
 use App\Support\CurrencyDisplay;
 use App\Support\InvestmentPackages;
@@ -213,9 +214,20 @@ class InvestmentController extends Controller
             ]);
         }
 
+        if ($isNewAccountBalancePurchase) {
+            return redirect()->route('investments.receipt', $investment);
+        }
+
         return redirect()
             ->route('dashboard')
             ->with('status', $message);
+    }
+
+    public function receipt(Request $request, Investment $investment)
+    {
+        abort_unless($investment->user_id === $request->user()->id, 404);
+
+        return view('invest-receipt', ['investment' => $investment]);
     }
 
     public function confirmPayment(Request $request): RedirectResponse
@@ -268,8 +280,7 @@ class InvestmentController extends Controller
         }
 
         return redirect()
-            ->route('dashboard')
-            ->with('status', $package['name'].' bond payment was submitted for admin approval. Your agreement is ready to sign from the dashboard notification.');
+            ->route('investments.receipt', $investment);
     }
 
     private function isValidSignatureData(string $signatureData): bool

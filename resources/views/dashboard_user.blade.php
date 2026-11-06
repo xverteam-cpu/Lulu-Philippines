@@ -1436,11 +1436,12 @@
     text-decoration: none;
   }
 
-  .dashboard-notification-link svg {
+  .dashboard-notification-link > img {
     position: relative;
     z-index: 1;
     width: 23px;
     height: 23px;
+    object-fit: contain;
   }
 
   .dashboard-profile {
@@ -1841,13 +1842,13 @@
     content: "";
   }
 
-  .dashboard-notification-link svg {
+  .dashboard-notification-link > img {
     position: relative;
     z-index: 1;
     display: block;
     width: 23px;
     height: 23px;
-    color: #0e8a5a;
+    object-fit: contain;
   }
 
   .dashboard-notification-badge {
@@ -2960,10 +2961,7 @@
       <div class="dashboard-header-actions">
         <a class="dashboard-notification-link" href="{{ route('notifications.index') }}"
            aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
-            <path d="M10 21h4"/>
-          </svg>
+          <img src="{{ asset('Untitled%20design%20(2).png') }}" alt="" aria-hidden="true">
           @if ($unreadCount > 0)
             <span class="dashboard-notification-badge" aria-hidden="true">{{ min($unreadCount, 99) }}</span>
           @endif

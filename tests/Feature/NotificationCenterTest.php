@@ -34,6 +34,7 @@ class NotificationCenterTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('href="'.route('notifications.index').'"', false)
+            ->assertSee('src="'.asset('Untitled%20design%20(2).png').'"', false)
             ->assertSee('aria-label="Notifications, 1 unread"', false)
             ->assertSee('<span class="dashboard-notification-badge" aria-hidden="true">1</span>', false);
     }

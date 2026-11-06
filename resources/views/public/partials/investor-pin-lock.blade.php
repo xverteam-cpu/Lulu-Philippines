@@ -1,3 +1,6 @@
+@php
+    $mobileBackground = asset('investor-mobile-background.png').'?v='.filemtime(public_path('investor-mobile-background.png'));
+@endphp
 <section class="investors-pin-lock" aria-labelledby="investors-pin-title">
     <style>
         .investors-login-card.investors-pin-lock-card {
@@ -319,7 +322,7 @@
                 height: 100%;
                 overflow: hidden;
                 background: #032818;
-                background-image: url("{{ asset('investor-mobile-background.png') }}");
+                background-image: url("{{ $mobileBackground }}");
                 background-position: center;
                 background-size: cover;
                 background-repeat: no-repeat;
@@ -340,7 +343,7 @@
                 border: 0;
                 border-radius: 0;
                 background: #062b19;
-                background-image: url("{{ asset('investor-mobile-background.png') }}");
+                background-image: url("{{ $mobileBackground }}");
                 background-position: center;
                 background-size: cover;
                 box-shadow: 0 28px 90px #0008;
@@ -598,7 +601,7 @@
             overflow: hidden;
             border: 0;
             border-radius: 38px;
-            background: #f3f7f5 url("{{ asset('investor-mobile-background.png') }}") center / cover no-repeat;
+            background: #f3f7f5 url("{{ $mobileBackground }}") center / cover no-repeat;
             box-shadow: 0 28px 70px rgba(8, 42, 28, .22);
         }
         .investors-pin-lock {
@@ -805,7 +808,7 @@
         @media (max-width: 780px) {
             body.investors-pin-screen {
                 background: #dce5df;
-                background-image: url("{{ asset('investor-mobile-background.png') }}");
+                background-image: url("{{ $mobileBackground }}");
                 background-position: center;
                 background-size: cover;
                 background-repeat: no-repeat;
@@ -814,7 +817,7 @@
                 height: 100vh !important;
                 height: 100dvh !important;
                 min-height: 0 !important;
-                background: #f3f7f5 url("{{ asset('investor-mobile-background.png') }}") center / cover no-repeat;
+                background: #f3f7f5 url("{{ $mobileBackground }}") center / cover no-repeat;
                 box-shadow: none;
             }
             .investors-pin-lock .pin-hero {

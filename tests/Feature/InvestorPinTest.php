@@ -30,6 +30,7 @@ class InvestorPinTest extends TestCase
             ], false)
             ->assertSee("document.querySelector('.investors-pin-lock-form[data-pin-lock=\"true\"]')", false)
             ->assertSee('Forgot your PIN? Reset it by email.')
+            ->assertSee(asset('investor-mobile-background.png').'?v='.filemtime(public_path('investor-mobile-background.png')), false)
             ->assertSee(route('pin.request'))
             ->assertSee(route('password.request'))
             ->assertSee('Secure investor access')
@@ -37,7 +38,6 @@ class InvestorPinTest extends TestCase
             ->assertSee('justify-content: center;', false)
             ->assertSee('min-width: 0;', false)
             ->assertSee('background: #fff;', false)
-            ->assertSee('investor-mobile-background.png')
             ->assertSee('cxcx.png')
             ->assertDontSee('investors-dashboard-continue');
 

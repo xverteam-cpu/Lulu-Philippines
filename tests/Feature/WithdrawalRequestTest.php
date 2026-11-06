@@ -167,6 +167,8 @@ class WithdrawalRequestTest extends TestCase
             ->assertSee('••••7890')
             ->assertSee($withdrawal->transaction_reference)
             ->assertSee('Share')
+            ->assertSee('Download receipt image')
+            ->assertSee(asset('receipt-image.js').'?v='.filemtime(public_path('receipt-image.js')), false)
             ->assertDontSee('1234567890');
 
         $otherUser = User::factory()->create(['pin_hash' => Hash::make('1234')]);

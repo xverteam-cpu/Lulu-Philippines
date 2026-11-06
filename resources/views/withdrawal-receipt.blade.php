@@ -15,6 +15,30 @@
     $netAmount = (float) ($withdrawal->total_withdrawn ?? ((float) $withdrawal->amount - $processingFee));
     $receiptReference = $withdrawal->transaction_reference ?: 'WD-'.$withdrawal->id;
     $shareText = 'Withdrawal receipt '.$receiptReference.' — amount $'.number_format((float) $withdrawal->amount, 2).', processing fee $'.number_format($processingFee, 2).', net $'.number_format($netAmount, 2).', status '.$withdrawalStatus.'.';
+    $receiptImageConfig = [
+        'title' => 'LuLu withdrawal receipt',
+        'status' => $withdrawalStatus,
+        'statusTone' => $withdrawal->status === 'approved' ? 'approved' : ($withdrawal->status === 'rejected' ? 'rejected' : 'pending'),
+        'heroLabel' => 'Net amount to receive',
+        'heroValue' => '$'.number_format($netAmount, 2),
+        'subtitle' => 'After the 5% processing fee',
+        'rows' => [
+            ['label' => 'Withdrawal amount (USD)', 'value' => '$'.number_format((float) $withdrawal->amount, 2)],
+            ['label' => 'Processing fee (5%)', 'value' => '−$'.number_format($processingFee, 2)],
+            ['label' => 'Net amount', 'value' => '$'.number_format($netAmount, 2)],
+            ['label' => 'Bank / e-wallet', 'value' => $withdrawal->bank_name ?: ucfirst(str_replace('_', ' ', $withdrawal->payment_method))],
+            ['label' => 'Account number', 'value' => $maskedAccount],
+            ['label' => 'Recipient', 'value' => $withdrawal->account_holder ?: '—'],
+            ['label' => 'Receipt reference', 'value' => $receiptReference],
+            ['label' => 'Submitted', 'value' => $withdrawal->created_at?->format('M j, Y g:i A') ?? now()->format('M j, Y g:i A')],
+        ],
+        'note' => $withdrawal->status === 'pending'
+            ? 'Withdrawal request received and awaiting review. Net amount is an estimate based on the 5% processing fee.'
+            : ($withdrawal->status === 'rejected'
+                ? 'This withdrawal request was rejected. Contact support if you need more information.'
+                : 'This withdrawal request has been approved. The net amount reflects the recorded 5% processing fee.'),
+        'shareText' => $shareText,
+    ];
 @endphp
 <style>
   body { min-height:100vh; margin:0; color:#0a1f17; background:#e7ece9 !important; font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
@@ -42,6 +66,7 @@
   .withdrawal-receipt-actions { display:grid; gap:10px; margin-top:auto; padding-top:8px; }
   .withdrawal-receipt-share { display:flex; min-height:54px; align-items:center; justify-content:center; gap:9px; border:0; border-radius:16px; color:#fff; background:linear-gradient(135deg,#1fb97a,#054a31); box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); font:750 15px/1 Inter,system-ui,sans-serif; cursor:pointer; }
   .withdrawal-receipt-share svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:2; }
+  .withdrawal-receipt-download { display:flex; min-height:48px; align-items:center; justify-content:center; border:1px solid #d6e0da; border-radius:15px; color:#075a3b; background:#fff; font:700 13px/1 Inter,system-ui,sans-serif; cursor:pointer; }
   .withdrawal-receipt-done { display:flex; min-height:44px; align-items:center; justify-content:center; color:#075a3b; background:transparent; font-size:13px; font-weight:700; text-decoration:underline; text-underline-offset:3px; }
   .withdrawal-receipt-share-status { min-height:16px; margin:0; color:#52655b; text-align:center; font-size:11px; }
   @media(max-height:700px) { .withdrawal-receipt-page { padding-top:max(6px,env(safe-area-inset-top)); }.withdrawal-receipt-heading { padding-top:3px; }.withdrawal-receipt-status { margin-top:8px; }.withdrawal-receipt-hero { margin-top:9px; padding:15px 17px; }.withdrawal-receipt-rows { margin-top:9px; }.withdrawal-receipt-row { padding:8px 0; }.withdrawal-receipt-note { margin:8px 2px; } }
@@ -89,38 +114,26 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg>
       Share
     </button>
+    <button class="withdrawal-receipt-download" id="downloadWithdrawalReceipt" type="button">Download receipt image</button>
     <p class="withdrawal-receipt-share-status" id="withdrawalReceiptShareStatus" aria-live="polite"></p>
     <a class="withdrawal-receipt-done" href="{{ route('withdraw') }}">Done</a>
   </div>
 </main>
 
+<script src="{{ asset('receipt-image.js') }}?v={{ filemtime(public_path('receipt-image.js')) }}"></script>
 <script>
   (function () {
-    var button = document.getElementById('shareWithdrawalReceipt');
+    var shareButton = document.getElementById('shareWithdrawalReceipt');
+    var downloadButton = document.getElementById('downloadWithdrawalReceipt');
     var status = document.getElementById('withdrawalReceiptShareStatus');
-    var receiptText = @json($shareText);
+    var config = @json($receiptImageConfig);
+    var filename = 'lulu-withdrawal-receipt-{{ $withdrawal->id }}.png';
 
-    button.addEventListener('click', async function () {
-      try {
-        if (navigator.share) {
-          await navigator.share({ title: 'LuLu withdrawal receipt', text: receiptText, url: window.location.href });
-          status.textContent = 'Receipt shared.';
-          return;
-        }
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(receiptText + ' ' + window.location.href);
-          status.textContent = 'Receipt details and link copied.';
-          return;
-        }
-
-        status.textContent = 'Sharing is not supported on this browser.';
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Unable to share the withdrawal receipt.', error);
-          status.textContent = 'Could not share the receipt. Please try again.';
-        }
-      }
+    shareButton.addEventListener('click', function () {
+      window.LuluReceiptImage.share(config, filename, status);
+    });
+    downloadButton.addEventListener('click', function () {
+      window.LuluReceiptImage.download(config, filename, status);
     });
   })();
 </script>

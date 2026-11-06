@@ -21,6 +21,30 @@
         default => ucfirst($investment->status),
     };
     $receiptReference = 'LOT-INV-'.str_pad((string) $investment->id, 6, '0', STR_PAD_LEFT);
+    $receiptShareText = $investment->package_name.' bond receipt '.$receiptReference.' — amount $'.number_format((float) $investment->amount, 2).', status '.$paymentStatus.'.';
+    $receiptImageConfig = [
+        'title' => 'LuLu investment receipt',
+        'status' => $paymentStatus,
+        'statusTone' => $investment->status === 'approved' ? 'confirmed' : ($investment->status === 'rejected' ? 'rejected' : 'pending'),
+        'heroLabel' => 'Estimated value at maturity',
+        'heroValue' => '$'.number_format((float) $investment->amount + $estimatedInterest, 2),
+        'subtitle' => 'Principal + estimated interest · '.$investment->package_name.' bond',
+        'rows' => [
+            ['label' => 'Amount invested (USD)', 'value' => '$'.number_format((float) $investment->amount, 2)],
+            ['label' => 'Payment method', 'value' => $paymentMethod],
+            ['label' => 'Rate', 'value' => number_format((float) $investment->daily_interest_rate, 2).'% daily'],
+            ['label' => 'Term', 'value' => $investment->duration_days.' days'],
+            ['label' => 'Interest payout', 'value' => 'Daily accrual'],
+            ['label' => 'Estimated interest', 'value' => '$'.number_format($estimatedInterest, 2)],
+            ['label' => 'Estimated maturity date', 'value' => $estimatedMaturity->format('M j, Y')],
+            ['label' => 'Receipt reference', 'value' => $receiptReference],
+            ['label' => 'Submitted', 'value' => $investment->created_at?->format('M j, Y g:i A') ?? now()->format('M j, Y g:i A')],
+        ],
+        'note' => $investment->status === 'pending'
+            ? 'Payment claim pending admin review. Transfer has not been verified. Returns are estimates before taxes and fees; actual terms are governed by your signed agreement.'
+            : 'Returns are estimates before taxes and fees. Actual terms and maturity date are governed by your signed agreement.',
+        'shareText' => $receiptShareText,
+    ];
 @endphp
 <style>
   body { min-height:100vh; margin:0; color:#0a1f17; background:#e7ece9 !important; font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
@@ -45,6 +69,7 @@
   .receipt-actions { display:grid; gap:10px; margin-top:auto; padding-top:8px; }
   .receipt-share { display:flex; min-height:54px; align-items:center; justify-content:center; gap:9px; border:0; border-radius:16px; color:#fff; background:linear-gradient(135deg,#1fb97a,#054a31); box-shadow:0 7px 18px rgba(7,90,59,.25),inset 0 1px 0 rgba(255,255,255,.2); font:750 15px/1 Inter,system-ui,sans-serif; cursor:pointer; }
   .receipt-share svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:2; }
+  .receipt-download { display:flex; min-height:48px; align-items:center; justify-content:center; border:1px solid #d6e0da; border-radius:15px; color:#075a3b; background:#fff; font:700 13px/1 Inter,system-ui,sans-serif; cursor:pointer; }
   .receipt-dashboard { min-height:44px; border:0; color:#075a3b; background:transparent; font:700 13px/1 Inter,system-ui,sans-serif; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
   .receipt-share-status { min-height:16px; margin:0; color:#52655b; text-align:center; font-size:11px; }
   @media(max-height:700px) { .receipt-page { padding-top:max(6px,env(safe-area-inset-top)); }.receipt-heading { padding-top:3px; }.receipt-status { margin-top:8px; }.receipt-hero { margin-top:9px; padding:15px 17px; }.receipt-rows { margin-top:9px; }.receipt-row { padding:9px 0; }.receipt-note { margin:8px 2px; } }
@@ -91,38 +116,26 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg>
       Share
     </button>
+    <button class="receipt-download" id="downloadReceipt" type="button">Download receipt image</button>
     <p class="receipt-share-status" id="receiptShareStatus" aria-live="polite"></p>
     <a class="receipt-dashboard" href="{{ route('dashboard') }}">Back to dashboard</a>
   </div>
 </main>
 
+<script src="{{ asset('receipt-image.js') }}?v={{ filemtime(public_path('receipt-image.js')) }}"></script>
 <script>
   (function () {
-    var button = document.getElementById('shareReceipt');
+    var shareButton = document.getElementById('shareReceipt');
+    var downloadButton = document.getElementById('downloadReceipt');
     var status = document.getElementById('receiptShareStatus');
-    var receiptText = @json($investment->package_name.' bond payment receipt '.$receiptReference.' — amount invested $'.number_format((float) $investment->amount, 2).', status '.$paymentStatus.'.');
+    var config = @json($receiptImageConfig);
+    var filename = 'lulu-investment-receipt-{{ $investment->id }}.png';
 
-    button.addEventListener('click', async function () {
-      try {
-        if (navigator.share) {
-          await navigator.share({ title: 'LuLu payment receipt', text: receiptText, url: window.location.href });
-          status.textContent = 'Receipt shared.';
-          return;
-        }
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(receiptText + ' ' + window.location.href);
-          status.textContent = 'Receipt details and link copied.';
-          return;
-        }
-
-        status.textContent = 'Sharing is not supported on this browser.';
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Unable to share the payment receipt.', error);
-          status.textContent = 'Could not share the receipt. Please try again.';
-        }
-      }
+    shareButton.addEventListener('click', function () {
+      window.LuluReceiptImage.share(config, filename, status);
+    });
+    downloadButton.addEventListener('click', function () {
+      window.LuluReceiptImage.download(config, filename, status);
     });
   })();
 </script>

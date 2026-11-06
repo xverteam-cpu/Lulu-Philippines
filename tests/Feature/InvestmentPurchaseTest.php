@@ -179,6 +179,9 @@ class InvestmentPurchaseTest extends TestCase
             ->assertSee('Your payment claim has been submitted for admin review')
             ->assertSee('Receipt reference')
             ->assertSee('Share')
+            ->assertSee('Download receipt image')
+            ->assertSee(asset('receipt-image.js').'?v='.filemtime(public_path('receipt-image.js')), false)
+            ->assertSee('lulu-investment-receipt-', false)
             ->assertDontSee('Confirm purchase')
             ->assertDontSee('>Edit<', false);
 

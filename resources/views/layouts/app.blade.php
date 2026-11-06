@@ -52,6 +52,13 @@
     body { background:#eef1f4; font-family:Inter, 'Helvetica Neue', Helvetica, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; margin:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
     .container { max-width:1100px; margin:0 auto; padding:18px; }
     a { color:#14532d; }
+    .promotion-overlay[hidden] { display:none !important; }
+    .promotion-overlay { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; overflow-y:auto; padding:16px; box-sizing:border-box; background:rgba(15,23,42,.58); }
+    .promotion-card { position:relative; width:90vw; max-width:400px; max-height:80vh; max-height:80dvh; overflow-y:auto; border-radius:18px; background:#fff; box-shadow:0 24px 70px rgba(0,0,0,.3); }
+    .promotion-image { display:block; width:100%; height:auto; aspect-ratio:4 / 5; object-fit:contain; }
+    .promotion-close { position:absolute; top:10px; right:10px; z-index:1; display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:50%; background:rgba(15,23,42,.75); color:#fff; font-size:28px; line-height:1; cursor:pointer; }
+    .promotion-close:focus-visible { outline:3px solid #fff; outline-offset:2px; }
+    .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .page-loader {
       position:fixed;
       inset:0;
@@ -83,6 +90,56 @@
     @yield('content')
   </div>
   @auth
+  <div class="promotion-overlay" id="promotionOverlay" hidden>
+    <section class="promotion-card" role="dialog" aria-modal="true" aria-labelledby="promotionTitle">
+      <h2 id="promotionTitle" class="visually-hidden">Promotion</h2>
+      <button class="promotion-close" id="promotionClose" type="button" aria-label="Close promotion">&times;</button>
+      <img class="promotion-image" src="{{ asset('Promotions.png') }}" alt="Lulu promotion">
+    </section>
+  </div>
+  <script>
+    (function () {
+      var overlay = document.getElementById('promotionOverlay');
+      var closeButton = document.getElementById('promotionClose');
+      var storageKey = @json('lulu-promotion-shown-user-'.auth()->id());
+      var now = new Date();
+      var today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      var previousOverflow = document.body.style.overflow;
+      var alreadyShownToday = false;
+
+      function closePromotion() {
+        overlay.hidden = true;
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = previousOverflow;
+      }
+
+      try {
+        alreadyShownToday = window.localStorage.getItem(storageKey) === today;
+      } catch (error) {
+        console.error('Unable to check the daily promotion display.', error);
+      }
+
+      if (!alreadyShownToday) {
+        try {
+          window.localStorage.setItem(storageKey, today);
+        } catch (error) {
+          console.error('Unable to record the daily promotion display.', error);
+        }
+        overlay.hidden = false;
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+      }
+
+      closeButton.addEventListener('click', closePromotion);
+      overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) closePromotion();
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !overlay.hidden) closePromotion();
+      });
+    })();
+  </script>
   <script>
     (function () {
       var heartbeatUrl = @json(route('activity.heartbeat'));

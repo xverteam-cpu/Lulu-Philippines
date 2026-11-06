@@ -14,6 +14,7 @@
     $processingFee = (float) ($withdrawal->processing_fee ?? round((float) $withdrawal->amount * 0.05, 2));
     $netAmount = (float) ($withdrawal->total_withdrawn ?? ((float) $withdrawal->amount - $processingFee));
     $receiptReference = $withdrawal->transaction_reference ?: 'WD-'.$withdrawal->id;
+    $submittedAt = ($withdrawal->created_at ?? now())->copy()->timezone('Asia/Manila')->format('M j, Y g:i A');
     $shareText = 'Withdrawal receipt '.$receiptReference.' — amount $'.number_format((float) $withdrawal->amount, 2).', processing fee $'.number_format($processingFee, 2).', net $'.number_format($netAmount, 2).', status '.$withdrawalStatus.'.';
     $receiptImageConfig = [
         'title' => 'LuLu withdrawal receipt',
@@ -30,7 +31,7 @@
             ['label' => 'Account number', 'value' => $maskedAccount],
             ['label' => 'Recipient', 'value' => $withdrawal->account_holder ?: '—'],
             ['label' => 'Receipt reference', 'value' => $receiptReference],
-            ['label' => 'Submitted', 'value' => $withdrawal->created_at?->format('M j, Y g:i A') ?? now()->format('M j, Y g:i A')],
+            ['label' => 'Submitted', 'value' => $submittedAt],
         ],
         'note' => $withdrawal->status === 'pending'
             ? 'Withdrawal request received and awaiting review. Net amount is an estimate based on the 5% processing fee.'
@@ -96,7 +97,7 @@
     <div class="withdrawal-receipt-row"><span>Account number</span><strong>{{ $maskedAccount }}</strong></div>
     <div class="withdrawal-receipt-row"><span>Recipient</span><strong>{{ $withdrawal->account_holder ?: '—' }}</strong></div>
     <div class="withdrawal-receipt-row"><span>Receipt reference</span><strong>{{ $receiptReference }}</strong></div>
-    <div class="withdrawal-receipt-row"><span>Submitted</span><strong>{{ $withdrawal->created_at?->format('M j, Y g:i A') ?? now()->format('M j, Y g:i A') }}</strong></div>
+    <div class="withdrawal-receipt-row"><span>Submitted</span><strong>{{ $submittedAt }}</strong></div>
   </section>
 
   <p class="withdrawal-receipt-note">

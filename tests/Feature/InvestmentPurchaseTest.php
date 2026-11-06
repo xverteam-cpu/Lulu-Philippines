@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Mail\PackagePurchaseNotification;
 use App\Models\PackageSlot;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class InvestmentPurchaseTest extends TestCase
@@ -156,6 +158,7 @@ class InvestmentPurchaseTest extends TestCase
 
     public function test_payment_confirmation_creates_pending_purchase_and_dashboard_signing_shortcut(): void
     {
+        Mail::fake();
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
@@ -168,6 +171,7 @@ class InvestmentPurchaseTest extends TestCase
 
         $investment = $user->investments()->firstOrFail();
         $response->assertRedirect(route('investments.receipt', $investment));
+        Mail::assertSent(PackagePurchaseNotification::class, fn (PackagePurchaseNotification $mail): bool => $mail->hasTo($user->email));
         $this->assertSame('pending', $investment->status);
         $this->assertNull($investment->agreement_signed_at);
         $this->assertNull($investment->agreement_signature_data);

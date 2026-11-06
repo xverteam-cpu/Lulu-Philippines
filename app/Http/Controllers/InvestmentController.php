@@ -268,16 +268,18 @@ class InvestmentController extends Controller
             'status' => 'pending',
         ]));
 
-        try {
-            Mail::to($investment->user->email)
-                ->send(new PackagePurchaseNotification($investment));
-        } catch (\Throwable $e) {
-            Log::warning('Failed to send package purchase notification', [
-                'investment_id' => $investment->id,
-                'user_id' => $investment->user_id,
-                'error' => $e->getMessage(),
-            ]);
-        }
+        dispatch(function () use ($investment) {
+            try {
+                Mail::to($investment->user->email)
+                    ->send(new PackagePurchaseNotification($investment));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to send package purchase notification', [
+                    'investment_id' => $investment->id,
+                    'user_id' => $investment->user_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        })->afterResponse();
 
         return redirect()
             ->route('investments.receipt', $investment);

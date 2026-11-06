@@ -6,6 +6,7 @@ use App\Mail\WithdrawalConfirmation;
 use App\Models\Investment;
 use App\Models\User;
 use App\Models\Withdrawal;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -190,6 +191,29 @@ class WithdrawalRequestTest extends TestCase
         $this->assertSame('1234567890', $user->fresh()->bank_account_number);
         $this->assertSame('Test User', $user->fresh()->bank_account_holder);
         $this->assertEquals(450.0, (float) $user->fresh()->balance);
+    }
+
+    public function test_withdrawal_receipt_shows_submitted_time_in_manila_timezone(): void
+    {
+        $user = User::factory()->create(['pin_hash' => Hash::make('1234')]);
+        $submittedAt = Carbon::parse('2026-11-06 18:38:00', 'UTC');
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'amount' => 50,
+            'payment_method' => 'bank_transfer',
+            'bank_name' => 'Test Bank',
+            'account_number' => '1234567890',
+            'account_holder' => 'Test User',
+            'status' => 'pending',
+        ]);
+        $withdrawal->created_at = $submittedAt;
+        $withdrawal->saveQuietly();
+
+        $this->actingAs($user)
+            ->withSession(['pin_verified' => true])
+            ->get(route('withdrawals.receipt', $withdrawal))
+            ->assertOk()
+            ->assertSee('Nov 7, 2026 2:38 AM');
     }
 
     public function test_withdrawal_email_uses_the_users_details_and_shows_the_five_percent_net_amount(): void

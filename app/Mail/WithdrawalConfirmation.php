@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Withdrawal;
+use App\Support\CurrencyRateService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -24,6 +25,7 @@ class WithdrawalConfirmation extends Mailable
         $withdrawalAmount = (float) $this->withdrawal->amount;
         $processingFee = round($withdrawalAmount * self::PROCESSING_FEE_RATE, 2);
         $totalWithdrawn = round($withdrawalAmount - $processingFee, 2);
+        $usdToPhpRate = CurrencyRateService::latestUsdToPhp();
         $clientName = $user->name ?: $user->email;
         $view = $this->withdrawal->status === 'approved'
             ? 'emails.withdrawal-confirmation'
@@ -43,9 +45,9 @@ class WithdrawalConfirmation extends Mailable
                 'transactionType' => $accountType,
                 'accountProvider' => $this->withdrawal->bank_name,
                 'accountNumber' => $this->withdrawal->account_number,
-                'withdrawalAmount' => number_format($withdrawalAmount, 2),
-                'processingFee' => number_format($processingFee, 2),
-                'totalWithdrawn' => number_format($totalWithdrawn, 2),
+                'withdrawalAmount' => number_format($withdrawalAmount * $usdToPhpRate, 2),
+                'processingFee' => number_format($processingFee * $usdToPhpRate, 2),
+                'totalWithdrawn' => number_format($totalWithdrawn * $usdToPhpRate, 2),
                 'status' => ucfirst($this->withdrawal->status),
                 'withdrawalDate' => ($this->withdrawal->approved_at ?? $this->withdrawal->created_at)?->format('F j, Y')
                     ?? now()->format('F j, Y'),

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -176,6 +177,12 @@ class WithdrawalRequestTest extends TestCase
     public function test_withdrawal_email_uses_the_users_details_and_shows_the_five_percent_net_amount(): void
     {
         Mail::fake();
+        Http::fake([
+            'api.frankfurter.dev/v1/latest*' => Http::response([
+                'date' => '2026-11-06',
+                'rates' => ['PHP' => 58.25],
+            ]),
+        ]);
 
         $user = User::factory()->create([
             'name' => 'Profile Client Name',
@@ -209,9 +216,11 @@ class WithdrawalRequestTest extends TestCase
             $this->assertStringContainsString('1234567890', $html);
             $this->assertStringNotContainsString('Dwell Realty', $html);
             $this->assertStringNotContainsString('SD5461SFDF', $html);
-            $this->assertStringContainsString('$125.00', $html);
-            $this->assertStringContainsString('-$6.25', $html);
-            $this->assertStringContainsString('$118.75', $html);
+            $this->assertStringContainsString('₱7,281.25', $html);
+            $this->assertStringContainsString('-₱364.06', $html);
+            $this->assertStringContainsString('₱6,917.19', $html);
+            $this->assertStringContainsString('0967 826 9411', $html);
+            $this->assertStringNotContainsString('123-456-7890', $html);
 
             return true;
         });
@@ -220,6 +229,12 @@ class WithdrawalRequestTest extends TestCase
     public function test_approval_sends_the_supplied_success_image_template_with_current_withdrawal_details(): void
     {
         Mail::fake();
+        Http::fake([
+            'api.frankfurter.dev/v1/latest*' => Http::response([
+                'date' => '2026-11-06',
+                'rates' => ['PHP' => 58.25],
+            ]),
+        ]);
 
         $admin = User::factory()->create(['is_admin' => true]);
         $user = User::factory()->create(['name' => 'Approved Client']);
@@ -251,9 +266,13 @@ class WithdrawalRequestTest extends TestCase
             $this->assertStringContainsString($withdrawal->fresh()->approved_at->format('F j, Y'), $html);
             $this->assertStringContainsString('Approved', $html);
             $this->assertStringContainsString('data:image/jpeg;base64,', $html);
-            $this->assertStringContainsString('$125.00', $html);
-            $this->assertStringContainsString('-$6.25', $html);
-            $this->assertStringContainsString('$118.75', $html);
+            $emailText = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $this->assertStringContainsString('We’re pleased to confirm that your Withdrawal has been completed successfully', $emailText);
+            $this->assertStringContainsString('₱7,281.25', $html);
+            $this->assertStringContainsString('-₱364.06', $html);
+            $this->assertStringContainsString('₱6,917.19', $html);
+            $this->assertStringContainsString('0967 826 9411', $html);
+            $this->assertStringNotContainsString('123-456-7890', $html);
 
             return true;
         });

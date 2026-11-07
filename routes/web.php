@@ -19,8 +19,9 @@ use App\Http\Controllers\PhoneNumberController;
 use App\Http\Middleware\RequireInvestorPin;
 use App\Http\Middleware\RestrictUserAccess;
 use App\Mail\WithdrawalConfirmation;
-use App\Models\Investment;
 use App\Models\AccountActivity;
+use App\Models\Investment;
+use App\Models\PushSubscription;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\CurrencyRateService;
@@ -1192,6 +1193,39 @@ Route::post('/profile/notifications', function (Request $request) {
 
     return redirect()->route('profile.notifications')->with('status', 'Notification preferences saved.');
 })->middleware(['auth', RestrictUserAccess::class])->name('profile.notifications.update');
+
+Route::post('/push-subscriptions', function (Request $request) {
+    $validated = $request->validate([
+        'endpoint' => ['required', 'string', 'url', 'regex:/\Ahttps:\/\/(?:fcm\.googleapis\.com|updates\.push\.services\.mozilla\.com|web\.push\.apple\.com|[a-z0-9-]+\.notify\.windows\.com)\//i', 'max:2048'],
+        'keys.p256dh' => ['required', 'string', 'max:255'],
+        'keys.auth' => ['required', 'string', 'max:255'],
+    ]);
+
+    PushSubscription::query()->updateOrCreate(
+        ['endpoint_hash' => hash('sha256', $validated['endpoint'])],
+        [
+            'user_id' => $request->user()->id,
+            'endpoint' => $validated['endpoint'],
+            'public_key' => $validated['keys']['p256dh'],
+            'auth_token' => $validated['keys']['auth'],
+        ]
+    );
+
+    return response()->json(['message' => 'Daily interest notifications enabled.']);
+})->middleware(['auth', RestrictUserAccess::class, 'throttle:10,1'])->name('push-subscriptions.store');
+
+Route::delete('/push-subscriptions', function (Request $request) {
+    $validated = $request->validate([
+        'endpoint' => ['required', 'string', 'url', 'regex:/\Ahttps:\/\/(?:fcm\.googleapis\.com|updates\.push\.services\.mozilla\.com|web\.push\.apple\.com|[a-z0-9-]+\.notify\.windows\.com)\//i', 'max:2048'],
+    ]);
+
+    PushSubscription::query()
+        ->where('user_id', $request->user()->id)
+        ->where('endpoint_hash', hash('sha256', $validated['endpoint']))
+        ->delete();
+
+    return response()->json(['message' => 'Daily interest notifications disabled.']);
+})->middleware(['auth', RestrictUserAccess::class, 'throttle:10,1'])->name('push-subscriptions.destroy');
 
 Route::post('/investments', [InvestmentController::class, 'store'])
     ->middleware(['auth', RestrictUserAccess::class])

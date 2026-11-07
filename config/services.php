@@ -45,4 +45,10 @@ return [
         'database_path' => env('GEOIP_DATABASE_PATH'),
     ],
 
+    'webpush' => [
+        'vapid_public_key' => env('VAPID_PUBLIC_KEY'),
+        'vapid_private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT', 'mailto:support@luluph.com'),
+    ],
+
 ];

@@ -4,13 +4,13 @@ namespace App\Support;
 
 use App\Models\Investment;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 
 class DailyInterestAccrualService
 {
     public static function accrueDueInterest(): float
     {
         $totalCredited = 0.0;
+        $creditedByUser = [];
 
         $investments = Investment::query()
             ->where('status', 'approved')
@@ -26,7 +26,19 @@ class DailyInterestAccrualService
             ->get();
 
         foreach ($investments as $investment) {
-            $totalCredited += $investment->accrueDailyInterest();
+            $credited = $investment->accrueDailyInterest();
+            $totalCredited += $credited;
+
+            if ($credited > 0) {
+                $creditedByUser[$investment->user_id] = ($creditedByUser[$investment->user_id] ?? 0) + $credited;
+            }
+        }
+
+        foreach ($creditedByUser as $userId => $amount) {
+            $user = User::query()->find($userId);
+            if ($user) {
+                app(PushNotificationService::class)->sendDailyInterestCredit($user, (float) $amount);
+            }
         }
 
         return round($totalCredited, 2);
@@ -51,6 +63,10 @@ class DailyInterestAccrualService
 
         foreach ($investments as $investment) {
             $totalCredited += $investment->accrueDailyInterest();
+        }
+
+        if ($totalCredited > 0) {
+            app(PushNotificationService::class)->sendDailyInterestCredit($user, $totalCredited);
         }
 
         return round($totalCredited, 2);

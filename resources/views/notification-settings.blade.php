@@ -599,7 +599,7 @@
 
           <div class="notification-info" role="note">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
-            <p>Your choices are saved to your account. Delivery controls are not yet connected to every notification service.</p>
+            <p>Email and marketing choices are saved to your account. Enable daily interest notifications below for this device.</p>
           </div>
 
           <div class="notification-actions">
@@ -610,10 +610,162 @@
             </button>
           </div>
         </form>
+
+        <div class="notification-info" id="pushNotificationStatus" role="status" aria-live="polite">
+          Daily interest push notifications are not enabled on this device.
+        </div>
+        @if (config('services.webpush.vapid_public_key') && config('services.webpush.vapid_private_key'))
+          <div class="notification-actions">
+            <button class="notification-button notification-save" id="pushNotificationToggle" type="button" disabled>
+              Enable daily interest notifications
+            </button>
+          </div>
+          <p class="notification-option-copy">Notifications appear when daily interest is credited. On iPhone, add Lulu to your Home Screen first, then open it there to enable notifications.</p>
+        @else
+          <div class="notification-error" role="note">Phone notifications are not configured yet. The site administrator must configure web-push keys.</div>
+        @endif
       </section>
     </main>
   </div>
 </div>
+
+@if (config('services.webpush.vapid_public_key') && config('services.webpush.vapid_private_key'))
+<script>
+  (function () {
+    var status = document.getElementById('pushNotificationStatus');
+    var toggle = document.getElementById('pushNotificationToggle');
+    var vapidPublicKey = @json(config('services.webpush.vapid_public_key'));
+    var csrfToken = document.querySelector('meta[name="csrf-token"]');
+    var saveUrl = @json(route('push-subscriptions.store'));
+    var deleteUrl = @json(route('push-subscriptions.destroy'));
+    var registration = null;
+    var subscription = null;
+    var isEnabled = false;
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function decodeApplicationServerKey(encodedKey) {
+      var padding = '='.repeat((4 - encodedKey.length % 4) % 4);
+      var base64 = (encodedKey + padding).replace(/-/g, '+').replace(/_/g, '/');
+      var raw = window.atob(base64);
+      var key = new Uint8Array(raw.length);
+
+      for (var index = 0; index < raw.length; index += 1) {
+        key[index] = raw.charCodeAt(index);
+      }
+
+      return key;
+    }
+
+    function sendSubscription(url, method, currentSubscription) {
+      return fetch(url, {
+        method: method,
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken.content,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ endpoint: currentSubscription.endpoint, keys: currentSubscription.toJSON().keys })
+      }).then(function (response) {
+        if (!response.ok) {
+          return response.json().then(function (payload) {
+            throw new Error(payload.message || 'The server could not save your notification settings.');
+          });
+        }
+      });
+    }
+
+    function initialize() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        toggle.disabled = true;
+        setStatus('This browser does not support phone notifications.');
+        return;
+      }
+
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(function (workerRegistration) {
+          registration = workerRegistration;
+          toggle.disabled = false;
+          return registration.pushManager.getSubscription();
+        })
+        .then(function (currentSubscription) {
+          subscription = currentSubscription;
+          if (!subscription) {
+            setStatus('Daily interest push notifications are not enabled on this device.');
+            toggle.textContent = 'Enable daily interest notifications';
+            return;
+          }
+
+          return sendSubscription(saveUrl, 'POST', subscription).then(function () {
+            isEnabled = true;
+            setStatus('Daily interest notifications are enabled on this device.');
+            toggle.textContent = 'Disable on this device';
+          });
+        })
+        .catch(function (error) {
+          console.error('Unable to initialize push notifications.', error);
+          setStatus(error.message || 'Unable to set up phone notifications. Please try again.');
+        });
+    }
+
+    toggle.addEventListener('click', function () {
+      toggle.disabled = true;
+
+      var operation;
+      if (isEnabled) {
+        operation = sendSubscription(deleteUrl, 'DELETE', subscription).then(function () {
+            return subscription.unsubscribe();
+          }).then(function () {
+            subscription = null;
+            isEnabled = false;
+            setStatus('Daily interest notifications are disabled on this device.');
+            toggle.textContent = 'Enable daily interest notifications';
+          });
+      } else {
+        var subscriptionPromise;
+        if (subscription) {
+          subscriptionPromise = Promise.resolve(subscription);
+        } else if (Notification.permission === 'denied') {
+          subscriptionPromise = Promise.reject(new Error('Notifications are blocked in your browser settings. Allow them for Lulu, then try again.'));
+        } else {
+          subscriptionPromise = Notification.requestPermission().then(function (permission) {
+            if (permission !== 'granted') {
+              throw new Error('Notification permission was not granted.');
+            }
+            return registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: decodeApplicationServerKey(vapidPublicKey)
+            });
+          });
+        }
+
+        operation = subscriptionPromise.then(function (newSubscription) {
+            subscription = newSubscription;
+            return sendSubscription(saveUrl, 'POST', subscription);
+          })
+          .then(function () {
+            isEnabled = true;
+            setStatus('Daily interest notifications are enabled on this device.');
+            toggle.textContent = 'Disable on this device';
+          });
+      }
+
+      operation.catch(function (error) {
+        console.error('Unable to update push notification settings.', error);
+        setStatus(error.message || 'Unable to update phone notifications. Please try again.');
+      }).finally(function () {
+        toggle.disabled = false;
+      });
+    });
+
+    initialize();
+  })();
+</script>
+@endif
 
 <script>
   (function () {

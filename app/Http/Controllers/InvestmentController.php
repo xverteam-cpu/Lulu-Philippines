@@ -7,6 +7,7 @@ use App\Models\Investment;
 use App\Support\CurrencyRateService;
 use App\Support\CurrencyDisplay;
 use App\Support\InvestmentPackages;
+use App\Support\ReferralCommissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -154,6 +155,10 @@ class InvestmentController extends Controller
                 $user = $request->user();
                 $user->balance = max(0, ($user->balance ?? 0) - $amountInUsd);
                 $user->save();
+            }
+
+            if (! $isPending) {
+                app(ReferralCommissionService::class)->creditForInvestment($investment);
             }
 
             return $investment;

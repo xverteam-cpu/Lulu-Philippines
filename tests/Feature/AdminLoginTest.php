@@ -83,7 +83,7 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
-            ->withSession(['pin_verified' => true])
+            ->withSession(['investor_pin_verified' => true])
             ->get('/admin/dashboard');
 
         $response->assertOk();
@@ -100,6 +100,8 @@ class AdminLoginTest extends TestCase
         $response->assertSee("body.querySelector(':scope > .modal-card')", false);
         $response->assertSee('#userDetailsModalBody > .modal-card', false);
         $response->assertSee('View details');
+        $response->assertSee('Identity Verification');
+        $response->assertSee('Mark verified');
         $response->assertSee('Block IP address');
         $response->assertSee('class="users-page"', false);
         $response->assertSee('class="users-page-header"', false);

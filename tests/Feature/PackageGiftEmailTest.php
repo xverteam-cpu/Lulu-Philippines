@@ -215,7 +215,11 @@ class PackageGiftEmailTest extends TestCase
         Mail::fake();
 
         $admin = User::factory()->create(['is_admin' => true, 'pin_hash' => 'test-pin']);
-        $recipient = User::factory()->create(['email' => 'buyer@example.com']);
+        $referrer = User::factory()->create();
+        $recipient = User::factory()->create([
+            'email' => 'buyer@example.com',
+            'referred_by' => $referrer->id,
+        ]);
         $investment = Investment::create([
             'user_id' => $recipient->id,
             'package_key' => 'loaded',
@@ -234,6 +238,14 @@ class PackageGiftEmailTest extends TestCase
             ->post(route('admin.investments.approve', $investment))
             ->assertRedirect()
             ->assertSessionHas('status', 'Investment approved successfully.');
+
+        $this->assertSame(39.95, round((float) $referrer->fresh()->balance, 2));
+        $this->assertDatabaseHas('referral_earnings', [
+            'user_id' => $referrer->id,
+            'referred_user_id' => $recipient->id,
+            'investment_id' => $investment->id,
+            'amount' => 39.95,
+        ]);
 
         Mail::assertSent(BondPurchaseApprovedEmail::class, function (BondPurchaseApprovedEmail $mail) use ($recipient): bool {
             $content = $mail->render();

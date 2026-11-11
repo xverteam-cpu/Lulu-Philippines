@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\BondPurchaseApprovedEmail;
 use App\Models\Investment;
 use App\Support\InvestmentPackages;
+use App\Support\ReferralCommissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +84,7 @@ class InvestmentApprovalController extends Controller
 
             $investment->refresh();
             $investment->accrueDailyInterest();
+            app(ReferralCommissionService::class)->creditForInvestment($investment);
 
             try {
                 Mail::to($investment->user->email)->send(new BondPurchaseApprovedEmail($investment));

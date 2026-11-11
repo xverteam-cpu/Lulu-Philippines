@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class IdentityVerification extends Model
 {
+    public const MANUAL_ID_TYPE = 'admin_manual';
+
     public const ID_TYPES = [
         'drivers_license' => "Driver's license",
         'national_id' => 'Philippine National ID',

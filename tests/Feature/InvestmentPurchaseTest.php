@@ -486,9 +486,11 @@ class InvestmentPurchaseTest extends TestCase
 
     public function test_account_balance_activation_reduces_package_slots(): void
     {
+        $referrer = User::factory()->create(['balance' => 0]);
         $user = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
             'balance' => 5000,
+            'referred_by' => $referrer->id,
         ]);
 
         $response = $this->actingAs($user)
@@ -547,6 +549,13 @@ class InvestmentPurchaseTest extends TestCase
             'package_key' => 'loaded',
             'remaining_slots' => 249,
         ]);
+        $this->assertSame(40.0, round((float) $referrer->fresh()->balance, 2));
+        $this->assertDatabaseHas('referral_earnings', [
+            'user_id' => $referrer->id,
+            'referred_user_id' => $user->id,
+            'investment_id' => $investment->id,
+            'amount' => 40.00,
+        ]);
     }
 
     public function test_admin_send_package_activation_reduces_package_slots(): void
@@ -582,7 +591,7 @@ class InvestmentPurchaseTest extends TestCase
         ]);
     }
 
-    public function test_admin_send_package_does_not_credit_referrer_with_a_commission(): void
+    public function test_admin_send_package_credits_five_percent_referral_commission_once(): void
     {
         $referrer = User::factory()->create([
             'pin_hash' => Hash::make('123456'),
@@ -615,11 +624,19 @@ class InvestmentPurchaseTest extends TestCase
             'payment_method' => 'admin_transfer',
         ]);
 
-        $this->assertSame(0.0, (float) $referrer->fresh()->balance);
-        $this->assertDatabaseMissing('referral_earnings', [
+        $investment = $user->investments()->where('payment_method', 'admin_transfer')->firstOrFail();
+        $this->assertSame(6.45, round((float) $referrer->fresh()->balance, 2));
+        $this->assertDatabaseHas('referral_earnings', [
             'user_id' => $referrer->id,
             'referred_user_id' => $user->id,
+            'investment_id' => $investment->id,
+            'amount' => 6.45,
         ]);
+        $this->assertSame(1, $referrer->referralEarnings()->where('investment_id', $investment->id)->count());
+
+        app(\App\Support\ReferralCommissionService::class)->creditForInvestment($investment);
+        $this->assertSame(6.45, round((float) $referrer->fresh()->balance, 2));
+        $this->assertSame(1, $referrer->referralEarnings()->where('investment_id', $investment->id)->count());
     }
 
     private function fakeUsdToPhpRate(): void

@@ -63,6 +63,15 @@
     line-height:22px;
     overflow-wrap:anywhere;
   }
+  .user-status-message {
+    margin:0 0 16px;
+    padding:12px 14px;
+    border:1px solid #b7e4ce;
+    border-radius:10px;
+    background:#f0fdf4;
+    color:#14532d;
+    font-weight:600;
+  }
   @media (max-width:640px) {
     .user-top,
     .detail-grid {
@@ -80,6 +89,9 @@
 
 <div class="user-shell">
   <div class="user-card">
+    @if (session('status'))
+      <div class="user-status-message" role="status">{{ session('status') }}</div>
+    @endif
     <div class="user-top">
       <div>
         <h1 class="user-title">{{ $managedUser->name }}</h1>
@@ -94,6 +106,18 @@
           style="background:#0e8a5a;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;"
         >Copy referral link</button>
         @if(! $managedUser->is_admin)
+          @if ($managedUser->identityVerification?->status === 'verified')
+            <button type="button" disabled style="background:#e8f5ee;color:#14532d;border:1px solid #b7e4ce;border-radius:8px;padding:10px 14px;font-weight:700;cursor:default;">
+              Verified
+            </button>
+          @else
+            <form action="{{ route('admin.users.verify', $managedUser) }}" method="POST" style="display:inline;" onsubmit="return confirm('Mark this user identity as verified?');">
+              @csrf
+              <button type="submit" style="background:#0e8a5a;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer;">
+                Mark verified
+              </button>
+            </form>
+          @endif
           <form action="{{ route('admin.users.restrict', $managedUser) }}" method="POST" style="display:inline;" onsubmit="return confirm('Restrict this user from accessing the website?');">
             @csrf
             <button type="submit" style="background:#111827; color:#fff; border:none; border-radius:8px; padding:10px 14px; font-weight:700; cursor:pointer;">
@@ -127,6 +151,10 @@
       <div class="detail-item">
         <span class="detail-label">Phone Verification</span>
         <span class="detail-value">{{ $managedUser->phone_verified_at?->format('M d, Y h:i A') ?: 'SMS verification temporarily disabled' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Identity Verification</span>
+        <span class="detail-value">{{ $managedUser->identityVerification?->status === 'verified' ? 'Verified' : ($managedUser->identityVerification?->status === 'pending' ? 'Under review' : ($managedUser->identityVerification?->status === 'rejected' ? 'Rejected' : 'Not verified')) }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Profile Region (self-reported)</span>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\IdentityVerification;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -84,6 +85,43 @@ class IdentityVerificationController extends Controller
 
         return redirect()->route('admin.identity-verifications')
             ->with('status', 'Identity verification approved. ID and selfie photos were deleted.');
+    }
+
+    public function markUserVerified(Request $request, User $user): RedirectResponse
+    {
+        abort_if($user->is_admin, 403);
+
+        $verification = $user->identityVerification()->firstOrNew();
+        if ($verification->status === 'verified') {
+            return redirect()->route('admin.users.show', $user)
+                ->with('status', 'This user is already verified.');
+        }
+
+        $paths = array_filter([
+            $verification->front_image_path,
+            $verification->back_image_path,
+            $verification->selfie_image_path,
+        ]);
+
+        DB::transaction(function () use ($request, $verification): void {
+            $verification->fill([
+                'id_type' => $verification->id_type ?: IdentityVerification::MANUAL_ID_TYPE,
+                'status' => 'verified',
+                'review_note' => null,
+                'reviewed_by' => $request->user()->id,
+                'reviewed_at' => now(),
+                'front_image_path' => null,
+                'back_image_path' => null,
+                'selfie_image_path' => null,
+                'submitted_at' => $verification->submitted_at ?: now(),
+            ]);
+            $verification->save();
+        });
+
+        $this->deleteReviewedDocuments($paths, $verification);
+
+        return redirect()->route('admin.users.show', $user)
+            ->with('status', 'User identity marked as verified. Any submitted ID and selfie photos were deleted.');
     }
 
     public function reject(Request $request, IdentityVerification $verification): RedirectResponse

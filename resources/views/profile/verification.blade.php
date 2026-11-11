@@ -140,8 +140,13 @@
         <div class="verification-status" role="status">
           <div class="verification-status-icon" aria-hidden="true">✓</div>
           <h2>Identity verified</h2>
-          <p>Your identity has been reviewed and verified{{ $verification->reviewed_at ? ' on '.$verification->reviewed_at->format('M j, Y') : '' }}. Your ID and selfie photos were deleted after review.</p>
-          <div class="verification-status-meta"><strong>ID type:</strong> {{ $idTypes[$verification->id_type] ?? $verification->id_type }}</div>
+          @if ($verification->id_type === \App\Models\IdentityVerification::MANUAL_ID_TYPE)
+            <p>Your account was manually verified by the LuLu team{{ $verification->reviewed_at ? ' on '.$verification->reviewed_at->format('M j, Y') : '' }}.</p>
+            <div class="verification-status-meta"><strong>Verification method:</strong> Manual admin verification</div>
+          @else
+            <p>Your identity has been reviewed and verified{{ $verification->reviewed_at ? ' on '.$verification->reviewed_at->format('M j, Y') : '' }}. Your ID and selfie photos were deleted after review.</p>
+            <div class="verification-status-meta"><strong>ID type:</strong> {{ $idTypes[$verification->id_type] ?? $verification->id_type }}</div>
+          @endif
         </div>
       @elseif ($verification?->status === 'pending')
         <div class="verification-status pending" role="status">

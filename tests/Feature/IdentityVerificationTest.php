@@ -188,6 +188,94 @@ class IdentityVerificationTest extends TestCase
         $this->assertDatabaseCount('identity_verifications', 0);
     }
 
+    public function test_admin_can_manually_verify_a_user_from_user_details(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSee('Identity Verification')
+            ->assertSee('Not verified')
+            ->assertSee('Mark verified');
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->post(route('admin.users.verify', $user))
+            ->assertRedirect(route('admin.users.show', $user))
+            ->assertSessionHas('status', 'User identity marked as verified. Any submitted ID and selfie photos were deleted.');
+
+        $verification = IdentityVerification::where('user_id', $user->id)->firstOrFail();
+        $this->assertSame(IdentityVerification::MANUAL_ID_TYPE, $verification->id_type);
+        $this->assertSame('verified', $verification->status);
+        $this->assertSame($admin->id, $verification->reviewed_by);
+        $this->assertNotNull($verification->reviewed_at);
+
+        $this->actingAs($admin)
+            ->get(route('admin.users.show', $user))
+            ->assertOk()
+            ->assertSee('Verified')
+            ->assertDontSee('Mark verified');
+
+        $this->actingAs($user)
+            ->get(route('profile.verification'))
+            ->assertOk()
+            ->assertSee('Your account was manually verified by the LuLu team')
+            ->assertSee('Manual admin verification');
+    }
+
+    public function test_admin_manual_verification_deletes_existing_submission_photos(): void
+    {
+        Storage::fake('local');
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+        $frontPath = UploadedFile::fake()->image('front.png')
+            ->storeAs('identity-verifications/'.$user->id, 'front.png', 'local');
+        $selfiePath = UploadedFile::fake()->image('selfie.png')
+            ->storeAs('identity-verifications/'.$user->id, 'selfie.png', 'local');
+        $verification = IdentityVerification::create([
+            'user_id' => $user->id,
+            'id_type' => 'national_id',
+            'front_image_path' => $frontPath,
+            'selfie_image_path' => $selfiePath,
+            'status' => 'pending',
+            'submitted_at' => now(),
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => true])
+            ->post(route('admin.users.verify', $user))
+            ->assertRedirect(route('admin.users.show', $user));
+
+        $verification->refresh();
+        $this->assertSame('verified', $verification->status);
+        $this->assertSame('national_id', $verification->id_type);
+        $this->assertNull($verification->front_image_path);
+        $this->assertNull($verification->selfie_image_path);
+        Storage::disk('local')->assertMissing($frontPath);
+        Storage::disk('local')->assertMissing($selfiePath);
+    }
+
+    public function test_manual_verification_requires_an_admin_with_a_verified_pin(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($otherUser)
+            ->withSession(['investor_pin_verified' => true])
+            ->post(route('admin.users.verify', $user))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->withSession(['investor_pin_verified' => false])
+            ->post(route('admin.users.verify', $user))
+            ->assertRedirect(route('investors'));
+
+        $this->assertDatabaseCount('identity_verifications', 0);
+    }
+
     public function test_admin_can_view_a_pending_id_and_approval_deletes_the_photo(): void
     {
         Storage::fake('local');

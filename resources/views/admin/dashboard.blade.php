@@ -980,6 +980,7 @@
 
 @foreach ($users as $user)
   <template id="userModal-{{ $user->id }}">
+      @php $identityStatus = $user->identityVerification?->status; @endphp
       <button class="modal-close" type="button" onclick="closeUserModal()" aria-label="Close user details">&times;</button>
       <div class="modal-header">
         <div>
@@ -1003,6 +1004,10 @@
         <div class="modal-field">
           <span class="modal-label">Phone/device type (detected)</span>
           <div class="modal-value">{{ $user->last_device ?: 'Not recorded yet' }}</div>
+        </div>
+        <div class="modal-field">
+          <span class="modal-label">Identity Verification</span>
+          <div class="modal-value">{{ $identityStatus === 'verified' ? 'Verified' : ($identityStatus === 'pending' ? 'Under review' : ($identityStatus === 'rejected' ? 'Rejected' : 'Not verified')) }}</div>
         </div>
         <div class="modal-field">
           <span class="modal-label">Referred By</span>
@@ -1085,6 +1090,15 @@
       @endif
 
       @unless ($user->is_admin)
+        @if ($identityStatus === 'verified')
+          <button type="button" class="admin-nav-btn" style="border-color:#b7e4ce;color:#14532d;cursor:default;" disabled>Verified</button>
+        @else
+          <form action="{{ route('admin.users.verify', $user) }}" method="POST" style="margin:20px 0;" onsubmit="return confirm('Mark this user identity as verified?');">
+            @csrf
+            <button type="submit" class="admin-nav-btn" style="border-color:#166534;color:#166534;">Mark verified</button>
+          </form>
+        @endif
+
         <form action="{{ route('admin.users.temporary-password', $user) }}" method="POST" style="margin:20px 0;">
           @csrf
           <button type="submit" class="admin-nav-btn" style="border-color:#166534;color:#166534;" onclick="return confirm('Create a single-use temporary password for this account? Any previous temporary password will stop working.')">Create Temporary Password</button>

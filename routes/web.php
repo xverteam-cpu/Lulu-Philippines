@@ -1276,6 +1276,10 @@ Route::post('/admin/identity-verifications/{verification}/reject', [AdminIdentit
     ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
     ->name('admin.identity-verifications.reject');
 
+Route::post('/admin/users/{user}/verify', [AdminIdentityVerificationController::class, 'markUserVerified'])
+    ->middleware(['auth', RestrictUserAccess::class, RequireInvestorPin::class])
+    ->name('admin.users.verify');
+
 Route::get('/admin/users/{user}', function (User $user) {
     abort_unless(Auth::user()?->is_admin, 403);
 

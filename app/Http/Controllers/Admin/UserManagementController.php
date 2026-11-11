@@ -13,6 +13,7 @@ use App\Models\ReferralEarning;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Support\InvestmentPackages;
+use App\Support\ReferralCommissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,6 +44,7 @@ class UserManagementController extends Controller
         $temporaryPasswordUser = $request->session()->pull('temporary_password_user');
 
         $users = User::query()
+            ->with('identityVerification')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -435,6 +437,8 @@ class UserManagementController extends Controller
                 'status' => 'approved',
                 'starts_at' => now(),
             ]);
+
+            app(ReferralCommissionService::class)->creditForInvestment($investment);
 
             return $investment;
         });
